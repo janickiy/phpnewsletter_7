@@ -13,9 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('category', function (Blueprint $table) {
+        Schema::create('subscribers', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name', 100)->nullable();
+            $table->string('email');
+            $table->tinyInteger('active')->default(1);
+            $table->string('token', 32);
+            $table->timestamp('timeSent')->nullable();
             $table->timestamps();
             $table->engine = 'MyISAM';
         });
@@ -28,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('category');
+        Schema::dropIfExists('subscribers');
     }
 };

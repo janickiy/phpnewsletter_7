@@ -13,9 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('category', function (Blueprint $table) {
+        Schema::create('smtp', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('host');
+            $table->string('username');
+            $table->string('email');
+            $table->string('password')->nullable();
+            $table->integer('port');
+            $table->string('authentication');
+            $table->string('secure');
+            $table->integer('timeout');
+            $table->tinyInteger('active')->default(1);
             $table->timestamps();
             $table->engine = 'MyISAM';
         });
@@ -28,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('category');
+        Schema::dropIfExists('smtp');
     }
 };

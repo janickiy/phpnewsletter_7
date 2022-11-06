@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('category', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->timestamps();
+        Schema::create('schedule_category', function (Blueprint $table) {
+            $table->integer('scheduleId')->index('scheduleId');
+            $table->integer('categoryId')->index('categoryId');
+            $table->primary(['scheduleId', 'categoryId']);
             $table->engine = 'MyISAM';
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('category');
+        Schema::dropIfExists('schedule_category');
     }
 };

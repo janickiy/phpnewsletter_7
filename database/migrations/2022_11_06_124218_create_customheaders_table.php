@@ -13,9 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('category', function (Blueprint $table) {
+        Schema::create('customheaders', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('value');
             $table->timestamps();
             $table->engine = 'MyISAM';
         });
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('category');
+        Schema::dropIfExists('customheaders');
     }
 };
