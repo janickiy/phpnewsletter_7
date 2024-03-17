@@ -11,14 +11,6 @@ class Category extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'name'
+        'name',
     ];
-
-    /**
-     * @return mixed
-     */
-    public static function getOption()
-    {
-        return Category::orderBy('name')->get()->pluck('name', 'id');
-    }
 }

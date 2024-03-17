@@ -28,9 +28,9 @@ class CheckPermission
      */
     public function handle($request, Closure $next, $permissions)
     {
-        if ($this->helper->has_permission(\Auth::user('web')->role, $permissions)) {
+        if($this->helper->has_permission($permissions)){
             return $next($request);
-        } else {
+        }else{
             abort(403);
         }
 
