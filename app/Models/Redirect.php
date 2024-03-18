@@ -4,11 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Category extends Model
+class Redirect extends Model
 {
-    protected $table = 'category';
+    protected $table = 'redirect';
+
     protected $primaryKey = 'id';
+
     protected $fillable = [
-        'name',
+        'url',
+        'email'
     ];
 }

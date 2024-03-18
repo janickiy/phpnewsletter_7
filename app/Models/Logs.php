@@ -4,11 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Category extends Model
+class Logs extends Model
 {
-    protected $table = 'category';
+    protected $table = 'logs';
+
     protected $primaryKey = 'id';
+
+    public $timestamps = false;
+
     protected $fillable = [
-        'name',
+        'time',
     ];
 }

@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
-class Category extends Model
+class Process extends Model
 {
-    protected $table = 'category';
+    protected $table = 'process';
+
     protected $primaryKey = 'id';
+
     protected $fillable = [
-        'name',
+        'command',
+        'userId'
     ];
 }

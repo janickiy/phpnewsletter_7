@@ -251,6 +251,7 @@ return [
         // 'Example' => App\Facades\Example::class,
         'Html' => Collective\Html\HtmlFacade::class,
         'PermissionsHelper' => App\Helpers\PermissionsHelper::class,
+        'StringHelper' => App\Helpers\StringHelper::class,
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
         'Form' => Collective\Html\FormFacade::class,
 
