@@ -6,7 +6,8 @@ use App\Http\Controllers\Admin\{
     CategoryController,
     DataTableController,
     TemplatesController,
-
+    SmtpController,
+    SettingsController,
 
 };
 
@@ -29,17 +30,39 @@ Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/', [TemplatesController::class, 'index'])->name('admin.templates.index');
 
 
-Route::group(['prefix' => 'category'], function () {
-    Route::get('', [CategoryController::class, 'index'])->name('admin.category.index')->middleware(['permission:admin|moderator']);
-    Route::get('create', [CategoryController::class, 'create'])->name('admin.category.create')->middleware(['permission:admin|moderator']);
-    Route::post('store', [CategoryController::class, 'store'])->name('admin.category.store')->middleware(['permission:admin|moderator']);
-    Route::get('edit/{id}', [CategoryController::class, 'edit'])->name('admin.category.edit')->where('id', '[0-9]+')->middleware(['permission:admin|moderator']);
-    Route::put('update', [CategoryController::class, 'update'])->name('admin.category.update')->middleware(['permission:admin|moderator']);
-    Route::post('destroy', [CategoryController::class, 'destroy'])->name('admin.category.destroy')->middleware(['permission:admin|moderator']);
+Route::middleware(['permission:admin|moderator'])->group(function () {
+    Route::group(['prefix' => 'category'], function () {
+        Route::get('', [CategoryController::class, 'index'])->name('admin.category.index');
+        Route::get('create', [CategoryController::class, 'create'])->name('admin.category.create');
+        Route::post('store', [CategoryController::class, 'store'])->name('admin.category.store');
+        Route::get('edit/{id}', [CategoryController::class, 'edit'])->name('admin.category.edit')->where('id', '[0-9]+');
+        Route::put('update', [CategoryController::class, 'update'])->name('admin.category.update');
+        Route::post('destroy', [CategoryController::class, 'destroy'])->name('admin.category.destroy');
+    });
+});
+
+Route::middleware(['permission:admin'])->group(function () {
+    Route::group(['prefix' => 'smtp'], function () {
+        Route::get('', [SmtpController::class, 'index'])->name('admin.smtp.index');
+        Route::get('create', [SmtpController::class, 'create'])->name('admin.smtp.create');
+        Route::post('store', [SmtpController::class, 'store'])->name('admin.smtp.store');
+        Route::get('edit/{id}', [SmtpController::class, 'edit'])->name('admin.smtp.edit')->where('id', '[0-9]+');
+        Route::put('update', [SmtpController::class, 'update'])->name('admin.smtp.update');
+        Route::delete('destroy', [SmtpController::class, 'destroy'])->name('admin.smtp.destroy');
+        Route::post('status', [SmtpController::class, 'status'])->name('admin.smtp.status');
+    });
+});
+
+Route::middleware(['permission:admin'])->group(function () {
+    Route::group(['prefix' => 'settings'], function () {
+        Route::get('', [SettingsController::class, 'index'])->name('admin.settings.index');
+        Route::put('update', [SettingsController::class, 'update'])->name('admin.settings.update');
+    });
 });
 
 Route::group(['prefix' => 'datatable'], function () {
-    Route::any('category', [DataTableController::class, 'getCategory'])->name('admin.datatable.category');
+    Route::any('category', [DataTableController::class, 'getCategory'])->name('admin.datatable.category')->middleware(['permission:admin|moderator']);
+    Route::any('smtp', [DataTableController::class, 'getSmtp'])->name('admin.datatable.smtp')->middleware(['permission:admin']);
 });
 
 

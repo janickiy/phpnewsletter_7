@@ -4,25 +4,32 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Storage;
 
 class Attach extends Model
 {
-    const DIRECTORY = 'public/attach';
+    public const DIRECTORY = 'public/attach';
 
     protected $table = 'attach';
-
-    protected $primaryKey = 'id';
 
     protected $fillable = [
         'name',
         'file_name',
-        'templateId'
+        'template_id'
     ];
 
     protected $attributes = [
         'name' => 'user',
     ];
+
+    /**
+     * @return HasOne
+     */
+    public function template(): HasOne
+    {
+        return $this->hasOne(Templates::class);
+    }
 
     /**
      * @param Builder $query

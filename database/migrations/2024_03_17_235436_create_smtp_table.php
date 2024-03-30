@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('smtp', function (Blueprint $table) {
+        Schema::create('smtp', function (Blueprint $table) {
             $table->increments('id');
             $table->string('host');
             $table->string('username');

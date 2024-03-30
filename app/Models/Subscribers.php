@@ -3,12 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Subscribers extends Model
 {
     protected $table = 'subscribers';
-
-    protected $primaryKey = 'id';
 
     protected $fillable = [
         'name',
@@ -32,10 +31,10 @@ class Subscribers extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function subscriptions()
+    public function subscriptions(): HasMany
     {
-        return $this->hasMany(Subscriptions::class,'subscriberId','id');
+        return $this->hasMany(Subscriptions::class,'subscriber_id');
     }
 }

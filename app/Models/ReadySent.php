@@ -3,31 +3,46 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ReadySent extends Model
 {
     protected $table = 'ready_sent';
 
-    protected $primaryKey = 'id';
-
     protected $fillable = [
-        'subscriberId',
+        'subscriber_id',
         'email',
-        'templateId',
+        'template_id',
         'template',
         'success',
         'errorMsg',
         'readMail',
         'date',
-        'scheduleId',
-        'logId'
+        'schedule_id',
+        'log_id'
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function template()
+    public function template(): BelongsTo
     {
-        return $this->belongsTo(Schedule::class, 'scheduleId','id');
+        return $this->belongsTo(Schedule::class, 'schedule_id');
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function subscriber(): BelongsTo
+    {
+        return $this->belongsTo(Subscribers::class, 'subscriber_id');
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function schedule(): BelongsTo
+    {
+        return $this->belongsTo(Schedule::class, 'schedule_id');
     }
 }

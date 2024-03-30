@@ -40,7 +40,7 @@ class SettingsSeeder extends Seeder
         $data_insert['en'][] = ['name' => 'CONTENT_TYPE', 'value' => 'html'];
         $data_insert['en'][] = ['name' => 'HOW_TO_SEND', 'value' => 'php'];
         $data_insert['en'][] = ['name' => 'SENDMAIL_PATH', 'value' => '/usr/sbin/sendmail'];
-        $data_insert['en'][] = ['name' => 'URL', 'value' => StringHelper::getUrl()];
+        $data_insert['en'][] = ['name' => 'URL', 'value' => ''];
         $data_insert['en'][] = ['name' => 'ADD_DKIM', 'value' => '0'];
         $data_insert['en'][] = ['name' => 'DKIM_DOMAIN', 'value' => 'my-domain.com'];
         $data_insert['en'][] = ['name' => 'DKIM_SELECTOR', 'value' => 'phpnewsletter'];
@@ -74,7 +74,7 @@ class SettingsSeeder extends Seeder
         $data_insert['ru'][] = ['name' => 'CONTENT_TYPE', 'value' => 'html'];
         $data_insert['ru'][] = ['name' => 'HOW_TO_SEND', 'value' => 'php'];
         $data_insert['ru'][] = ['name' => 'SENDMAIL_PATH', 'value' => '/usr/sbin/sendmail'];
-        $data_insert['ru'][] = ['name' => 'URL', 'value' => StringHelpers::getUrl()];
+        $data_insert['ru'][] = ['name' => 'URL', 'value' => ''];
         $data_insert['ru'][] = ['name' => 'ADD_DKIM', 'value' => '0'];
         $data_insert['ru'][] = ['name' => 'DKIM_DOMAIN', 'value' => 'my-domain.com'];
         $data_insert['ru'][] = ['name' => 'DKIM_SELECTOR', 'value' => 'phpnewsletter'];

@@ -9,8 +9,6 @@ class Charsets extends Model
 {
     protected $table = 'charsets';
 
-    protected $primaryKey = 'id';
-
     public $timestamps = false;
 
     /**

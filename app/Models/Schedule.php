@@ -3,32 +3,32 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use \Illuminate\Database\Eloquent\Relations\HasManyThrough;
 class Schedule extends Model
 {
     protected $table = 'schedule';
 
-    protected $primaryKey = 'id';
-
     protected $fillable = [
         'value_from_start_date',
         'value_from_end_date',
-        'templateId'
+        'template_id'
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function template()
+    public function template(): BelongsTo
     {
-        return $this->belongsTo(Templates::class, 'templateId','id');
+        return $this->belongsTo(Templates::class, 'template_id');
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     * @return HasManyThrough
      */
-    public function categories()
+    public function categories(): HasManyThrough
     {
-        return $this->hasManyThrough(Category::class, ScheduleCategory::class,'scheduleId','id','id','categoryId');
+        return $this->hasManyThrough(Category::class, ScheduleCategory::class,'schedule_id','id','id','category_id');
     }
 
 }

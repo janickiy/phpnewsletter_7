@@ -2,40 +2,45 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\Admin\Category\{
+    StoreSettingsRequest,
+    EditSettingsRequest
+};
 use App\Models\Category;
-use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use URL;
+
+
+use App\Helpers\SettingsHelper;
 
 class CategoryController extends Controller
 {
     /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
+       // dd(SettingsHelper::getInstance()->getValueForKey('EMAIL'));
+
         return view('admin.category.index')->with('title', 'Категория подписчиков');
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         return view('admin.category.create_edit')->with('title', 'Добавление категории');
     }
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @param StoreSettingsRequest $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(StoreSettingsRequest $request): RedirectResponse
     {
-        $rules = [
-            'name' => 'required',
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
+        $validator = $request->validated();
 
         if ($validator->fails()) return back()->withErrors($validator)->withInput();
 
@@ -46,9 +51,9 @@ class CategoryController extends Controller
 
     /**
      * @param int $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return View
      */
-    public function edit(int $id)
+    public function edit(int $id): View
     {
         $row = Category::find($id);
 
@@ -58,16 +63,12 @@ class CategoryController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @param EditSettingsRequest $request
+     * @return RedirectResponse
      */
-    public function update(Request $request)
+    public function update(EditSettingsRequest $request): RedirectResponse
     {
-        $rules = [
-            'name' => 'required',
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
+        $validator = $request->validated();
 
         if ($validator->fails()) return back()->withErrors($validator)->withInput();
 
@@ -76,7 +77,6 @@ class CategoryController extends Controller
         if (!$row) abort(404);
 
         $row->name = $request->input('name');
-
         $row->save();
 
         return redirect(URL::route('admin.category.index'))->with('success', 'Данные обновлены');

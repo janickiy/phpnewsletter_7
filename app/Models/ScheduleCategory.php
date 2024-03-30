@@ -11,7 +11,11 @@ class ScheduleCategory extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'scheduleId',
-        'categoryId'
+        'schedule_id',
+        'category_id'
     ];
+
+    protected $primaryKey = ['schedule_id', 'category_id'];
+
+    public $incrementing = false;
 }

@@ -8,7 +8,7 @@ class PermissionsHelper
      * @param string $permissions
      * @return bool
      */
-    public static function has_permission($permissions = '')
+    public static function has_permission(string $permissions = '')
     {
         if (\Auth::user()->role == 'admin') return true;
 

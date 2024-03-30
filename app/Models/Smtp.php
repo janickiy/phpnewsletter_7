@@ -8,8 +8,6 @@ class Smtp  extends Model
 {
     protected $table = 'smtp';
 
-    protected $primaryKey = 'id';
-
     protected $fillable = [
         'host',
         'email',

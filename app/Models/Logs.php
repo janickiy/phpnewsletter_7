@@ -8,8 +8,6 @@ class Logs extends Model
 {
     protected $table = 'logs';
 
-    protected $primaryKey = 'id';
-
     public $timestamps = false;
 
     protected $fillable = [

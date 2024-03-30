@@ -9,8 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
 
     <!-- Font Awesome -->
     {!! Html::style('/plugins/fontawesome-free/css/all.min.css') !!}
@@ -90,6 +89,17 @@
                             <a href="{{ URL::route('admin.category.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-th"></i>
                                 <p>Категория подписчиков</p>
+                            </a>
+                        </li>
+
+                    @endif
+
+                    @if(PermissionsHelper::has_permission(Auth::user()->role,'admin'))
+
+                        <li class="nav-item">
+                            <a href="{{ URL::route('admin.smtp.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-th"></i>
+                                <p>SMTP</p>
                             </a>
                         </li>
 

@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('logs', function (Blueprint $table) {
+        Schema::create('logs', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('logId')->index('logId');
+            $table->foreignId('subscriber_id')
+                ->constrained('subscribers')
+                ->onDelete('cascade');
             $table->timestamp('time');
             $table->engine = 'MyISAM';
         });

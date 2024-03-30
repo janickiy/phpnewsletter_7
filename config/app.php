@@ -84,6 +84,7 @@ return [
     */
 
     'locale' => 'en',
+    'locales' => ['en', 'ru'],
 
     /*
     |--------------------------------------------------------------------------
@@ -122,7 +123,7 @@ return [
     |
     */
 
-    'key' => env('APP_KEY'),
+    'key' => env('APP_KEY', 'base64:xTOzWWnj0hy+51bo546J/r8LaWI9BucdU93KWC2TpdQ='),
 
     'cipher' => 'AES-256-CBC',
 
@@ -254,6 +255,7 @@ return [
         'StringHelper' => App\Helpers\StringHelper::class,
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
         'Form' => Collective\Html\FormFacade::class,
+        'SettingsHelper' => App\Helpers\SettingsHelper::class,
 
     ])->toArray(),
 

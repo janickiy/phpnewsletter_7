@@ -3,13 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Helpers\StringHelper;
 
 class Templates  extends Model
 {
     protected $table = 'templates';
-
-    protected $primaryKey = 'id';
 
     protected $fillable = [
         'name',
@@ -18,17 +17,17 @@ class Templates  extends Model
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function attach()
     {
-        return $this->hasMany(Attach::class, 'templateId', 'id');
+        return $this->hasMany(Attach::class, 'template_id');
     }
 
     /**
      * @return string
      */
-    public function excerpt()
+    public function excerpt(): string
     {
         $content = $this->body;
         $content = preg_replace('/(<.*?>)|(&.*?;)/', '', $content);

@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('schedule_category', function (Blueprint $table) {
-            $table->integer('scheduleId')->index('scheduleId');
-            $table->integer('categoryId')->index('categoryId');
-            $table->primary(['categoryId', 'categoryId']);
+        Schema::create('schedule_category', function (Blueprint $table) {
+            $table->foreignId('schedul_id')
+                ->constrained('schedule')
+                ->onDelete('cascade');
+            $table->foreignId('category_id')
+                ->constrained('categories')
+                ->onDelete('cascade');
+            $table->primary(['schedul_id', 'category_id']);
             $table->engine = 'MyISAM';
         });
     }

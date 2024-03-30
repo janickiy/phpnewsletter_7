@@ -4,23 +4,28 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::table('ready_sent', function (Blueprint $table) {
+        Schema::create('ready_sent', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('subscriberId')->index('subscriberId');
+            $table->foreignId('subscriber_id')
+                ->constrained('subscribers')
+                ->onDelete('cascade');
             $table->string('email');
-            $table->integer('templateId')->index('templateId');
+            $table->foreignId('template_id')
+                ->constrained('templates')
+                ->onDelete('cascade');
             $table->string('template');
             $table->tinyInteger('success');
             $table->text('errorMsg')->nullable();
             $table->tinyInteger('readMail')->nullable();
-            $table->integer('scheduleId')->index('scheduleId');
+            $table->foreignId('schedule_id')
+                ->constrained('schedule')
+                ->onDelete('cascade');
             $table->timestamps();
             $table->engine = 'MyISAM';
         });
