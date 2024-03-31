@@ -105,6 +105,17 @@
 
                     @endif
 
+                    @if(PermissionsHelper::has_permission(Auth::user()->role,'admin|moderator'))
+
+                        <li class="nav-item">
+                            <a href="{{ URL::route('admin.subscribers.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-th"></i>
+                                <p>Подписчики</p>
+                            </a>
+                        </li>
+
+                    @endif
+
                     <li class="nav-item">
                         <a href="#" class="nav-link">
                             <i class="nav-icon fas fa-chart-pie"></i>

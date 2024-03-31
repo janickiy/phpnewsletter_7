@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Admin\Category;
+namespace App\Http\Requests\Admin\Subscribers;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class EditCategoryRequest extends FormRequest
+class ImportRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,7 @@ class EditCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required',
+            'import' => 'required|mimes:csv,xlsx,xls,txt',
         ];
     }
 }

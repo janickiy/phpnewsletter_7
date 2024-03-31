@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use Illuminate\Support\Str;
+
 class StringHelper
 {
     /**
@@ -41,7 +43,7 @@ class StringHelper
      */
     public static function token(): string
     {
-        return md5(uniqid(rand(), TRUE));
+        return md5(Str::random(30));
     }
 
     /**

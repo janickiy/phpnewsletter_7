@@ -20,4 +20,13 @@ class Category extends Model
     {
         return $this->hasMany(Templates::class, 'subscriberId');
     }
+
+    /**
+     * @return mixed
+     */
+    public static function getOption(): mixed
+    {
+        return self::orderBy('name')->get()->pluck('name', 'id');
+    }
+
 }

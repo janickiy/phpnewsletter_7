@@ -12,8 +12,6 @@ use Illuminate\View\View;
 use URL;
 
 
-use App\Helpers\SettingsHelper;
-
 class CategoryController extends Controller
 {
     /**
@@ -21,7 +19,7 @@ class CategoryController extends Controller
      */
     public function index(): View
     {
-       // dd(SettingsHelper::getInstance()->getValueForKey('EMAIL'));
+
 
         return view('admin.category.index')->with('title', 'Категория подписчиков');
     }

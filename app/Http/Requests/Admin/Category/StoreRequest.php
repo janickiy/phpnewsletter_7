@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Admin\Smtp;
+namespace App\Http\Requests\Admin\Category;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class EditCategoryRequest extends FormRequest
+class StoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,7 @@ class EditCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'host' => 'required|max:255',
-            'username' => 'required',
-            'email' => 'required|email',
-            'port' => 'required|numeric',
-            'timeout' => 'required|numeric',
+            'name' => 'required',
         ];
     }
 }

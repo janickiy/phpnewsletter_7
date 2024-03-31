@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\{
     TemplatesController,
     SmtpController,
     SettingsController,
+    SubscribersController,
 
 };
 
@@ -60,9 +61,30 @@ Route::middleware(['permission:admin'])->group(function () {
     });
 });
 
+Route::middleware(['permission:admin|moderator'])->group(function () {
+    Route::group(['prefix' => 'subscribers'], function () {
+        Route::get('', [SubscribersController::class, 'index'])->name('admin.subscribers.index');
+        Route::get('create', [SubscribersController::class, 'create'])->name('admin.subscribers.create');
+        Route::post('store', [SubscribersController::class, 'store'])->name('admin.subscribers.store');
+        Route::get('edit/{id}', [SubscribersController::class, 'edit'])->name('admin.subscribers.edit')->where('id', '[0-9]+');
+        Route::put('update', [SubscribersController::class, 'update'])->name('admin.subscribers.update');
+        Route::delete('destroy', [SubscribersController::class, 'destroy'])->name('admin.subscribers.destroy');
+        Route::get('import', [SubscribersController::class, 'import'])->name('admin.subscribers.import');
+        Route::post('import-subscribers', [SubscribersController::class, 'mportSubscribers'])->name('admin.subscribers.import_subscribers');
+        Route::get('export', [SubscribersController::class, 'export'])->name('admin.subscribers.export');
+        Route::post('export-subscribers', [SubscribersController::class, 'exportSubscribers'])->name('admin.subscribers.export_subscribers');
+        Route::get('remove-all', [SubscribersController::class, 'removeAll'])->name('admin.subscribers.remove_all');
+        Route::post('status', [SubscribersController::class, 'status'])->name('admin.subscribers.status');
+    });
+});
+
+
 Route::group(['prefix' => 'datatable'], function () {
     Route::any('category', [DataTableController::class, 'getCategory'])->name('admin.datatable.category')->middleware(['permission:admin|moderator']);
     Route::any('smtp', [DataTableController::class, 'getSmtp'])->name('admin.datatable.smtp')->middleware(['permission:admin']);
+    Route::any('subscribers', [DataTableController::class, 'getSubscribers'])->name('admin.datatable.subscribers')->middleware(['permission:admin|moderator']);
+
+    //subscribers
 });
 
 

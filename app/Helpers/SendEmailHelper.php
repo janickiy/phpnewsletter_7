@@ -317,7 +317,7 @@ class SendEmailHelper
         $msg = SettingsHelper::getInstance()->getValueForKey('RANDOM_REPLACEMENT_BODY') == 1 ? StringHelper::encodeString($msg) : $msg;
 
         if ($attach) {
-            foreach (Attach::where('templateId', $attach)->get() as $f) {
+            foreach (Attach::where('template_id', $attach)->get() as $f) {
                 $path = Attach::DIRECTORY . '/' . $f->file_name;
 
                 if (Storage::exists($path)) {

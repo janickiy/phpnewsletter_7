@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Helpers\SendEmailHelper;
-use App\Http\Requests\Admin\Smtp\EditCategoryRequest;
-use App\Http\Requests\Admin\Smtp\StoreCategoryRequest;
+use App\Http\Requests\Admin\Smtp\EditRequest;
+use App\Http\Requests\Admin\Smtp\StoreRequest;
 use App\Models\Smtp;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -30,11 +30,11 @@ class SmtpController extends Controller
     }
 
     /**
-     * @param StoreCategoryRequest $request
+     * @param StoreRequest $request
      * @return RedirectResponse
      * @throws \PHPMailer\PHPMailer\Exception
      */
-    public function store(StoreCategoryRequest $request): RedirectResponse
+    public function store(StoreRequest $request): RedirectResponse
     {
         $validator = $request->validated();
 
@@ -67,11 +67,11 @@ class SmtpController extends Controller
     }
 
     /**
-     * @param EditCategoryRequest $request
+     * @param EditRequest $request
      * @return RedirectResponse
      * @throws \PHPMailer\PHPMailer\Exception
      */
-    public function update(EditCategoryRequest $request): RedirectResponse
+    public function update(EditRequest $request): RedirectResponse
     {
         $validator = $request->validated();
 
