@@ -86,4 +86,5 @@ class DataTableController extends Controller
             })
             ->rawColumns(['action', 'checkbox'])->make(true);
     }
+
 }

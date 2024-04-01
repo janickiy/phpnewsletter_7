@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\Admin\Category\{
-    StoreSettingsRequest,
-    EditSettingsRequest
+    StoreRequest,
+    EditRequest
 };
 use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 use URL;
 
@@ -33,10 +34,10 @@ class CategoryController extends Controller
     }
 
     /**
-     * @param StoreSettingsRequest $request
+     * @param StoreRequest $request
      * @return RedirectResponse
      */
-    public function store(StoreSettingsRequest $request): RedirectResponse
+    public function store(StoreRequest $request): RedirectResponse
     {
         $validator = $request->validated();
 
@@ -61,10 +62,10 @@ class CategoryController extends Controller
     }
 
     /**
-     * @param EditSettingsRequest $request
+     * @param EditRequest $request
      * @return RedirectResponse
      */
-    public function update(EditSettingsRequest $request): RedirectResponse
+    public function update(EditRequest $request): RedirectResponse
     {
         $validator = $request->validated();
 

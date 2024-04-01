@@ -50,12 +50,12 @@
 
                             <div class="form-group">
 
-                                {!! Form::label('category_id[]',  trans('frontend.form.subscribers_category')) !!}
+                                {!! Form::label('categoryId[]',  trans('frontend.form.subscribers_category')) !!}
 
-                                {!! Form::select('category_id[]', $options, isset($subscriber) ? $subscriberCategoryId : null, ['multiple' => 'multiple', 'placeholder' => trans('frontend.form.select_category'), 'multiple' => '', 'class' => 'form-control']) !!}
+                                {!! Form::select('categoryId[]', $options, isset($subscriber) ? $subscriberCategoryId : null, ['multiple' => 'multiple', 'placeholder' => trans('frontend.form.select_category'), 'class' => 'form-control']) !!}
 
-                                @if ($errors->has('category_id'))
-                                    <p class="text-danger">{{ $errors->first('category_id') }}</p>
+                                @if ($errors->has('categoryId'))
+                                    <p class="text-danger">{{ $errors->first('categoryId') }}</p>
                                 @endif
                             </div>
 

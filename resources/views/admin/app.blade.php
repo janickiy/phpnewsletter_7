@@ -19,7 +19,6 @@
     <!-- Theme style -->
     {!! Html::style('/dist/css/adminlte.min.css') !!}
 
-
     @yield('css')
 
     <script type="text/javascript">
@@ -111,6 +110,17 @@
                             <a href="{{ URL::route('admin.subscribers.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-th"></i>
                                 <p>Подписчики</p>
+                            </a>
+                        </li>
+
+                    @endif
+
+                    @if(PermissionsHelper::has_permission(Auth::user()->role,'admin'))
+
+                        <li class="nav-item">
+                            <a href="{{ URL::route('admin.settings.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-th"></i>
+                                <p>Настройки</p>
                             </a>
                         </li>
 
