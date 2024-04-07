@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Helpers\StringHelper;
 
 class Settings extends Model
 {
@@ -22,5 +23,24 @@ class Settings extends Model
     public function setNameAttribute(string $name): void
     {
         $this->attributes['name'] = str_replace(' ', '_', strtoupper($name));
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     */
+    public static function setValue(string $key, mixed $value): void
+    {
+        $setting = self::where('name', $key)->first();
+
+        if ($value === null) $value = '';
+
+        if ($key == 'URL' && trim($value) == '')  $value = StringHelper::getUrl();
+
+        if ($setting) {
+            $setting->value = $value;
+            $setting->save();
+        }
     }
 }

@@ -31,7 +31,7 @@
                             <div class="form-group">
                                 {!! Form::label('name', trans('frontend.form.name')) !!}
 
-                                {!! Form::text('name', old('name', isset($subscriber) ? $subscriber->name : null), ['class' => 'form-control']) !!}
+                                {!! Form::text('name', old('name', $subscriber->name ?? null), ['class' => 'form-control']) !!}
 
                                 @if ($errors->has('name'))
                                     <p class="text-danger">{{ $errors->first('name') }}</p>
@@ -41,7 +41,7 @@
                             <div class="form-group">
                                 {!! Form::label('email', 'Email*') !!}
 
-                                {!! Form::text('email', old('email', isset($subscriber) ? $subscriber->email : null), ['class' => 'form-control']) !!}
+                                {!! Form::text('email', old('email', $subscriber->email ?? null), ['class' => 'form-control']) !!}
 
                                 @if ($errors->has('email'))
                                     <p class="text-danger">{{ $errors->first('email') }}</p>
@@ -52,7 +52,7 @@
 
                                 {!! Form::label('categoryId[]',  trans('frontend.form.subscribers_category')) !!}
 
-                                {!! Form::select('categoryId[]', $options, isset($subscriber) ? $subscriberCategoryId : null, ['multiple' => 'multiple', 'placeholder' => trans('frontend.form.select_category'), 'class' => 'form-control']) !!}
+                                {!! Form::select('categoryId[]', $options, $subscriberCategoryId ?? null, ['multiple' => 'multiple', 'placeholder' => trans('frontend.form.select_category'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('categoryId'))
                                     <p class="text-danger">{{ $errors->first('categoryId') }}</p>

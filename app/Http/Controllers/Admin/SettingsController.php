@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Charsets;
 use App\Models\Customheaders;
 use App\Helpers\StringHelper;
+use App\Models\Settings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
@@ -24,6 +25,7 @@ class SettingsController extends Controller
         }
 
         $customheaders = Customheaders::get();
+
 
         return view('admin.settings.index', compact('option_charset', 'customheaders'))->with('title', '');
     }
@@ -48,7 +50,7 @@ class SettingsController extends Controller
         $array['REMOVE_SUBSCRIBER'] = $request->input('REMOVE_SUBSCRIBER') ? 1 : 0;
 
         foreach ($array as $key => $value) {
-            $this->setValue($key, $value);
+            Settings::setValue($key, $value);
         }
 
         if ($request->input('header_name')) {

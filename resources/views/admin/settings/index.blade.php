@@ -20,16 +20,13 @@
                         <div class="card-header p-2">
                             <ul class="nav nav-pills">
                                 <li class="nav-item">
-                                    <a class="nav-link active" href="#s1"
-                                       data-toggle="tab">{{ trans('frontend.str.interface_settings') }}</a>
+                                    <a class="nav-link active" href="#s1" data-toggle="tab">{{ trans('frontend.str.interface_settings') }}</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#s2"
-                                       data-toggle="tab">{{ trans('frontend.str.mailing_options') }}</a>
+                                    <a class="nav-link" href="#s2" data-toggle="tab">{{ trans('frontend.str.mailing_options') }}</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#s3"
-                                       data-toggle="tab">{{ trans('frontend.str.additional_headers') }}</a>
+                                    <a class="nav-link" href="#s3" data-toggle="tab">{{ trans('frontend.str.additional_headers') }}</a>
                                 </li>
                             </ul>
                         </div><!-- /.card-header -->
@@ -278,7 +275,8 @@
                                                 {!! Form::text('LIMIT_NUMBER', SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER'), ['class' => 'form-control']) !!}
 
                                                 @if ($errors->has('LIMIT_NUMBER'))
-                                                    <span class="text-danger">{{ $errors->first('LIMIT_NUMBER') }}</span>
+                                                    <span
+                                                        class="text-danger">{{ $errors->first('LIMIT_NUMBER') }}</span>
                                                 @endif
 
                                             </div>
@@ -319,7 +317,8 @@
                                                 {!! Form::text('DAYS_FOR_REMOVE_SUBSCRIBER', SettingsHelper::getInstance()->getValueForKey('DAYS_FOR_REMOVE_SUBSCRIBER'), ['class' => 'form-control']) !!}
 
                                                 @if ($errors->has('DAYS_FOR_REMOVE_SUBSCRIBER'))
-                                                    <span class="text-danger">{{ $errors->first('DAYS_FOR_REMOVE_SUBSCRIBER') }}</span>
+                                                    <span
+                                                        class="text-danger">{{ $errors->first('DAYS_FOR_REMOVE_SUBSCRIBER') }}</span>
                                                 @endif
 
                                             </div>
@@ -592,28 +591,68 @@
                                     </div>
 
                                 </div>
+                                <!-- /.tab-pane -->
 
+                                <div class="tab-pane" id="s3">
+                                    <div id="headerslist">
+
+                                        @foreach($customheaders as $header)
+
+                                            <div class="header-row">
+                                                <div class="form-group row">
+
+                                                    {!! Form::label('header_name[]', trans('frontend.form.name'), ['class' => 'col-sm-2 col-form-label']) !!}
+
+                                                    <div class="col-md-3">
+
+                                                        {!! Form::text('header_name[]', $header->name, ['class' => 'form-control']) !!}
+
+                                                    </div>
+
+                                                    {!! Form::label('header_value[]', trans('frontend.form.value'), ['class' => 'col-sm-2 col-form-label']) !!}
+
+                                                    <div class="col-md-3">
+
+                                                        {!! Form::text('header_value[]', $header->value, ['class' => 'form-control']) !!}
+
+                                                    </div>
+
+                                                    <div class="col-md-2">
+                                                        <a class="btn btn-outline btn-danger removeBlock" title="{{ trans('frontend.form.remove') }}"> - </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        @endforeach
+
+                                        <div class="form-group">
+                                            <div class="col-lg-12">
+                                                <input class="btn btn-default" id="add_field" type="button" value="+ {{ trans('frontend.form.add') }}">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <!-- /.tab-pane -->
                             </div>
-                            <!-- /.tab-pane -->
+                            <!-- /.tab-content -->
+                        </div><!-- /.card-body -->
 
-                            <div class="tab-pane" id="s3">
-
-                            </div>
-                            <!-- /.tab-pane -->
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">
+                                {{ trans('frontend.str.apply') }}
+                            </button>
                         </div>
-                        <!-- /.tab-content -->
-                    </div><!-- /.card-body -->
 
-                    {!! Form::close() !!}
+                        {!! Form::close() !!}
 
-
-                    <!-- /.card-body -->
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
                 </div>
-                <!-- /.card -->
+                <!-- /.col -->
             </div>
-            <!-- /.col -->
-        </div>
-        <!-- /.row -->
+            <!-- /.row -->
         </div>
         <!-- /.container-fluid -->
 
@@ -623,5 +662,30 @@
 @endsection
 
 @section('js')
+
+    <script>
+
+        $(document).ready(function () {
+            $(document).on("click", '#add_field', function () {
+
+                let html = '<div class="header-row"><div class="form-group row">';
+                html += '<label class="col-sm-2 col-form-label">{{ trans('frontend.str.name') }}</label>';
+                html += '<div class="col-md-3"><input class="form-control" type="text" value="" name="header_name[]"></div>';
+                html += '<label class="col-sm-2 col-form-label">{{ trans('frontend.str.value') }}</label>';
+                html += '<div class="col-md-3"><input class="form-control" type="text" value="" name="header_value[]"></div>';
+                html += '<div class="col-md-2"><a class="btn btn-outline btn-danger removeBlock" title="{{ trans('frontend.form.remove') }}"> - </a></div>';
+                html += '</div></div>';
+
+                $('#headerslist').prepend(html);
+
+            });
+
+            $(document).on("click", '.removeBlock', function () {
+                let parent = $(this).parents('div[class^="header-row"]').first();
+                parent.remove();
+            });
+        });
+
+    </script>
 
 @endsection

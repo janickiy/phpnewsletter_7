@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Панель управления | @yield('title')</title>
+    <title>{{ trans('frontend.str.admin_panel') }} | @yield('title')</title>
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -22,7 +22,7 @@
     @yield('css')
 
     <script type="text/javascript">
-        var SITE_URL = "{{ URL::to('/') }}";
+        let SITE_URL = "{{ URL::to('/') }}";
     </script>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -35,16 +35,22 @@
             <li class="nav-item">
                 <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" data-widget="fullscreen" title="{{ trans('frontend.str.expand_full_screen') }}" href="#" role="button">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                </a>
+            </li>
         </ul>
 
         <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
             <!-- Notifications Dropdown Menu -->
             <li class="nav-item">
-                <a class="nav-link" data-widget="fullscreen" href="#" role="button">
-                    <i class="fas fa-expand-arrows-alt"></i>
+                <a class="nav-link" title="{{ trans('frontend.str.signout') }}" href="{{ URL::route('logout') }}" role="button">
+                    <i class="fas fa-sign-out-alt"></i>
                 </a>
             </li>
+
         </ul>
     </nav>
     <!-- /.navbar -->
@@ -52,7 +58,7 @@
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
-        <a href="../../index3.html" class="brand-link">
+        <a href="{{ URL::route('admin.templates.index') }}" class="brand-link">
             <img src="../../dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
                  style="opacity: .8">
             <span class="brand-text font-weight-light">AdminLTE 3</span>
@@ -63,10 +69,9 @@
             <!-- Sidebar user (optional) -->
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div class="info">
-                    <a href="#" class="d-block">{{ Auth::user()->login }} @if(!empty(Auth::user()->name))({{ Auth::user()->name }})@endif</a>
+                    <a href="{{ URL::route('admin.users.edit', ['id' => Auth::user()->id ]) }}" class="d-block">{{ Auth::user()->login }} @if(!empty(Auth::user()->name))({{ Auth::user()->name }})@endif</a>
                 </div>
             </div>
-
 
             <!-- Sidebar Menu -->
             <nav class="mt-2">
@@ -76,7 +81,7 @@
                          with font-awesome or any other icon font library -->
 
                     <li class="nav-item">
-                        <a href="../widgets.html" class="nav-link">
+                        <a href="{{ URL::route('admin.templates.index') }}" class="nav-link">
                             <i class="nav-icon fas fa-th"></i>
                             <p>Шаблоны</p>
                         </a>
@@ -121,6 +126,17 @@
                             <a href="{{ URL::route('admin.settings.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-th"></i>
                                 <p>Настройки</p>
+                            </a>
+                        </li>
+
+                    @endif
+
+                    @if(PermissionsHelper::has_permission(Auth::user()->role,'admin'))
+
+                        <li class="nav-item">
+                            <a href="{{ URL::route('admin.users.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-th"></i>
+                                <p>Пользователи</p>
                             </a>
                         </li>
 

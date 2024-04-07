@@ -31,7 +31,7 @@
                             <div class="form-group">
                                 {!! Form::label('host', trans('frontend.form.smtp_server') . '*') !!}
 
-                                {!! Form::text('host', old('host', isset($smtp) ? $smtp->host : null), [ 'placeholder' => trans('frontend.form.smtp_server'), 'class' => 'form-control']) !!}
+                                {!! Form::text('host', old('host', $smtp->host ?? null), [ 'placeholder' => trans('frontend.form.smtp_server'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('host'))
                                     <p class="text-danger">{{ $errors->first('host') }}</p>
@@ -41,7 +41,7 @@
                             <div class="form-group">
                                 {!! Form::label('email', 'E-mail*', ['class' => 'label']) !!}
 
-                                {!! Form::text('email', old('email', isset($smtp) ? $smtp->email : null), [ 'placeholder' => 'E-mail', 'class' => 'form-control']) !!}
+                                {!! Form::text('email', old('email', $smtp->email ?? null), [ 'placeholder' => 'E-mail', 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('email'))
                                     <p class="text-danger">{{ $errors->first('email') }}</p>
@@ -51,7 +51,7 @@
                             <div class="form-group">
                                 {!! Form::label('username', trans('frontend.form.login') . '*') !!}
 
-                                {!! Form::text('username', old('username', isset($smtp) ? $smtp->username : null), [ 'placeholder' => trans('frontend.form.login'), 'class' => 'form-control']) !!}
+                                {!! Form::text('username', old('username', $smtp->username ?? null), [ 'placeholder' => trans('frontend.form.login'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('username'))
                                     <p class="text-danger">{{ $errors->first('username') }}</p>
@@ -62,7 +62,7 @@
 
                                 {!! Form::label('password', trans('frontend.form.password')) !!}
 
-                                {!! Form::text('password', old('password', isset($smtp) ? $smtp->password : null), [ 'placeholder' => trans('frontend.form.password'), 'class' => 'form-control']) !!}
+                                {!! Form::text('password', old('password', $smtp->password ?? null), [ 'placeholder' => trans('frontend.form.password'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('password'))
                                     <p class="text-danger">{{ $errors->first('password') }}</p>
@@ -72,7 +72,7 @@
                             <div class="form-group">
                                 {!! Form::label('port', trans('frontend.form.port') . '*') !!}
 
-                                {!! Form::text('port', old('port', isset($smtp) ? $smtp->port : 25), [ 'placeholder' => trans('frontend.form.port'), 'class' => 'form-control']) !!}
+                                {!! Form::text('port', old('port', $smtp->port ?? 25), [ 'placeholder' => trans('frontend.form.port'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('port'))
                                     <p class="text-danger">{{ $errors->first('port') }}</p>
@@ -82,7 +82,7 @@
                             <div class="form-group">
                                 {!! Form::label('timeout', trans('frontend.form.timeout') . '*') !!}
 
-                                {!! Form::text('timeout', old('timeout', isset($smtp) ? $smtp->timeout : 5), [ 'placeholder' => trans('frontend.form.timeout'), 'class' => 'form-control']) !!}
+                                {!! Form::text('timeout', old('timeout', $smtp->timeout ?? 5), [ 'placeholder' => trans('frontend.form.timeout'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('timeout'))
                                     <p class="text-danger">{{ $errors->first('timeout') }}</p>
@@ -97,7 +97,8 @@
 
                                         {!! Form::radio('secure', 'no', old('secure', (isset($smtp) && ($smtp->secure == 'no') or !isset($smtp)) ? true : false )) !!}
 
-                                        <i></i>{{ trans('frontend.str.no') }}</label>
+                                        <i></i>
+                                        {{ trans('frontend.str.no') }}</label>
                                     <label class="radio">
 
                                         {!! Form::radio('secure', 'ssl', old('secure', (isset($smtp) && ($smtp->secure == 'ssl')) ? true : false )) !!}

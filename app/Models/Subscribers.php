@@ -153,7 +153,7 @@ class Subscribers extends Model
             $name = trim($dataInSheet['B']);
 
             if (StringHelper::isEmail($email)) {
-                $subscribers = Subscribers::where('email', 'like', $email)->first();
+                $subscribers = self::where('email', 'like', $email)->first();
 
                 if ($subscribers && $f->categoryId) {
                     Subscriptions::where('subscriber_id', $subscribers->id)->delete();
@@ -167,7 +167,7 @@ class Subscribers extends Model
                         }
                     }
                 } else {
-                    $insertId = Subscribers::create([
+                    $insertId = self::create([
                         'name' => $name,
                         'email' => $email,
                         'active' => 1,
@@ -208,7 +208,7 @@ class Subscribers extends Model
                 }
             }
 
-            $subscribers = Subscribers::select('subscribers.name', 'subscribers.email')
+            $subscribers = self::select('subscribers.name', 'subscribers.email')
                 ->leftJoin('subscriptions', function ($join) {
                     $join->on('subscribers.id', '=', 'subscriptions.subscriber_id');
                 })
@@ -219,7 +219,7 @@ class Subscribers extends Model
                 ->groupBy('subscribers.name')
                 ->get();
         } else {
-            $subscribers = Subscribers::select('name', 'email')
+            $subscribers = self::select('name', 'email')
                 ->where('active', 1)
                 ->get();
         }

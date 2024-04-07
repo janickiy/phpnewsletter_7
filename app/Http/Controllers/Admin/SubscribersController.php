@@ -52,18 +52,12 @@ class SubscribersController extends Controller
      */
     public function store(StoreRequest $request): RedirectResponse
     {
-        $validator = $request->validated();
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
         $id = Subscribers::create(array_merge($request->all(), ['timeSent' => date('Y-m-d H:i:s'), 'active' => 1, 'token' => StringHelper::token()]))->id;
 
         if ($request->categoryId && $id) {
             foreach ($request->categoryId as $categoryId) {
                 if (is_numeric($categoryId)) {
-                    Subscriptions::create(['subscriber_id' => $id, 'categoryId' => $categoryId]);
+                    //Subscriptions::create(['subscriber_id' => $id, 'category_id' => $categoryId]);
                 }
             }
         }
@@ -100,13 +94,6 @@ class SubscribersController extends Controller
      */
     public function update(EditRequest $request): RedirectResponse
     {
-
-        $validator = $request->validated();
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
         $subscribers = Subscribers::find($request->id);
 
         if (!$subscribers) abort(404);
@@ -115,7 +102,7 @@ class SubscribersController extends Controller
             Subscriptions::where('subscriber_id', $request->id)->delete();
 
             foreach ($request->categoryId as $categoryId) {
-                if (is_numeric($categoryId)) Subscriptions::create(['subscriberId' => $request->id, 'category_id' => $categoryId]);
+                if (is_numeric($categoryId)) Subscriptions::create(['subscriber_id' => $request->id, 'category_id' => $categoryId]);
             }
         }
 
@@ -159,11 +146,6 @@ class SubscribersController extends Controller
      */
     public function importSubscribers(ImportRequest $request): RedirectResponse
     {
-        $validator = $request->validated();
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
 
         $extension = strtolower($request->file('import')->getClientOriginalExtension());
 

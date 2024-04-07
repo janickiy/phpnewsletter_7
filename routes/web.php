@@ -9,7 +9,7 @@ use App\Http\Controllers\Admin\{
     SmtpController,
     SettingsController,
     SubscribersController,
-
+    UsersController,
 };
 
 /*
@@ -41,6 +41,7 @@ Route::middleware(['permission:admin|moderator'])->group(function () {
         Route::post('destroy', [CategoryController::class, 'destroy'])->name('admin.category.destroy');
     });
 });
+
 
 Route::middleware(['permission:admin'])->group(function () {
     Route::group(['prefix' => 'smtp'], function () {
@@ -78,11 +79,22 @@ Route::middleware(['permission:admin|moderator'])->group(function () {
     });
 });
 
+Route::middleware(['permission:admin'])->group(function () {
+    Route::group(['prefix' => 'users'], function () {
+        Route::get('', [UsersController::class, 'index'])->name('admin.users.index');
+        Route::get('create', [UsersController::class, 'create'])->name('admin.users.create');
+        Route::post('store', [UsersController::class, 'store'])->name('admin.users.store');
+        Route::get('edit/{id}', [UsersController::class, 'edit'])->name('admin.users.edit');
+        Route::put('update', [UsersController::class, 'update'])->name('admin.users.update');
+        Route::delete('destroy', [UsersController::class, 'destroy'])->name('admin.users.destroy')->where('id', '[0-9]+');
+    });
+});
 
 Route::group(['prefix' => 'datatable'], function () {
     Route::any('category', [DataTableController::class, 'getCategory'])->name('admin.datatable.category')->middleware(['permission:admin|moderator']);
     Route::any('smtp', [DataTableController::class, 'getSmtp'])->name('admin.datatable.smtp')->middleware(['permission:admin']);
     Route::any('subscribers', [DataTableController::class, 'getSubscribers'])->name('admin.datatable.subscribers')->middleware(['permission:admin|moderator']);
+    Route::any('users', [DataTableController::class, 'getUsers'])->name('admin.datatable.users')->middleware(['permission:admin']);
 });
 
 

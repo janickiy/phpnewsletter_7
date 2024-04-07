@@ -12,4 +12,5 @@ class CustomHeaders extends Model
         'name',
         'value'
     ];
+
 }

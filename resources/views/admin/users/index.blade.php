@@ -24,25 +24,18 @@
                         <!-- /.card-header -->
                         <div class="card-body">
                             <div class="pb-3">
-                                <a href="{{ URL::route('admin.smtp.create') }}"
-                                   class="btn btn-info btn-sm pull-left">
-                                    <span class="fa fa-plus"> &nbsp;</span> Добавить
+                                <a href="{{ URL::route('admin.users.create') }}" class="btn btn-info btn-sm pull-left">
+                                    <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_user') }}
                                 </a>
                             </div>
                             <table id="itemList" class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
-                                    <th style="width: 10px"><span><input type="checkbox"
-                                                                         title="{{ trans('frontend.str.check_uncheck_all') }}"
-                                                                         id="checkAll"></span></th>
-                                    <th>{{ trans('frontend.str.smtp_server') }}</th>
-                                    <th>E-mail</th>
                                     <th>{{ trans('frontend.str.login') }}</th>
-                                    <th>{{ trans('frontend.str.port') }}</th>
-                                    <th>{{ trans('frontend.str.connection_timeout') }}</th>
-                                    <th>{{ trans('frontend.str.connection') }}</th>
-                                    <th>{{ trans('frontend.str.authentication_method') }}</th>
-                                    <th>{{ trans('frontend.str.status') }}</th>
+                                    <th>{{ trans('frontend.str.name') }}</th>
+                                    <th>{{ trans('frontend.str.description') }}</th>
+                                    <th>{{ trans('frontend.str.role') }}</th>
+                                    <th>{{ trans('frontend.str.added') }}</th>
                                     <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
                                 </tr>
                                 </thead>
@@ -82,11 +75,8 @@
     {!! Html::script('/plugins/datatables-buttons/js/buttons.colVis.min.js') !!}
 
     <script>
-        $(document).ready(function () {
 
-            $("#checkAll").click(function () {
-                $('input:checkbox').not(this).prop('checked', this.checked);
-            });
+        $(document).ready(function () {
 
             $("#itemList").DataTable({
                 "oLanguage": {
@@ -106,26 +96,20 @@
                 'createdRow': function (row, data, dataIndex) {
                     $(row).attr('id', 'rowid_' + data['id']);
                 },
-                aaSorting: [[1, 'asc']],
                 "processing": true,
                 "responsive": true,
                 "autoWidth": true,
                 'serverSide': true,
                 'ajax': {
-                    url: '{{ URL::route('admin.datatable.smtp') }}'
+                    url: '{{ URL::route('admin.datatable.users') }}'
                 },
                 'columns': [
-                    {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},
-                    {data: 'host', name: 'host'},
-                    {data: 'email', name: 'email'},
-                    {data: 'username', name: 'username'},
-                    {data: 'port', name: 'port'},
-                    {data: 'timeout', name: 'timeout'},
-                    {data: 'secure', name: 'secure'},
-                    {data: 'authentication', name: 'authentication'},
-                    {data: 'active', name: 'active'},
+                    {data: 'login', name: 'login'},
+                    {data: 'name', name: 'name'},
+                    {data: 'description', name: 'description'},
+                    {data: 'role', name: 'role'},
+                    {data: 'created_at', name: 'created_at'},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
-
                 ]
             });
 
@@ -147,7 +131,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: '{{ URL::route('admin.smtp.destroy') }}',
+                            url: '{{ URL::route('admin.users.destroy') }}',
                             type: "POST",
                             dataType: "html",
                             data: {id: rowid},
@@ -164,5 +148,6 @@
                 })
             });
         })
+
     </script>
 @endsection

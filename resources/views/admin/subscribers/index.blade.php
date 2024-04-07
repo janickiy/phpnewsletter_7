@@ -19,17 +19,19 @@
         <div class="container-fluid">
             <div class="row">
 
-
                 <div class="col-lg-12"><p class="text-center">
-                        <a class="btn btn-outline btn-default btn-lg" title="{{ trans('frontend.str.import_subscribers') }}"
+                        <a class="btn btn-outline btn-default btn-lg"
+                           title="{{ trans('frontend.str.import_subscribers') }}"
                            href="{{ URL::route('admin.subscribers.import') }}">
                             <span class="fa fa-download fa-2x"></span> {{ trans('frontend.str.import') }}
                         </a>
-                        <a class="btn btn-outline btn-default btn-lg" title="{{ trans('frontend.str.export_subscribers') }}"
+                        <a class="btn btn-outline btn-default btn-lg"
+                           title="{{ trans('frontend.str.export_subscribers') }}"
                            href="{{ URL::route('admin.subscribers.export') }}">
                             <span class="fa fa-upload fa-2x"></span> {{ trans('frontend.str.export') }}
                         </a>
-                        <a class="btn btn-outline btn-danger btn-lg" title="{{ trans('frontend.str.delete_all_subscribers') }}"
+                        <a class="btn btn-outline btn-danger btn-lg"
+                           title="{{ trans('frontend.str.delete_all_subscribers') }}"
                            onclick="confirmation()">
                             <span class="fa fa-trash fa-2x"></span> {{ trans('frontend.str.delete_all') }}
                         </a>
@@ -37,72 +39,69 @@
                 </div>
             </div>
 
-
             <div class="col-12">
 
-                    <div class="card">
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                            <div class="pb-3">
-                                <a href="{{ URL::route('admin.subscribers.create') }}"
-                                   class="btn btn-info btn-sm pull-left">
-                                    <span class="fa fa-plus"> &nbsp;</span> Добавить
-                                </a>
-                            </div>
+                <div class="card">
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="pb-3">
+                            <a href="{{ URL::route('admin.subscribers.create') }}"
+                               class="btn btn-info btn-sm pull-left">
+                                <span class="fa fa-plus"> &nbsp;</span> Добавить
+                            </a>
+                        </div>
 
-                            {!! Form::open(['url' => URL::route('admin.subscribers.status'), 'method' => 'post']) !!}
+                        {!! Form::open(['url' => URL::route('admin.subscribers.status'), 'method' => 'post']) !!}
 
-                            <table id="itemList" class="table table-bordered table-striped">
-                                <thead>
-                                <tr>
-                                    <th style="width: 10px">
-                                        <span>
-                                            <input type="checkbox" title="{{ trans('frontend.str.check_uncheck_all') }}" id="checkAll">
-                                        </span>
-                                    </th>
-                                    <th>{{ trans('frontend.str.name') }}</th>
-                                    <th>E-mail</th>
-                                    <th>{{ trans('frontend.str.category') }}</th>
-                                    <th>{{ trans('frontend.str.status') }}</th>
-                                    <th>{{ trans('frontend.str.added') }}</th>
-                                    <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
-                                </tr>
-                                </thead>
-                                <tfoot>
-
-                                </tfoot>
-                            </table>
-
-                            <div class="row">
-                                <div class="col-sm-12 padding-bottom-10">
-                                    <div class="form-inline">
-                                        <div class="control-group">
-
-                                            {!! Form::select('action',[
-                                            '1' => trans('frontend.str.activate'),
-                                            '0' => trans('frontend.str.deactivate'),
-                                            '2' => trans('frontend.str.remove')
-                                            ],null,['class' => 'span3 form-control', 'id' => 'select_action','placeholder' => '--' . trans('frontend.str.action') . '--']) !!}
-
-                                            <span class="help-inline">
-                                       {!! Form::submit(trans('frontend.str.apply'), ['class' => 'btn btn-success', 'disabled' => "", 'id' => 'apply']) !!}
+                        <table id="itemList" class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <th style="width: 10px">
+                                    <span>
+                                       <input type="checkbox" title="{{ trans('frontend.str.check_uncheck_all') }}" id="checkAll">
                                     </span>
+                                </th>
+                                <th>{{ trans('frontend.str.name') }}</th>
+                                <th>E-mail</th>
+                                <th>{{ trans('frontend.str.category') }}</th>
+                                <th>{{ trans('frontend.str.status') }}</th>
+                                <th>{{ trans('frontend.str.added') }}</th>
+                                <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
 
-                                        </div>
+                            </tfoot>
+                        </table>
+
+                        <div class="row">
+                            <div class="col-sm-12 padding-bottom-10">
+                                <div class="form-inline">
+                                    <div class="control-group">
+
+                                        {!! Form::select('action',[
+                                        '1' => trans('frontend.str.activate'),
+                                        '0' => trans('frontend.str.deactivate'),
+                                        '2' => trans('frontend.str.remove')
+                                        ],null,['class' => 'span3 form-control', 'id' => 'select_action','placeholder' => '--' . trans('frontend.str.action') . '--']) !!}
+
+                                        <span class="help-inline">
+                                            {!! Form::submit(trans('frontend.str.apply'), ['class' => 'btn btn-success', 'disabled' => "", 'id' => 'apply']) !!}
+                                        </span>
+
                                     </div>
                                 </div>
                             </div>
-
-                            {!! Form::close() !!}
-
                         </div>
+
+                        {!! Form::close() !!}
+
                         <!-- /.card-body -->
                     </div>
                     <!-- /.card -->
                 </div>
                 <!-- /.col -->
             </div>
-            <!-- /.row -->
         </div>
         <!-- /.container-fluid -->
 
@@ -127,6 +126,7 @@
     {!! Html::script('/plugins/datatables-buttons/js/buttons.colVis.min.js') !!}
 
     <script>
+
         $(document).ready(function () {
             $("#apply").click(function (event) {
                 let idSelect = $('#select_action').val();
@@ -155,7 +155,7 @@
                             confirmButtonText: "{{ trans('frontend.str.yes') }}",
                             cancelButtonText: "{{ trans('frontend.str.cancel') }}",
                             closeOnConfirm: false
-                        }, function(isConfirm){
+                        }, function (isConfirm) {
                             if (isConfirm) form.submit();
                         });
                     }
@@ -167,7 +167,7 @@
                 countChecked();
             });
 
-            $("#checkAll").on('change',function () {
+            $("#checkAll").on('change', function () {
                 countChecked();
             });
 
@@ -215,12 +215,12 @@
             $('#itemList').on('click', 'a.deleteRow', function () {
                 let rowid = $(this).attr('id');
                 Swal.fire({
-                    title: "{{ trans('frontend.msg.are_you_sure') }}"",
+                    title: "{{ trans('frontend.msg.are_you_sure') }}",
                     text: "{{ trans('frontend.msg.will_not_be_able_to_ecover_information') }}",
                     showCancelButton: true,
                     icon: 'warning',
-                    cancelButtonText: "Отмена",
-                    confirmButtonText: "{{ trans('frontend.msg.yes_remove') }}"",
+                    cancelButtonText: "{{ trans('frontend.str.cancel') }}",
+                    confirmButtonText: "{{ trans('frontend.msg.yes_remove') }}",
                     reverseButtons: true,
                     confirmButtonColor: "#DD6B55",
                     customClass: {
@@ -247,5 +247,15 @@
                 })
             });
         })
+
+        function countChecked()
+        {
+            if ($('.check').is(':checked'))
+                $('#apply').attr('disabled',false);
+            else
+                $('#apply').attr('disabled',true);
+        }
+
     </script>
+
 @endsection

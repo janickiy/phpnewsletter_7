@@ -20,8 +20,6 @@ class CategoryController extends Controller
      */
     public function index(): View
     {
-
-
         return view('admin.category.index')->with('title', 'Категория подписчиков');
     }
 
@@ -39,9 +37,6 @@ class CategoryController extends Controller
      */
     public function store(StoreRequest $request): RedirectResponse
     {
-        $validator = $request->validated();
-
-        if ($validator->fails()) return back()->withErrors($validator)->withInput();
 
         Category::create($request->all());
 
@@ -67,10 +62,6 @@ class CategoryController extends Controller
      */
     public function update(EditRequest $request): RedirectResponse
     {
-        $validator = $request->validated();
-
-        if ($validator->fails()) return back()->withErrors($validator)->withInput();
-
         $row = Category::find($request->id);
 
         if (!$row) abort(404);

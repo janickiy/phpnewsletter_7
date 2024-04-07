@@ -111,12 +111,12 @@
             $('#itemList').on('click', 'a.deleteRow', function () {
                 let rowid = $(this).attr('id');
                 Swal.fire({
-                    title: 'Вы уверены?',
-                    text: "Вы не сможете восстановить эту информацию!",
+                    title: "{{ trans('frontend.msg.are_you_sure') }}",
+                    text: "{{ trans('frontend.msg.will_not_be_able_to_ecover_information') }}",
                     showCancelButton: true,
                     icon: 'warning',
-                    cancelButtonText: "Отмена",
-                    confirmButtonText: 'Да, удалить!',
+                    cancelButtonText: "{{ trans('frontend.str.cancel') }}",
+                    confirmButtonText: "{{ trans('frontend.msg.yes_remove') }}",
                     reverseButtons: true,
                     confirmButtonColor: "#DD6B55",
                     customClass: {
@@ -133,10 +133,10 @@
                             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                             success: function () {
                                 $("#rowid_" + rowid).remove();
-                                Swal.fire('Сделано!', 'Данные успешно удалены!', 'success');
+                                Swal.fire("{{ trans('frontend.msg.done') }}", "{{ trans('frontend.msg.data_successfully_deleted') }}", 'success');
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
-                                Swal.fire('Ошибка при удалении!', 'Попробуйте еще раз', 'error');
+                                Swal.fire("{{ trans('frontend.msg.error_deleting') }}", "{{ trans('frontend.msg.try_again') }}", 'error');
                             }
                         });
                     }

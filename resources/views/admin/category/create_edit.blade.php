@@ -31,7 +31,7 @@
                             <div class="form-group">
                                 {!! Form::label('name', 'Имя*') !!}
 
-                                {!! Form::text('name', old('name', isset($row) ? $row->name : null), ['class' => 'form-control', 'placeholder' => "Название"]) !!}
+                                {!! Form::text('name', old('name', $row->name ?? null), ['class' => 'form-control', 'placeholder' => "Название"]) !!}
 
                                 @if ($errors->has('name'))
                                     <p class="text-danger">{{ $errors->first('name') }}</p>
