@@ -32,24 +32,15 @@ class Attach extends Model
     }
 
     /**
-     * @param Builder $query
-     * @param int $id
-     * @return false|mixed
+     * @return void
      */
-    public function scopeRemove(Builder $query, int $id)
+    public function scopeRemove(): void
     {
-        $q = $query->where('id', $id);
-
-        if ($q->exists()) {
-            $attach = $q->first();
-
-            if (Storage::exists(Attach::DIRECTORY . '/' . $attach->file_name)) {
-                Storage::delete(Attach::DIRECTORY . '/' . $attach->file_name);
-            }
-
-            return $q->delete();
+        if (Storage::exists(Attach::DIRECTORY . '/' . $this->file_name)) {
+            Storage::delete(Attach::DIRECTORY . '/' . $this->file_name);
         }
 
-        return false;
+        $this->delete();
+
     }
 }

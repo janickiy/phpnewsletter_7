@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Helpers\StringHelper;
 
-class Templates  extends Model
+class Templates extends Model
 {
     protected $table = 'templates';
 
@@ -32,7 +32,7 @@ class Templates  extends Model
         $content = $this->body;
         $content = preg_replace('/(<.*?>)|(&.*?;)/', '', $content);
 
-        return StringHelper::shortText($content,500);
+        return StringHelper::shortText($content, 500);
     }
 
     /**
@@ -57,5 +57,17 @@ class Templates  extends Model
             case 3:
                 return trans('frontend.str.normal');
         }
+    }
+
+    /**
+     * @return void
+     */
+    public function scopeRemove(): void
+    {
+        foreach ($this->attach() as $attach) {
+            $attach->remove();
+        }
+
+        $this->delete();
     }
 }

@@ -30,6 +30,14 @@ Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/', [TemplatesController::class, 'index'])->name('admin.templates.index');
 
+Route::group(['prefix' => 'template'], function () {
+    Route::get('create', [TemplatesController::class, 'create'])->name('admin.templates.create');
+    Route::post('store', [TemplatesController::class, 'store'])->name('admin.templates.store');
+    Route::get('edit/{id}', [TemplatesController::class, 'edit'])->name('admin.templates.edit')->where('id', '[0-9]+');
+    Route::put('update', [TemplatesController::class, 'update'])->name('admin.templates.update');
+    Route::delete('destroy', [TemplatesController::class, 'destroy'])->name('admin.templates.destroy');
+    Route::post('status', [TemplatesController::class, 'status'])->name('admin.templates.status');
+});
 
 Route::middleware(['permission:admin|moderator'])->group(function () {
     Route::group(['prefix' => 'category'], function () {

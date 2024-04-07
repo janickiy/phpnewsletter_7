@@ -17,47 +17,72 @@
     <section class="content">
 
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
 
-                    <div class="card">
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                            <div class="pb-3">
-                                <a href="{{ URL::route('admin.smtp.create') }}"
-                                   class="btn btn-info btn-sm pull-left">
-                                    <span class="fa fa-plus"> &nbsp;</span> Добавить
-                                </a>
-                            </div>
-                            <table id="itemList" class="table table-bordered table-striped">
-                                <thead>
-                                <tr>
-                                    <th style="width: 10px"><span><input type="checkbox"
-                                                                         title="{{ trans('frontend.str.check_uncheck_all') }}"
-                                                                         id="checkAll"></span></th>
-                                    <th>{{ trans('frontend.str.smtp_server') }}</th>
-                                    <th>E-mail</th>
-                                    <th>{{ trans('frontend.str.login') }}</th>
-                                    <th>{{ trans('frontend.str.port') }}</th>
-                                    <th>{{ trans('frontend.str.connection_timeout') }}</th>
-                                    <th>{{ trans('frontend.str.connection') }}</th>
-                                    <th>{{ trans('frontend.str.authentication_method') }}</th>
-                                    <th>{{ trans('frontend.str.status') }}</th>
-                                    <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
-                                </tr>
-                                </thead>
-                                <tfoot>
+            <div class="col-12">
 
-                                </tfoot>
-                            </table>
+                <div class="card">
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="pb-3">
+                            <a href="{{ URL::route('admin.templates.create') }}"
+                               class="btn btn-info btn-sm pull-left">
+                                <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_template') }}
+                            </a>
                         </div>
+
+                        {!! Form::open(['url' => URL::route('admin.templates.status'), 'method' => 'post']) !!}
+
+                        <table id="itemList" class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <th style="width: 10px">
+                                   <span>
+                                        <input type="checkbox" title="{{ trans('frontend.str.check_uncheck_all') }}"
+                                               id="checkAll">
+                                    </span>
+                                </th>
+                                <th style="width: 10px">ID</th>
+                                <th>{{ trans('frontend.str.template') }}</th>
+                                <th>{{ trans('frontend.str.importance') }}</th>
+                                <th>{{ trans('frontend.str.attachments') }}</th>
+                                <th>{{ trans('frontend.str.date') }}</th>
+                                <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
+
+                            </tfoot>
+                        </table>
+
+                        <div class="row">
+                            <div class="col-sm-12 padding-bottom-10">
+                                <div class="form-inline">
+                                    <div class="control-group">
+
+                                        {!! Form::select('action',[
+                                        '0' => trans('frontend.str.send'),
+                                        '1' => trans('frontend.str.remove')
+                                        ],null,['class' => 'span3 form-control', 'id' => 'select_action','placeholder' => '--' . trans('frontend.str.action') . '--'],[0 => ['data-id' => 'sendmail', 'class' => 'open_modal']]) !!}
+
+                                        <span class="help-inline">
+
+                                        {!! Form::submit(trans('frontend.str.apply'), ['class' => 'btn btn-success', 'disabled' => "", 'id' => 'apply']) !!}
+
+                                    </span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {!! Form::close() !!}
+
                         <!-- /.card-body -->
                     </div>
                     <!-- /.card -->
                 </div>
                 <!-- /.col -->
             </div>
-            <!-- /.row -->
         </div>
         <!-- /.container-fluid -->
 
@@ -82,11 +107,56 @@
     {!! Html::script('/plugins/datatables-buttons/js/buttons.colVis.min.js') !!}
 
     <script>
+
         $(document).ready(function () {
+
+            $("#apply").click(function (event) {
+                let idSelect = $('#select_action').val();
+
+                if (idSelect == '') {
+                    event.preventDefault();
+                    swal({
+                        title: "Error",
+                        text: "{{ trans('frontend.str.select_action') }}",
+                        type: "error",
+                        showCancelButton: false,
+                        cancelButtonText: "{{ trans('frontend.str.cancel') }}",
+                        confirmButtonColor: "#DD6B55",
+                        closeOnConfirm: false
+                    });
+                } else {
+                    if (idSelect == 2) {
+                        event.preventDefault();
+                        let form = $(this).parents('form');
+                        swal({
+                            title: "{{ trans('frontend.str.delete_confirmation') }}",
+                            text: "{{ trans('frontend.str.confirm_remove') }}",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "{{ trans('frontend.str.yes') }}",
+                            cancelButtonText: "{{ trans('frontend.str.cancel') }}",
+                            closeOnConfirm: false
+                        }, function (isConfirm) {
+                            if (isConfirm) form.submit();
+                        });
+                    }
+                }
+            });
 
             $("#checkAll").click(function () {
                 $('input:checkbox').not(this).prop('checked', this.checked);
+                countChecked();
             });
+
+            $("#checkAll").on('change', function () {
+                countChecked();
+            });
+
+            $("#itemList").on('change', 'input.check', function () {
+                countChecked();
+            });
+
 
             $("#itemList").DataTable({
                 "oLanguage": {
@@ -106,9 +176,9 @@
                 'createdRow': function (row, data, dataIndex) {
                     $(row).attr('id', 'rowid_' + data['id']);
                 },
-                aaSorting: [[1, 'asc']],
                 "processing": true,
                 "responsive": true,
+                aaSorting: [[1, 'asc']],
                 "autoWidth": true,
                 'serverSide': true,
                 'ajax': {
@@ -125,7 +195,6 @@
                     {data: 'authentication', name: 'authentication'},
                     {data: 'active', name: 'active'},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
-
                 ]
             });
 
@@ -164,5 +233,14 @@
                 })
             });
         })
+
+        function countChecked() {
+            if ($('.check').is(':checked'))
+                $('#apply').attr('disabled', false);
+            else
+                $('#apply').attr('disabled', true);
+        }
+
     </script>
+
 @endsection
