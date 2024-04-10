@@ -645,23 +645,26 @@ class StringHelper
                 $info_arr[$cat][$val[1]] = array("local" => $val[2], "master" => $val[3]);
             }
         }
+
         return $info_arr;
     }
 
     /**
-     * @param $el
+     * @param object|array $el
      * @param bool $first
      * @return string
      */
-    public static function tree($el, $first = true)
+    public static function tree(object|array $el, bool $first = true): string
     {
         if (is_object($el)) $el = (array)$el;
+
         if ($el) {
             if ($first) {
                 $out = '<ul id="tree-checkbox" class="tree-checkbox treeview">';
             } else {
                 $out = '<ul>';
             }
+
             foreach ($el as $k => $v) {
                 if (is_object($v)) $v = (array)$v;
                 if ($v) {
@@ -675,7 +678,10 @@ class StringHelper
                 }
             }
             $out .= "</ul>";
+
             return $out;
+        } else {
+            return '';
         }
     }
 

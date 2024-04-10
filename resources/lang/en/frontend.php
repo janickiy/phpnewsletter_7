@@ -299,7 +299,7 @@ return [
         'settings' => 'Settings',
         'users' => 'Users',
         'schedule' => 'Schedule',
-        'cron_job_list' => 'Ccron job list',
+        'cron_job_list' => 'Cron job list',
         'miscellaneous' => 'Miscellaneous',
         'update' => 'Update',
         'subscription_form' => 'Subscription form',
