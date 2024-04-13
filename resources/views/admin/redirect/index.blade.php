@@ -23,26 +23,38 @@
                     <div class="card">
                         <!-- /.card-header -->
                         <div class="card-body">
-                            <div class="pb-3">
-                                <a href="{{ URL::route('admin.category.create') }}"
-                                   class="btn btn-info btn-sm pull-left">
-                                    <span class="fa fa-plus"> &nbsp;</span> Добавить
-                                </a>
-                            </div>
-                            <table id="itemList" class="table table-bordered table-striped">
+
+                            @if(PermissionsHelper::has_permission(Auth::user()->role,'admin'))
+
+                                <div class="row">
+                                    <div class="col-lg-12"><p class="text-center">
+                                            <a class="btn btn-outline btn-danger btn-lg"
+                                               title="{{ trans('frontend.str.log_clear') }}" onclick="confirmation()">
+                                                <span class="fa fa-trash fa-2x"></span> {{ trans('frontend.str.redirect_clear') }}
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
+
+                            @endif
+
+                            <table id="itemList" class="table table-striped table-bordered table-hover">
                                 <thead>
                                 <tr>
-                                    <th>Название</th>
-                                    <th style="width: 10%">Действия</th>
+                                    <th>URL</th>
+                                    <th>{{ trans('frontend.str.redirect_number') }}</th>
+                                    <th>{{ trans('frontend.str.excel_report') }}</th>
                                 </tr>
                                 </thead>
                                 <tfoot>
                                 <tr>
-                                    <th>Название</th>
-                                    <th style="width: 10%">Действия</th>
+                                    <th>URL</th>
+                                    <th>{{ trans('frontend.str.redirect_number') }}</th>
+                                    <th>{{ trans('frontend.str.excel_report') }}</th>
                                 </tr>
                                 </tfoot>
                             </table>
+
                         </div>
                         <!-- /.card-body -->
                     </div>
@@ -75,8 +87,10 @@
     {!! Html::script('/plugins/datatables-buttons/js/buttons.colVis.min.js') !!}
 
     <script>
+
         $(document).ready(function () {
-            $("#itemList").DataTable({
+
+            $('#itemList').dataTable({
                 "oLanguage": {
                     "sLengthMenu": "Отображено _MENU_ записей на страницу",
                     "sZeroRecords": "Ничего не найдено - извините",
@@ -91,56 +105,23 @@
                     },
                     "sSearch": ' <i class="fas fa-search" aria-hidden="true"></i>'
                 },
-                'createdRow': function (row, data, dataIndex) {
-                    $(row).attr('id', 'rowid_' + data['id']);
-                },
-                "processing": true,
-                "responsive": true,
+                "sDom": "flrtip",
                 "autoWidth": true,
-                'serverSide': true,
-                'ajax': {
-                    url: '{{ URL::route('admin.datatable.category') }}'
+                aaSorting: [[0, 'asc']],
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '{{ URL::route('admin.datatable.redirect') }}'
                 },
-                'columns': [
-                    {data: 'name', name: 'name'},
-                    {data: 'actions', name: 'actions', orderable: false, searchable: false}
-                ]
-            });
-
-            $('#itemList').on('click', 'a.deleteRow', function () {
-                let rowid = $(this).attr('id');
-                Swal.fire({
-                    title: "{{ trans('frontend.msg.are_you_sure') }}",
-                    text: "{{ trans('frontend.msg.will_not_be_able_to_ecover_information') }}",
-                    showCancelButton: true,
-                    icon: 'warning',
-                    cancelButtonText: "{{ trans('frontend.str.cancel') }}",
-                    confirmButtonText: "{{ trans('frontend.msg.yes_remove') }}",
-                    reverseButtons: true,
-                    confirmButtonColor: "#DD6B55",
-                    customClass: {
-                        actions: 'my-actions',
-                        cancelButton: 'order-1',
-                    },
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: '{{ URL::route('admin.category.destroy') }}',
-                            type: "POST",
-                            dataType: "html",
-                            data: {id: rowid},
-                            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                            success: function () {
-                                $("#rowid_" + rowid).remove();
-                                Swal.fire("{{ trans('frontend.msg.done') }}", "{{ trans('frontend.msg.data_successfully_deleted') }}", 'success');
-                            },
-                            error: function (xhr, ajaxOptions, thrownError) {
-                                Swal.fire("{{ trans('frontend.msg.error_deleting') }}", "{{ trans('frontend.msg.try_again') }}", 'error');
-                            }
-                        });
-                    }
-                })
+                columns: [
+                    {data: 'url', name: 'url'},
+                    {data: 'count', name: 'count', searchable: false},
+                    {data: 'report', name: 'report', orderable: false, searchable: false},
+                ],
             });
         })
+
     </script>
+
 @endsection
+

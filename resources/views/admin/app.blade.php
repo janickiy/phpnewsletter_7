@@ -87,7 +87,7 @@
                          with font-awesome or any other icon font library -->
 
                     <li class="nav-item">
-                        <a href="{{ URL::route('admin.templates.index') }}" class="nav-link"
+                        <a href="{{ URL::route('admin.templates.index') }}" class="nav-link{{ Request::is('template*') ? ' active' : '' }}"
                            title="{{ trans('frontend.menu.templates') }}">
                             <i class="nav-icon fas fa-envelope"></i>
                             <p>{{ trans('frontend.menu.templates') }}</p>
@@ -95,7 +95,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a href="{{ URL::route('admin.schedule.index') }}" class="nav-link"
+                        <a href="{{ URL::route('admin.schedule.index') }}" class="nav-link{{ Request::is('schedule*') ? ' active' : '' }}"
                            title="{{ trans('frontend.menu.schedule') }}">
                             <i class="nav-icon fas fa-calendar-alt"></i>
                             <p>{{ trans('frontend.menu.schedule') }}</p>
@@ -105,7 +105,7 @@
                     @if(PermissionsHelper::has_permission(Auth::user()->role,'admin|moderator'))
 
                         <li class="nav-item">
-                            <a href="{{ URL::route('admin.subscribers.index') }}" class="nav-link"
+                            <a href="{{ URL::route('admin.subscribers.index') }}" class="nav-link{{ Request::is('subscribers*') ? ' active' : '' }}"
                                title="{{ trans('frontend.menu.subscribers') }}">
                                 <i class="nav-icon fas fa-user-friends"></i>
                                 <p>{{ trans('frontend.menu.subscribers') }}</p>
@@ -117,7 +117,7 @@
                     @if(PermissionsHelper::has_permission(Auth::user()->role,'admin|moderator'))
 
                         <li class="nav-item">
-                            <a href="{{ URL::route('admin.category.index') }}" class="nav-link"
+                            <a href="{{ URL::route('admin.category.index') }}" class="nav-link{{ Request::is('category*') ? ' active' : '' }}"
                                title="{{ trans('frontend.menu.subscribers') }}">
                                 <i class="nav-icon fas fa-list"></i>
                                 <p>{{ trans('frontend.menu.subscribers_category') }}</p>
@@ -129,7 +129,7 @@
                     @if(PermissionsHelper::has_permission(Auth::user()->role,'admin'))
 
                         <li class="nav-item">
-                            <a href="{{ URL::route('admin.smtp.index') }}" class="nav-link" title="SMTP">
+                            <a href="{{ URL::route('admin.smtp.index') }}" class="nav-link{{ Request::is('smtp*') ? ' active' : '' }}" title="SMTP">
                                 <i class="nav-icon fas fa-inbox"></i>
                                 <p>SMTP</p>
                             </a>
@@ -137,10 +137,40 @@
 
                     @endif
 
+                    <li class="nav-item{{ Request::is('log*') || Request::is('redirect*') ? ' menu-open' : '' }}">
+                        <a href="#" class="nav-link{{ Request::is('log*') || Request::is('redirect*') ? ' active' : '' }}" title="{{ trans('frontend.menu.logs') }}">
+                            <i class="nav-icon fas fa-chart-area"></i>
+                            <p>
+                                {{ trans('frontend.menu.logs') }}
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+
+                        <ul class="nav nav-treeview">
+
+                            <li class="nav-item">
+                                <a href="{{ URL::route('admin.log.index') }}" class="nav-link{{ Request::is('log*') ? ' active' : '' }}"
+                                   title="{{ trans('frontend.menu.mailing_log') }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>{{ trans('frontend.menu.mailing_log') }}</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ URL::route('admin.redirect.index') }}" class="nav-link{{ Request::is('redirect*') ? ' active' : '' }}"
+                                   title="{{ trans('frontend.menu.referrens_log') }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>{{ trans('frontend.menu.referrens_log') }}</p>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
+
                     @if(PermissionsHelper::has_permission(Auth::user()->role,'admin'))
 
                         <li class="nav-item">
-                            <a href="{{ URL::route('admin.settings.index') }}" class="nav-link"
+                            <a href="{{ URL::route('admin.settings.index') }}" class="nav-link{{  Request::is('settings*') ? ' active' : '' }}"
                                title="{{ trans('frontend.menu.settings') }}">
                                 <i class="nav-icon fa fa-cogs"></i>
                                 <p>{{ trans('frontend.menu.settings') }}</p>
@@ -152,7 +182,7 @@
                     @if(PermissionsHelper::has_permission(Auth::user()->role,'admin'))
 
                         <li class="nav-item">
-                            <a href="{{ URL::route('admin.users.index') }}" class="nav-link"
+                            <a href="{{ URL::route('admin.users.index') }}" class="nav-link{{ Request::is('users*') ? ' active' : '' }}"
                                title="{{ trans('frontend.menu.users') }}">
                                 <i class="nav-icon fas fa-users"></i>
                                 <p>{{ trans('frontend.menu.users') }}</p>
@@ -162,14 +192,14 @@
                     @endif
 
                     <li class="nav-item">
-                        <a href="{{ URL::route('admin.pages.faq') }}" class="nav-link" title="FAQ">
+                        <a href="{{ URL::route('admin.pages.faq') }}" class="nav-link{{ Request::is('faq*') ? ' active' : '' }}" title="FAQ">
                             <i class="nav-icon fas fa-question-circle"></i>
                             <p>FAQ</p>
                         </a>
                     </li>
 
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" title="{{ trans('frontend.menu.miscellaneous') }}">
+                    <li class="nav-item{{ Request::is('pages*') ? ' menu-open' : '' }}">
+                        <a href="#" class="nav-link{{ Request::is('pages*') ? ' active' : '' }}" title="{{ trans('frontend.menu.miscellaneous') }}">
                             <i class="nav-icon fas fa-bookmark"></i>
                             <p>
                                 {{ trans('frontend.menu.miscellaneous') }}
@@ -180,7 +210,7 @@
                         <ul class="nav nav-treeview">
 
                             <li class="nav-item">
-                                <a href="{{ URL::route('admin.pages.subscription_form') }}" class="nav-link"
+                                <a href="{{ URL::route('admin.pages.subscription_form') }}" class="nav-link{{ Request::is('pages/subscription-form*') ? ' active' : '' }}"
                                    title="{{ trans('frontend.menu.subscription_form') }}">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>{{ trans('frontend.menu.subscription_form') }}</p>
@@ -190,7 +220,7 @@
                             @if(PermissionsHelper::has_permission(Auth::user()->role,'admin|moderator'))
 
                                 <li class="nav-item">
-                                    <a href="{{ URL::route('admin.pages.cron_job_list') }}" class="nav-link"
+                                    <a href="{{ URL::route('admin.pages.cron_job_list') }}" class="nav-link{{ Request::is('pages/cron-job-list*') ? ' active' : '' }}"
                                        title="{{ trans('frontend.menu.cron_job_list') }}">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>{{ trans('frontend.menu.cron_job_list') }}</p>
@@ -198,11 +228,12 @@
                                 </li>
 
                                 <li class="nav-item">
-                                    <a href="{{ URL::route('admin.pages.phpinfo') }}" class="nav-link" title="PHP Info">
+                                    <a href="{{ URL::route('admin.pages.phpinfo') }}" class="nav-link{{ Request::is('pages/phpinfo*') ? ' active' : '' }}" title="PHP Info">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>PHP Info</p>
                                     </a>
                                 </li>
+
                             @endif
 
                         </ul>

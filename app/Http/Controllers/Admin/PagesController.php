@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\View\View;
 use App\Helpers\StringHelper;
 
+use Illuminate\Http\Request;
+
 class PagesController extends Controller
 {
     /**
@@ -20,6 +22,7 @@ class PagesController extends Controller
      */
     public function cronJobList(): View
     {
+
         $infoAlert = trans('frontend.hint.cron_job_list') ? trans('frontend.hint.cron_job_list') : null;
 
         $path = base_path() ? base_path() . '/artisan' : ' /home/phpnewsletter/artisan';

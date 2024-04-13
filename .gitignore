@@ -18,3 +18,4 @@ yarn-error.log
 /.vscode
 /.vagrant
 /composer.lock
+/package-lock.json
