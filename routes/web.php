@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\{
     UsersController,
 };
 use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\AjaxController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,7 +39,7 @@ Route::any('form', [FrontendController::class, 'form'])->name('frontend.form');
 Route::any('categories', [FrontendController::class, 'getCategories'])->name('frontend.categories');
 Route::post('addsub', 'FrontendController@addSub')->name('frontend.addsub');
 Route::any('categories', [FrontendController::class, 'getCategories'])->name('frontend.categories');
-
+Route::any('ajax', [AjaxController::class, 'action'])->name('ajax.action');
 
 Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('login', [AuthController::class, 'login'])->name('login.submit');

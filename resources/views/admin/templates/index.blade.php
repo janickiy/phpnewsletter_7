@@ -157,7 +157,6 @@
                 countChecked();
             });
 
-
             $("#itemList").DataTable({
                 "oLanguage": {
                     "sLengthMenu": "Отображено _MENU_ записей на страницу",

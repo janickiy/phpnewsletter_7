@@ -139,16 +139,12 @@ class TemplatesController extends Controller
             }
         }
 
-        switch ($request->action) {
-            case  1 :
+        if ($request->action === 1) {
+            $templates = Templates::whereIN('id', $templateId)->get();
 
-                $templates = Templates::whereIN('id', $templateId)->get();
-
-                foreach ($templates as $template) {
-                    $template->remove();
-                }
-
-                break;
+            foreach ($templates as $template) {
+                $template->remove();
+            }
         }
 
         return redirect(URL::route('admin.templates.index'))->with('success', trans('message.actions_completed'));

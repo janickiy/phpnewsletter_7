@@ -99,17 +99,39 @@
 
 @section('js')
 
-
     {!! Html::script('/plugins/bs-custom-file-input/bs-custom-file-input.min.js') !!}
-
     {!! Html::script('/plugins/bs-custom-file-input/bs-custom-file-input.min.js') !!}
-
 
     <script>
-        $(function () {
-            bsCustomFileInput.init();
-        });
-    </script>
 
+        $(document).ready(function () {
+            bsCustomFileInput.init();
+
+            $(document).on("click", ".remove_attach", function () {
+                let idAttach = $(this).attr('data-num');
+                let request = $.ajax({
+                    url: '{{ URL::route('admin.ajax.action') }}',
+                    method: "POST",
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    data: {
+                        action: "remove_attach",
+                        id: idAttach,
+                    },
+
+                    dataType: "json"
+                });
+
+                request.done(function (data) {
+                    if (data.result != null && data.result == true) {
+                        $("#attach_" + idAttach).remove();
+                    }
+                });
+            });
+
+
+
+        });
+
+    </script>
 
 @endsection
