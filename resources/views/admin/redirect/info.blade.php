@@ -72,7 +72,7 @@
 
     <script>
 
-        $(document).ready(function () {
+        $(function () {
 
             $('#itemList').dataTable({
                 "sDom": "flrtip",

@@ -107,7 +107,7 @@
 
     <script>
 
-        $(document).ready(function () {
+        $(function () {
             bsCustomFileInput.init();
 
             $(document).on("click", ".remove_attach", function () {

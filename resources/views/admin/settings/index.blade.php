@@ -664,8 +664,7 @@
 @section('js')
 
     <script>
-
-        $(document).ready(function () {
+        $(function () {
             $(document).on("click", '#add_field', function () {
 
                 let html = '<div class="header-row"><div class="form-group row">';
@@ -685,7 +684,6 @@
                 parent.remove();
             });
         });
-
     </script>
 
 @endsection

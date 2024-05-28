@@ -48,7 +48,7 @@
     {!! Html::script('/plugins/jquery-treeview/jquery.treeview.js') !!}
 
     <script>
-        $(document).ready(function () {
+        $(function () {
             $('.tree-checkbox').treeview({
                 collapsed: true,
                 animated: 'medium',

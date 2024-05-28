@@ -75,7 +75,7 @@
     {!! Html::script('/plugins/datatables-buttons/js/buttons.colVis.min.js') !!}
 
     <script>
-        $(document).ready(function () {
+        $(function () {
             $("#itemList").DataTable({
                 "oLanguage": {
                     "sLengthMenu": "Отображено _MENU_ записей на страницу",

@@ -108,7 +108,7 @@
 
     <script>
 
-        $(document).ready(function () {
+        $(function () {
 
             $("#checkAll").click(function () {
                 $('input:checkbox').not(this).prop('checked', this.checked);

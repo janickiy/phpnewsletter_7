@@ -88,7 +88,7 @@
 
     <script>
 
-        $(document).ready(function () {
+        $(function () {
 
             $('#itemList').dataTable({
                 "oLanguage": {

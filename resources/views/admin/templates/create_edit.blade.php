@@ -175,7 +175,7 @@
 
     <!-- Page specific script -->
     <script>
-        $(document).ready(function () {
+        $(function () {
             // Summernote
             $('#body').summernote();
             bsCustomFileInput.init();

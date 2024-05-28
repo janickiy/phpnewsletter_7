@@ -127,7 +127,7 @@
 
     <script>
 
-        $(document).ready(function () {
+        $(function () {
             $("#apply").click(function (event) {
                 let idSelect = $('#select_action').val();
 
