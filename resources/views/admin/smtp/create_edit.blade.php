@@ -150,6 +150,9 @@
                         </div>
 
                     {!! Form::close() !!}
+
+                    </header>
+
                 </div>
                 <!-- /.card -->
             </div>

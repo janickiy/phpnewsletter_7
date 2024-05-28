@@ -14,9 +14,13 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('file_name');
-            $table->integer('template_id')->index('template_id');
+            $table->integer('template_id');
             $table->timestamps();
             $table->engine = 'MyISAM';
+        });
+
+        Schema::table('attach', function (Blueprint $table) {
+            $table->foreign('template_id')->references('id')->on('templates');
         });
     }
 

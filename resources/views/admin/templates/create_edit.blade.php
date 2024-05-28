@@ -122,24 +122,34 @@
                             <a class="btn btn-default" href="{{ URL::route('admin.templates.index') }}">
                                 {{ trans('frontend.form.back') }}
                             </a>
-                        </div>
 
-                        <div class="well bg-color-blueLight">
-                            <div id="resultSend"></div>
-                            <h3>{{ trans('frontend.str.send_test_letter') }}<span id="process"></span></h3>
-                            <div class="input-group">
+                        </div>
+                    </header>
+
+                    <header class="card card-primary">
+
+                        <div class="card-header">
+                            <h3 class="card-title">{{ trans('frontend.str.send_test_letter') }}<span
+                                    id="process"></span></h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                </div>
 
                                 {!! Form::text('email', null, ['class' => 'form-control', 'placeholder' => 'Email', 'id' => 'email']) !!}
 
-                                <div class="input-group-btn">
-                                    <button class="btn btn-default" id="send_test" type="button">
-                                        <i class="fa fa-send"></i> {{ trans('frontend.str.send') }}
-                                    </button>
-                                </div>
+                                <span class="input-group-append">
+                                    <button type="button" id="send_test" class="btn btn-info btn-flat">{{ trans('frontend.str.send') }}</button>
+                                </span>
+
                             </div>
                         </div>
+                    </header>
 
                     {!! Form::close() !!}
+
                 </div>
                 <!-- /.card -->
             </div>
@@ -199,7 +209,7 @@
                 let sParam;
 
                 $("#process").removeClass().addClass('showprocess');
-                $("#send_test").attr('disabled','disabled');
+                $("#send_test").attr('disabled', 'disabled');
 
                 for (var i = 0, count = arr.length; i < count; i++) {
                     sParam = encodeURIComponent(arr[i].name);
@@ -232,19 +242,19 @@
                     if (data.result != null) {
                         let alert_msg = '';
 
-                        if (data.result == 'success'){
+                        if (data.result == 'success') {
                             alert_msg += '<div class="alert alert-success fade in">';
                             alert_msg += '<button class="close" data-dismiss="alert">×</button>';
                             alert_msg += '<i class="fa-fw fa fa-check"></i>';
                             alert_msg += data.msg;
                             alert_msg += '</div>';
-                        } else if (data.result == 'error'){
+                        } else if (data.result == 'error') {
                             alert_msg += '<div class="alert alert-danger fade in">';
                             alert_msg += '<button class="close" data-dismiss="alert">×</button>';
                             alert_msg += '<strong>{{ trans('frontend.str.error_alert') }} </strong>';
                             alert_msg += data.msg;
                             alert_msg += '</div>';
-                        } else if (data.result == 'errors'){
+                        } else if (data.result == 'errors') {
                             alert_msg += '<div class="alert alert-danger fade in">';
                             alert_msg += '<button class="close" data-dismiss="alert">×</button>';
                             alert_msg += '<strong>{{ trans('frontend.str.error_alert') }} </strong>';
@@ -252,7 +262,7 @@
 
                             let arr = data.msg.split(',');
 
-                            for (var i = 0; i < arr.length; i++){
+                            for (var i = 0; i < arr.length; i++) {
                                 alert_msg += '<li> ' + arr[i] + '</li>';
                             }
 

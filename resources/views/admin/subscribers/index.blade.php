@@ -23,17 +23,17 @@
                         <a class="btn btn-outline btn-default btn-lg"
                            title="{{ trans('frontend.str.import_subscribers') }}"
                            href="{{ URL::route('admin.subscribers.import') }}">
-                            <span class="fa fa-download fa-2x"></span> {{ trans('frontend.str.import') }}
+                            <span class="fa fa-download fa-x"></span> {{ trans('frontend.str.import') }}
                         </a>
                         <a class="btn btn-outline btn-default btn-lg"
                            title="{{ trans('frontend.str.export_subscribers') }}"
                            href="{{ URL::route('admin.subscribers.export') }}">
-                            <span class="fa fa-upload fa-2x"></span> {{ trans('frontend.str.export') }}
+                            <span class="fa fa-upload fa-x"></span> {{ trans('frontend.str.export') }}
                         </a>
                         <a class="btn btn-outline btn-danger btn-lg"
                            title="{{ trans('frontend.str.delete_all_subscribers') }}"
                            onclick="confirmation()">
-                            <span class="fa fa-trash fa-2x"></span> {{ trans('frontend.str.delete_all') }}
+                            <span class="fa fa-trash fa-x"></span> {{ trans('frontend.str.delete_all') }}
                         </a>
                     </p>
                 </div>

@@ -45,7 +45,8 @@
                                 @endif
 
                                 <blockquote class="quote-secondary">
-                                    <small>{{ trans('frontend.form.maximum_size') }}: <cite title="Source Title">{{ $maxUploadFileSize }}</cite></small>
+                                    <small>{{ trans('frontend.form.maximum_size') }}: <cite
+                                            title="Source Title">{{ $maxUploadFileSize }}</cite></small>
                                 </blockquote>
 
                             </div>
@@ -86,7 +87,9 @@
                             </a>
                         </div>
 
-                    {!! Form::close() !!}
+                        {!! Form::close() !!}
+
+                    </header>
                 </div>
                 <!-- /.card -->
             </div>
@@ -127,7 +130,6 @@
                     }
                 });
             });
-
 
 
         });

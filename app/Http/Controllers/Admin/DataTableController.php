@@ -2,22 +2,48 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\{
-    Category,
-    Smtp,
-    Subscribers,
-    Schedule,
-    User,
-    ReadySent,
-    Redirect,
-};
+use App\Models\{Category, Smtp, Subscribers, Schedule, Templates, User, ReadySent, Redirect};
 use App\Helpers\PermissionsHelper;
-use DataTables;
+use App\Helpers\StringHelper;
 use Illuminate\Support\Facades\Auth;
+use DataTables;
 use URL;
 
 class DataTableController extends Controller
 {
+    public function getTemplates()
+    {
+        $row = Templates::query();
+
+        return Datatables::of($row)
+
+            ->addColumn('checkbox', function ($row) {
+                return '<input type="checkbox" class="check" value="' . $row->id . '" name="templateId[]">';
+            })
+
+            ->addColumn('action', function ($row) {
+                $editBtn = '<a title="' . trans('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.template.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
+                return $editBtn;
+
+            })
+
+            ->editColumn('name', function ($row) {
+                $body = preg_replace('/(<.*?>)|(&.*?;)/', '', $row->body);
+                return $row->name . '<br><br><small class="text-muted">' . StringHelper::shortText($body, 500) . '</small>';
+            })
+
+            ->editColumn('prior', function ($row) {
+                return Templates::getPrior($row->id);
+            })
+
+            ->editColumn('attach.id', function ($row) {
+                return $row->attach ? trans('frontend.str.yes') : trans('frontend.str.no');
+            })
+
+            ->rawColumns(['action', 'name', 'checkbox'])->make(true);
+    }
+
+
     /**
      * @return mixed
      */

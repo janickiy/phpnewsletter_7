@@ -17,11 +17,13 @@ use App\Models\{
 };
 use App\Helpers\{SendEmailHelper, SettingsHelper, StringHelper, UpdateHelper};
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\JsonResponse;
 use Cookie;
 use Artisan;
 use ZipArchive;
 use DateTime;
-use Illuminate\Http\JsonResponse;
+use Auth;
+
 
 class AjaxController extends Controller
 {
@@ -202,7 +204,7 @@ class AjaxController extends Controller
                 case 'change_lng':
 
                     if ($request->input('locale')) {
-                        if (in_array($request->input('locale'), \Config::get('app.locales'))) {
+                        if (in_array($request->input('locale'), Config::get('app.locales'))) {
                             Cookie::queue(
                                 Cookie::forever('lang', $request->input('locale')));
                         }
@@ -359,7 +361,7 @@ class AjaxController extends Controller
                                 ->leftJoin('ready_sent', function ($join) use ($template, $logId) {
                                     $join->on('subscribers.id', '=', 'ready_sent.subscriber_id')
                                         ->where('ready_sent.template_id', '=', $template->id)
-                                        ->where('ready_sent.logId', '=', $logId)
+                                        ->where('ready_sent.log_id', '=', $logId)
                                         ->where(function ($query) {
                                             $query->where('ready_sent.success', '=', 1)
                                                 ->orWhere('ready_sent.success', '=', 0);
@@ -399,16 +401,15 @@ class AjaxController extends Controller
 
                             $result = SendEmailHelper::sendEmail($template->id);
 
-
                             if ($result['result'] === true) {
                                 $data = [
-                                    'subscriberId' => $subscriber->id,
+                                    'subscriber_id' => $subscriber->id,
                                     'email' => $subscriber->email,
-                                    'templateId' => $template->id,
+                                    'template_id' => $template->id,
                                     'template' => $template->name,
                                     'success' => 1,
-                                    'scheduleId' => 0,
-                                    'log_Id' => $logId,
+                                    'schedule_id' => 0,
+                                    'log_id' => $logId,
                                 ];
 
                                 $mailcount++;
@@ -614,14 +615,14 @@ class AjaxController extends Controller
      */
     private function getProcess(): string
     {
-        $process = Process::where('userId', \Auth::user('web')->id)->first();
+        $process = Process::where('user_id', Auth::user('web')->id)->first();
 
         if (isset($process->command)) {
             return $process->command;
         } else {
             $process = new Process();
             $process->command = 'start';
-            $process->userId = \Auth::user('web')->id;
+            $process->user_id = Auth::user('web')->id;
             $process->save();
 
             return 'start';
@@ -633,14 +634,14 @@ class AjaxController extends Controller
      */
     private function updateProcess($command)
     {
-        $result = Process::where('userId', \Auth::user('web')->id);
+        $result = Process::where('user_id', Auth::user('web')->id);
 
         if ($result->first()) {
             $result->update(['command' => $command]);
         } else {
             $process = new Process();
             $process->command = $command;
-            $process->userId = \Auth::user('web')->id;
+            $process->user_id = Auth::user('web')->id;
             $process->save();
         }
     }

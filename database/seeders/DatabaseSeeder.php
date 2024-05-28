@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CharsetSeeder::class,
             CategorySeeder::class,
-           // UsersSeeder::class,
+            UsersSeeder::class,
             SettingsSeeder::class,
         ]);
     }

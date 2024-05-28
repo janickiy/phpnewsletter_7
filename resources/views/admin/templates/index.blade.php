@@ -110,40 +110,6 @@
 
         $(document).ready(function () {
 
-            $("#apply").click(function (event) {
-                let idSelect = $('#select_action').val();
-
-                if (idSelect == '') {
-                    event.preventDefault();
-                    swal({
-                        title: "Error",
-                        text: "{{ trans('frontend.str.select_action') }}",
-                        type: "error",
-                        showCancelButton: false,
-                        cancelButtonText: "{{ trans('frontend.str.cancel') }}",
-                        confirmButtonColor: "#DD6B55",
-                        closeOnConfirm: false
-                    });
-                } else {
-                    if (idSelect == 2) {
-                        event.preventDefault();
-                        let form = $(this).parents('form');
-                        swal({
-                            title: "{{ trans('frontend.str.delete_confirmation') }}",
-                            text: "{{ trans('frontend.str.confirm_remove') }}",
-                            type: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#DD6B55",
-                            confirmButtonText: "{{ trans('frontend.str.yes') }}",
-                            cancelButtonText: "{{ trans('frontend.str.cancel') }}",
-                            closeOnConfirm: false
-                        }, function (isConfirm) {
-                            if (isConfirm) form.submit();
-                        });
-                    }
-                }
-            });
-
             $("#checkAll").click(function () {
                 $('input:checkbox').not(this).prop('checked', this.checked);
                 countChecked();
@@ -175,24 +141,21 @@
                 'createdRow': function (row, data, dataIndex) {
                     $(row).attr('id', 'rowid_' + data['id']);
                 },
+                aaSorting: [[1, 'asc']],
                 "processing": true,
                 "responsive": true,
-                aaSorting: [[1, 'asc']],
                 "autoWidth": true,
                 'serverSide': true,
                 'ajax': {
-                    url: '{{ URL::route('admin.datatable.smtp') }}'
+                    url: '{{ URL::route('admin.datatable.templates') }}'
                 },
                 'columns': [
                     {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},
-                    {data: 'host', name: 'host'},
-                    {data: 'email', name: 'email'},
-                    {data: 'username', name: 'username'},
-                    {data: 'port', name: 'port'},
-                    {data: 'timeout', name: 'timeout'},
-                    {data: 'secure', name: 'secure'},
-                    {data: 'authentication', name: 'authentication'},
-                    {data: 'active', name: 'active'},
+                    {data: 'id', name: 'id'},
+                    {data: 'name', name: 'name'},
+                    {data: 'prior', name: 'prior', searchable: false},
+                    {data: 'attach.id', name: 'attach.id', searchable: false},
+                    {data: 'created_at', name: 'created_at'},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
                 ]
             });
@@ -215,7 +178,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: '{{ URL::route('admin.smtp.destroy') }}',
+                            url: '{{ URL::route('admin.templates.destroy') }}',
                             type: "POST",
                             dataType: "html",
                             data: {id: rowid},
@@ -231,7 +194,7 @@
                     }
                 })
             });
-        })
+        });
 
         function countChecked() {
             if ($('.check').is(':checked'))

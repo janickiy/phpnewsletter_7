@@ -115,7 +115,10 @@
                             </a>
                         </div>
 
-                    {!! Form::close() !!}
+                        {!! Form::close() !!}
+
+                    </header>
+
                 </div>
                 <!-- /.card -->
             </div>
