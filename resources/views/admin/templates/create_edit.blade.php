@@ -25,7 +25,7 @@
                     <header class="card card-primary">
 
                         <!-- form start -->
-                        {!! Form::open(['url' => isset($template) ? URL::route('admin.templatesupdate') : URL::route('admin.templates.store'), 'files' => true, 'method' => isset($template) ? 'put' : 'post', 'id' => 'tmplForm']) !!}
+                        {!! Form::open(['url' => isset($template) ? URL::route('admin.templates.update') : URL::route('admin.templates.store'), 'files' => true, 'method' => isset($template) ? 'put' : 'post', 'id' => 'tmplForm']) !!}
 
                         {!! isset($template) ? Form::hidden('id', $template->id) : '' !!}
 
