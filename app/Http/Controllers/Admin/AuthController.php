@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 use URL;
 
 class AuthController extends Controller
@@ -14,19 +16,19 @@ class AuthController extends Controller
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return View
      */
-    public function showLoginForm()
+    public function showLoginForm(): View
     {
         return view('admin.login')->with('title', 'Авторизация');
     }
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function login(Request $request)
+    public function login(Request $request): RedirectResponse
     {
         // Validate the form data
         $this->validate($request, [
@@ -46,9 +48,9 @@ class AuthController extends Controller
     /**
      * @param $request
      * @param $user
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @return RedirectResponse
      */
-    protected function authenticated($request, $user)
+    protected function authenticated($request, $user): RedirectResponse
     {
         $redirect = redirect(URL::route('admin.templates.index'));
 
@@ -56,9 +58,9 @@ class AuthController extends Controller
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @return RedirectResponse
      */
-    public function logout()
+    public function logout(): RedirectResponse
     {
         \Auth::guard('web')->logout();
 
