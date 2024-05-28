@@ -4,11 +4,11 @@
 
 @section('css')
 
+    {!! Html::style('/plugins/daterangepicker/daterangepicker.css') !!}
 
 @endsection
 
 @section('content')
-
     <!-- Main content -->
     <section class="content">
 
@@ -44,16 +44,30 @@
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-3">
-                                        {!! Form::text('value_from_start_date', old('value_from_start_date', isset($row) ? date("d.m.Y H:i", strtotime($row->value_from_start_date)) : null), ['placeholder' => 'DD.MM.YYYY HH:MM', 'class' => 'form-control', 'data-datepicker' => "separateRange"]) !!}
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="far fa-calendar-alt"></i>
+                                                </span>
+                                            </div>
 
+                                            {!! Form::text('value_from_start_date', old('value_from_start_date', isset($row) ? date("d.m.Y H:i", strtotime($row->value_from_start_date)) : null), ['placeholder' => 'DD.MM.YYYY HH:MM', 'class' => 'form-control', 'id' => "value_from_start_date" ]) !!}
+                                        </div>
                                         @if ($errors->has('value_from_start_date'))
                                             <p class="text-danger">{{ $errors->first('value_from_start_date') }}</p>
                                         @endif
                                     </div>
 
                                     <div class="col-3">
-                                        {!! Form::text('value_from_end_date', old('value_from_end_date', isset($row) ? date("d.m.Y H:i", strtotime($row->value_from_end_date)) : null), ['placeholder' => 'DD.MM.YYYY HH:MM', 'class' => 'form-control', 'data-datepicker' => "separateRange"]) !!}
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="far fa-calendar-alt"></i>
+                                                </span>
+                                            </div>
 
+                                            {!! Form::text('value_from_end_date', old('value_from_end_date', isset($row) ? date("d.m.Y H:i", strtotime($row->value_from_end_date)) : null), ['placeholder' => 'DD.MM.YYYY HH:MM', 'class' => 'form-control', 'id' => 'value_from_end_date']) !!}
+                                        </div>
                                         @if ($errors->has('value_from_end_date'))
                                             <p class="text-danger">{{ $errors->first('value_from_end_date') }}</p>
                                         @endif
@@ -100,14 +114,35 @@
 
 @section('js')
 
-
-
+    <!-- date-range-picker -->
+    {!! Html::script('/plugins/moment/moment.min.js') !!}
     {!! Html::script('/plugins/daterangepicker/daterangepicker.js') !!}
-
 
     <script>
 
         $(function () {
+
+            $('#value_from_start_date').daterangepicker({
+                timePickerIncrement: 30,
+                timePicker24Hour: true,
+                timePicker: true,
+                locale: {
+                    format: 'DD.MM.YYYY hh:mm',
+                },
+                minDate: moment().add(1, 'days'),
+                maxDate: moment().add(359, 'days'),
+            })
+
+            $('#value_from_end_date').daterangepicker({
+                timePickerIncrement: 30,
+                timePicker24Hour: true,
+                timePicker: true,
+                locale: {
+                    format: 'DD.MM.YYYY hh:mm'
+                },
+                minDate: moment().add(1, 'days'),
+                maxDate: moment().add(359, 'days'),
+            })
 
         })
 
