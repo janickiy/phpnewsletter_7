@@ -21,7 +21,7 @@ class UsersController extends Controller
     {
         $infoAlert = trans('frontend.hint.users_index') ?? null;
 
-        return view('admin.users.index', compact('infoAlert'))->with('title', 'Главная');
+        return view('admin.users.index', compact('infoAlert'))->with('title', trans('frontend.title.users_index'));
     }
 
     /**

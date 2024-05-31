@@ -6,7 +6,11 @@ use App\Http\Requests\Admin\Category\{
     StoreRequest,
     EditRequest
 };
-use App\Models\Category;
+use App\Models\{
+    Category,
+    Subscriptions,
+    ScheduleCategory,
+};
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -20,7 +24,9 @@ class CategoryController extends Controller
      */
     public function index(): View
     {
-        return view('admin.category.index')->with('title', 'Категория подписчиков');
+        $infoAlert = trans('frontend.hint.category_index') ? trans('frontend.hint.category_index') : null;
+
+        return view('admin.category.index', compact('infoAlert'))->with('title', 'Категория подписчиков');
     }
 
     /**
@@ -28,7 +34,9 @@ class CategoryController extends Controller
      */
     public function create(): View
     {
-        return view('admin.category.create_edit')->with('title', 'Добавление категории');
+        $infoAlert = trans('frontend.hint.category_create') ? trans('frontend.hint.category_create') : null;
+
+        return view('admin.category.create_edit', compact('infoAlert'))->with('title', 'Добавление категории');
     }
 
     /**
@@ -53,7 +61,9 @@ class CategoryController extends Controller
 
         if (!$row) abort(404);
 
-        return view('admin.category.create_edit', compact('row'))->with('title', 'Редактирование категории');
+        $infoAlert = trans('frontend.hint.category_create') ? trans('frontend.hint.category_create') : null;
+
+        return view('admin.category.create_edit', compact('row', 'infoAlert'))->with('title', 'Редактирование категории');
     }
 
     /**
@@ -78,6 +88,8 @@ class CategoryController extends Controller
      */
     public function destroy(Request $request): void
     {
+        Subscriptions::where('category_id', $request->id)->delete();
+        ScheduleCategory::where('category_id', $request->id)->delete();
         Category::find($request->id)->delete();
     }
 

@@ -18,7 +18,9 @@ class SmtpController extends Controller
      */
     public function index(): View
     {
-        return view('admin.smtp.index')->with('title', 'Список SMTP');
+        $infoAlert = trans('frontend.hint.smtp_index') ? trans('frontend.hint.smtp_index') : null;
+
+        return view('admin.smtp.index', compact('infoAlert'))->with('title', trans('frontend.title.smtp_index'));
     }
 
     /**
@@ -26,7 +28,9 @@ class SmtpController extends Controller
      */
     public function create(): View
     {
-        return view('admin.smtp.create_edit')->with('title', 'Добавление SMTP');
+        $infoAlert = trans('frontend.hint.smtp_create') ? trans('frontend.hint.smtp_create') : null;
+
+        return view('admin.smtp.create_edit', compact('infoAlert'))->with('title', trans('frontend.title.smtp_create'));
     }
 
     /**
@@ -63,7 +67,7 @@ class SmtpController extends Controller
 
         $infoAlert = trans('frontend.hint.smtp_edit') ? trans('frontend.hint.smtp_edit') : null;
 
-        return view('admin.category.create_edit', compact('row', 'infoAlert'))->with('title', 'Редактирование категории');
+        return view('admin.category.create_edit', compact('row', 'infoAlert'))->with('title', trans('frontend.title.smtp_edit'));
     }
 
     /**

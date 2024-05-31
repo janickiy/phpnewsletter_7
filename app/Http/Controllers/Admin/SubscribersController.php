@@ -168,7 +168,6 @@ class SubscribersController extends Controller
         else
             return redirect(URL::route('admin.subscribers.index'))->with('success', trans('message.import_completed') . $result);
 
-
     }
 
     /**

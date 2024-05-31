@@ -19,7 +19,9 @@ class TemplatesController extends Controller
      */
     public function index(): View
     {
-        return view('admin.templates.index')->with('title', trans('frontend.title.template_index'));
+        $infoAlert = trans('frontend.hint.template_index') ? trans('frontend.hint.template_index') : null;
+
+        return view('admin.templates.index', compact('infoAlert', 'category_options'))->with('title', trans('frontend.title.template_index'));
     }
 
     /**
