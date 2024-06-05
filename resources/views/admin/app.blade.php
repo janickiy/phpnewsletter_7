@@ -20,6 +20,9 @@
     <!-- Theme style -->
     {!! Html::style('/dist/css/adminlte.min.css') !!}
 
+    {!! Html::style('/plugins/toastr/toastr.min.css') !!}
+
+
     @yield('css')
 
     <script type="text/javascript">
@@ -293,10 +296,12 @@
 <!-- Bootstrap 4 -->
 {!! Html::script('/plugins/bootstrap/js/bootstrap.bundle.min.js') !!}
 
+{!! Html::script('/plugins/sweetalert2/sweetalert2.min.js') !!}
+{!! Html::script('/plugins/toastr/toastr.min.js') !!}
+
 <!-- AdminLTE App -->
 {!! Html::script('/dist/js/adminlte.min.js') !!}
 
-{!! Html::script('/plugins/sweetalert2/sweetalert2.min.js') !!}
 
 @yield('js')
 

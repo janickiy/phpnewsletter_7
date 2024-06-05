@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\View\View;
 use App\Helpers\StringHelper;
 
-use Illuminate\Http\Request;
-
 class PagesController extends Controller
 {
     /**

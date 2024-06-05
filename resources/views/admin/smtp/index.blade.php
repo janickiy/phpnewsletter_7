@@ -17,73 +17,75 @@
     <section class="content">
 
         <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
 
-            <div class="col-12">
+                    <div class="card">
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <div class="pb-3">
+                                <a href="{{ URL::route('admin.smtp.create') }}"
+                                   class="btn btn-info btn-sm pull-left">
+                                    <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_smtp_server') }}
+                                </a>
+                            </div>
 
-                <div class="card">
-                    <!-- /.card-header -->
-                    <div class="card-body">
-                        <div class="pb-3">
-                            <a href="{{ URL::route('admin.smtp.create') }}"
-                               class="btn btn-info btn-sm pull-left">
-                                <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_smtp_server') }}
-                            </a>
-                        </div>
+                            {!! Form::open(['url' => URL::route('admin.smtp.status'), 'method' => 'post']) !!}
 
-                        {!! Form::open(['url' => URL::route('admin.smtp.status'), 'method' => 'post']) !!}
-
-                        <table id="itemList" class="table table-bordered table-striped">
-                            <thead>
-                            <tr>
-                                <th style="width: 10px">
+                            <table id="itemList" class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th style="width: 10px">
                                     <span>
                                        <input type="checkbox" title="{{ trans('frontend.str.check_uncheck_all') }}" id="checkAll">
                                     </span>
-                                </th>
-                                <th>{{ trans('frontend.str.smtp_server') }}</th>
-                                <th>E-mail</th>
-                                <th>{{ trans('frontend.str.login') }}</th>
-                                <th>{{ trans('frontend.str.port') }}</th>
-                                <th>{{ trans('frontend.str.connection_timeout') }}</th>
-                                <th>{{ trans('frontend.str.connection') }}</th>
-                                <th>{{ trans('frontend.str.authentication_method') }}</th>
-                                <th>{{ trans('frontend.str.status') }}</th>
-                                <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
-                            </tr>
-                            </thead>
-                            <tfoot>
+                                    </th>
+                                    <th>{{ trans('frontend.str.smtp_server') }}</th>
+                                    <th>E-mail</th>
+                                    <th>{{ trans('frontend.str.login') }}</th>
+                                    <th>{{ trans('frontend.str.port') }}</th>
+                                    <th>{{ trans('frontend.str.connection_timeout') }}</th>
+                                    <th>{{ trans('frontend.str.connection') }}</th>
+                                    <th>{{ trans('frontend.str.authentication_method') }}</th>
+                                    <th>{{ trans('frontend.str.status') }}</th>
+                                    <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
+                                </tr>
+                                </thead>
+                                <tfoot>
 
-                            </tfoot>
-                        </table>
+                                </tfoot>
+                            </table>
 
-                        <div class="row">
-                            <div class="col-sm-12 padding-bottom-10">
-                                <div class="form-inline">
-                                    <div class="control-group">
+                            <div class="row">
+                                <div class="col-sm-12 padding-bottom-10">
+                                    <div class="form-inline">
+                                        <div class="control-group">
 
-                                        {!! Form::select('action',[
-                                        '1' => trans('frontend.str.activate'),
-                                        '0' => trans('frontend.str.deactivate'),
-                                        '2' => trans('frontend.str.remove')
-                                        ],null,['class' => 'span3 form-control', 'id' => 'select_action','placeholder' => '--' . trans('frontend.str.action') . '--']) !!}
+                                            {!! Form::select('action',[
+                                            '1' => trans('frontend.str.activate'),
+                                            '0' => trans('frontend.str.deactivate'),
+                                            '2' => trans('frontend.str.remove')
+                                            ],null,['class' => 'span3 form-control', 'id' => 'select_action','placeholder' => '--' . trans('frontend.str.action') . '--']) !!}
 
-                                        <span class="help-inline">
+                                            <span class="help-inline">
                                             {!! Form::submit(trans('frontend.str.apply'), ['class' => 'btn btn-success', 'disabled' => "", 'id' => 'apply']) !!}
                                         </span>
 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
+                            {!! Form::close() !!}
+
                         </div>
-
-                        {!! Form::close() !!}
-
-                        <!-- /.card-body -->
+                            <!-- /.card-body -->
                     </div>
                     <!-- /.card -->
                 </div>
                 <!-- /.col -->
             </div>
+            <!-- /.row -->
         </div>
         <!-- /.container-fluid -->
 
@@ -157,7 +159,6 @@
             $("#itemList").on('change', 'input.check', function () {
                 countChecked();
             });
-
 
             $("#itemList").DataTable({
                 "oLanguage": {

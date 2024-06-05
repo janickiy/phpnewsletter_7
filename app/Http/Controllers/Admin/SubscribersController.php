@@ -15,7 +15,6 @@ use App\Http\Requests\Admin\Subscribers\{ImportRequest, StoreRequest, EditReques
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Http\Request;
-use URL;
 
 class SubscribersController extends Controller
 {
@@ -35,11 +34,7 @@ class SubscribersController extends Controller
      */
     public function create(): View
     {
-        $options = [];
-
-        foreach (Category::orderBy('name')->get() as $row) {
-            $options[$row->id] = $row->name;
-        }
+        $options = Category::getOption();
 
         $infoAlert = trans('frontend.hint.subscribers_create') ? trans('frontend.hint.subscribers_create') : null;
 
@@ -57,12 +52,12 @@ class SubscribersController extends Controller
         if ($request->categoryId && $id) {
             foreach ($request->categoryId as $categoryId) {
                 if (is_numeric($categoryId)) {
-                    //Subscriptions::create(['subscriber_id' => $id, 'category_id' => $categoryId]);
+                    Subscriptions::create(['subscriber_id' => $id, 'category_id' => $categoryId]);
                 }
             }
         }
 
-        return redirect(URL::route('admin.subscribers.index'))->with('success', trans('message.information_successfully_added'));
+        return redirect()->route('admin.subscribers.index')->with('success', trans('message.information_successfully_added'));
     }
 
     /**
@@ -71,12 +66,11 @@ class SubscribersController extends Controller
      */
     public function edit(int $id): View
     {
-        $subscriber = Subscribers::where('id', $id)->first();
+        $subscriber = Subscribers::find($id);
 
         if (!$subscriber) abort(404);
 
         $options = Category::getOption();
-
         $subscriberCategoryId = [];
 
         foreach ($subscriber->subscriptions as $subscription) {
@@ -110,7 +104,7 @@ class SubscribersController extends Controller
         $subscribers->email = $request->input('email');
         $subscribers->save();
 
-        return redirect(URL::route('admin.subscribers.index'))->with('success', trans('message.data_updated'));
+        return redirect()->route('admin.subscribers.index')->with('success', trans('message.data_updated'));
     }
 
     /**
@@ -164,9 +158,9 @@ class SubscribersController extends Controller
         }
 
         if ($result === false)
-            return redirect(URL::route('admin.subscribers.index'))->with('error', trans('message.error_import_file'));
+            return redirect()->route('admin.subscribers.index')->with('error', trans('message.error_import_file'));
         else
-            return redirect(URL::route('admin.subscribers.index'))->with('success', trans('message.import_completed') . $result);
+            return redirect()->route('admin.subscribers.index')->with('success', trans('message.import_completed') . $result);
 
     }
 
@@ -322,7 +316,7 @@ class SubscribersController extends Controller
                 break;
         }
 
-        return redirect(URL::route('admin.subscribers.index'))->with('success', trans('message.actions_completed'));
+        return redirect()->route('admin.subscribers.index')->with('success', trans('message.actions_completed'));
     }
 
 }

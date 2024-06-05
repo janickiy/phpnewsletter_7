@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Helpers\StringHelper;
-use App\Models\{Templates, Attach};
+use App\Models\{Templates, Attach, Category};
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -21,7 +21,7 @@ class TemplatesController extends Controller
     {
         $infoAlert = trans('frontend.hint.template_index') ? trans('frontend.hint.template_index') : null;
 
-        return view('admin.templates.index', compact('infoAlert', 'category_options'))->with('title', trans('frontend.title.template_index'));
+        return view('admin.templates.index', compact('infoAlert'))->with('title', trans('frontend.title.template_index'));
     }
 
     /**

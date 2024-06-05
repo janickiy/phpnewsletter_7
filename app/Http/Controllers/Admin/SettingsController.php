@@ -9,7 +9,6 @@ use App\Models\Settings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
-use URL;
 
 class SettingsController extends Controller
 {
@@ -81,7 +80,7 @@ class SettingsController extends Controller
             Customheaders::truncate();
         }
 
-        return redirect(URL::route('admin.settings.index'))->with('success', trans('message.data_updated'));
+        return redirect()->route('admin.settings.index')->with('success', trans('message.data_updated'));
 
     }
 }

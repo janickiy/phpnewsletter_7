@@ -14,7 +14,6 @@ use App\Models\{
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use URL;
 
 
 class CategoryController extends Controller
@@ -48,7 +47,7 @@ class CategoryController extends Controller
 
         Category::create($request->all());
 
-        return redirect(URL::route('admin.category.index'))->with('success', 'Информация успешно добавлена');
+        return redirect()->route('admin.category.index')->with('success', 'Информация успешно добавлена');
     }
 
     /**
@@ -79,7 +78,7 @@ class CategoryController extends Controller
         $row->name = $request->input('name');
         $row->save();
 
-        return redirect(URL::route('admin.category.index'))->with('success', 'Данные обновлены');
+        return redirect()->route('admin.category.index')->with('success', 'Данные обновлены');
     }
 
     /**

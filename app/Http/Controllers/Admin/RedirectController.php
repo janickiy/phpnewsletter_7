@@ -9,7 +9,6 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
-use URL;
 
 class RedirectController  extends Controller
 {
@@ -30,7 +29,7 @@ class RedirectController  extends Controller
     {
         Redirect::truncate();
 
-        return redirect(URL::route('admin.redirect.index'))->with('success', trans('message.statistics_cleared'));
+        return redirect()->route('admin.redirect.index')->with('success', trans('message.statistics_cleared'));
     }
 
     /**

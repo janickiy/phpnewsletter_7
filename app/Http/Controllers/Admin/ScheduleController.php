@@ -12,7 +12,6 @@ use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\Admin\Schedule\StoreRequest;
 use App\Http\Requests\Admin\Schedule\EditRequest;
 use Illuminate\View\View;
-use URL;
 
 class ScheduleController extends Controller
 {
@@ -61,7 +60,7 @@ class ScheduleController extends Controller
             }
         }
 
-        return redirect(URL::route('admin.schedule.index'))->with('success', trans('message.information_successfully_added'));
+        return redirect()->route('admin.schedule.index')->with('success', trans('message.information_successfully_added'));
 
     }
 
@@ -114,7 +113,7 @@ class ScheduleController extends Controller
             }
         }
 
-        return redirect(URL::route('admin.schedule.index'))->with('success', trans('message.data_updated'));
+        return redirect()->route('admin.schedule.index')->with('success', trans('message.data_updated'));
     }
 
     /**

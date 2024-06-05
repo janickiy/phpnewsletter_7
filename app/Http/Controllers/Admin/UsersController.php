@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Admin\Users\StoreRequest;
 use App\Http\Requests\Admin\Users\UpdateRequest;
 use Hash;
-use URL;
 
 class UsersController extends Controller
 {
@@ -48,7 +47,7 @@ class UsersController extends Controller
     {
         User::create(array_merge($request->all(), ['password' => Hash::make($request->password)]));
 
-        return redirect(URL::route('admin.users.index'))->with('success', trans('message.information_successfully_added'));
+        return redirect()->route('admin.users.index')->with('success', trans('message.information_successfully_added'));
     }
 
     /**
@@ -57,7 +56,7 @@ class UsersController extends Controller
      */
     public function edit(int $id): View
     {
-        $user = User::where('id', $id)->first();
+        $user = User::find($id);
 
         if (!$user) abort(404);
 
@@ -93,7 +92,7 @@ class UsersController extends Controller
 
         $user->save();
 
-        return redirect(URL::route('admin.users.index'))->with('success', trans('message.data_updated'));
+        return redirect()->route('admin.users.index')->with('success', trans('message.data_updated'));
     }
 
     /**

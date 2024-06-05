@@ -14,7 +14,6 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use URL;
 
 class LogController extends Controller
 {
@@ -36,7 +35,7 @@ class LogController extends Controller
         ReadySent::truncate();
         Logs::truncate();
 
-        return redirect(URL::route('admin.log.index'))->with('success', trans('message.log_cleared'));
+        return redirect()->route('admin.log.index')->with('success', trans('message.log_cleared'));
     }
 
     /**

@@ -9,7 +9,6 @@ use App\Models\Smtp;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use URL;
 
 class SmtpController extends Controller
 {
@@ -52,7 +51,7 @@ class SmtpController extends Controller
 
         Smtp::create($request->all());
 
-        return redirect(URL::route('admin.smtp.index'))->with('success', trans('message.information_successfully_added'));
+        return redirect()->route('admin.smtp.index')->with('success', trans('message.information_successfully_added'));
     }
 
     /**
@@ -101,7 +100,7 @@ class SmtpController extends Controller
         $smtp->timeout = $request->input('timeout');
         $smtp->save();
 
-        return redirect(URL::route('admin.category.index'))->with('success', trans('message.data_updated'));
+        return redirect()->route('admin.category.index')->with('success', trans('message.data_updated'));
     }
 
     /**

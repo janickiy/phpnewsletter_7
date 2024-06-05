@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Illuminate\Support\Str;
+use Illuminate\Support\Number;
 
 class StringHelper
 {
@@ -60,22 +61,9 @@ class StringHelper
     }
 
     /**
-     * @param int|float $size
-     * @param int $maxDecimals
-     * @param string $mbSuffix
-     * @return string
+     * @return int
      */
-    public static function formatSizeInMb(int|float $size, int $maxDecimals = 3, string $mbSuffix = "MB"): string
-    {
-        $mbSize = round($size / 1024 / 1024, $maxDecimals);
-
-        return preg_replace("/\\.?0+$/", "", $mbSize) . $mbSuffix;
-    }
-
-    /**
-     * @return mixed
-     */
-    public static function detectMaxUploadFileSize()
+    public static function detectMaxUploadFileSize(): int
     {
         /**
          * Converts shorthands like "2M" or "512K" to bytes
@@ -102,7 +90,8 @@ class StringHelper
             $limits[] = $memory_limit;
         }
         $maxFileSize = min($limits);
-        return $maxFileSize;
+
+        return (int)$maxFileSize;
     }
 
     /**
@@ -116,7 +105,7 @@ class StringHelper
             $maxUploadFileSize = 2097152;
         }
 
-        return self::formatSizeInMb($maxUploadFileSize);
+        return Number::fileSize($maxUploadFileSize);
     }
 
     /**
