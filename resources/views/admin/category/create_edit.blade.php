@@ -26,12 +26,12 @@
 
                         <div class="card-body">
 
-                            <p>*-обязательные поля </p>
+                            <p>*-{{ trans('frontend.form.required_fields') }}</p>
 
                             <div class="form-group">
-                                {!! Form::label('name', 'Имя*') !!}
+                                {!! Form::label('name', trans('frontend.form.name') . '*') !!}
 
-                                {!! Form::text('name', old('name', $row->name ?? null), ['class' => 'form-control', 'placeholder' => "Название"]) !!}
+                                {!! Form::text('name', old('name', $row->name ?? null), ['class' => 'form-control', 'placeholder' => trans('frontend.form.name')]) !!}
 
                                 @if ($errors->has('name'))
                                     <p class="text-danger">{{ $errors->first('name') }}</p>
@@ -43,10 +43,10 @@
 
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary">
-                                {{ isset($row) ? 'Изменить' : 'Добавить' }}
+                                {{ isset($row) ? trans('frontend.form.edit') : trans('frontend.form.add') }}
                             </button>
-                            <a class="btn btn-default" href="{{ URL::route('admin.category.index') }}">
-                                Назад
+                            <a class="btn btn-default float-sm-right" href="{{ URL::route('admin.category.index') }}">
+                                {{ trans('frontend.form.back') }}
                             </a>
                         </div>
 

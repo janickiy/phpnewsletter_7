@@ -110,7 +110,7 @@
                             <button type="submit" class="btn btn-primary">
                                 {{ isset($user) ? trans('frontend.form.edit') : trans('frontend.form.add') }}
                             </button>
-                            <a class="btn btn-default" href="{{ URL::route('admin.users.index') }}">
+                            <a class="btn btn-default float-sm-right" href="{{ URL::route('admin.users.index') }}">
                                 {{ trans('frontend.form.back') }}
                             </a>
                         </div>

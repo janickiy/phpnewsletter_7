@@ -144,7 +144,7 @@
                             <button type="submit" class="btn btn-primary">
                                 {{ isset($smtp) ? trans('frontend.form.edit') : trans('frontend.form.add') }}
                             </button>
-                            <a class="btn btn-default" href="{{ URL::route('admin.smtp.index') }}">
+                            <a class="btn btn-default float-sm-right" href="{{ URL::route('admin.smtp.index') }}">
                                 {{ trans('frontend.form.back') }}
                             </a>
                         </div>
