@@ -64,7 +64,6 @@
                                             '1' => trans('frontend.str.remove')
                                             ],null,['class' => 'span3 form-control', 'id' => 'select_action','placeholder' => '--' . trans('frontend.str.action') . '--'],[0 => ['data-id' => 'sendmail', 'class' => 'open_modal']]) !!}
 
-
                                             <span class="help-inline">
 
                                         {!! Form::submit(trans('frontend.str.apply'), ['class' => 'btn btn-success', 'disabled' => "", 'id' => 'apply']) !!}
@@ -93,25 +92,55 @@
     </section>
     <!-- /.content -->
 
-
-
-    <div class="modal fade" id="modal-xl">
-        <div class="modal-dialog modal-xl">
+    <div class="modal fade" id="modal-lg">
+        <input id="logId" type="hidden" value="0">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Extra Large Modal</h4>
+                    <h4 class="modal-title">{{ trans('frontend.str.online_newsletter_log') }}<span id="process"></span></h4>
+
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>One fine body&hellip;</p>
+                    <div id="onlinelog"></div>
+                    <div class="row">
+                        <div class="col-sm-12 padding-top-10 padding-bottom-10">
+                            <div class="form-inline">
+                                <div class="control-group">
+
+                                    {!! Form::select('categoryId[]', $categoryOptions, null, ['id' => 'categoryId','multiple'=>'multiple', 'placeholder' => trans('frontend.form.select_category'), 'class' => 'form-control custom-scroll', 'style' => 'width: 100%']) !!}
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p><span id="leftsend">0</span>% {{ trans('frontend.str.left') }}: <span id="timer2">00:00:00</span></p>
+                    <div class="progress progress-sm progress-striped active">
+                        <div class="progress-bar bg-color-darken" role="progressbar" style="width: 1%"></div>
+                    </div>
+                    <div class="online_statistics">{{ trans('frontend.str.total')  }}:
+                        <span id="totalsendlog">0</span>
+                        <span style="color: green">{{ trans('frontend.str.good') }}: </span>
+                        <span style="color: green" id="successful">0</span>
+                        <span style="color: red">{{ trans('frontend.str.bad') }}: </span>
+                        <span style="color: red"  id="unsuccessful">0</span><br><br>
+                        <span id="divStatus" class="error"></span>
+                        <button id="sendout" class="btn btn-default btn-circle btn-modal btn-lg" style="margin-right: 15px;"  title="{{ trans('frontend.str.send_out_newsletter') }}"><i class="fa fa-play"></i></button>
+                        <button onClick="stopsend('stop');" id="stopsendout" class="btn btn-danger btn-circle btn-lg disabled"  disabled="disabled" title="{{ trans('frontend.str.stop_newsletter') }}">
+                            <i class="fa fa-stop"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
                 </div>
             </div>
+
+        </div>
+
+    </div>
 
 @endsection
 
@@ -134,12 +163,6 @@
 
         $(function () {
 
-            let open_modal = $('#apply');
-            var div = $('.open_modal').attr('data-id');
-           // let div = $('.open_modal').attr('data-toggle');
-           // 'data-toggle' => 'modal'
-            // data-toggle
-            //
             $("#sendout").on('click', function () {
                 pausesend = false;
                 completed = null;
@@ -215,14 +238,11 @@
 
                     if (idSelect == 0) {
                         event.preventDefault();
-                        Swal.fire(
-                            'Are you done?',
-                        )
 
+                        let myModal = new bootstrap.Modal(document.getElementById('modal-lg'), {});
+                        myModal.show();
                     }
                 }
-
-
             });
 
             $("#checkAll").click(function () {

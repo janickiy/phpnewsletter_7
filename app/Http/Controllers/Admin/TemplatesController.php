@@ -19,9 +19,11 @@ class TemplatesController extends Controller
      */
     public function index(): View
     {
+        $categoryOptions = Category::getOption();
+
         $infoAlert = trans('frontend.hint.template_index') ? trans('frontend.hint.template_index') : null;
 
-        return view('admin.templates.index', compact('infoAlert'))->with('title', trans('frontend.title.template_index'));
+        return view('admin.templates.index', compact('infoAlert', 'categoryOptions'))->with('title', trans('frontend.title.template_index'));
     }
 
     /**
