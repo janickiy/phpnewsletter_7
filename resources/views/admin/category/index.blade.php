@@ -32,14 +32,16 @@
                             <table id="itemList" class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
-                                    <th>Название</th>
-                                    <th style="width: 10%">Действия</th>
+                                    <th>{{ trans('frontend.str.name') }}</th>
+                                    <th>{{ trans('frontend.str.subscribers_number') }}</th>
+                                    <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
                                 </tr>
                                 </thead>
                                 <tfoot>
                                 <tr>
-                                    <th>Название</th>
-                                    <th style="width: 10%">Действия</th>
+                                    <th>{{ trans('frontend.str.name') }}</th>
+                                    <th>{{ trans('frontend.str.subscribers_number') }}</th>
+                                    <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
                                 </tr>
                                 </tfoot>
                             </table>
@@ -75,6 +77,7 @@
     {!! Html::script('/plugins/datatables-buttons/js/buttons.colVis.min.js') !!}
 
     <script>
+
         $(function () {
             $("#itemList").DataTable({
                 "oLanguage": {
@@ -103,6 +106,7 @@
                 },
                 'columns': [
                     {data: 'name', name: 'name'},
+                    {data: 'subcount', name: 'subcount', searchable: false},
                     {data: 'actions', name: 'actions', orderable: false, searchable: false}
                 ]
             });
@@ -142,5 +146,6 @@
                 })
             });
         })
+
     </script>
 @endsection

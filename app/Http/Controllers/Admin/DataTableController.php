@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\{Category, Smtp, Subscribers, Schedule, Templates, User, ReadySent, Redirect};
-use App\Helpers\{StringHelper,PermissionsHelper};
+use App\Helpers\{StringHelper, PermissionsHelper};
 use Illuminate\Support\Facades\Auth;
 use DataTables;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -45,7 +45,11 @@ class DataTableController extends Controller
      */
     public function getCategory(): JsonResponse
     {
-        $row = Category::query();
+        $row = Category::query()
+            ->selectRaw('categories.id,categories.name,count(subscriptions.category_id) AS subcount')
+            ->leftJoin('subscriptions', 'categories.id', '=', 'subscriptions.category_id')
+            ->groupBy('categories.id')
+            ->groupBy('categories.name');
 
         return Datatables::of($row)
             ->addColumn('actions', function ($row) {
