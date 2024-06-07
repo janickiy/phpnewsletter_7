@@ -64,6 +64,7 @@
                                             '1' => trans('frontend.str.remove')
                                             ],null,['class' => 'span3 form-control', 'id' => 'select_action','placeholder' => '--' . trans('frontend.str.action') . '--'],[0 => ['data-id' => 'sendmail', 'class' => 'open_modal']]) !!}
 
+
                                             <span class="help-inline">
 
                                         {!! Form::submit(trans('frontend.str.apply'), ['class' => 'btn btn-success', 'disabled' => "", 'id' => 'apply']) !!}
@@ -91,6 +92,8 @@
 
     </section>
     <!-- /.content -->
+
+
 
     <div class="modal fade" id="modal-lg">
         <input id="logId" type="hidden" value="0">
@@ -162,6 +165,8 @@
     <script>
 
         $(function () {
+
+            let open_modal = $('#apply');
 
             $("#sendout").on('click', function () {
                 pausesend = false;
@@ -289,7 +294,7 @@
                     {data: 'id', name: 'id'},
                     {data: 'name', name: 'name'},
                     {data: 'prior', name: 'prior', searchable: false},
-                    {data: 'attach.id', name: 'attach.id', searchable: false},
+                    {data: 'attach', name: 'attach.id', searchable: false},
                     {data: 'created_at', name: 'created_at'},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
                 ]

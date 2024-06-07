@@ -16,7 +16,7 @@ class DataTableController extends Controller
      */
     public function getTemplates(): JsonResponse
     {
-        $row = Templates::query();
+        $row = Templates::with('attach')->select('templates.*');
 
         return Datatables::of($row)
             ->addColumn('checkbox', function ($row) {
@@ -34,8 +34,8 @@ class DataTableController extends Controller
             ->editColumn('prior', function ($row) {
                 return Templates::getPrior($row->id);
             })
-            ->editColumn('attach.id', function ($row) {
-                return $row->attach ? trans('frontend.str.yes') : trans('frontend.str.no');
+            ->addColumn('attach', function ($row) {
+                return isset($row->attach) && count($row->attach) > 0 ? trans('frontend.str.yes') : trans('frontend.str.no');
             })
             ->rawColumns(['action', 'name', 'checkbox'])->make(true);
     }

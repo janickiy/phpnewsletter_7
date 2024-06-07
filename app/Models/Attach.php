@@ -3,8 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Storage;
 
 class Attach extends Model
@@ -23,12 +22,13 @@ class Attach extends Model
         'name' => 'user',
     ];
 
+
     /**
-     * @return HasOne
+     * @return BelongsTo
      */
-    public function template(): HasOne
+    public function template(): BelongsTo
     {
-        return $this->hasOne(Templates::class);
+        return $this->belongsTo(Templates::class);
     }
 
     /**

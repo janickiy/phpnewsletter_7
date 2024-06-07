@@ -19,7 +19,7 @@ class Templates extends Model
     /**
      * @return HasMany
      */
-    public function attach()
+    public function attach(): hasMany
     {
         return $this->hasMany(Attach::class, 'template_id');
     }

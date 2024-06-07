@@ -198,6 +198,8 @@ return [
         Collective\Html\HtmlServiceProvider::class,
         Yajra\DataTables\ButtonsServiceProvider::class,
         Yajra\DataTables\HtmlServiceProvider::class,
+
+        Barryvdh\Debugbar\ServiceProvider::class,
     ])->toArray(),
 
     /*
