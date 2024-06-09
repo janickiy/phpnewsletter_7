@@ -35,7 +35,7 @@ class DataTableController extends Controller
                 return Templates::getPrior($row->id);
             })
             ->addColumn('attach', function ($row) {
-                return isset($row->attach) && count($row->attach) > 0 ? trans('frontend.str.yes') : trans('frontend.str.no');
+                return count($row->attach) > 0 ? trans('frontend.str.yes') : trans('frontend.str.no');
             })
             ->rawColumns(['action', 'name', 'checkbox'])->make(true);
     }
@@ -89,7 +89,7 @@ class DataTableController extends Controller
      */
     public function getSubscribers(): JsonResponse
     {
-        $row = Subscribers::selectRaw('subscribers.*')
+        $row = Subscribers::select('subscribers.*','subscriptions.subscriber_id')
             ->leftJoin('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
             ->distinct();
 
@@ -97,7 +97,7 @@ class DataTableController extends Controller
             ->addColumn('checkbox', function ($row) {
                 return '<input type="checkbox" class="check" value="' . $row->id . '" name="activate[]">';
             })
-            ->addColumn('categories', function ($row) {
+            ->addColumn('subscriptions', function ($row) {
                 $categories = [];
 
                 foreach ($row->subscriptions as $subscription) {
@@ -138,22 +138,16 @@ class DataTableController extends Controller
                 return '<div class="nobr"> ' . $editBtn . $deleteBtn . '</div>';
             })
             ->editColumn('role', function ($row) {
-
                 switch ($row->role) {
                     case 'admin':
-                        $role = trans('frontend.str.admin');
-                        break;
+                        return trans('frontend.str.admin');
                     case 'editor':
-                        $role = trans('frontend.str.editor');
-                        break;
+                        return trans('frontend.str.editor');
                     case 'moderator':
-                        $role = trans('frontend.str.moderator');
-                        break;
+                        return trans('frontend.str.moderator');
                     default:
-                        $role = '';
+                        return '';
                 }
-
-                return $role;
             })
             ->rawColumns(['action', 'id'])->make(true);
     }
@@ -181,7 +175,7 @@ class DataTableController extends Controller
                 return $row->read_mail ? $row->read_mail : 0;
             })
             ->addColumn('report', function ($row) {
-                return Helpers::has_permission(Auth::user()->role, 'admin') ? '<a href="' . URL::route('admin.log.report', ['id' => $row->id]) . '">' . trans('frontend.str.download') . '</a>' : '';
+                return PermissionsHelper::has_permission(Auth::user()->role, 'admin') ? '<a href="' . URL::route('admin.log.report', ['id' => $row->id]) . '">' . trans('frontend.str.download') . '</a>' : '';
             })
             ->rawColumns(['count', 'report'])->make(true);
     }
@@ -196,10 +190,10 @@ class DataTableController extends Controller
 
         return Datatables::of($row)
             ->editColumn('success', function ($row) {
-                return $row->success == 1 ? trans('frontend.str.send_status_yes') : trans('frontend.str.send_status_no');
+                return $row->success === 1 ? trans('frontend.str.send_status_yes') : trans('frontend.str.send_status_no');
             })
             ->editColumn('readMail', function ($row) {
-                return $row->readMail == 1 ? trans('frontend.str.yes') : trans('frontend.str.no');
+                return $row->readMail === 1 ? trans('frontend.str.yes') : trans('frontend.str.no');
             })
             ->addColumn('status', function ($row) {
                 return $row->success;

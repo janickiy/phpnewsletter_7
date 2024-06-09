@@ -39,16 +39,6 @@ class SmtpController extends Controller
      */
     public function store(StoreRequest $request): RedirectResponse
     {
-        $validator = $request->validated();
-
-        if (SendEmailHelper::checkConnection($request->host, $request->email, $request->username, $request->password, $request->port, $request->authentication, $request->secure, $request->timeout) === false) {
-            $validator->after(function ($validator) {
-                $validator->errors()->add('connection', trans('message.unable_connect_to_smtp'));
-            });
-        }
-
-        if ($validator->fails()) return back()->withErrors($validator)->withInput();
-
         Smtp::create($request->all());
 
         return redirect()->route('admin.smtp.index')->with('success', trans('message.information_successfully_added'));
@@ -66,7 +56,7 @@ class SmtpController extends Controller
 
         $infoAlert = trans('frontend.hint.smtp_edit') ? trans('frontend.hint.smtp_edit') : null;
 
-        return view('admin.category.create_edit', compact('row', 'infoAlert'))->with('title', trans('frontend.title.smtp_edit'));
+        return view('admin.smtp.create_edit', compact('row', 'infoAlert'))->with('title', trans('frontend.title.smtp_edit'));
     }
 
     /**
@@ -76,16 +66,6 @@ class SmtpController extends Controller
      */
     public function update(EditRequest $request): RedirectResponse
     {
-        $validator = $request->validated();
-
-        if (SendEmailHelper::checkConnection($request->host, $request->email, $request->username, $request->password, $request->port, $request->authentication, $request->secure, $request->timeout) === false) {
-            $validator->after(function ($validator) {
-                $validator->errors()->add('connection', trans('message.unable_connect_to_smtp'));
-            });
-        }
-
-        if ($validator->fails()) return back()->withErrors($validator)->withInput();
-
         $smtp = Smtp::find($request->id);
 
         if (!$smtp) abort(404);

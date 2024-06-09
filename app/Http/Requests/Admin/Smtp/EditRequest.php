@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin\Smtp;
 
+use App\Helpers\SendEmailHelper;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class EditRequest extends FormRequest
 {
@@ -27,7 +29,20 @@ class EditRequest extends FormRequest
             'email' => 'required|email',
             'port' => 'required|numeric',
             'timeout' => 'required|numeric',
-            'id' => 'required|integer'
+        ];
+    }
+
+    /**
+     * @return mixed
+     */
+    public function after(): array
+    {
+        return [
+            function (Validator $validator) {
+                if (SendEmailHelper::checkConnection($this->host, $this->email, $this->username, $this->password, $this->port, $this->authentication, $this->secure, $this->timeout) === false) {
+                    $validator->errors()->add('connection', trans('message.unable_connect_to_smtp'));
+                }
+            }
         ];
     }
 }
