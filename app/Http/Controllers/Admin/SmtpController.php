@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Helpers\SendEmailHelper;
 use App\Http\Requests\Admin\Smtp\EditRequest;
 use App\Http\Requests\Admin\Smtp\StoreRequest;
 use App\Models\Smtp;
@@ -66,21 +65,21 @@ class SmtpController extends Controller
      */
     public function update(EditRequest $request): RedirectResponse
     {
-        $smtp = Smtp::find($request->id);
+        $row = Smtp::find($request->id);
 
-        if (!$smtp) abort(404);
+        if (!$row) abort(404);
 
-        $smtp->host = $request->input('host');
-        $smtp->email = $request->input('email');
-        $smtp->username = $request->input('username');
-        $smtp->password = $request->input('password');
-        $smtp->port = $request->input('port');
-        $smtp->authentication = $request->input('authentication');
-        $smtp->secure = $request->input('secure');
-        $smtp->timeout = $request->input('timeout');
-        $smtp->save();
+        $row->host = $request->input('host');
+        $row->email = $request->input('email');
+        $row->username = $request->input('username');
+        $row->password = $request->input('password');
+        $row->port = $request->input('port');
+        $row->authentication = $request->input('authentication');
+        $row->secure = $request->input('secure');
+        $row->timeout = $request->input('timeout');
+        $row->save();
 
-        return redirect()->route('admin.category.index')->with('success', trans('message.data_updated'));
+        return redirect()->route('admin.smtp.index')->with('success', trans('message.data_updated'));
     }
 
     /**

@@ -66,20 +66,20 @@ class SubscribersController extends Controller
      */
     public function edit(int $id): View
     {
-        $subscriber = Subscribers::find($id);
+        $row = Subscribers::find($id);
 
-        if (!$subscriber) abort(404);
+        if (!$row) abort(404);
 
         $options = Category::getOption();
         $subscriberCategoryId = [];
 
-        foreach ($subscriber->subscriptions as $subscription) {
+        foreach ($row->subscriptions as $subscription) {
             $subscriberCategoryId[] = $subscription->categoryId;
         }
 
         $infoAlert = trans('frontend.hint.subscribers_edit') ? trans('frontend.hint.subscribers_edit') : null;
 
-        return view('admin.subscribers.create_edit', compact('options', 'subscriber', 'subscriberCategoryId', 'infoAlert'))->with('title', trans('frontend.title.subscribers_edit'));
+        return view('admin.subscribers.create_edit', compact('options', 'row', 'subscriberCategoryId', 'infoAlert'))->with('title', trans('frontend.title.subscribers_edit'));
     }
 
     /**
@@ -88,9 +88,9 @@ class SubscribersController extends Controller
      */
     public function update(EditRequest $request): RedirectResponse
     {
-        $subscribers = Subscribers::find($request->id);
+        $row = Subscribers::find($request->id);
 
-        if (!$subscribers) abort(404);
+        if (!$row) abort(404);
 
         if ($request->categoryId) {
             Subscriptions::where('subscriber_id', $request->id)->delete();
@@ -100,9 +100,9 @@ class SubscribersController extends Controller
             }
         }
 
-        $subscribers->name = $request->input('name');
-        $subscribers->email = $request->input('email');
-        $subscribers->save();
+        $row->name = $request->input('name');
+        $row->email = $request->input('email');
+        $row->save();
 
         return redirect()->route('admin.subscribers.index')->with('success', trans('message.data_updated'));
     }

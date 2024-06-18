@@ -23,7 +23,7 @@ class EditRequest extends FormRequest
     {
         return [
             'email' => 'required|email|unique:subscribers,email,' . $this->id,
-            'category_id' => 'array|nullable',
+            'categoryId' => 'array|nullable',
             'id' => 'required|integer'
         ];
     }

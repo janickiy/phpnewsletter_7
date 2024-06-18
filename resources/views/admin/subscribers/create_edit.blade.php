@@ -22,7 +22,7 @@
                         <!-- form start -->
                         {!! Form::open(['url' => isset($row) ? URL::route('admin.subscribers.update') : URL::route('admin.subscribers.store'), 'method' => isset($row) ? 'put' : 'post']) !!}
 
-                        {!! isset($subscriber) ? Form::hidden('id', $subscriber->id) : '' !!}
+                        {!! isset($row) ? Form::hidden('id', $row->id) : '' !!}
 
                         <div class="card-body">
 
@@ -31,7 +31,7 @@
                             <div class="form-group">
                                 {!! Form::label('name', trans('frontend.form.name')) !!}
 
-                                {!! Form::text('name', old('name', $subscriber->name ?? null), ['class' => 'form-control']) !!}
+                                {!! Form::text('name', old('name', $row->name ?? null), ['class' => 'form-control']) !!}
 
                                 @if ($errors->has('name'))
                                     <p class="text-danger">{{ $errors->first('name') }}</p>
@@ -41,7 +41,7 @@
                             <div class="form-group">
                                 {!! Form::label('email', 'Email*') !!}
 
-                                {!! Form::text('email', old('email', $subscriber->email ?? null), ['class' => 'form-control']) !!}
+                                {!! Form::text('email', old('email', $row->email ?? null), ['class' => 'form-control']) !!}
 
                                 @if ($errors->has('email'))
                                     <p class="text-danger">{{ $errors->first('email') }}</p>
@@ -64,7 +64,7 @@
 
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary">
-                                {{ isset($smtp) ? trans('frontend.form.edit') : trans('frontend.form.add') }}
+                                {{ isset($row) ? trans('frontend.form.edit') : trans('frontend.form.add') }}
                             </button>
                             <a class="btn btn-default float-sm-right" href="{{ URL::route('admin.subscribers.index') }}">
                                 {{ trans('frontend.form.back') }}

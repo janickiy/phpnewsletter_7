@@ -220,7 +220,7 @@ class Subscribers extends Model
                 ->get();
         } else {
             $subscribers = self::select('name', 'email')
-                ->where('active', 1)
+                ->active()
                 ->get();
         }
 
