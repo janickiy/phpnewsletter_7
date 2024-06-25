@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Http\Requests\Frontend\InstallRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Session;
 use Hash;
 use Artisan;
@@ -38,9 +39,9 @@ class InstallController extends Controller
     }
 
     /**
-     * @return View
+     * @return View|RedirectResponse
      */
-    public function permissions(): View
+    public function permissions(): View|RedirectResponse
     {
         if (!$this->allRequirementsLoaded()) {
             return redirect()->route('install.requirements');
@@ -69,21 +70,11 @@ class InstallController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @param InstallRequest $request
+     * @return RedirectResponse|View
      */
-    public function installation(Request $request): RedirectResponse|View
+    public function installation(InstallRequest $request): RedirectResponse|View
     {
-        $rules = [
-            'host' => 'required',
-            'username' => 'required',
-            'database' => 'required',
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) return back()->withErrors($validator)->withInput();
-
         if (!$this->allRequirementsLoaded()) {
             return redirect()->route('install.requirements');
         }
@@ -106,32 +97,20 @@ class InstallController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function admin(Request $request)
+    public function admin(): View
     {
         return view('install.installation');
     }
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function install(Request $request)
+    public function install(InstallRequest $request): RedirectResponse
     {
-        $rules = [
-            'login' => 'required',
-            'password' => 'required|min:4',
-            'confirm_password' => 'required|min:4|same:password',
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) return back()->withErrors($validator)->withInput();
-
         try {
-
             $db = Session::pull('install.db_credentials');
 
             copy(base_path('.env.example'), base_path('.env'));
@@ -158,19 +137,19 @@ class InstallController extends Controller
             User::create(['name' => 'admin', 'login' => $request->input('login'), 'role' => 'admin', 'password' => Hash::make($request->input('password'))]);
 
             return redirect()->route('install.complete');
-
         } catch (\Exception $e) {
             @unlink(base_path('.env'));
             Log::error($e->getMessage());
             Log::error($e->getTraceAsString());
+
             return redirect()->route('install.error');
         }
     }
 
     /**
-     *
+     * @return void
      */
-    private function reloadEnv()
+    private function reloadEnv(): void
     {
         (new LoadEnvironmentVariables)->bootstrap(app());
     }
@@ -235,7 +214,7 @@ class InstallController extends Controller
     /**
      * @return array
      */
-    private function getPermissions()
+    private function getPermissions(): array
     {
         return [
             'storage/app' => is_writable(storage_path('app')),
@@ -251,12 +230,12 @@ class InstallController extends Controller
     /**
      * @return bool
      */
-    private function allPermissionsGranted()
+    private function allPermissionsGranted(): bool
     {
         $allGranted = true;
 
         foreach ($this->getPermissions() as $permission => $granted) {
-            if ($granted == false) {
+            if ($granted === false) {
                 $allGranted = false;
             }
         }
@@ -265,10 +244,10 @@ class InstallController extends Controller
     }
 
     /**
-     * @param $credentials
+     * @param array $credentials
      * @return bool
      */
-    private function dbCredentialsAreValid($credentials): bool
+    private function dbCredentialsAreValid(array $credentials): bool
     {
         $this->setDatabaseCredentials($credentials);
 
@@ -283,9 +262,10 @@ class InstallController extends Controller
     }
 
     /**
-     * @param $credentials
+     * @param array $credentials
+     * @return void
      */
-    private function setDatabaseCredentials($credentials)
+    private function setDatabaseCredentials(array $credentials): void
     {
         $default = config('database.default');
 
@@ -299,9 +279,9 @@ class InstallController extends Controller
 
     /**
      * @param Request $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function ajax(Request $request)
+    public function ajax(Request $request): JsonResponse
     {
         if ($request->input('action')) {
             switch ($request->input('action')) {
@@ -314,11 +294,7 @@ class InstallController extends Controller
                         }
                     }
 
-                    return ResponseHelpers::jsonResponse([
-                        'result' => true
-                    ]);
-
-                    break;
+                    return response()->json(['result' => true]);
             }
         }
     }
