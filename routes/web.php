@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\{
     UsersController,
 };
 use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\InstallController;
 use App\Http\Controllers\AjaxController;
 
 /*
@@ -158,7 +159,17 @@ Route::group(['middleware' => ['install']], function () {
 });
 
 Route::group(['prefix' => 'install'], function () {
+    Route::get('/', [InstallController::class, 'index'])->name('install.start');
+    Route::get('requirements', [InstallController::class, 'requirements'])->name('install.requirements');
+    Route::get('permissions', [InstallController::class, 'permissions'])->name('install.permissions');
+    Route::get('database', [InstallController::class, 'database'])->name('install.database');
+    Route::get('admin', [InstallController::class, 'admin'])->name('install.admin');
+    Route::post('installation', [InstallController::class, 'installation'])->name('install.installation');
 
+    Route::post('install-app', [InstallController::class, 'install'])->name('install.install');
+    Route::get('complete', [InstallController::class, 'complete'])->name('install.complete');
+    Route::get('error', [InstallController::class, 'error'])->name('install.error');
+    Route::any('ajax', [InstallController::class, 'ajax'])->name('install.ajax.action');
 });
 
 

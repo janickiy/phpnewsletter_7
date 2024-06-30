@@ -56,7 +56,7 @@ class InstallController extends Controller
     /**
      * @return View|RedirectResponse
      */
-    public function databaseInfo(): View|RedirectResponse
+    public function database(): View|RedirectResponse
     {
         if (!$this->allRequirementsLoaded()) {
             return redirect()->route('install.requirements');
@@ -105,7 +105,7 @@ class InstallController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param InstallRequest $request
      * @return RedirectResponse
      */
     public function install(InstallRequest $request): RedirectResponse
