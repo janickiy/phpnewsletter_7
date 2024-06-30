@@ -183,7 +183,7 @@
             $(document).on("click", ".remove_attach", function () {
                 let idAttach = $(this).attr('data-num');
                 let request = $.ajax({
-                    url: '{{ URL::route('ajax.action') }}',
+                    url: '{{ URL::route('admin.ajax.action') }}',
                     method: "POST",
                     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                     data: {
@@ -232,7 +232,7 @@
 
                 let sendData = aParams.join("&");
                 let request = $.ajax({
-                    url: '{{ URL::route('ajax.action') }}',
+                    url: '{{ URL::route('admin.ajax.action') }}',
                     method: "POST",
                     data: sendData,
                     dataType: "json"

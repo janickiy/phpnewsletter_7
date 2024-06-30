@@ -19,11 +19,11 @@ use App\Helpers\{SendEmailHelper, SettingsHelper, StringHelper, UpdateHelper};
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\JsonResponse;
 use Cookie;
+use Config;
 use Artisan;
 use ZipArchive;
 use DateTime;
 use Auth;
-
 
 class AjaxController extends Controller
 {
@@ -51,7 +51,7 @@ class AjaxController extends Controller
                             }
                         }
 
-                        if ($download_completed == true) {
+                        if ($download_completed === true) {
                             $content['status'] = trans('frontend.msg.download_completed');
                             $content['result'] = true;
                         } else {
@@ -70,7 +70,7 @@ class AjaxController extends Controller
                             }
                         }
 
-                        if ($download_completed == true) {
+                        if ($download_completed === true) {
                             $content['status'] = trans('frontend.msg.download_completed');
                             $content['result'] = true;
                         } else {
@@ -89,7 +89,7 @@ class AjaxController extends Controller
                             }
                         }
 
-                        if ($download_completed == true) {
+                        if ($download_completed === true) {
                             $content['status'] = trans('frontend.msg.download_completed');
                             $content['result'] = true;
                         } else {
@@ -189,6 +189,8 @@ class AjaxController extends Controller
                         return response()->json(["msg" => $update_warning]);
                     }
 
+                    return response()->json(["msg" => null]);
+
                     break;
 
                 case 'remove_schedule':
@@ -236,7 +238,7 @@ class AjaxController extends Controller
                     if (empty($email)) $errors[] = trans('validation.empty_email');
                     if (!empty($email) && StringHelper::isEmail($email) === false) $errors[] = trans('validation.wrong_email');
 
-                    if (count($errors) == 0) {
+                    if (count($errors) === 0) {
                         SendEmailHelper::setBody($body);
                         SendEmailHelper::setSubject($subject);
                         SendEmailHelper::setPrior($prior);
@@ -296,8 +298,8 @@ class AjaxController extends Controller
 
                     $mailcount = 0;
 
-                    $order = SettingsHelper::getInstance()->getValueForKey('RANDOM_SEND') == 1 ? 'RAND()' : 'subscribers.id';
-                    $limit = SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') == 1 ? SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') : null;
+                    $order = SettingsHelper::getInstance()->getValueForKey('RANDOM_SEND') === 1 ? 'RAND()' : 'subscribers.id';
+                    $limit = SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 ? SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') : null;
 
                     switch (SettingsHelper::getInstance()->getValueForKey('INTERVAL_TYPE')) {
                         case "minute":
@@ -360,11 +362,11 @@ class AjaxController extends Controller
                                 ->join('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
                                 ->leftJoin('ready_sent', function ($join) use ($template, $logId) {
                                     $join->on('subscribers.id', '=', 'ready_sent.subscriber_id')
-                                        ->where('ready_sent.template_id', '=', $template->id)
-                                        ->where('ready_sent.log_id', '=', $logId)
+                                        ->where('ready_sent.template_id', $template->id)
+                                        ->where('ready_sent.log_id', $logId)
                                         ->where(function ($query) {
-                                            $query->where('ready_sent.success', '=', 1)
-                                                ->orWhere('ready_sent.success', '=', 0);
+                                            $query->where('ready_sent.success', 1)
+                                                ->orWhere('ready_sent.success', 0);
                                         });
                                 })
                                 ->whereIN('subscriptions.category_id', $categoryId)
@@ -433,7 +435,7 @@ class AjaxController extends Controller
 
                             unset($data);
 
-                            if (SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') == $mailcount) {
+                            if (SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailcount) {
 
                                 $this->updateProcess('stop');
 
@@ -445,7 +447,7 @@ class AjaxController extends Controller
                         }
                     }
 
-                    if (SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') == $mailcount) {
+                    if (SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailcount) {
 
                         $this->updateProcess('stop');
 
@@ -525,7 +527,7 @@ class AjaxController extends Controller
                         ->where('success', 0)
                         ->count();
 
-                    $sleep = SettingsHelper::getInstance()->getValueForKey('sleep') == 0 ? 0.5 : SettingsHelper::getInstance()->getValueForKey('sleep');
+                    $sleep = SettingsHelper::getInstance()->getValueForKey('sleep') === 0 ? 0.5 : SettingsHelper::getInstance()->getValueForKey('sleep');
                     $timesec = intval(($total - ($success + $unsuccess)) * $sleep);
 
                     $datetime = new DateTime();

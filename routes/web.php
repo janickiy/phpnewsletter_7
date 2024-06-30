@@ -40,7 +40,7 @@ Route::group(['middleware' => ['install']], function () {
     Route::any('categories', [FrontendController::class, 'getCategories'])->name('frontend.categories');
     Route::post('addsub', 'FrontendController@addSub')->name('frontend.addsub');
     Route::any('categories', [FrontendController::class, 'getCategories'])->name('frontend.categories');
-    Route::any('ajax', [AjaxController::class, 'action'])->name('ajax.action');
+    Route::any('ajax', [AjaxController::class, 'action'])->name('admin.ajax.action');
 
     Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('login', [AuthController::class, 'login'])->name('login.submit');

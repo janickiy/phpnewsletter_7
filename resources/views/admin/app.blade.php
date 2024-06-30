@@ -9,8 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
 
     <!-- Font Awesome -->
     {!! Html::style('/plugins/fontawesome-free/css/all.min.css') !!}
@@ -21,6 +20,8 @@
     {!! Html::style('/dist/css/adminlte.min.css') !!}
 
     {!! Html::style('/plugins/toastr/toastr.min.css') !!}
+
+    {!! Html::style('/plugins/flag-icon-css/css/flag-icon.min.css') !!}
 
 
     @yield('css')
@@ -39,6 +40,7 @@
             <li class="nav-item">
                 <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
             </li>
+
             <li class="nav-item">
                 <a class="nav-link" data-widget="fullscreen" title="{{ trans('frontend.str.expand_full_screen') }}"
                    href="#" role="button">
@@ -49,6 +51,28 @@
 
         <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+
+                @if( Config::get('app.locale') == 'ru')
+                    <a class="nav-link" data-toggle="dropdown" href="javascript:void(0);">
+                        <i class="flag-icon flag-icon-ru"></i>
+                    </a>
+                @else
+                    <a class="nav-link" data-toggle="dropdown" href="javascript:void(0);">
+                        <i class="flag-icon flag-icon-us"></i>
+                    </a>
+                @endif
+
+                <div class="dropdown-menu dropdown-menu-right p-0">
+                    <a data-id="en" href="javascript:void(0);" class="dropdown-item select-lang ">
+                        <i class="flag-icon flag-icon-us mr-2"></i> English
+                    </a>
+                    <a data-id="ru" href="javascript:void(0);" class="dropdown-item select-lang " alt="Русский (Russian)">
+                        <i class="flag-icon flag-icon-ru mr-2"></i> Русский (Russian)
+                    </a>
+                </div>
+            </li>
+
             <!-- Notifications Dropdown Menu -->
             <li class="nav-item">
                 <a class="nav-link" title="{{ trans('frontend.str.signout') }}" href="{{ URL::route('logout') }}"
@@ -56,7 +80,6 @@
                     <i class="fas fa-sign-out-alt"></i>
                 </a>
             </li>
-
         </ul>
     </nav>
     <!-- /.navbar -->
@@ -259,7 +282,7 @@
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">Панель управления</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url('/') }}">{{ trans('frontend.str.admin_panel') }}</a></li>
                             <li class="breadcrumb-item active">{{ $title }}</li>
                         </ol>
                     </div>
@@ -279,8 +302,7 @@
         <div class="float-right d-none d-sm-block">
             <b>{{ env('VERSION') }}</b>
         </div>
-        <strong>&copy; 2006-{{ date('Y') }} <a href="https://janicky.com">PHP Newsletter</a>.</strong> All rights
-        reserved.
+        <strong>&copy; 2006-{{ date('Y') }} <a href="https://janicky.com">PHP Newsletter</a>{{ env('VERSION') }}, {{ trans('frontend.str.author') }}</strong>
     </footer>
 
     <!-- Control Sidebar -->
@@ -302,6 +324,52 @@
 <!-- AdminLTE App -->
 {!! Html::script('/dist/js/adminlte.min.js') !!}
 
+<script>
+
+    $(function () {
+        $.ajax({
+            cache: false,
+            url: '{{ URL::route('admin.ajax.action') }}',
+            method: "POST",
+            data: {
+                action: "alert_update",
+            },
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+            dataType: "json",
+            success: function (data) {
+                if (data.msg !== '' && $.cookie('alertshow') !== 'no') {
+                    $('#alert_msg_block').fadeIn('700');
+                    $("#alert_warning_msg").append(data.msg);
+                }
+            }
+        });
+
+        $('a.select-lang').on('click', function () {
+          //  $(this).parent().find('li.active').removeClass('active');
+          //  $(this).addClass('active');
+
+            let Lng = $(this).attr('data-id');
+
+            let request = $.ajax({
+                url: '{{ URL::route('admin.ajax.action') }}',
+                method: "POST",
+                data: {
+                    action: "change_lng",
+                    locale: Lng,
+                },
+                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                dataType: "json"
+            });
+
+            request.done(function (data) {
+                if (data.result != null && data.result === true) {
+                    location.reload();
+                }
+            });
+        });
+    });
+
+</script>
 
 @yield('js')
 

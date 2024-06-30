@@ -182,7 +182,7 @@
                     $("#process").removeClass().addClass('showprocess');
 
                     var request = $.ajax({
-                        url: '{{ URL::route('ajax.action') }}',
+                        url: '{{ URL::route('admin.ajax.action') }}',
                         method: "POST",
                         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                         data: {
