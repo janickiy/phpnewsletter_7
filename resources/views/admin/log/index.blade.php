@@ -76,6 +76,16 @@
                                     </thead>
                                     <tbody>
                                     </tbody>
+                                    <tfoot>
+                                    <tr>
+                                        <th>{{ trans('frontend.str.newsletter') }}</th>
+                                        <th>E-mail</th>
+                                        <th>{{ trans('frontend.str.time') }}</th>
+                                        <th>{{ trans('frontend.str.status') }}</th>
+                                        <th>{{ trans('frontend.str.read') }}</th>
+                                        <th>{{ trans('frontend.str.error') }}</th>
+                                    </tr>
+                                    </tfoot>
                                 </table>
                             </div>
 

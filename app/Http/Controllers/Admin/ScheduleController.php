@@ -21,8 +21,7 @@ class ScheduleController extends Controller
     public function index(): View
     {
         $schedule = Schedule::get();
-
-        $infoAlert = trans('frontend.hint.schedule_index') ? trans('frontend.hint.schedule_index') : null;
+        $infoAlert = trans('frontend.hint.schedule_index') ?? null;
 
         return view('admin.schedule.index', compact('schedule', 'infoAlert'))->with('title', trans('frontend.title.schedule_index'));
     }
@@ -34,11 +33,9 @@ class ScheduleController extends Controller
     {
         $options = Templates::getOption();
         $category_options = Category::getOption();
-
-        $infoAlert = trans('frontend.hint.schedule_create') ? trans('frontend.hint.schedule_create') : null;
+        $infoAlert = trans('frontend.hint.schedule_create') ?? null;
 
         return view('admin.schedule.create_edit', compact('options', 'category_options', 'infoAlert'))->with('title', trans('frontend.title.schedule_index'));
-
     }
 
     /**
@@ -61,7 +58,6 @@ class ScheduleController extends Controller
         }
 
         return redirect()->route('admin.schedule.index')->with('success', trans('message.information_successfully_added'));
-
     }
 
     /**
@@ -83,7 +79,7 @@ class ScheduleController extends Controller
         $options = Templates::getOption();
         $category_options = Category::getOption();
 
-        $infoAlert = trans('frontend.hint.schedule_edit') ? trans('frontend.hint.schedule_edit') : null;
+        $infoAlert = trans('frontend.hint.schedule_edit') ?? null;
 
         return view('admin.schedule.create_edit', compact('categoryId', 'options', 'category_options', 'schedule', 'infoAlert'))->with('title', trans('frontend.title.schedule_edit'));
     }

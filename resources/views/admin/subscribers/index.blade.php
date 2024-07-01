@@ -49,7 +49,7 @@
                             <div class="pb-3">
                                 <a href="{{ URL::route('admin.subscribers.create') }}"
                                    class="btn btn-info btn-sm pull-left">
-                                    <span class="fa fa-plus"> &nbsp;</span> Добавить
+                                    <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_subscriber') }}
                                 </a>
                             </div>
 
@@ -72,7 +72,15 @@
                                 </tr>
                                 </thead>
                                 <tfoot>
-
+                                <tr>
+                                    <th></th>
+                                    <th>{{ trans('frontend.str.name') }}</th>
+                                    <th>E-mail</th>
+                                    <th>{{ trans('frontend.str.category') }}</th>
+                                    <th>{{ trans('frontend.str.status') }}</th>
+                                    <th>{{ trans('frontend.str.added') }}</th>
+                                    <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
+                                </tr>
                                 </tfoot>
                             </table>
 

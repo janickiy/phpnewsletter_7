@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
-use URL;
+use Auth;
 
 class AuthController extends Controller
 {
@@ -20,7 +20,7 @@ class AuthController extends Controller
      */
     public function showLoginForm(): View
     {
-        return view('admin.login')->with('title', 'Авторизация');
+        return view('admin.login')->with('title', trans('frontend.str.auth'));
     }
 
     /**
@@ -37,12 +37,12 @@ class AuthController extends Controller
         ]);
 
         // Attempt to log the user in
-        if (\Auth::guard('web')->attempt(['login' => $request->login, 'password' => $request->password], $request->remember)) {
+        if (Auth::guard('web')->attempt(['login' => $request->login, 'password' => $request->password], $request->remember)) {
             // if successful, then redirect to their intended location
             return redirect()->intended(route('admin.templates.index'));
         }
         // if unsuccessful, then redirect back to the login with the form data
-        return redirect(URL::route('login'))->with('error', "Неверный логин или пароль!");
+        redirect()->route('login')->with('error', trans('auth.failed'));
     }
 
     /**
@@ -52,9 +52,7 @@ class AuthController extends Controller
      */
     protected function authenticated($request, $user): RedirectResponse
     {
-        $redirect = redirect(URL::route('admin.templates.index'));
-
-        return $redirect;
+        return redirect()->route('admin.templates.index');
     }
 
     /**
@@ -62,8 +60,8 @@ class AuthController extends Controller
      */
     public function logout(): RedirectResponse
     {
-        \Auth::guard('web')->logout();
+        Auth::guard('web')->logout();
 
-        return redirect(URL::route('login'));
+        return redirect()->route('login');
     }
 }

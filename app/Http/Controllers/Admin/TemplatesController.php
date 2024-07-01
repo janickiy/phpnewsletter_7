@@ -10,7 +10,6 @@ use Illuminate\View\View;
 use App\Http\Requests\Admin\Templates\StoreRequest;
 use App\Http\Requests\Admin\Templates\UpdateRequest;
 use Storage;
-use URL;
 
 class TemplatesController extends Controller
 {
@@ -62,7 +61,7 @@ class TemplatesController extends Controller
             }
         }
 
-        return redirect(URL::route('admin.templates.index'))->with('success', trans('message.information_successfully_added'));
+        return redirect()->route('admin.templates.index')->with('success', trans('message.information_successfully_added'));
     }
 
     /**
@@ -76,7 +75,6 @@ class TemplatesController extends Controller
         if (!$template) abort(404);
 
         $attachment = $template->attach;
-
         $infoAlert = trans('frontend.hint.template_edit') ? trans('frontend.hint.template_edit') : null;
 
         return view('admin.templates.create_edit', compact('template', 'attachment', 'infoAlert'))->with('title', trans('frontend.title.template_edit'));
@@ -116,8 +114,7 @@ class TemplatesController extends Controller
 
         $templates->save();
 
-        return redirect(URL::route('admin.templates.index'))->with('success', trans('message.data_updated'));
-
+        return redirect()->route('admin.templates.index')->with('success', trans('message.data_updated'));
     }
 
     /**
@@ -151,6 +148,6 @@ class TemplatesController extends Controller
             }
         }
 
-        return redirect(URL::route('admin.templates.index'))->with('success', trans('message.actions_completed'));
+        return redirect()->route('admin.templates.index')->with('success', trans('message.actions_completed'));
     }
 }

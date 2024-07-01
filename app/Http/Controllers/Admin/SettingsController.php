@@ -24,8 +24,7 @@ class SettingsController extends Controller
         }
 
         $customheaders = Customheaders::get();
-
-        $infoAlert = trans('frontend.hint.settings_index') ? trans('frontend.hint.settings_index') : null;
+        $infoAlert = trans('frontend.hint.settings_index') ?? null;
 
         return view('admin.settings.index', compact('option_charset', 'customheaders', 'infoAlert'))->with('title',  trans('frontend.title.settings_index'));
     }
@@ -81,6 +80,5 @@ class SettingsController extends Controller
         }
 
         return redirect()->route('admin.settings.index')->with('success', trans('message.data_updated'));
-
     }
 }

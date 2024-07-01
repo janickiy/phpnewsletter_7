@@ -73,7 +73,7 @@ class DataTableController extends Controller
                 return '<input type="checkbox" class="check" value="' . $row->id . '" name="activate[]">';
             })
             ->editColumn('active', function ($row) {
-                return $row->active == 1 ? trans('frontend.str.yes') : trans('frontend.str.no');
+                return $row->active === 1 ? trans('frontend.str.yes') : trans('frontend.str.no');
             })
             ->addColumn('action', function ($row) {
                 $editBtn = '<a title="' . trans('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.smtp.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
@@ -107,7 +107,7 @@ class DataTableController extends Controller
                 return implode(', ', $categories);
             })
             ->editColumn('active', function ($row) {
-                return $row->active == 1 ? trans('frontend.str.yes') : trans('frontend.str.no');
+                return $row->active === 1 ? trans('frontend.str.yes') : trans('frontend.str.no');
             })
             ->editColumn('activeStatus', function ($row) {
                 return $row->active;
@@ -172,7 +172,7 @@ class DataTableController extends Controller
                 return $row->count - $row->sent;
             })
             ->editColumn('read_mail', function ($row) {
-                return $row->read_mail ? $row->read_mail : 0;
+                return $row->read_mail ?? 0;
             })
             ->addColumn('report', function ($row) {
                 return PermissionsHelper::has_permission(Auth::user()->role, 'admin') ? '<a href="' . URL::route('admin.log.report', ['id' => $row->id]) . '">' . trans('frontend.str.download') . '</a>' : '';
@@ -237,5 +237,4 @@ class DataTableController extends Controller
         return Datatables::of($row)
             ->make(true);
     }
-
 }

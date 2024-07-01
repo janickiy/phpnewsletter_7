@@ -252,7 +252,6 @@ return [
         'unsubscribe' => 'Отписка от рассылки',
         'timeout' => 'Таймаут соединения',
         'interval_number' => 'Отправлять письма подписчику в интервале',
-        'license_key' => 'Лицензионный ключ',
         'select_role' => 'Выберите роль',
     ],
     'note' => [
@@ -289,7 +288,6 @@ return [
         'subform' => 'Подписка',
         'auth' => 'Авторизация',
         'update' => 'Обновление',
-        'expired' => 'Лицензионный ключ истек',
         'subscription_form' => 'Форма подписки',
     ],
     'menu' => [
@@ -336,7 +334,6 @@ return [
         'template_create' => '',
         'template_edit' => '',
         'log_info' => '',
-        'expired_index' => '',
         'redirectlog_info' => '',
         'subscription_form' => '',
     ],

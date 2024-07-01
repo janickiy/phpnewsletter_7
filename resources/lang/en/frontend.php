@@ -249,7 +249,6 @@ return [
         'hour' => 'hour',
         'day' => 'day',
         'timeout' => 'Timeout connection',
-        'license_key' => 'License key',
         'select_role' => 'Select role',
     ],
     'note' => [
@@ -286,8 +285,7 @@ return [
         'subform' => 'Subscription',
         'auth' => 'Login',
         'update' => 'Update',
-        'expired' => 'License Key Expired',
-        'subscription_form' => 'Форма подписки',
+        'subscription_form' => 'Subscription Form',
     ],
     'menu' => [
         'templates' => 'Templates',
@@ -333,7 +331,6 @@ return [
         'template_create' => '',
         'template_edit' => '',
         'log_info' => '',
-        'expired_index' => '',
         'redirectlog_info' => '',
         'subscription_form' => '',
     ],

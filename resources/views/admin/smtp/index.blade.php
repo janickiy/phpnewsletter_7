@@ -52,7 +52,16 @@
                                 </tr>
                                 </thead>
                                 <tfoot>
-
+                                    <th style="width: 10px"></th>
+                                    <th>{{ trans('frontend.str.smtp_server') }}</th>
+                                    <th>E-mail</th>
+                                    <th>{{ trans('frontend.str.login') }}</th>
+                                    <th>{{ trans('frontend.str.port') }}</th>
+                                    <th>{{ trans('frontend.str.connection_timeout') }}</th>
+                                    <th>{{ trans('frontend.str.connection') }}</th>
+                                    <th>{{ trans('frontend.str.authentication_method') }}</th>
+                                    <th>{{ trans('frontend.str.status') }}</th>
+                                    <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
                                 </tfoot>
                             </table>
 
@@ -68,8 +77,8 @@
                                             ],null,['class' => 'span3 form-control', 'id' => 'select_action','placeholder' => '--' . trans('frontend.str.action') . '--']) !!}
 
                                             <span class="help-inline">
-                                            {!! Form::submit(trans('frontend.str.apply'), ['class' => 'btn btn-success', 'disabled' => "", 'id' => 'apply']) !!}
-                                        </span>
+                                                {!! Form::submit(trans('frontend.str.apply'), ['class' => 'btn btn-success', 'disabled' => "", 'id' => 'apply']) !!}
+                                            </span>
 
                                         </div>
                                     </div>
@@ -112,7 +121,6 @@
     <script>
 
         $(function () {
-
             $("#apply").click(function (event) {
                 let idSelect = $('#select_action').val();
 

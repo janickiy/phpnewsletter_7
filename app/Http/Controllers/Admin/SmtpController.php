@@ -16,7 +16,7 @@ class SmtpController extends Controller
      */
     public function index(): View
     {
-        $infoAlert = trans('frontend.hint.smtp_index') ? trans('frontend.hint.smtp_index') : null;
+        $infoAlert = trans('frontend.hint.smtp_index') ?? null;
 
         return view('admin.smtp.index', compact('infoAlert'))->with('title', trans('frontend.title.smtp_index'));
     }
@@ -26,7 +26,7 @@ class SmtpController extends Controller
      */
     public function create(): View
     {
-        $infoAlert = trans('frontend.hint.smtp_create') ? trans('frontend.hint.smtp_create') : null;
+        $infoAlert = trans('frontend.hint.smtp_create') ?? null;
 
         return view('admin.smtp.create_edit', compact('infoAlert'))->with('title', trans('frontend.title.smtp_create'));
     }
@@ -53,7 +53,7 @@ class SmtpController extends Controller
 
         if (!$row) abort(404);
 
-        $infoAlert = trans('frontend.hint.smtp_edit') ? trans('frontend.hint.smtp_edit') : null;
+        $infoAlert = trans('frontend.hint.smtp_edit') ?? null;
 
         return view('admin.smtp.create_edit', compact('row', 'infoAlert'))->with('title', trans('frontend.title.smtp_edit'));
     }

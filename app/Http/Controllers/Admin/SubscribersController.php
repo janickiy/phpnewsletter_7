@@ -18,13 +18,12 @@ use Illuminate\Http\Request;
 
 class SubscribersController extends Controller
 {
-
     /**
      * @return View
      */
     public function index(): View
     {
-        $infoAlert = trans('frontend.hint.subscribers_index') ? trans('frontend.hint.subscribers_index') : null;
+        $infoAlert = trans('frontend.hint.subscribers_index') ?? null;
 
         return view('admin.subscribers.index', compact('infoAlert'))->with('title', trans('frontend.title.subscribers_index'));
     }
@@ -35,8 +34,7 @@ class SubscribersController extends Controller
     public function create(): View
     {
         $options = Category::getOption();
-
-        $infoAlert = trans('frontend.hint.subscribers_create') ? trans('frontend.hint.subscribers_create') : null;
+        $infoAlert = trans('frontend.hint.subscribers_create') ?? null;
 
         return view('admin.subscribers.create_edit', compact('options', 'infoAlert'))->with('title', trans('frontend.title.subscribers_create'));
     }
@@ -77,7 +75,7 @@ class SubscribersController extends Controller
             $subscriberCategoryId[] = $subscription->categoryId;
         }
 
-        $infoAlert = trans('frontend.hint.subscribers_edit') ? trans('frontend.hint.subscribers_edit') : null;
+        $infoAlert = trans('frontend.hint.subscribers_edit') ?? null;
 
         return view('admin.subscribers.create_edit', compact('options', 'row', 'subscriberCategoryId', 'infoAlert'))->with('title', trans('frontend.title.subscribers_edit'));
     }
@@ -127,11 +125,9 @@ class SubscribersController extends Controller
         $charsets = Charsets::getOption();
         $category_options = Category::getOption();
         $maxUploadFileSize = StringHelper::maxUploadFileSize();
-
-        $infoAlert = trans('frontend.hint.subscribers_import') ? trans('frontend.hint.subscribers_import') : null;
+        $infoAlert = trans('frontend.hint.subscribers_import') ?? null;
 
         return view('admin.subscribers.import', compact('charsets', 'category_options', 'maxUploadFileSize', 'infoAlert'))->with('title', trans('frontend.title.subscribers_import'));
-
     }
 
     /**
@@ -140,20 +136,16 @@ class SubscribersController extends Controller
      */
     public function importSubscribers(ImportRequest $request): RedirectResponse
     {
-
         $extension = strtolower($request->file('import')->getClientOriginalExtension());
 
         switch ($extension) {
             case 'csv':
             case 'xls':
             case 'xlsx':
-
                 $result = Subscribers::importFromExcel($request);
-
                 break;
 
             default:
-
                 $result = Subscribers::importFromText($request);
         }
 
@@ -161,7 +153,6 @@ class SubscribersController extends Controller
             return redirect()->route('admin.subscribers.index')->with('error', trans('message.error_import_file'));
         else
             return redirect()->route('admin.subscribers.index')->with('success', trans('message.import_completed') . $result);
-
     }
 
     /**
@@ -170,8 +161,7 @@ class SubscribersController extends Controller
     public function export(): View
     {
         $options = Category::getOption();
-
-        $infoAlert = trans('frontend.hint.subscribers_export') ? trans('frontend.hint.subscribers_export') : null;
+        $infoAlert = trans('frontend.hint.subscribers_export') ?? null;
 
         return view('admin.subscribers.export', compact('options', 'infoAlert'))->with('title', trans('frontend.title.subscribers_export'));
     }
@@ -284,7 +274,7 @@ class SubscribersController extends Controller
         Subscribers::truncate();
         Subscriptions::truncate();
 
-        return redirect(URL::route('admin.subscribers.index'))->with('success', trans('message.data_successfully_deleted'));
+        return redirect()->route('admin.subscribers.index')->with('success', trans('message.data_successfully_deleted'));
     }
 
     /**
@@ -304,19 +294,14 @@ class SubscribersController extends Controller
         switch ($request->action) {
             case  0 :
             case  1 :
-
                 Subscribers::whereIN('id', $temp)->update(['active' => $request->action]);
-
                 break;
 
             case 2 :
-
                 Subscribers::whereIN('id', $temp)->delete();
-
                 break;
         }
 
         return redirect()->route('admin.subscribers.index')->with('success', trans('message.actions_completed'));
     }
-
 }

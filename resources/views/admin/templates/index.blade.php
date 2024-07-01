@@ -24,8 +24,7 @@
                         <!-- /.card-header -->
                         <div class="card-body">
                             <div class="pb-3">
-                                <a href="{{ URL::route('admin.templates.create') }}"
-                                   class="btn btn-info btn-sm pull-left">
+                                <a href="{{ URL::route('admin.templates.create') }}" class="btn btn-info btn-sm pull-left">
                                     <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_template') }}
                                 </a>
                             </div>
@@ -36,10 +35,9 @@
                                 <thead>
                                 <tr>
                                     <th style="width: 10px">
-                                   <span>
-                                        <input type="checkbox" title="{{ trans('frontend.str.check_uncheck_all') }}"
-                                               id="checkAll">
-                                    </span>
+                                        <span>
+                                            <input type="checkbox" title="{{ trans('frontend.str.check_uncheck_all') }}" id="checkAll">
+                                        </span>
                                     </th>
                                     <th style="width: 10px">ID</th>
                                     <th>{{ trans('frontend.str.template') }}</th>
@@ -50,7 +48,13 @@
                                 </tr>
                                 </thead>
                                 <tfoot>
-
+                                <th style="width: 10px"></th>
+                                <th style="width: 10px">ID</th>
+                                <th>{{ trans('frontend.str.template') }}</th>
+                                <th>{{ trans('frontend.str.importance') }}</th>
+                                <th>{{ trans('frontend.str.attachments') }}</th>
+                                <th>{{ trans('frontend.str.date') }}</th>
+                                <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
                                 </tfoot>
                             </table>
 
@@ -64,12 +68,11 @@
                                             '1' => trans('frontend.str.remove')
                                             ],null,['class' => 'span3 form-control', 'id' => 'select_action','placeholder' => '--' . trans('frontend.str.action') . '--'],[0 => ['data-id' => 'sendmail', 'class' => 'open_modal']]) !!}
 
-
                                             <span class="help-inline">
 
-                                        {!! Form::submit(trans('frontend.str.apply'), ['class' => 'btn btn-success', 'disabled' => "", 'id' => 'apply']) !!}
+                                            {!! Form::submit(trans('frontend.str.apply'), ['class' => 'btn btn-success', 'disabled' => "", 'id' => 'apply']) !!}
 
-                                    </span>
+                                            </span>
 
                                         </div>
                                     </div>
@@ -77,7 +80,6 @@
                             </div>
 
                             {!! Form::close() !!}
-
 
                             <!-- /.card-body -->
                         </div>
@@ -92,8 +94,6 @@
 
     </section>
     <!-- /.content -->
-
-
 
     <div class="modal fade" id="modal-lg">
         <input id="logId" type="hidden" value="0">
@@ -140,9 +140,7 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
-
         </div>
-
     </div>
 
 @endsection
@@ -165,7 +163,6 @@
     <script>
 
         $(function () {
-
             let open_modal = $('#apply');
 
             $("#sendout").on('click', function () {
@@ -192,7 +189,7 @@
                     });
 
                     request.done(function (data) {
-                        if (data.result != null && data.result == true) {
+                        if (data.result != null && data.result === true) {
                             $('#logId').val(data.logId);
 
                             getCountProcess();
@@ -212,7 +209,7 @@
             open_modal.click(function (event) {
                 let idSelect = $('#select_action').val();
 
-                if (idSelect == '') {
+                if (idSelect === '') {
                     event.preventDefault();
                     swal({
                         title: "Error",
@@ -224,7 +221,7 @@
                         closeOnConfirm: false
                     });
                 } else {
-                    if (idSelect == 1) {
+                    if (idSelect === 1) {
                         event.preventDefault();
                         let form = $(this).parents('form');
                         swal({
@@ -241,7 +238,7 @@
                         });
                     }
 
-                    if (idSelect == 0) {
+                    if (idSelect === 0) {
                         event.preventDefault();
 
                         let myModal = new bootstrap.Modal(document.getElementById('modal-lg'), {});

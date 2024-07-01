@@ -17,7 +17,7 @@ class RedirectController  extends Controller
      */
     public function index(): View
     {
-        $infoAlert = trans('frontend.hint.redirect_index') ? trans('frontend.hint.redirect_index') : null;
+        $infoAlert = trans('frontend.hint.redirect_index') ?? null;
 
         return view('admin.redirect.index', compact('infoAlert'))->with('title',trans('frontend.title.redirect_index'));
     }
@@ -92,7 +92,7 @@ class RedirectController  extends Controller
      */
     public function info(string $url): View
     {
-        $infoAlert = trans('frontend.hint.redirectlog_info') ? trans('frontend.hint.redirectlog_info') : null;
+        $infoAlert = trans('frontend.hint.redirectlog_info') ?? null;
 
         return view('admin.redirect.info', compact('url','infoAlert'))->with('title', trans('frontend.title.redirect_info'));
     }

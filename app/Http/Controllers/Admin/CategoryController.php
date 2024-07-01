@@ -15,7 +15,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-
 class CategoryController extends Controller
 {
     /**
@@ -23,9 +22,9 @@ class CategoryController extends Controller
      */
     public function index(): View
     {
-        $infoAlert = trans('frontend.hint.category_index') ? trans('frontend.hint.category_index') : null;
+        $infoAlert = trans('frontend.hint.category_index') ?? null;
 
-        return view('admin.category.index', compact('infoAlert'))->with('title', 'Категория подписчиков');
+        return view('admin.category.index', compact('infoAlert'))->with('title', trans('frontend.title.category_index'));
     }
 
     /**
@@ -33,9 +32,9 @@ class CategoryController extends Controller
      */
     public function create(): View
     {
-        $infoAlert = trans('frontend.hint.category_create') ? trans('frontend.hint.category_create') : null;
+        $infoAlert = trans('frontend.hint.category_create') ?? null;
 
-        return view('admin.category.create_edit', compact('infoAlert'))->with('title', 'Добавление категории');
+        return view('admin.category.create_edit', compact('infoAlert'))->with('title', trans('frontend.title.category_create'));
     }
 
     /**
@@ -44,10 +43,9 @@ class CategoryController extends Controller
      */
     public function store(StoreRequest $request): RedirectResponse
     {
-
         Category::create($request->all());
 
-        return redirect()->route('admin.category.index')->with('success', 'Информация успешно добавлена');
+        return redirect()->route('admin.category.index')->with('success', trans('message.information_successfully_added'));
     }
 
     /**
@@ -60,9 +58,9 @@ class CategoryController extends Controller
 
         if (!$row) abort(404);
 
-        $infoAlert = trans('frontend.hint.category_create') ? trans('frontend.hint.category_create') : null;
+        $infoAlert = trans('frontend.hint.category_create') ?? null;
 
-        return view('admin.category.create_edit', compact('row', 'infoAlert'))->with('title', 'Редактирование категории');
+        return view('admin.category.create_edit', compact('row', 'infoAlert'))->with('title', trans('frontend.title.category_edit'));
     }
 
     /**
@@ -78,7 +76,7 @@ class CategoryController extends Controller
         $row->name = $request->input('name');
         $row->save();
 
-        return redirect()->route('admin.category.index')->with('success', 'Данные обновлены');
+        return redirect()->route('admin.category.index')->with('success', trans('message.data_updated'));
     }
 
     /**
@@ -91,5 +89,4 @@ class CategoryController extends Controller
         ScheduleCategory::where('category_id', $request->id)->delete();
         Category::find($request->id)->delete();
     }
-
 }

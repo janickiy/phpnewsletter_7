@@ -22,7 +22,7 @@ class LogController extends Controller
      */
     public function index(): View
     {
-        $infoAlert = trans('frontend.hint.log_index') ? trans('frontend.hint.log_index') : null;
+        $infoAlert = trans('frontend.hint.log_index') ?? null;
 
         return view('admin.log.index', compact('infoAlert'))->with('title', trans('frontend.title.log_index'));
     }
@@ -150,7 +150,7 @@ class LogController extends Controller
      */
     public function info(int $id): View
     {
-        $infoAlert = trans('frontend.hint.log_info') ? trans('frontend.hint.log_info') : null;
+        $infoAlert = trans('frontend.hint.log_info') ?? null;
 
         return view('admin.log.info', compact('id', 'infoAlert'))->with('title', trans('frontend.title.log_info'));
     }
