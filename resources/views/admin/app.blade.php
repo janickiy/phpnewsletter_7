@@ -23,7 +23,6 @@
 
     {!! Html::style('/plugins/flag-icon-css/css/flag-icon.min.css') !!}
 
-
     @yield('css')
 
     <script type="text/javascript">
