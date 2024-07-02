@@ -205,10 +205,10 @@ class AjaxController extends Controller
                     ]);
 
                 case 'remove_attach':
-                    $result = $request->id ? Attach::find($request->id)->remove() : false;
+                    Attach::find($request->id)->remove();
 
                     return response()->json([
-                        'result' => $result
+                        'result' => true
                     ]);
 
                 case 'send_test_email':
