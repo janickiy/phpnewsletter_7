@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\{
     LogController,
     RedirectController,
     UsersController,
+    UpdateController,
 };
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\InstallController;
@@ -100,12 +101,24 @@ Route::group(['middleware' => ['install']], function () {
             Route::delete('destroy', [SmtpController::class, 'destroy'])->name('admin.smtp.destroy');
             Route::post('status', [SmtpController::class, 'status'])->name('admin.smtp.status');
         });
-    });
 
-    Route::middleware(['permission:admin'])->group(function () {
+        Route::group(['prefix' => 'update'], function () {
+            Route::get('', [UpdateController::class, 'index'])->name('admin.update.index');
+            Route::put('update', [UpdateController::class, 'update'])->name('admin.update.update');
+        });
+
         Route::group(['prefix' => 'settings'], function () {
             Route::get('', [SettingsController::class, 'index'])->name('admin.settings.index');
             Route::put('update', [SettingsController::class, 'update'])->name('admin.settings.update');
+        });
+
+        Route::group(['prefix' => 'users'], function () {
+            Route::get('', [UsersController::class, 'index'])->name('admin.users.index');
+            Route::get('create', [UsersController::class, 'create'])->name('admin.users.create');
+            Route::post('store', [UsersController::class, 'store'])->name('admin.users.store');
+            Route::get('edit/{id}', [UsersController::class, 'edit'])->name('admin.users.edit');
+            Route::put('update', [UsersController::class, 'update'])->name('admin.users.update');
+            Route::delete('destroy', [UsersController::class, 'destroy'])->name('admin.users.destroy')->where('id', '[0-9]+');
         });
     });
 
@@ -123,17 +136,6 @@ Route::group(['middleware' => ['install']], function () {
             Route::post('export-subscribers', [SubscribersController::class, 'exportSubscribers'])->name('admin.subscribers.export_subscribers');
             Route::get('remove-all', [SubscribersController::class, 'removeAll'])->name('admin.subscribers.remove_all');
             Route::post('status', [SubscribersController::class, 'status'])->name('admin.subscribers.status');
-        });
-    });
-
-    Route::middleware(['permission:admin'])->group(function () {
-        Route::group(['prefix' => 'users'], function () {
-            Route::get('', [UsersController::class, 'index'])->name('admin.users.index');
-            Route::get('create', [UsersController::class, 'create'])->name('admin.users.create');
-            Route::post('store', [UsersController::class, 'store'])->name('admin.users.store');
-            Route::get('edit/{id}', [UsersController::class, 'edit'])->name('admin.users.edit');
-            Route::put('update', [UsersController::class, 'update'])->name('admin.users.update');
-            Route::delete('destroy', [UsersController::class, 'destroy'])->name('admin.users.destroy')->where('id', '[0-9]+');
         });
     });
 

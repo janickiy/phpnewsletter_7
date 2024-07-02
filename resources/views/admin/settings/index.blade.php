@@ -65,9 +65,7 @@
                                             @endif
 
                                         </div>
-
                                     </div>
-
 
                                     <div class="form-group row">
 
@@ -666,8 +664,8 @@
     <script>
         $(function () {
             $(document).on("click", '#add_field', function () {
-
                 let html = '<div class="header-row"><div class="form-group row">';
+
                 html += '<label class="col-sm-2 col-form-label">{{ trans('frontend.str.name') }}</label>';
                 html += '<div class="col-md-3"><input class="form-control" type="text" value="" name="header_name[]"></div>';
                 html += '<label class="col-sm-2 col-form-label">{{ trans('frontend.str.value') }}</label>';
@@ -676,7 +674,6 @@
                 html += '</div></div>';
 
                 $('#headerslist').prepend(html);
-
             });
 
             $(document).on("click", '.removeBlock', function () {

@@ -142,7 +142,7 @@
                         </div>
                     </header>
 
-                    <header class="card card-primary">
+                    <header class="card card-info">
 
                         <div class="card-header">
                             <h3 class="card-title">{{ trans('frontend.str.send_test_letter') }}<span

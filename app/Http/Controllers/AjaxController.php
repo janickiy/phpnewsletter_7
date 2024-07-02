@@ -319,7 +319,6 @@ class AjaxController extends Controller
                     $templates = Templates::whereIN('id', $templateId)->get();
 
                     foreach ($templates as $template) {
-
                         if ($interval) {
                             $subscribers = Subscribers::select('subscribers.email', 'subscribers.token', 'subscribers.id', 'subscribers.name')
                                 ->join('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
@@ -328,8 +327,8 @@ class AjaxController extends Controller
                                         ->where('ready_sent.template_id', '=', $template->id)
                                         ->where('ready_sent.log_id', '=', $logId)
                                         ->where(function ($query) {
-                                            $query->where('ready_sent.success', '=', 1)
-                                                ->orWhere('ready_sent.success', '=', 0);
+                                            $query->where('ready_sent.success', 1)
+                                                ->orWhere('ready_sent.success', 0);
                                         });
                                 })
                                 ->whereIN('subscriptions.category_id', $categoryId)

@@ -23,6 +23,9 @@
 
     {!! Html::style('/plugins/flag-icon-css/css/flag-icon.min.css') !!}
 
+    <!-- Custom style -->
+    {!! Html::style('/dist/css/admin.css') !!}
+
     @yield('css')
 
     <script type="text/javascript">
@@ -301,7 +304,7 @@
         <div class="float-right d-none d-sm-block">
             <b>{{ env('VERSION') }}</b>
         </div>
-        <strong>&copy; 2006-{{ date('Y') }} <a href="https://janicky.com">PHP Newsletter</a>{{ env('VERSION') }}, {{ trans('frontend.str.author') }}</strong>
+        <strong>&copy; 2006-{{ date('Y') }} <a href="https://janicky.com">PHP Newsletter</a>, {{ trans('frontend.str.author') }}</strong>
     </footer>
 
     <!-- Control Sidebar -->
@@ -368,6 +371,24 @@
                     location.reload();
                 }
             });
+        });
+
+        $(document).on("click", "a.opislink:not(.active)", function () {
+            $(this).addClass('active');
+            $(this).parent().find('div.opis').slideDown(760);
+            return false;
+        });
+
+        $(document).on("click", "a.opislink.active", function () {
+            $(this).removeClass('active');
+            $(this).parent().find('div.opis').slideUp(760);
+            return false;
+        });
+
+        setTimeout(function () {
+            setTimeout(function () {
+                $('.alert-success').fadeOut('700')
+            }, 5000);
         });
     });
 

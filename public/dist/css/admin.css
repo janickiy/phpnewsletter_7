@@ -1,0 +1,15 @@
+div.opis {
+    display: none;
+}
+
+a.opislink {
+    margin-top: 12px;
+    display: block;
+}
+
+.showprocess {
+    background: url("./dist/img/select2-spinner.gif") no-repeat scroll 50% 50% rgba(0, 0, 0, 0);
+    height: 16px;
+    width: 16px;
+    padding: 16px;
+}
