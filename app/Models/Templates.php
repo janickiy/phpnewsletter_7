@@ -47,9 +47,9 @@ class Templates extends Model
      * @param int $prior
      * @return string
      */
-    public static function getPrior(int $prior): string
+    public function getPrior(): string
     {
-        switch ($prior) {
+        switch ($this->prior) {
             case 1:
                 return trans('frontend.str.high');
             case 2:

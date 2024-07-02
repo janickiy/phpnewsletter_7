@@ -82,6 +82,22 @@
 
                             <div class="form-group">
 
+                                {!! Form::label('attachments', trans('frontend.str.attachments')) !!}
+
+                                <div class="inline-group">
+                                    @if(isset($attachment))
+                                        @foreach($attachment as $a)
+                                            <span id="attach_{{ $a->id }}">{{ $a->file_name }}
+                                                <a href="#" data-num="{{ $a->id }}" class="remove_attach" title="{{ trans('frontend.str.remove') }}"> X </a>&nbsp;&nbsp;
+                                            </span>
+                                        @endforeach
+                                    @endif
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+
                                 {!! Form::label('prior', trans('frontend.form.prior')) !!}
 
                                 <div class="inline-group">
@@ -181,6 +197,8 @@
             bsCustomFileInput.init();
 
             $(document).on("click", ".remove_attach", function () {
+
+                alert(456);
                 let idAttach = $(this).attr('data-num');
                 let request = $.ajax({
                     url: '{{ URL::route('admin.ajax.action') }}',
@@ -195,14 +213,13 @@
                 });
 
                 request.done(function (data) {
-                    if (data.result != null && data.result == true) {
+                    if (data.result != null && data.result === true) {
                         $("#attach_" + idAttach).remove();
                     }
                 });
             });
 
             $(document).on("click", "#send_test", function () {
-
                 let bodyContent = ('#body').val();
                 let arr = $("#tmplForm").serializeArray();
                 let aParams = [];

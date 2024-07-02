@@ -32,7 +32,7 @@ class DataTableController extends Controller
                 return $row->name . '<br><br><small class="text-muted">' . StringHelper::shortText($body, 500) . '</small>';
             })
             ->editColumn('prior', function ($row) {
-                return Templates::getPrior($row->id);
+                return $row->getPrior();
             })
             ->addColumn('attach', function ($row) {
                 return count($row->attach) > 0 ? trans('frontend.str.yes') : trans('frontend.str.no');

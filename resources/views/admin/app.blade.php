@@ -320,6 +320,9 @@
 {!! Html::script('/plugins/sweetalert2/sweetalert2.min.js') !!}
 {!! Html::script('/plugins/toastr/toastr.min.js') !!}
 
+<!-- Cookie -->
+{!! Html::script('/plugins/cookie/jquery.cookie.js') !!}
+
 <!-- AdminLTE App -->
 {!! Html::script('/dist/js/adminlte.min.js') !!}
 
@@ -336,7 +339,7 @@
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
             dataType: "json",
             success: function (data) {
-                if (data.msg !== '' && $.cookie('alertshow') !== 'no') {
+                if (data.msg !== null && $.cookie('alertshow') !== 'no') {
                     $('#alert_msg_block').fadeIn('700');
                     $("#alert_warning_msg").append(data.msg);
                 }
