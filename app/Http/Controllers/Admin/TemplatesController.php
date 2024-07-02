@@ -53,7 +53,7 @@ class TemplatesController extends Controller
                     $attach = [
                         'name' => $file->getClientOriginalName(),
                         'file_name' => $filename,
-                        'templateId' => $id,
+                        'template_id' => $id,
                     ];
 
                     Attach::create($attach);

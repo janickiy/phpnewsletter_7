@@ -54,7 +54,7 @@ class Templates extends Model
                 return trans('frontend.str.high');
             case 2:
                 return trans('frontend.str.low');
-            case 3:
+            default:
                 return trans('frontend.str.normal');
         }
     }
