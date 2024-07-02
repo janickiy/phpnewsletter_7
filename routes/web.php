@@ -104,7 +104,6 @@ Route::group(['middleware' => ['install']], function () {
 
         Route::group(['prefix' => 'update'], function () {
             Route::get('', [UpdateController::class, 'index'])->name('admin.update.index');
-            Route::put('update', [UpdateController::class, 'update'])->name('admin.update.update');
         });
 
         Route::group(['prefix' => 'settings'], function () {

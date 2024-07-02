@@ -26,7 +26,7 @@
                             <div class="pb-3">
                                 <a href="{{ URL::route('admin.category.create') }}"
                                    class="btn btn-info btn-sm pull-left">
-                                    <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add') }}
+                                    <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_category') }}
                                 </a>
                             </div>
                             <table id="itemList" class="table table-bordered table-striped">

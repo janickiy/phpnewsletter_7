@@ -219,6 +219,17 @@
 
                     @endif
 
+                    @if(PermissionsHelper::has_permission(Auth::user()->role,'admin'))
+
+                        <li class="nav-item">
+                            <a href="{{ URL::route('admin.update.index') }}" class="nav-link{{ Request::is('update*') ? ' active' : '' }}" title="{{ trans('frontend.menu.update') }}">
+                                <i class="nav-icon fas fa-sync-alt"></i>
+                                <p>{{ trans('frontend.menu.update') }}</p>
+                            </a>
+                        </li>
+
+                    @endif
+
                     <li class="nav-item">
                         <a href="{{ URL::route('admin.pages.faq') }}" class="nav-link{{ Request::is('faq*') ? ' active' : '' }}" title="FAQ">
                             <i class="nav-icon fas fa-question-circle"></i>

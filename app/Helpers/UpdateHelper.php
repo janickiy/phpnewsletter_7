@@ -8,7 +8,7 @@ class UpdateHelper
     private $url = 'http://license.janicky.com/';
     private $currenversion;
 
-    public function __construct($language, $currenversion)
+    public function __construct(string $language, string $currenversion)
     {
         $this->language = $language;
         $this->currenversion = $currenversion;
@@ -20,7 +20,6 @@ class UpdateHelper
     public function checkNewVersion(): bool
     {
         $result = false;
-
         $newversion = $this->getVersion();
 
         if ($newversion) {
@@ -30,8 +29,7 @@ class UpdateHelper
             $v1 = ($out1[1] * 10000 + $out1[2] * 100 + $out1[3]);
             $v2 = ($out2[1] * 10000 + $out2[2] * 100 + $out2[3]);
 
-            if ($v2 > $v1)
-                $result = true;
+            if ($v2 > $v1) $result = true;
         }
 
         return $result;
@@ -52,12 +50,10 @@ class UpdateHelper
             $v1 = ($out1[1] * 10000 + $out1[2] * 100 + $out1[3]);
             $v2 = ($out2[1] * 10000 + $out2[2] * 100 + $out2[3]);
 
-            if ($v2 > $v1)
-                $result = true;
+            if ($v2 > $v1) $result = true;
         }
 
-        return  $result;
-
+        return $result;
     }
 
     /**
@@ -90,7 +86,7 @@ class UpdateHelper
 
         curl_close($ch);
 
-        preg_match('/\{([^\}])+\}/',$data, $out);
+        preg_match('/\{([^\}])+\}/', $data, $out);
 
         return isset($out[0]) ? json_decode($out[0], true) : '';
     }
@@ -102,10 +98,11 @@ class UpdateHelper
     {
         preg_match("/(\d+)\.(\d+)\.(\d+)/", $this->currenversion, $out);
 
-        if ($out[1] < $out[2])
+        if ($out[1] < $out[2]) {
             return false;
-        else
+        } else {
             return true;
+        }
     }
 
     /**
