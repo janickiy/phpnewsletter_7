@@ -40,9 +40,7 @@ class AjaxController extends Controller
             switch ($request->input('action')) {
 
                 case 'start_update':
-
                     if ($request->p == 'start') {
-
                         $download_completed = false;
 
                         if ($update->getUpdateLink()) {
@@ -61,7 +59,6 @@ class AjaxController extends Controller
                     }
 
                     if ($request->p == 'uploap_files_2') {
-
                         $download_completed = false;
 
                         if ($update->getUpdateLink()) {
@@ -80,7 +77,6 @@ class AjaxController extends Controller
                     }
 
                     if ($request->p == 'uploap_files_3') {
-
                         $download_completed = false;
 
                         if ($update->getUpdateLink()) {
@@ -99,7 +95,6 @@ class AjaxController extends Controller
                     }
 
                     if ($request->p == 'update_files') {
-
                         $zip = new ZipArchive();
 
                         if (Storage::disk('public')->exists('update.zip') && $zip->open(Storage::disk('public')->path('update.zip')) === true) {
@@ -119,7 +114,6 @@ class AjaxController extends Controller
                     }
 
                     if ($request->p == 'update_files_2') {
-
                         $zip = new ZipArchive();
 
                         if (Storage::disk('public')->exists('public.zip') && $zip->open(Storage::disk('public')->path('public.zip')) === true) {
@@ -139,7 +133,6 @@ class AjaxController extends Controller
                     }
 
                     if ($request->p == 'update_files_3') {
-
                         $zip = new ZipArchive();
 
                         if (Storage::disk('public')->exists('vendor.zip') && $zip->open(Storage::disk('public')->path('vendor.zip')) === true) {
@@ -178,7 +171,6 @@ class AjaxController extends Controller
                     return response()->json($content);
 
                 case 'alert_update':
-
                     if ($update->checkNewVersion()) {
                         $update_warning = str_replace('%SCRIPTNAME%', trans('frontend.str.script_name'), trans('frontend.str.update_warning'));
                         $update_warning = str_replace('%VERSION%', $update->getVersion(), $update_warning);
@@ -191,10 +183,7 @@ class AjaxController extends Controller
 
                     return response()->json(["msg" => null]);
 
-                    break;
-
                 case 'remove_schedule':
-
                     Schedule::find($request->input('id'))->delete();
                     ScheduleCategory::where('schedule_id', $request->input('id'))->delete();
 
@@ -204,7 +193,6 @@ class AjaxController extends Controller
                     ]);
 
                 case 'change_lng':
-
                     if ($request->input('locale')) {
                         if (in_array($request->input('locale'), Config::get('app.locales'))) {
                             Cookie::queue(
@@ -217,15 +205,13 @@ class AjaxController extends Controller
                     ]);
 
                 case 'remove_attach':
-
-                    $result = $request->id ? Attach::Remove($request->id) : false;
+                    $result = $request->id ? Attach::find($request->id)->remove() : false;
 
                     return response()->json([
                         'result' => $result
                     ]);
 
                 case 'send_test_email':
-
                     $subject = $request->input('name');
                     $body = $request->input('body');
                     $prior = $request->input('prior');
@@ -273,7 +259,6 @@ class AjaxController extends Controller
                     );
 
                 case 'send_out':
-
                     $fh = fopen(__FILE__, 'r');
 
                     if (!flock($fh, LOCK_EX | LOCK_NB)) {
@@ -465,7 +450,6 @@ class AjaxController extends Controller
                     ]);
 
                 case 'count_send':
-
                     if (!$request->logId || !$request->categoryId) {
                         return response()->jsone([
                             'result' => false,
@@ -544,14 +528,12 @@ class AjaxController extends Controller
                     ]);
 
                 case 'log_online':
-
                     $readySent = ReadySent::orderBy('id', 'desc')
                         ->where('logId', '>', 0)
                         ->limit(5)
                         ->get();
 
                     if ($readySent) {
-
                         $rows = [];
 
                         foreach ($readySent as $row) {
@@ -574,7 +556,6 @@ class AjaxController extends Controller
                     }
 
                 case 'start_mailing':
-
                     $log = Logs::create(['time' => date('Y-m-d H:i:s')]);
                     $logId = $log->id;
 
@@ -584,7 +565,6 @@ class AjaxController extends Controller
                     ]);
 
                 case 'get_categories':
-
                     $category = Category::select('name', 'id')->get();
 
                     return response()->json([
@@ -592,9 +572,7 @@ class AjaxController extends Controller
                     ]);
 
                 case 'process':
-
                     if ($request->command) {
-
                         $this->updateProcess($request->command);
 
                         return response()->json([

@@ -19,8 +19,7 @@ class TemplatesController extends Controller
     public function index(): View
     {
         $categoryOptions = Category::getOption();
-
-        $infoAlert = trans('frontend.hint.template_index') ? trans('frontend.hint.template_index') : null;
+        $infoAlert = trans('frontend.hint.template_index') ?? null;
 
         return view('admin.templates.index', compact('infoAlert', 'categoryOptions'))->with('title', trans('frontend.title.template_index'));
     }
@@ -30,7 +29,7 @@ class TemplatesController extends Controller
      */
     public function create(): View
     {
-        $infoAlert = trans('frontend.hint.template_create') ? trans('frontend.hint.template_create') : null;
+        $infoAlert = trans('frontend.hint.template_create') ?? null;
 
         return view('admin.templates.create_edit', compact('infoAlert'))->with('title', trans('frontend.title.template_create'));
     }
@@ -45,7 +44,7 @@ class TemplatesController extends Controller
 
         $attachFile = $request->file('attachfile');
 
-        if (isset($attachFile)) {
+        if (!empty($attachFile)) {
             foreach ($attachFile as $file) {
                 $filename = StringHelper::randomText(10) . '.' . $file->getClientOriginalExtension();
 
@@ -140,7 +139,7 @@ class TemplatesController extends Controller
             }
         }
 
-        if ($request->action === 1) {
+        if ($request->action == 1) {
             $templates = Templates::whereIN('id', $templateId)->get();
 
             foreach ($templates as $template) {

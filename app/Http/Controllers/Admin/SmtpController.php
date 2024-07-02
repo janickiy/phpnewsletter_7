@@ -90,4 +90,32 @@ class SmtpController extends Controller
     {
         Smtp::find($request->id)->delete();
     }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function status(Request $request)
+    {
+        $temp = [];
+
+        foreach ($request->activate as $id) {
+            if (is_numeric($id)) {
+                $temp[] = $id;
+            }
+        }
+
+        switch ($request->action) {
+            case  0 :
+            case  1 :
+                Smtp::whereIN('id', $temp)->update(['active' => $request->action]);
+                break;
+
+            case 2 :
+                Smtp::whereIN('id', $temp)->delete();
+                break;
+        }
+
+        return redirect()->route('admin.smtp.index')->with('success', trans('message.actions_completed'));
+    }
 }

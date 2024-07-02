@@ -29,7 +29,6 @@ use App\Http\Controllers\AjaxController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-//frontend.categories
 
 Route::group(['middleware' => ['install']], function () {
     Route::get('pic/{subscriber}_{template}', [FrontendController::class, 'pic'])->name('frontend.pic')->where('subscriber', '[0-9]+')->where('template', '[0-9]+');

@@ -41,6 +41,5 @@ class Attach extends Model
         }
 
         $this->delete();
-
     }
 }

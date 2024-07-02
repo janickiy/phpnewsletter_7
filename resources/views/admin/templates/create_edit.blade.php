@@ -197,9 +197,8 @@
             bsCustomFileInput.init();
 
             $(document).on("click", ".remove_attach", function () {
-
-                alert(456);
                 let idAttach = $(this).attr('data-num');
+
                 let request = $.ajax({
                     url: '{{ URL::route('admin.ajax.action') }}',
                     method: "POST",
@@ -228,7 +227,7 @@
                 $("#process").removeClass().addClass('showprocess');
                 $("#send_test").attr('disabled', 'disabled');
 
-                for (var i = 0, count = arr.length; i < count; i++) {
+                for (let i = 0, count = arr.length; i < count; i++) {
                     sParam = encodeURIComponent(arr[i].name);
 
                     if (sParam == 'body') {
@@ -279,7 +278,7 @@
 
                             let arr = data.msg.split(',');
 
-                            for (var i = 0; i < arr.length; i++) {
+                            for (let i = 0; i < arr.length; i++) {
                                 alert_msg += '<li> ' + arr[i] + '</li>';
                             }
 
