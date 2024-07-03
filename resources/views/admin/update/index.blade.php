@@ -16,23 +16,19 @@
             <div class="row">
                 <div class="col-12">
 
-                        @if (!empty($button_update))
-
-                            <div id="btn_refresh">
-                                <a id="start_update" class="btn btn-outline btn-default" href="#">
-                                    <i class="fa fa-refresh"></i> {!! $button_update !!}
-                                </a>
-                            </div>
-
-                        @endif
-
-                        @if (!empty($msg_no_update))
-
-                            <a class="btn btn-outline btn-default" disabled>
-                                <i class="fa fa-refresh"></i> {!! $msg_no_update !!}
+                    @if (!empty($button_update))
+                        <div id="btn_refresh">
+                            <a id="start_update" class="btn btn-outline btn-default">
+                                <i class="fa fa-sync-alt"></i> {!! $button_update !!}
                             </a>
+                        </div>
+                    @endif
 
-                        @endif
+                    @if (!empty($msg_no_update))
+                        <a class="btn btn-outline btn-default" disabled>
+                            <i class="fa fa-sync-alt"></i> {!! $msg_no_update !!}
+                        </a>
+                    @endif
 
                 </div>
                 <!-- /.col -->
@@ -52,7 +48,7 @@
 
         $(function () {
             $("#start_update").on("click", function () {
-                $("#btn_refresh").html('<div class="progress"><div id="progress_bar" class="progress-bar bg-primary progress-bar-striped" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width: 1%"></div></div><span style="padding: 10px" id="status_process">{{ trans('frontend.str.start_update') }}</span>');
+                $("#btn_refresh").html('<div class="progress"><div id="progress_bar" class="progress-bar bg-primary progress-bar-striped" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width: 1%"></div></div><p class="text-muted" id="status_process">{{ trans('frontend.str.start_update') }}</p>');
                 $("#status_process").text('{{ trans('frontend.msg.downloading') }} update.zip ...');
 
                 $.ajax({
@@ -70,8 +66,9 @@
                             $("#status_process").text(data.status);
                             uploapFiles2();
                         } else {
-                            $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default" href="#"><i class="fa fa-refresh"></i> {!! $button_update !!}</a><span style="padding: 10px">' + data.status + '</span>');
+                            $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                         }
+                        console.log(data);
                     }
                 });
             });
@@ -95,8 +92,9 @@
                         $("#status_process").text(data.status);
                         uploadFiles3();
                     } else {
-                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default" href="#"><i class="fa fa-refresh"></i> {!! $button_update !!}</a><span style="padding: 10px">' + data.status + '</span>');
+                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                     }
+                    console.log(data);
                 }
             });
         }
@@ -119,8 +117,9 @@
                         $("#status_process").text(data.status);
                         updateFiles();
                     } else {
-                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default" href="#"><i class="fa fa-refresh"></i> {!! $button_update !!}</a><span style="padding: 10px">' + data.status + '</span>');
+                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                     }
+                    console.log(data);
                 }
             });
         }
@@ -143,8 +142,9 @@
                         $("#status_process").text(data.status);
                         updateFiles2();
                     } else {
-                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default" href="#"><i class="fa fa-refresh"></i> {!! $button_update !!}</a><span style="padding: 10px">' + data.status + '</span>');
+                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                     }
+                    console.log(data);
                 }
             });
         }
@@ -167,8 +167,9 @@
                         $("#status_process").text(data.status);
                         updateFiles3();
                     } else {
-                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default" href="#"><i class="fa fa-refresh"></i> {!! $button_update !!}</a><span style="padding: 10px">' + data.status + '</span>');
+                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                     }
+                    console.log(data);
                 }
             });
         }
@@ -191,8 +192,9 @@
                         $("#status_process").text(data.status);
                         updateBD();
                     } else {
-                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default" href="#"><i class="fa fa-refresh"></i> {!! $button_update !!}</a><span style="padding: 10px">' + data.status + '</span>');
+                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                     }
+                    console.log(data);
                 }
             });
         }
@@ -215,8 +217,9 @@
                         $("#status_process").text(data.status);
                         clearCache();
                     } else {
-                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default" href="#"><i class="fa fa-refresh"></i> {!! $button_update !!}</a><span style="padding: 10px">' + data.status + '</span>');
+                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                     }
+                    console.log(data);
                 }
             });
         }
@@ -239,8 +242,9 @@
                         $('#progress_bar').delay(3000).fadeOut();
                         $('#status_process').delay(3000).text('{{ trans('frontend.msg.update_completed') }}');
                     } else {
-                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default" href="#"><i class="fa fa-refresh"></i> {!! $button_update !!}</a><span style="padding: 10px">' + data.status + '</span>');
+                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                     }
+                    console.log(data);
                 }
             });
         }

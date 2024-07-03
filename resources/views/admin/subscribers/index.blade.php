@@ -217,11 +217,7 @@
                     {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},
                     {data: 'name', name: 'name'},
                     {data: 'email', name: 'email'},
-
-
-
                     {data: 'subscriptions', name: 'subscriptions.subscriber_id', searchable: false},
-
                     {data: 'active', name: 'active', searchable: false},
                     {data: 'created_at', name: 'created_at'},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
@@ -257,6 +253,8 @@
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
                                 Swal.fire("{{ trans('frontend.msg.error_deleting') }}", "{{ trans('frontend.msg.try_again') }}", 'error');
+                                console.log(ajaxOptions);
+                                console.log(thrownError);
                             }
                         });
                     }

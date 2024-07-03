@@ -237,6 +237,8 @@
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
                                 Swal.fire("{{ trans('frontend.msg.error_deleting') }}", "{{ trans('frontend.msg.try_again') }}", 'error');
+                                console.log(ajaxOptions);
+                                console.log(thrownError);
                             }
                         });
                     }

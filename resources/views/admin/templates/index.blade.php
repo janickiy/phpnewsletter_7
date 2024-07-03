@@ -178,7 +178,7 @@
                     $("#sendout").addClass('disabled').attr('disabled', 'disabled');
                     $("#process").removeClass().addClass('showprocess');
 
-                    var request = $.ajax({
+                    let request = $.ajax({
                         url: '{{ URL::route('admin.ajax.action') }}',
                         method: "POST",
                         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
@@ -199,6 +199,7 @@
                             completeProcess();
                             $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
                         }
+                        console.log(data);
                     });
 
                 } else {
@@ -326,6 +327,8 @@
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
                                 Swal.fire("{{ trans('frontend.msg.error_deleting') }}", "{{ trans('frontend.msg.try_again') }}", 'error');
+                                console.log(ajaxOptions);
+                                console.log(thrownError);
                             }
                         });
                     }
