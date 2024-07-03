@@ -157,11 +157,11 @@ class DataTableController extends Controller
      */
     public function getLogs(): JsonResponse
     {
-        $row = Schedule::selectRaw('schedule.id, schedule.value_from_start_date, schedule.value_from_end_date, COUNT(ready_sent.id) AS count, SUM(ready_sent.success=1) AS sent, SUM(ready_sent.readMail=1) AS read_mail')
+        $row = Schedule::selectRaw('schedule.id, schedule.start_date, schedule.end_date, COUNT(ready_sent.id) AS count, SUM(ready_sent.success=1) AS sent, SUM(ready_sent.readMail=1) AS read_mail')
             ->join('ready_sent', 'schedule.id', '=', 'ready_sent.schedule_id')
             ->groupBy('ready_sent.schedule_id')
-            ->groupBy('schedule.value_from_start_date')
-            ->groupBy('schedule.value_from_end_date')
+            ->groupBy('schedule.start_date')
+            ->groupBy('schedule.end_date')
             ->groupBy('schedule.id');
 
         return Datatables::of($row)

@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use \Illuminate\Database\Eloquent\Relations\HasManyThrough;
+
 class Schedule extends Model
 {
     protected $table = 'schedule';
 
     protected $fillable = [
-        'value_from_start_date',
-        'value_from_end_date',
+        'start_date',
+        'end_date',
         'template_id'
     ];
 

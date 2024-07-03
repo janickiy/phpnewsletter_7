@@ -149,7 +149,7 @@
                     url: '{{ URL::route('admin.datatable.logs') }}'
                 },
                 columns: [
-                    {data: 'value_from_start_date', name: 'value_from_start_date'},
+                    {data: 'start_date', name: 'start_date'},
                     {data: 'count', name: 'count', searchable: false},
                     {data: 'sent', name: 'sent', searchable: false},
                     {data: 'unsent', name: 'unsent', searchable: false},

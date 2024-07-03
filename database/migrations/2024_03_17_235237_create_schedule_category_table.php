@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('schedule_category', function (Blueprint $table) {
-            $table->foreignId('schedul_id')
+            $table->foreignId('schedule_id')
                 ->constrained('schedule')
                 ->onDelete('cascade');
             $table->foreignId('category_id')
                 ->constrained('categories')
                 ->onDelete('cascade');
-            $table->primary(['schedul_id', 'category_id']);
+            $table->primary(['schedule_id', 'category_id']);
             $table->engine = 'MyISAM';
         });
     }

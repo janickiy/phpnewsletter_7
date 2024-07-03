@@ -21,11 +21,15 @@ class EditRequest extends FormRequest
      */
     public function rules(): array
     {
+        $date = explode(' - ', $this->date_interval);
+        $this->start_date = $date[0];
+        $this->end_date = $date[1];
+
         return [
-            'templateId' => 'required|numeric',
+            'template_id' => 'required|integer',
             'categoryId' => 'required|array',
-            'value_from_start_date' => 'required|date|date_format:d.m.Y H:i',
-            'value_from_end_date' => 'required|date|date_format:d.m.Y H:i',
+            'end_date' => 'date_format:d.m.Y H:i|before:start_date',
+            'start_date' => 'date_format:d.m.Y H:i|after:tomorrow'
         ];
     }
 }

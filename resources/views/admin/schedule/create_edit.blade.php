@@ -31,12 +31,12 @@
 
                             <div class="form-group">
 
-                                {!! Form::label('templateId',  trans('frontend.form.template')) !!}
+                                {!! Form::label('template_id',  trans('frontend.form.template')) !!}
 
-                                {!! Form::select('templateId', $options, old('templateId', isset($row) ? $row->template_id : null), ['placeholder' => trans('frontend.form.select'), 'class' => 'custom-select']) !!}
+                                {!! Form::select('template_id', $options, old('template_id', $row->template_id ?? null), ['placeholder' => trans('frontend.form.select'), 'class' => 'custom-select']) !!}
 
-                                @if ($errors->has('templateId'))
-                                    <p class="text-danger">{{ $errors->first('templateId') }}</p>
+                                @if ($errors->has('template_id'))
+                                    <p class="text-danger">{{ $errors->first('template_id') }}</p>
                                 @endif
 
                             </div>
@@ -51,27 +51,13 @@
                                                 </span>
                                             </div>
 
-                                            {!! Form::text('value_from_start_date', old('value_from_start_date', isset($row) ? date("d.m.Y H:i", strtotime($row->value_from_start_date)) : null), ['placeholder' => 'DD.MM.YYYY HH:MM', 'class' => 'form-control', 'id' => "value_from_start_date" ]) !!}
+                                            {!! Form::text('date_interval', old('date_interval', $date_interval ?? null), ['placeholder' => 'DD.MM.YYYY HH:MM - DD.MM.YYYY HH:MM', 'class' => 'form-control', 'id' => 'date_interval']) !!}
                                         </div>
-                                        @if ($errors->has('value_from_start_date'))
-                                            <p class="text-danger">{{ $errors->first('value_from_start_date') }}</p>
+                                        @if ($errors->has('date_interval'))
+                                            <p class="text-danger">{{ $errors->first('date_interval') }}</p>
                                         @endif
                                     </div>
 
-                                    <div class="col-3">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">
-                                                    <i class="far fa-calendar-alt"></i>
-                                                </span>
-                                            </div>
-
-                                            {!! Form::text('value_from_end_date', old('value_from_end_date', isset($row) ? date("d.m.Y H:i", strtotime($row->value_from_end_date)) : null), ['placeholder' => 'DD.MM.YYYY HH:MM', 'class' => 'form-control', 'id' => 'value_from_end_date']) !!}
-                                        </div>
-                                        @if ($errors->has('value_from_end_date'))
-                                            <p class="text-danger">{{ $errors->first('value_from_end_date') }}</p>
-                                        @endif
-                                    </div>
                                 </div>
                             </div>
 
@@ -79,7 +65,7 @@
 
                                 {!! Form::label('categoryId[]',  trans('frontend.form.subscribers_category')) !!}
 
-                                {!! Form::select('categoryId[]', $category_options, old('categoryId', isset($row) ? $categoryId : null), ['multiple' => 'multiple', 'placeholder' => trans('frontend.form.select_category'), 'class' => 'form-control']) !!}
+                                {!! Form::select('categoryId[]', $category_options, old('categoryId', $categoryId ?? null), ['multiple' => 'multiple', 'placeholder' => trans('frontend.form.select_category'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('categoryId'))
                                     <p class="text-danger">{{ $errors->first('categoryId') }}</p>
@@ -121,29 +107,16 @@
     <script>
 
         $(function () {
-
-            $('#value_from_start_date').daterangepicker({
+            $('#date_interval').daterangepicker({
                 timePickerIncrement: 30,
                 timePicker24Hour: true,
                 timePicker: true,
                 locale: {
-                    format: 'DD.MM.YYYY hh:mm',
+                    format: 'DD.MM.YYYY HH:mm',
                 },
                 minDate: moment().add(1, 'days'),
                 maxDate: moment().add(359, 'days'),
             })
-
-            $('#value_from_end_date').daterangepicker({
-                timePickerIncrement: 30,
-                timePicker24Hour: true,
-                timePicker: true,
-                locale: {
-                    format: 'DD.MM.YYYY hh:mm'
-                },
-                minDate: moment().add(1, 'days'),
-                maxDate: moment().add(359, 'days'),
-            })
-
         })
 
     </script>

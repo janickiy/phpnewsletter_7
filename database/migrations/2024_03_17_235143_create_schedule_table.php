@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('schedule', function (Blueprint $table) {
             $table->increments('id');
-            $table->timestamp('value_from_start_date')->nullable();
-            $table->timestamp('value_from_end_date')->nullable();
+            $table->timestamp('start_date')->nullable();
+            $table->timestamp('end_date')->nullable();
             $table->integer('template_id');
             $table->foreign('template_id')->references('id')->on('templates')->onDelete('cascade');
             $table->timestamps();

@@ -44,9 +44,11 @@ class ScheduleController extends Controller
      */
     public function store(StoreRequest $request): RedirectResponse
     {
+        $date = explode(' - ', $request->date_interval);
+
         $id = Schedule::create(array_merge($request->all(), [
-            'value_from_start_date' => date("Y-m-d H:i:s", strtotime($request->value_from_start_date)),
-            'value_from_end_date' => date("Y-m-d H:i:s", strtotime($request->value_from_end_date))
+            'start_date' => date("Y-m-d H:i:s", strtotime($date[0])),
+            'end_date' => date("Y-m-d H:i:s", strtotime($date[1]))
         ]))->id;
 
         if ($request->categoryId && $id) {
@@ -66,22 +68,22 @@ class ScheduleController extends Controller
      */
     public function edit(int $id): View
     {
-        $schedule = Schedule::find($id);
+        $row = Schedule::find($id);
 
-        if (!$schedule) abort(404);
+        if (!$row) abort(404);
 
         $categoryId = [];
 
-        foreach ($schedule->categories as $category) {
+        foreach ($row->categories as $category) {
             $categoryId[] = $category->id;
         }
 
         $options = Templates::getOption();
         $category_options = Category::getOption();
-
+        $date_interval = date("d.m.Y H:i", strtotime($row->start_date)) . ' - ' . date("d.m.Y H:i", strtotime($row->end_date));
         $infoAlert = trans('frontend.hint.schedule_edit') ?? null;
 
-        return view('admin.schedule.create_edit', compact('categoryId', 'options', 'category_options', 'schedule', 'infoAlert'))->with('title', trans('frontend.title.schedule_edit'));
+        return view('admin.schedule.create_edit', compact('categoryId', 'options', 'category_options', 'row', 'infoAlert', 'date_interval'))->with('title', trans('frontend.title.schedule_edit'));
     }
 
     /**
@@ -94,9 +96,11 @@ class ScheduleController extends Controller
 
         if (!$schedule) abort(404);
 
-        $schedule->value_from_start_date = date("Y-m-d H:i:s", strtotime($request->value_from_start_date));
-        $schedule->value_from_end_date = date("Y-m-d H:i:s", strtotime($request->value_from_end_date));
-        $schedule->templateId = $request->templateId;
+        $date = explode(' - ', $request->date_interval);
+
+        $schedule->start_date = date("Y-m-d H:i:s", strtotime($date[0]));
+        $schedule->end_date = date("Y-m-d H:i:s", strtotime($date[1]));
+        $schedule->template_id = $request->input('template_id');
         $schedule->save();
 
         ScheduleCategory::where('schedule_id', $request->id)->delete();
