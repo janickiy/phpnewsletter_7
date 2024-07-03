@@ -357,6 +357,11 @@
                     $('#alert_msg_block').fadeIn('700');
                     $("#alert_warning_msg").append(data.msg);
                 }
+                console.log(data);
+            },
+            error: function(xhr, textStatus, error) {
+                console.log(textStatus);
+                console.log(error);
             }
         });
 

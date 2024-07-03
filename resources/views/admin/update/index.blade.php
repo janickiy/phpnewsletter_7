@@ -69,6 +69,10 @@
                             $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                         }
                         console.log(data);
+                    },
+                    error: function(xhr, textStatus, error) {
+                        console.log(textStatus);
+                        console.log(error);
                     }
                 });
             });
@@ -95,6 +99,10 @@
                         $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                     }
                     console.log(data);
+                },
+                error: function(xhr, textStatus, error) {
+                    console.log(textStatus);
+                    console.log(error);
                 }
             });
         }
@@ -120,6 +128,10 @@
                         $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                     }
                     console.log(data);
+                },
+                error: function(xhr, textStatus, error) {
+                    console.log(textStatus);
+                    console.log(error);
                 }
             });
         }
@@ -145,6 +157,10 @@
                         $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                     }
                     console.log(data);
+                },
+                error: function(xhr, textStatus, error) {
+                    console.log(textStatus);
+                    console.log(error);
                 }
             });
         }
@@ -170,6 +186,10 @@
                         $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                     }
                     console.log(data);
+                },
+                error: function(xhr, textStatus, error) {
+                    console.log(textStatus);
+                    console.log(error);
                 }
             });
         }
@@ -195,6 +215,10 @@
                         $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                     }
                     console.log(data);
+                },
+                error: function(xhr, textStatus, error) {
+                    console.log(textStatus);
+                    console.log(error);
                 }
             });
         }
@@ -220,6 +244,10 @@
                         $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                     }
                     console.log(data);
+                },
+                error: function(xhr, textStatus, error) {
+                    console.log(textStatus);
+                    console.log(error);
                 }
             });
         }
@@ -245,6 +273,10 @@
                         $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                     }
                     console.log(data);
+                },
+                error: function(xhr, textStatus, error) {
+                    console.log(textStatus);
+                    console.log(error);
                 }
             });
         }
