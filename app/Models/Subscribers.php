@@ -51,20 +51,15 @@ class Subscribers extends Model
         if (!($fp = @fopen($f->file('import'), "rb"))) {
             return false;
         } else {
-          //  dd($f->file('import'));
             $buffer = fread($fp, filesize($f->file('import')));
+
             fclose($fp);
-            $tok = strtok($buffer, "\n");
 
-            while ($tok) {
-                $tok = strtok("\n");
-                $strtmp[] = $tok;
-            }
-
+            $strtmp =  explode("\n", $buffer);
             $count = 0;
 
             foreach ($strtmp as $val) {
-                $str = $val;
+                $str = trim($val);
 
                 if ($f->charset) {
                     $str = iconv($str, 'utf-8', $f->charset);
@@ -72,7 +67,7 @@ class Subscribers extends Model
 
                 preg_match('/([a-z0-9&\-_.]+?)@([\w\-]+\.([\w\-\.]+\.)*[\w]+)/uis', $str, $out);
 
-                $email = isset($out[0]) ? $out[0] : '';
+                $email = $out[0] ?? '';
                 $name = str_replace($email, '', $str);
                 $email = strtolower($email);
                 $name = trim($name);
@@ -142,7 +137,6 @@ class Subscribers extends Model
         }
 
         $count = 0;
-
         $spreadsheet = $reader->load($f->file('import'));
 
         if (!$spreadsheet) return false;
