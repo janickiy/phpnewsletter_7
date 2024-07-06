@@ -150,6 +150,8 @@ return [
         'normal' => 'нормальная',
         'copy_to_clipboard' => 'Скопировать в буфер обмена',
         'notification_newuser' => 'На Вашем сайте %SITE% зарегистрирован новый подписчик',
+        'add_macros' => 'Добавить макрос',
+        'macros_type' => 'Тип',
     ],
     'msg' => [
         'are_you_sure' => 'Вы уверены?',
@@ -289,6 +291,9 @@ return [
         'auth' => 'Авторизация',
         'update' => 'Обновление',
         'subscription_form' => 'Форма подписки',
+        'macros_index' => 'Макрос',
+        'macros_create' => 'Добавление макроса',
+        'macros_edit' => 'Редактирование макроса',
     ],
     'menu' => [
         'templates' => 'Шаблоны',
@@ -304,6 +309,7 @@ return [
         'miscellaneous' => 'Разное',
         'update' => 'Обновление',
         'subscription_form' => 'Форма подписки',
+        'macros' => 'Макрос',
     ],
     'hint' => [
         'template_index' => 'В этом разделе отображается список шаблонов, которые Вы можете использовать для рассылок.',
@@ -336,5 +342,8 @@ return [
         'log_info' => '',
         'redirectlog_info' => '',
         'subscription_form' => '',
+        'macros_index' => '',
+        'macros_create' => '',
+        'macros_edit' => '',
     ],
 ];

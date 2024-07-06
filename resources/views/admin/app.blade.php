@@ -122,14 +122,6 @@
                         </a>
                     </li>
 
-                    <li class="nav-item">
-                        <a href="{{ URL::route('admin.schedule.index') }}" class="nav-link{{ Request::is('schedule*') ? ' active' : '' }}"
-                           title="{{ trans('frontend.menu.schedule') }}">
-                            <i class="nav-icon fas fa-calendar-alt"></i>
-                            <p>{{ trans('frontend.menu.schedule') }}</p>
-                        </a>
-                    </li>
-
                     @if(PermissionsHelper::has_permission(Auth::user()->role,'admin|moderator'))
 
                         <li class="nav-item">
@@ -140,7 +132,23 @@
                             </a>
                         </li>
 
+                        <li class="nav-item">
+                            <a href="{{ URL::route('admin.macros.index') }}" class="nav-link{{ Request::is('macros*') ? ' active' : '' }}"
+                               title="{{ trans('frontend.menu.macros') }}">
+                                <i class="nav-icon fas fa-user-friends"></i>
+                                <p>{{ trans('frontend.menu.macros') }}</p>
+                            </a>
+                        </li>
+
                     @endif
+
+                    <li class="nav-item">
+                        <a href="{{ URL::route('admin.schedule.index') }}" class="nav-link{{ Request::is('schedule*') ? ' active' : '' }}"
+                           title="{{ trans('frontend.menu.schedule') }}">
+                            <i class="nav-icon fas fa-calendar-alt"></i>
+                            <p>{{ trans('frontend.menu.schedule') }}</p>
+                        </a>
+                    </li>
 
                     @if(PermissionsHelper::has_permission(Auth::user()->role,'admin|moderator'))
 

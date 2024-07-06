@@ -8,8 +8,6 @@ class Process extends Model
 {
     protected $table = 'process';
 
-    protected $primaryKey = 'id';
-
     protected $fillable = [
         'command',
         'user_id'

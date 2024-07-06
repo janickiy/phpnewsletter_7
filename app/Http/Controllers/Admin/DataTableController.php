@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\{Category, Smtp, Subscribers, Schedule, Templates, User, ReadySent, Redirect};
+use App\Models\{Category, Macros, Smtp, Subscribers, Schedule, Templates, User, ReadySent, Redirect};
 use App\Helpers\{StringHelper, PermissionsHelper};
 use Illuminate\Support\Facades\Auth;
 use DataTables;
@@ -53,8 +53,8 @@ class DataTableController extends Controller
 
         return Datatables::of($row)
             ->addColumn('actions', function ($row) {
-                $editBtn = '<a title="редактировать" class="btn btn-xs btn-primary"  href="' . URL::route('admin.category.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
-                $deleteBtn = '<a title="удалить" class="btn btn-xs btn-danger deleteRow" id="' . $row->id . '"><span class="fa fa-trash"></span></a>';
+                $editBtn = '<a title="' . trans('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.category.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
+                $deleteBtn = '<a title="' . trans('frontend.str.remove') . '" class="btn btn-xs btn-danger deleteRow" id="' . $row->id . '"><span class="fa fa-trash"></span></a>';
 
                 return '<div class="nobr"> ' . $editBtn . $deleteBtn . '</div>';
             })
@@ -131,7 +131,7 @@ class DataTableController extends Controller
                 $editBtn = '<a title="' . trans('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.users.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
 
                 if ($row->id != Auth::id())
-                    $deleteBtn = '<a class="btn btn-xs btn-danger deleteRow" id="' . $row->id . '"><span class="fa fa-remove"></span></a>';
+                    $deleteBtn = '<a title="' . trans('frontend.str.remove') . '" class="btn btn-xs btn-danger deleteRow" id="' . $row->id . '"><span class="fa fa-remove"></span></a>';
                 else
                     $deleteBtn = '';
 
@@ -231,10 +231,26 @@ class DataTableController extends Controller
     public function getInfoRedirectLog(string $url): JsonResponse
     {
         $url = base64_decode($url);
-
         $row = Redirect::query()->where('url', $url);
 
         return Datatables::of($row)
             ->make(true);
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function getMacros(): JsonResponse
+    {
+        $row = Macros::query();
+
+        return Datatables::of($row)
+            ->addColumn('actions', function ($row) {
+                $editBtn = '<a title="' . trans('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.macros.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
+                $deleteBtn = '<a title="' . trans('frontend.str.remove') . '" class="btn btn-xs btn-danger deleteRow" id="' . $row->id . '"><span class="fa fa-trash"></span></a>';
+
+                return '<div class="nobr"> ' . $editBtn . $deleteBtn . '</div>';
+            })
+            ->rawColumns(['actions'])->make(true);
     }
 }
