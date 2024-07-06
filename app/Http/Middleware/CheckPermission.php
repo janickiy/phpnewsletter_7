@@ -28,11 +28,10 @@ class CheckPermission
      */
     public function handle($request, Closure $next, $permissions)
     {
-        if($this->helper->has_permission($permissions)){
+        if ($this->helper->has_permission($permissions)) {
             return $next($request);
-        }else{
+        } else {
             abort(403);
         }
-
     }
 }

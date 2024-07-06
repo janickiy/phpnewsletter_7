@@ -20,7 +20,7 @@
                     <header class="card card-primary">
 
                         <!-- form start -->
-                        {!! Form::open(['url' => URL::route('admin.subscribers.update'), 'files' => true, 'method' => 'post']) !!}
+                        {!! Form::open(['url' => URL::route('admin.subscribers.import_subscribers'), 'files' => true, 'method' => 'post']) !!}
 
                         <div class="card-body">
 

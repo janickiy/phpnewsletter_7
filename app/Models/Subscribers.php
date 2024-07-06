@@ -51,6 +51,7 @@ class Subscribers extends Model
         if (!($fp = @fopen($f->file('import'), "rb"))) {
             return false;
         } else {
+          //  dd($f->file('import'));
             $buffer = fread($fp, filesize($f->file('import')));
             fclose($fp);
             $tok = strtok($buffer, "\n");
@@ -130,7 +131,7 @@ class Subscribers extends Model
         if ($ext == 'csv') {
             $reader = new Csv();
 
-            if ($ext == 'csv' && $f->charset) {
+            if ($f->charset) {
                 $reader->setInputEncoding($f->charset);
             }
 

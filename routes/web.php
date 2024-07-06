@@ -130,7 +130,7 @@ Route::group(['middleware' => ['install']], function () {
             Route::put('update', [SubscribersController::class, 'update'])->name('admin.subscribers.update');
             Route::delete('destroy', [SubscribersController::class, 'destroy'])->name('admin.subscribers.destroy');
             Route::get('import', [SubscribersController::class, 'import'])->name('admin.subscribers.import');
-            Route::post('import-subscribers', [SubscribersController::class, 'mportSubscribers'])->name('admin.subscribers.import_subscribers');
+            Route::post('import-subscribers', [SubscribersController::class, 'importSubscribers'])->name('admin.subscribers.import_subscribers');
             Route::get('export', [SubscribersController::class, 'export'])->name('admin.subscribers.export');
             Route::post('export-subscribers', [SubscribersController::class, 'exportSubscribers'])->name('admin.subscribers.export_subscribers');
             Route::get('remove-all', [SubscribersController::class, 'removeAll'])->name('admin.subscribers.remove_all');
