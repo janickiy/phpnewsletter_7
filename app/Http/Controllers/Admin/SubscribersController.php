@@ -72,7 +72,7 @@ class SubscribersController extends Controller
         $subscriberCategoryId = [];
 
         foreach ($row->subscriptions as $subscription) {
-            $subscriberCategoryId[] = $subscription->categoryId;
+            $subscriberCategoryId[] = $subscription->category_id;
         }
 
         $infoAlert = trans('frontend.hint.subscribers_edit') ?? null;
