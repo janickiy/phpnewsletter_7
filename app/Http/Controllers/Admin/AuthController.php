@@ -25,10 +25,9 @@ class AuthController extends Controller
 
     /**
      * @param Request $request
-     * @return RedirectResponse
-     * @throws \Illuminate\Validation\ValidationException
+     * @return RedirectResponse|void
      */
-    public function login(Request $request): RedirectResponse
+    public function login(Request $request)
     {
         // Validate the form data
         $this->validate($request, [
