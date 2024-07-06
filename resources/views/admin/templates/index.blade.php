@@ -212,7 +212,7 @@
 
                 if (idSelect === '') {
                     event.preventDefault();
-                    swal({
+                    Swal.fire({
                         title: "Error",
                         text: "{{ trans('frontend.str.select_action') }}",
                         type: "error",
@@ -225,7 +225,7 @@
                     if (idSelect === 1) {
                         event.preventDefault();
                         let form = $(this).parents('form');
-                        swal({
+                        Swal.fire({
                             title: "{{ trans('frontend.str.delete_confirmation') }}",
                             text: "{{ trans('frontend.str.confirm_remove') }}",
                             type: "warning",
@@ -234,8 +234,10 @@
                             confirmButtonText: "{{ trans('frontend.str.yes') }}",
                             cancelButtonText: "{{ trans('frontend.str.cancel') }}",
                             closeOnConfirm: false
-                        }, function(isConfirm){
-                            if (isConfirm) form.submit();
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                               form.submit();
+                            }
                         });
                     }
 
@@ -332,7 +334,7 @@
                             }
                         });
                     }
-                })
+                });
             });
         });
 

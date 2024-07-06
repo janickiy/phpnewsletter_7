@@ -118,7 +118,7 @@
                     {data: 'report', name: 'report', orderable: false, searchable: false},
                 ],
             });
-        })
+        });
 
     </script>
 

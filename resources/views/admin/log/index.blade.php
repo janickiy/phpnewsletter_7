@@ -122,7 +122,6 @@
 
     <script>
         $(function () {
-
             $('#itemList').dataTable({
                 "oLanguage": {
                     "sLengthMenu": "Отображено _MENU_ записей на страницу",

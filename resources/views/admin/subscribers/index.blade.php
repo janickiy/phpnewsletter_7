@@ -60,7 +60,8 @@
                                 <tr>
                                     <th style="width: 10px">
                                     <span>
-                                       <input type="checkbox" title="{{ trans('frontend.str.check_uncheck_all') }}" id="checkAll">
+                                       <input type="checkbox" title="{{ trans('frontend.str.check_uncheck_all') }}"
+                                              id="checkAll">
                                     </span>
                                     </th>
                                     <th>{{ trans('frontend.str.name') }}</th>
@@ -143,9 +144,9 @@
             $("#apply").click(function (event) {
                 let idSelect = $('#select_action').val();
 
-                if (idSelect == '') {
+                if (idSelect === '') {
                     event.preventDefault();
-                    swal({
+                    Swal.fire({
                         title: "Error",
                         text: "{{ trans('frontend.str.select_action') }}",
                         type: "error",
@@ -155,7 +156,7 @@
                         closeOnConfirm: false
                     });
                 } else {
-                    if (idSelect == 2) {
+                    if (idSelect === 2) {
                         event.preventDefault();
                         let form = $(this).parents('form');
                         swal({
@@ -258,16 +259,32 @@
                             }
                         });
                     }
-                })
+                });
             });
-        })
+        });
 
-        function countChecked()
-        {
+        function countChecked() {
             if ($('.check').is(':checked'))
-                $('#apply').attr('disabled',false);
+                $('#apply').attr('disabled', false);
             else
-                $('#apply').attr('disabled',true);
+                $('#apply').attr('disabled', true);
+        }
+
+        function confirmation() {
+            Swal.fire({
+                title: "{{ trans('frontend.str.delete_all_subscribers') }}",
+                text: "{{ trans('frontend.str.want_to_delete_all_subscribers')  }}",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "{{ trans('frontend.str.yes') }}",
+                cancelButtonText: "{{ trans('frontend.str.cancel') }}",
+                closeOnConfirm: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ URL::route('admin.subscribers.remove_all') }}";
+                }
+            });
         }
 
     </script>

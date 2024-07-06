@@ -674,6 +674,7 @@
                 html += '</div></div>';
 
                 $('#headerslist').prepend(html);
+                console.log(html);
             });
 
             $(document).on("click", '.removeBlock', function () {
