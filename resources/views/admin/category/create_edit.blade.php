@@ -22,7 +22,7 @@
                         <!-- form start -->
                         {!! Form::open(['url' => isset($row) ? URL::route('admin.category.update') : URL::route('admin.category.store'), 'method' => isset($row) ? 'put' : 'post']) !!}
 
-                        {!! isset($category) ? Form::hidden('id', $category->id) : '' !!}
+                        {!! isset($row) ? Form::hidden('id', $row->id) : '' !!}
 
                         <div class="card-body">
 
