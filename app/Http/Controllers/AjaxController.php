@@ -38,7 +38,6 @@ class AjaxController extends Controller
 
         if ($request->input('action')) {
             switch ($request->input('action')) {
-
                 case 'start_update':
                     if ($request->p == 'start') {
                         $download_completed = false;
@@ -585,6 +584,9 @@ class AjaxController extends Controller
                         ]);
                     }
 
+                case 'get-macros-value':
+
+
             }
         }
     }
@@ -596,7 +598,7 @@ class AjaxController extends Controller
     {
         $process = Process::where('user_id', Auth::user('web')->id)->first();
 
-        if (isset($process->command)) {
+        if ($process) {
             return $process->command;
         } else {
             $process = new Process();
@@ -611,7 +613,7 @@ class AjaxController extends Controller
     /**
      * @param $command
      */
-    private function updateProcess($command)
+    private function updateProcess($command): void
     {
         $result = Process::where('user_id', Auth::user('web')->id);
 

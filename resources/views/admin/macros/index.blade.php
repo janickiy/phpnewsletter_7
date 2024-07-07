@@ -32,14 +32,14 @@
                             <table id="itemList" class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
-                                    <th>{{ trans('frontend.str.name') }}</th>
+                                    <th>{{ trans('frontend.str.macros_name') }}</th>
                                     <th>{{ trans('frontend.str.macros_type') }}</th>
                                     <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
                                 </tr>
                                 </thead>
                                 <tfoot>
                                 <tr>
-                                    <th>{{ trans('frontend.str.name') }}</th>
+                                    <th>{{ trans('frontend.str.macros_name') }}</th>
                                     <th>{{ trans('frontend.str.macros_type') }}</th>
                                     <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
                                 </tr>

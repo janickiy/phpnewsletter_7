@@ -27,8 +27,9 @@ class MacrosController extends Controller
     public function create(): View
     {
         $infoAlert = trans('frontend.hint.macros_create') ?? null;
+        $options = Macros::getOption();
 
-        return view('admin.macros.create_edit', compact('infoAlert'))->with('title', trans('frontend.title.macros_create'));
+        return view('admin.macros.create_edit', compact('infoAlert', 'options'))->with('title', trans('frontend.title.macros_create'));
     }
 
     /**

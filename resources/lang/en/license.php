@@ -1,13 +1,6 @@
 <?php
 
 return [
-    'error' => [
-        'license_is_used' => 'This license key is already in use!',
-        'license_not_found' => 'License key not found!',
-        'error_checking_license' => 'License Validation Error! Server is not available.',
-        'cannot_create_licensekey_file' => 'Cannot create a license key file!',
-        'check_licensekey' => 'License key verification error!',
-    ],
     'agreement' => "Software Product License Agreement
 
 The present License Agreement is deemed to be the plainly required agreement, concluded between You (a natural or a legal person) (hereinafter referred to as User), and Alexander Yanitsky is the owner of the exclusive rights to the Program (\"Author\"),

@@ -29,7 +29,7 @@
                             <p>*-{{ trans('frontend.form.required_fields') }}</p>
 
                             <div class="form-group">
-                                {!! Form::label('name', trans('frontend.form.name') . '*') !!}
+                                {!! Form::label('name', trans('frontend.form.macros_name') . '*') !!}
 
                                 {!! Form::text('name', old('name', $row->name ?? null), ['class' => 'form-control', 'placeholder' => trans('frontend.form.name')]) !!}
 
@@ -40,14 +40,25 @@
 
                             <div class="form-group">
 
-                                {!! Form::label('value', trans('frontend.form.value')) !!}
+                                {!! Form::label('value', trans('frontend.form.value') . '*') !!}
 
-                                {!! Form::textarea('value', old('value', $user->value ?? null), [ 'placeholder' => trans('frontend.form.description'), 'rows' => 3, 'class' => 'form-control']) !!}
+                                {!! Form::textarea('value', old('value', $user->value ?? null), [ 'placeholder' => trans('frontend.form.value'), 'rows' => 3, 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('value'))
                                     <p class="text-danger">{{ $errors->first('value') }}</p>
                                 @endif
 
+                            </div>
+
+                            <div class="form-group">
+
+                                {!! Form::label('type', trans('frontend.form.macros_type')) !!}
+
+                                {!! Form::select('type', $options, $row->type ?? null, ['placeholder' => trans('frontend.form.macros_type'), 'class' => 'custom-select']) !!}
+
+                                @if ($errors->has('type'))
+                                    <p class="text-danger">{{ $errors->first('type') }}</p>
+                                @endif
                             </div>
 
                         </div>
@@ -62,7 +73,7 @@
                             </a>
                         </div>
 
-                    {!! Form::close() !!}
+                        {!! Form::close() !!}
 
                     </header>
 
@@ -78,6 +89,30 @@
 
 @section('js')
 
+    <script>
+        $(function () {
+            $('#type').on('change', function () {
+                let sampleMacros = getValue(this.value);
+                $('#value').val(sampleMacros);
+            });
+        });
+
+        function getValue(value) {
+            switch (value) {
+                case '1':
+                    return '{{ trans('frontend.form.sample_macros_type_url') }}';
+                case '2':
+                    return '{{ trans('frontend.form.sample_macros_type_email') }}';
+                case '3':
+                    return '{{ trans('frontend.form.sample_macros_type_hash_tags') }}';
+                case '4':
+                    return '{{ trans('frontend.form.sample_macros_type_tags') }}';
+                case '5':
+                    return '{{ trans('frontend.form.sample_macros_type_wrap_phrase') }}';
+            }
+        }
+
+    </script>
 
 @endsection
 

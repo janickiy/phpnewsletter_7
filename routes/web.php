@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\{
     PagesController,
     LogController,
     RedirectController,
+    MacrosController,
     UsersController,
     UpdateController,
 };
@@ -53,7 +54,7 @@ Route::group(['middleware' => ['install']], function () {
         Route::post('store', [TemplatesController::class, 'store'])->name('admin.templates.store');
         Route::get('edit/{id}', [TemplatesController::class, 'edit'])->name('admin.templates.edit')->where('id', '[0-9]+');
         Route::put('update', [TemplatesController::class, 'update'])->name('admin.templates.update');
-        Route::delete('destroy', [TemplatesController::class, 'destroy'])->name('admin.templates.destroy');
+        Route::post('destroy', [TemplatesController::class, 'destroy'])->name('admin.templates.destroy');
         Route::post('status', [TemplatesController::class, 'status'])->name('admin.templates.status');
     });
 
@@ -66,7 +67,32 @@ Route::group(['middleware' => ['install']], function () {
             Route::put('update', [CategoryController::class, 'update'])->name('admin.category.update');
             Route::post('destroy', [CategoryController::class, 'destroy'])->name('admin.category.destroy');
         });
+
+        Route::group(['prefix' => 'subscribers'], function () {
+            Route::get('', [SubscribersController::class, 'index'])->name('admin.subscribers.index');
+            Route::get('create', [SubscribersController::class, 'create'])->name('admin.subscribers.create');
+            Route::post('store', [SubscribersController::class, 'store'])->name('admin.subscribers.store');
+            Route::get('edit/{id}', [SubscribersController::class, 'edit'])->name('admin.subscribers.edit')->where('id', '[0-9]+');
+            Route::put('update', [SubscribersController::class, 'update'])->name('admin.subscribers.update');
+            Route::delete('destroy', [SubscribersController::class, 'destroy'])->name('admin.subscribers.destroy');
+            Route::get('import', [SubscribersController::class, 'import'])->name('admin.subscribers.import');
+            Route::post('import-subscribers', [SubscribersController::class, 'importSubscribers'])->name('admin.subscribers.import_subscribers');
+            Route::get('export', [SubscribersController::class, 'export'])->name('admin.subscribers.export');
+            Route::post('export-subscribers', [SubscribersController::class, 'exportSubscribers'])->name('admin.subscribers.export_subscribers');
+            Route::get('remove-all', [SubscribersController::class, 'removeAll'])->name('admin.subscribers.remove_all');
+            Route::post('status', [SubscribersController::class, 'status'])->name('admin.subscribers.status');
+        });
+
+        Route::group(['prefix' => 'macros'], function () {
+            Route::get('', [MacrosController::class, 'index'])->name('admin.macros.index');
+            Route::get('create', [MacrosController::class, 'create'])->name('admin.macros.create');
+            Route::post('store', [MacrosController::class, 'store'])->name('admin.macros.store');
+            Route::get('edit/{id}', [MacrosController::class, 'edit'])->name('admin.macros.edit')->where('id', '[0-9]+');
+            Route::put('update', [MacrosController::class, 'update'])->name('admin.macros.update');
+            Route::post('destroy', [MacrosController::class, 'destroy'])->name('admin.macros.destroy');
+        });
     });
+
 
     Route::group(['prefix' => 'schedule'], function () {
         Route::get('', [ScheduleController::class, 'index'])->name('admin.schedule.index');
@@ -74,7 +100,7 @@ Route::group(['middleware' => ['install']], function () {
         Route::post('store', [ScheduleController::class, 'store'])->name('admin.schedule.store');
         Route::get('edit/{id}', [ScheduleController::class, 'edit'])->name('admin.schedule.edit')->where('id', '[0-9]+');
         Route::put('update', [ScheduleController::class, 'update'])->name('admin.schedule.update');
-        Route::delete('destroy', [ScheduleController::class, 'destroy'])->name('admin.schedule.destroy')->where('id', '[0-9]+');
+        Route::post('destroy', [ScheduleController::class, 'destroy'])->name('admin.schedule.destroy');
     });
 
     Route::group(['prefix' => 'log'], function () {
@@ -98,7 +124,7 @@ Route::group(['middleware' => ['install']], function () {
             Route::post('store', [SmtpController::class, 'store'])->name('admin.smtp.store');
             Route::get('edit/{id}', [SmtpController::class, 'edit'])->name('admin.smtp.edit')->where('id', '[0-9]+');
             Route::put('update', [SmtpController::class, 'update'])->name('admin.smtp.update');
-            Route::delete('destroy', [SmtpController::class, 'destroy'])->name('admin.smtp.destroy');
+            Route::post('destroy', [SmtpController::class, 'destroy'])->name('admin.smtp.destroy');
             Route::post('status', [SmtpController::class, 'status'])->name('admin.smtp.status');
         });
 
@@ -121,22 +147,6 @@ Route::group(['middleware' => ['install']], function () {
         });
     });
 
-    Route::middleware(['permission:admin|moderator'])->group(function () {
-        Route::group(['prefix' => 'subscribers'], function () {
-            Route::get('', [SubscribersController::class, 'index'])->name('admin.subscribers.index');
-            Route::get('create', [SubscribersController::class, 'create'])->name('admin.subscribers.create');
-            Route::post('store', [SubscribersController::class, 'store'])->name('admin.subscribers.store');
-            Route::get('edit/{id}', [SubscribersController::class, 'edit'])->name('admin.subscribers.edit')->where('id', '[0-9]+');
-            Route::put('update', [SubscribersController::class, 'update'])->name('admin.subscribers.update');
-            Route::delete('destroy', [SubscribersController::class, 'destroy'])->name('admin.subscribers.destroy');
-            Route::get('import', [SubscribersController::class, 'import'])->name('admin.subscribers.import');
-            Route::post('import-subscribers', [SubscribersController::class, 'importSubscribers'])->name('admin.subscribers.import_subscribers');
-            Route::get('export', [SubscribersController::class, 'export'])->name('admin.subscribers.export');
-            Route::post('export-subscribers', [SubscribersController::class, 'exportSubscribers'])->name('admin.subscribers.export_subscribers');
-            Route::get('remove-all', [SubscribersController::class, 'removeAll'])->name('admin.subscribers.remove_all');
-            Route::post('status', [SubscribersController::class, 'status'])->name('admin.subscribers.status');
-        });
-    });
 
     Route::group(['prefix' => 'pages'], function () {
         Route::get('faq', [PagesController::class, 'faq'])->name('admin.pages.faq');
@@ -155,6 +165,7 @@ Route::group(['middleware' => ['install']], function () {
         Route::any('info-log/{id?}', [DataTableController::class, 'getInfoLog'])->name('admin.datatable.info_log')->where('id', '[0-9]+');
         Route::any('redirect-log', [DataTableController::class, 'getRedirectLogs'])->name('admin.datatable.redirect');
         Route::any('info-redirect-log/{url}', [DataTableController::class, 'getInfoRedirectLog'])->name('admin.datatable.info_redirect');
+        Route::any('macros', [DataTableController::class, 'getMacros'])->name('admin.datatable.macros');
     });
 });
 
@@ -165,12 +176,8 @@ Route::group(['prefix' => 'install'], function () {
     Route::get('database', [InstallController::class, 'database'])->name('install.database');
     Route::get('admin', [InstallController::class, 'admin'])->name('install.admin');
     Route::post('installation', [InstallController::class, 'installation'])->name('install.installation');
-
     Route::post('install-app', [InstallController::class, 'install'])->name('install.install');
     Route::get('complete', [InstallController::class, 'complete'])->name('install.complete');
     Route::get('error', [InstallController::class, 'error'])->name('install.error');
     Route::any('ajax', [InstallController::class, 'ajax'])->name('install.ajax.action');
 });
-
-
-
