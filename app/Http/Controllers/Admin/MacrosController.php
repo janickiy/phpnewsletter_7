@@ -53,9 +53,10 @@ class MacrosController extends Controller
 
         if (!$row) abort(404);
 
+        $options = Macros::getOption();
         $infoAlert = trans('frontend.hint.macros_create') ?? null;
 
-        return view('admin.macros.create_edit', compact('row', 'infoAlert'))->with('title', trans('frontend.title.macros_edit'));
+        return view('admin.macros.create_edit', compact('row', 'infoAlert', 'options'))->with('title', trans('frontend.title.macros_edit'));
     }
 
     /**

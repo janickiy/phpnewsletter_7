@@ -42,7 +42,7 @@
 
                                 {!! Form::label('value', trans('frontend.form.value') . '*') !!}
 
-                                {!! Form::textarea('value', old('value', $user->value ?? null), [ 'placeholder' => trans('frontend.form.value'), 'rows' => 3, 'class' => 'form-control']) !!}
+                                {!! Form::textarea('value', old('value', $row->value ?? null), [ 'placeholder' => trans('frontend.form.value'), 'rows' => 3, 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('value'))
                                     <p class="text-danger">{{ $errors->first('value') }}</p>
@@ -52,7 +52,7 @@
 
                             <div class="form-group">
 
-                                {!! Form::label('type', trans('frontend.form.macros_type')) !!}
+                                {!! Form::label('type', trans('frontend.form.macros_type') . '*') !!}
 
                                 {!! Form::select('type', $options, $row->type ?? null, ['placeholder' => trans('frontend.form.macros_type'), 'class' => 'custom-select']) !!}
 
