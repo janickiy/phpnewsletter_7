@@ -34,26 +34,22 @@ class ScheduleController extends Controller
      */
     public function list(Request $request): JsonResponse
     {
-       // if($request->ajax()) {
-            $data = Schedule::whereDate('event_start', '>=', $request->start)
-                ->whereDate('event_end',   '<=', $request->end)
-                ->get(['id', 'event_name', 'event_start', 'event_end']);
+        $data = Schedule::whereDate('event_start', '>=', $request->start)
+            ->whereDate('event_end', '<=', $request->end)
+            ->get(['id', 'event_name', 'event_start', 'event_end']);
 
-            $items = [];
+        $items = [];
 
-            foreach ($data as $row) {
-                $items[] = [
+        foreach ($data as $row) {
+            $items[] = [
+                'id' => $row->id,
+                'start' => $row->event_start, // Format as ISO 8601 with time zone
+                'end' => $row->event_end,
+                'title' => $row->event_name,
+            ];
+        }
 
-                    'id' => $row->id,
-                    'start' => $row->event_start, // Format as ISO 8601 with time zone
-                    'end' => $row->event_end,
-                    'title' => $row->event_name,
-
-                ];
-            }
-
-            return response()->json( $items);
-     //   }
+        return response()->json($items);
     }
 
     /**
@@ -63,15 +59,6 @@ class ScheduleController extends Controller
     public function calendarEvents(Request $request): JsonResponse
     {
         switch ($request->type) {
-            case 'create':
-                $event = Schedule::create([
-                    'event_name' => $request->event_name,
-                    'event_start' => $request->event_start,
-                    'event_end' => $request->event_end,
-                ]);
-
-                return response()->json($event);
-
             case 'edit':
                 $event = Schedule::find($request->id)->update([
                     'event_name' => $request->event_name,
