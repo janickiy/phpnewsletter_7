@@ -28,5 +28,4 @@ class Category extends Model
     {
         return self::orderBy('name')->get()->pluck('name', 'id');
     }
-
 }

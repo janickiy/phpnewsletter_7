@@ -11,8 +11,9 @@ class Schedule extends Model
     protected $table = 'schedule';
 
     protected $fillable = [
-        'start_date',
-        'end_date',
+        'event_name',
+        'event_start',
+        'event_end',
         'template_id'
     ];
 
@@ -31,5 +32,4 @@ class Schedule extends Model
     {
         return $this->hasManyThrough(Category::class, ScheduleCategory::class,'schedule_id','id','id','category_id');
     }
-
 }
