@@ -16,6 +16,6 @@
    RewriteCond %{REQUEST_FILENAME} !-d
    RewriteCond %{REQUEST_FILENAME} !-f
    RewriteCond %{REQUEST_URI} !^/public/
-   RewriteRule ^(css|js|images|fonts|admin|webfonts)/(.*)$ public/$1/$2 [L,NC]
+   RewriteRule ^(dist|plugins|css|js|images|fonts|admin|webfonts)/(.*)$ public/$1/$2 [L,NC]
 
 </IfModule>

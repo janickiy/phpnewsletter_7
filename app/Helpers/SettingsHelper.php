@@ -22,10 +22,6 @@ class SettingsHelper
     {
     }
 
-    private function __wakeup()
-    {
-    }
-
     public static function getInstance()
     {
         if (is_null(self::$instance)) {
