@@ -12,6 +12,8 @@ use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\Admin\Schedule\StoreRequest;
 use App\Http\Requests\Admin\Schedule\EditRequest;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class ScheduleController extends Controller
 {
@@ -24,6 +26,68 @@ class ScheduleController extends Controller
         $infoAlert = trans('frontend.hint.schedule_index') ?? null;
 
         return view('admin.schedule.index', compact('schedule', 'infoAlert'))->with('title', trans('frontend.title.schedule_index'));
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function list(Request $request): JsonResponse
+    {
+       // if($request->ajax()) {
+            $data = Schedule::whereDate('event_start', '>=', $request->start)
+                ->whereDate('event_end',   '<=', $request->end)
+                ->get(['id', 'event_name', 'event_start', 'event_end']);
+
+            $items = [];
+
+            foreach ($data as $row) {
+                $items[] = [
+
+                    'id' => $row->id,
+                    'start' => $row->event_start, // Format as ISO 8601 with time zone
+                    'end' => $row->event_end,
+                    'title' => $row->event_name,
+
+                ];
+            }
+
+            return response()->json( $items);
+     //   }
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function calendarEvents(Request $request): JsonResponse
+    {
+        switch ($request->type) {
+            case 'create':
+                $event = Schedule::create([
+                    'event_name' => $request->event_name,
+                    'event_start' => $request->event_start,
+                    'event_end' => $request->event_end,
+                ]);
+
+                return response()->json($event);
+
+            case 'edit':
+                $event = Schedule::find($request->id)->update([
+                    'event_name' => $request->event_name,
+                    'event_start' => $request->event_start,
+                    'event_end' => $request->event_end,
+                ]);
+
+                return response()->json($event);
+
+            case 'delete':
+                $event = Schedule::find($request->id)->delete();
+
+                return response()->json($event);
+            default:
+                break;
+        }
     }
 
     /**
@@ -47,8 +111,9 @@ class ScheduleController extends Controller
         $date = explode(' - ', $request->date_interval);
 
         $id = Schedule::create(array_merge($request->all(), [
-            'start_date' => date("Y-m-d H:i:s", strtotime($date[0])),
-            'end_date' => date("Y-m-d H:i:s", strtotime($date[1]))
+            'event_start' => date("Y-m-d H:i:s", strtotime($date[0])),
+            'event_end' => date("Y-m-d H:i:s", strtotime($date[1])),
+            'event_name' => $request->input('event_name'),
         ]))->id;
 
         if ($request->categoryId && $id) {
@@ -98,8 +163,9 @@ class ScheduleController extends Controller
 
         $date = explode(' - ', $request->date_interval);
 
-        $schedule->start_date = date("Y-m-d H:i:s", strtotime($date[0]));
-        $schedule->end_date = date("Y-m-d H:i:s", strtotime($date[1]));
+        $schedule->event_name = $request->input('event_name');
+        $schedule->event_start = date("Y-m-d H:i:s", strtotime($date[0]));
+        $schedule->event_end = date("Y-m-d H:i:s", strtotime($date[1]));
         $schedule->template_id = $request->input('template_id');
         $schedule->save();
 

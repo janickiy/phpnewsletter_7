@@ -54,7 +54,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             var initialTimeZone = 'UTC';
             var timeZoneSelectorEl = document.getElementById('timezone-selector');
-            var loadingEl = document.getElementById('loading');
+            var loadingEl = true;
             var calendarEl = document.getElementById('calendar');
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -68,15 +68,9 @@
                 editable: true,
                 selectable: true,
                 dayMaxEvents: true, // allow "more" link when too many events
-                events: '',
+                events: "{{ route('admin.schedule.list') }}",
 
-                loading: function(bool) {
-                    if (bool) {
-                        loadingEl.style.display = 'inline'; // show
-                    } else {
-                        loadingEl.style.display = 'none'; // hide
-                    }
-                },
+
 
                 eventTimeFormat: { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }
             });

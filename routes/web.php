@@ -96,6 +96,11 @@ Route::group(['middleware' => ['install']], function () {
 
     Route::group(['prefix' => 'schedule'], function () {
         Route::get('', [ScheduleController::class, 'index'])->name('admin.schedule.index');
+
+        Route::post('calendar-crud-ajax', [ScheduleController::class, 'calendarEvents'])->name('admin.schedule.calendarEvents');
+
+        Route::get('calendar-event', [ScheduleController::class, 'list'])->name('admin.schedule.list');
+
         Route::get('create', [ScheduleController::class, 'create'])->name('admin.schedule.create');
         Route::post('store', [ScheduleController::class, 'store'])->name('admin.schedule.store');
         Route::get('edit/{id}', [ScheduleController::class, 'edit'])->name('admin.schedule.edit')->where('id', '[0-9]+');

@@ -585,8 +585,6 @@ class AjaxController extends Controller
                     }
 
                 case 'get-macros-value':
-
-
             }
         }
     }

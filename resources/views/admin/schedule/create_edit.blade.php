@@ -30,6 +30,16 @@
                             <p>*-{{ trans('frontend.form.required_fields') }}</p>
 
                             <div class="form-group">
+                                {!! Form::label('event_name', trans('frontend.form.name') . '*') !!}
+
+                                {!! Form::text('event_name', old('event_name', $row->event_name ?? null), ['class' => 'form-control', 'placeholder' => trans('frontend.form.name')]) !!}
+
+                                @if ($errors->has('event_name'))
+                                    <p class="text-danger">{{ $errors->first('event_name') }}</p>
+                                @endif
+                            </div>
+
+                            <div class="form-group">
 
                                 {!! Form::label('template_id',  trans('frontend.form.template')) !!}
 
