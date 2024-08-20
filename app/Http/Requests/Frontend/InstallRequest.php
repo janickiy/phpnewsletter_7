@@ -14,9 +14,8 @@ class InstallRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'login' => 'required',
+            'username' => 'required',
             'password' => 'required|min:4',
-            'confirm_password' => 'required|min:4|same:password',
         ];
     }
 }
