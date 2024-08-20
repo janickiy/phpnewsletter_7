@@ -8,17 +8,6 @@
 {!! Html::style('/plugins/sweetalert2/sweetalert2.min.css') !!}
 
 <style>
-    .test
-    {
-        color: #fff !important;
-        /* font-size: 1.5rem; */
-    }
-
-    .test:hover
-    {
-        color: #4f57f7 !important;
-        /* font-size: 1.5rem; */
-    }
 
     .fc-time-grid .fc-event {
         overflow: auto;
@@ -36,6 +25,9 @@
         justify-content: space-around;
         font-size: 1.75rem;
         padding-top: 4px;
+    }
+    .event-actions {
+        color: #00008B
     }
 </style>
 
@@ -120,16 +112,16 @@
         let calendarEl = document.getElementById('calendar');
         let calendar = new FullCalendar.Calendar(calendarEl, {
             eventMouseEnter: function(info) {
-                info.el.innerHTML = '<span class = "test"> '+ info.event.title +'<div class="event-actions">'+
-                    '<a href="schedule/edit/'+info.event.id+'" class=" btn btn-info btn-sm"  ><i class="fa fa-edit"></i></a>'+
-                    '<button class=" btn btn-danger btn-sm delete-event" data-id='+info.event.id+'><i class="fa fa-trash"></i></button></div></span>';
+                info.el.innerHTML = '<div class="p-2"> '+ info.event.title +'<div class="event-actions">'+
+                    '<a href="/schedule/edit/'+info.event.id+'" class="m-1 btn btn-info btn-sm"><i class="fa fa-edit"></i></a>'+
+                    '<button class="m-1 btn btn-danger btn-sm delete-event" data-id='+info.event.id+'><i class="fa fa-trash"></i></button></div></div>';
             },
             eventMouseLeave: function(info) {
 
                 // console.log(info.event.start.getHours());
                 // console.log(info.event.start.getMinutes());
                 // console.log(info.event.start.getUTCHours());
-                info.el.innerHTML = '<span><div class="event-actions"> &#x25CF;'+info.event.start.getUTCHours() + ':' + info.event.start.getMinutes() + ' UTC <b>'  +info.event.title+'</b></span>';
+                info.el.innerHTML = '<div class="p-2"><div class="event-actions"> &#x25CF;'+info.event.start.getUTCHours() + ':' + info.event.start.getMinutes() + '<b> '  +info.event.title+'</b></div>';
             },
             timeZone: initialTimeZone,
             headerToolbar: {
