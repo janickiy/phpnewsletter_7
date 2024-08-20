@@ -82,7 +82,8 @@
 {!! Html::script('/plugins/sweetalert2/sweetalert2.min.js') !!}
 {!! Html::script('/plugins/moment/moment.min.js') !!}
 {!! Html::script('/plugins/fullcalendar/main.js') !!}
-{!! Html::script('/plugins/fullcalendar/locales/ru.js') !!}
+
+{{ app()->getLocale() !== 'en' ? Html::script('/plugins/fullcalendar/locales/' . app()->getLocale() . '.js') : '' }}
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -116,8 +117,6 @@
     });
     document.addEventListener('DOMContentLoaded', function() {
         let initialTimeZone = 'UTC';
-        let timeZoneSelectorEl = document.getElementById('timezone-selector');
-        let loadingEl = true;
         let calendarEl = document.getElementById('calendar');
         let calendar = new FullCalendar.Calendar(calendarEl, {
             eventMouseEnter: function(info) {
@@ -144,7 +143,7 @@
             dayMaxEvents: true, // allow "more" link when too many events
             events: "{{ route('admin.schedule.list') }}",
 
-            locale: 'ru', // the initial locale
+            @if(app()->getLocale()!= 'en') locale: '{{ app()->getLocale() }}', @endif
 
             eventTimeFormat: { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }
         });
