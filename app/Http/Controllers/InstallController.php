@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\StringHelper;
 use App\Models\User;
 use App\Http\Requests\Frontend\InstallRequest;
+use App\Http\Requests\Frontend\InstallAdminRequest;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Illuminate\View\View;
@@ -91,7 +93,11 @@ class InstallController extends Controller
                 ->withErrors(trans('install.str.connection_to_database_cannot_be_established'));
         }
 
+
+
         Session::put('install.db_credentials', $dbCredentials);
+
+
 
         return redirect()->route('install.admin');
     }
@@ -108,7 +114,7 @@ class InstallController extends Controller
      * @param InstallRequest $request
      * @return RedirectResponse
      */
-    public function install(InstallRequest $request): RedirectResponse
+    public function install(InstallAdminRequest $request): RedirectResponse
     {
         try {
             $db = Session::pull('install.db_credentials');
@@ -123,16 +129,17 @@ class InstallController extends Controller
             $env = str_replace('DB_DATABASE=' . env('DB_DATABASE'), 'DB_DATABASE=' . $db['database'], $env);
             $env = str_replace('DB_USERNAME=' . env('DB_USERNAME'), 'DB_USERNAME=' . $db['username'], $env);
             $env = str_replace('DB_PASSWORD=' . env('DB_PASSWORD'), 'DB_PASSWORD="' . $db['password'] . '"', $env);
-            $env = str_replace('VERSION=', 'VERSION="6.1.3"', $env);
+            $env = str_replace('VERSION=', 'VERSION="7.0.0"', $env);
+            $env = str_replace('APP_URL=', 'APP_URL=' . StringHelper::getUrl(), $env);
 
             file_put_contents($path, $env);
 
             $this->setDatabaseCredentials($db);
             config(['app.debug' => true]);
 
-            Artisan::call('key:generate', ['--force' => true]);
             Artisan::call('migrate', ['--force' => true]);
             Artisan::call('db:seed', ['--force' => true]);
+            Artisan::call('key:generate', ['--force' => true]);
 
             User::create(['name' => 'admin', 'login' => $request->input('login'), 'role' => 'admin', 'password' => Hash::make($request->input('password'))]);
 

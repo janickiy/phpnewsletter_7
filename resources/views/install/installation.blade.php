@@ -15,7 +15,7 @@
     <div class="step-content">
         <h3>{{ trans('install.str.install') }}</h3>
         <hr>
-        <p>{{ trans('install.str.ready_to_install') }}</p>
+        <strong>{{ trans('install.str.ready_to_install') }}</strong>
         <p>{{ trans('install.str.administration') }}:</p>
         <div class="form-group">
             <label for="app_name">{{ trans('install.str.login') }}</label>
