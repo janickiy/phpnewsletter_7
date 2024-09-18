@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PHP Newsletter | Авторизация</title>
+    <title>PHP Newsletter | {{ trans('frontend.title.auth') }}</title>
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -27,10 +27,11 @@
     <!-- /.login-logo -->
     <div class="card card-outline card-primary">
         <div class="card-header text-center">
-            <b>Admin</b>LTE
+
+            <img src="{{ url('../../dist/img/logo.png') }}" alt="">
         </div>
         <div class="card-body">
-            <p class="login-box-msg">Sign in to start your session</p>
+            <p class="login-box-msg">{{ trans('auth.admin_area') }}</p>
 
 
             {!! Form::open(['url' => URL::route('login'), 'method' => 'post']) !!}
@@ -38,11 +39,11 @@
 
                 <div class="input-group mb-3">
 
-                    {!! Form::text('login', old('login'), [ 'placeholder' => 'логин', 'class' => 'form-control']) !!}
+                    {!! Form::text('login', old('login'), [ 'placeholder' => trans('frontend.form.login'), 'class' => 'form-control']) !!}
 
                     <div class="input-group-append">
                         <div class="input-group-text">
-                            <span class="fas fa-envelope"></span>
+                            <span class="fas fa-user"></span>
                         </div>
                     </div>
 
@@ -53,7 +54,7 @@
                 </div>
                 <div class="input-group mb-3">
 
-                    {!! Form::password('password',['class' => 'form-control', 'placeholder' => "Password", 'type' => 'password']) !!}
+                    {!! Form::password('password',['class' => 'form-control', 'placeholder' => trans('frontend.form.password'), 'type' => 'password']) !!}
 
                     <div class="input-group-append">
                         <div class="input-group-text">
@@ -71,9 +72,8 @@
 
                             {!! Form::checkbox('remember', 1, old('remember') ? true : false , ['id' => "remember"]) !!}
 
-
                             <label for="remember">
-                                Remember Me
+                                {{ trans('frontend.str.remember_me') }}
                             </label>
                         </div>
                     </div>
