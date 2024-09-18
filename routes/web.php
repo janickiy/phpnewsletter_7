@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\{
     MacrosController,
     UsersController,
     UpdateController,
+    TestController,
 };
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\InstallController;
@@ -57,6 +58,8 @@ Route::group(['middleware' => ['install']], function () {
         Route::post('destroy', [TemplatesController::class, 'destroy'])->name('admin.templates.destroy');
         Route::post('status', [TemplatesController::class, 'status'])->name('admin.templates.status');
     });
+
+    Route::get('test', [TestController::class, 'index'])->name('test');
 
     Route::middleware(['permission:admin|moderator'])->group(function () {
         Route::group(['prefix' => 'category'], function () {

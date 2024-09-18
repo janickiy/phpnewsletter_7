@@ -315,6 +315,7 @@ class SendEmailHelper
         $msg = str_replace('%USERID%', $subscriberId, $msg);
         $msg = str_replace('%URL_PATH%', SettingsHelper::getInstance()->getValueForKey('URL'), $msg);
         $msg = SettingsHelper::getInstance()->getValueForKey('RANDOM_REPLACEMENT_BODY') == 1 ? StringHelper::encodeString($msg) : $msg;
+        $msg = StringHelper::macrosReplacement($msg);
 
         if ($attach) {
             foreach (Attach::where('template_id', $attach)->get() as $f) {

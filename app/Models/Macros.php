@@ -37,7 +37,7 @@ class Macros extends Model
     /**
      * @return string
      */
-    public function getValue(): string
+    public function getValueByType()
     {
         switch ($this->type) {
             case 1:

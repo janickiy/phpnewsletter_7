@@ -2,27 +2,12 @@
 
 namespace App\Helpers;
 
+use App\Models\Macros;
 use Illuminate\Support\Str;
 use Illuminate\Support\Number;
 
 class StringHelper
 {
-    /**
-     * @param $data
-     * @return array
-     */
-    public static function ObjectToArray($data): array
-    {
-        if (is_array($data) || is_object($data)) {
-            $result = [];
-            foreach ($data as $key => $value) {
-                $result[$key] = self::ObjectToArray($value);
-            }
-            return $result;
-        }
-        return $data;
-    }
-
     /**
      * @param int $max
      * @return null|string
@@ -552,7 +537,6 @@ class StringHelper
         $array = preg_split('//u', $str, -1, PREG_SPLIT_NO_EMPTY);
 
         foreach ($array as $char) {
-
             srand((double)microtime() * 1000000);
             $random_number = rand(0, count($quotes) - 1);
 
@@ -562,9 +546,7 @@ class StringHelper
                 $text[] = $char;
         }
 
-        $str = implode("", $text);
-
-        return $str;
+        return implode("", $text);
     }
 
     /**
@@ -574,9 +556,7 @@ class StringHelper
     static public function removeHtmlTags(string $str): string
     {
         $str = strip_tags($str);
-        $str = html_entity_decode($str);
-
-        return $str;
+        return html_entity_decode($str);
     }
 
     /**
@@ -731,5 +711,18 @@ class StringHelper
             "{$envKey}=\"{$envValue}\"",
             file_get_contents($path)
         ));
+    }
+
+    /**
+     * @param string $str
+     * @return string
+     */
+    public static function macrosReplacement(string $str): string
+    {
+        foreach (Macros::get() as $macros) {
+            $str = str_replace("{{" . $macros->name . "}}", $macros->getValueByType(), $str);
+        }
+
+        return $str;
     }
 }
