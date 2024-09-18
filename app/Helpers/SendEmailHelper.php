@@ -197,14 +197,6 @@ class SendEmailHelper
 
         $m = new PHPMailer\PHPMailer();
 
-        if (SettingsHelper::getInstance()->getValueForKey('ADD_DKIM') == 1) {
-            $m->DKIM_domain = SettingsHelper::getInstance()->getValueForKey('DKIM_DOMAIN');
-            $m->DKIM_private_string = SettingsHelper::getInstance()->getValueForKey('DKIM_PRIVATE');
-            $m->DKIM_selector = SettingsHelper::getInstance()->getValueForKey('DKIM_SELECTOR');
-            $m->DKIM_passphrase = SettingsHelper::getInstance()->getValueForKey('DKIM_PASSPHRASE');
-            $m->DKIM_identity = SettingsHelper::getInstance()->getValueForKey('DKIM_IDENTITY');
-        }
-
         if (SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') == 'smtp') {
             $m->IsSMTP();
             $m->SMTPAuth = true;
