@@ -90,8 +90,8 @@
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
         <a href="{{ URL::route('admin.templates.index') }}" class="brand-link">
-            <img src="../../dist/img/logo.png" alt="AdminLTE Logo" class="brand-image " style="">
-            <span class="">{{ env('VERSION') }}</span>
+            <img src="{{ url('../../dist/img/logo.png') }}" alt="PHP Newsletter" class="brand-image">
+            <small>{{ env('VERSION') }}</span>
         </a>
 
         <!-- Sidebar -->
