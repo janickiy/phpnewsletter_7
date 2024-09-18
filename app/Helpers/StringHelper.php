@@ -520,10 +520,10 @@ class StringHelper
     }
 
     /**
-     * @param $str
+     * @param string $str
      * @return string
      */
-    static public function encodeString($str)
+    static public function encodeString(string $str): string
     {
         $replace = [
             "А" => "A",
@@ -568,10 +568,10 @@ class StringHelper
     }
 
     /**
-     * @param $str
+     * @param string $str
      * @return string
      */
-    static public function removeHtmlTags($str)
+    static public function removeHtmlTags(string $str): string
     {
         $str = strip_tags($str);
         $str = html_entity_decode($str);
@@ -580,20 +580,20 @@ class StringHelper
     }
 
     /**
-     * @param $url
-     * @return bool
+     * @param string $url
+     * @return string
      */
-    static public function getDomain($url)
+    static public function getDomain(string $url): string
     {
         $parce = parse_url($url);
         return isset($parce['host']) ? $parce['host'] : $parce['path'];
     }
 
     /**
-     * @param $url
+     * @param string $url
      * @return string
      */
-    static public function getScheme($url)
+    static public function getScheme(string $url): string
     {
         $parce = parse_url($url);
         return isset($parce['scheme']) ? $parce['scheme'] : 'http';
@@ -602,7 +602,7 @@ class StringHelper
     /**
      * @return string
      */
-    public static function getUrl()
+    public static function getUrl(): string
     {
         if (dirname($_SERVER['SCRIPT_NAME']) == '/' | dirname($_SERVER['SCRIPT_NAME']) == '\\')
             $dir = '/';
@@ -612,17 +612,17 @@ class StringHelper
         $url = ((!empty($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $dir;
         $url = explode('?', $url);
 
-        return isset($url[0]) ? $url[0] : '';
+        return $url[0] ?? '';
     }
 
     /**
      * @return array
      */
-    static public function phpinfoArray()
+    static public function phpinfoArray(): array
     {
         ob_start();
         phpinfo();
-        $info_arr = array();
+        $info_arr = [];
         $info_lines = explode("\n", strip_tags(ob_get_clean(), "<tr><td><h2>"));
         $cat = "General";
         foreach ($info_lines as $line) {
@@ -675,10 +675,10 @@ class StringHelper
     }
 
     /**
-     * @param $str
-     * @return string|string[]|null
+     * @param string|null $str
+     * @return string|null
      */
-    public static function charsetList($str)
+    public static function charsetList(?string $str): ?string
     {
         $str = preg_replace("/^utf\-8$/i", trans('frontend.str.charutf8'), $str);
         $str = preg_replace("/^iso\-8859\-1$/i", trans('frontend.str.iso88591'), $str);
@@ -717,10 +717,11 @@ class StringHelper
     }
 
     /**
-     * @param $envKey
-     * @param $envValue
+     * @param string $envKey
+     * @param string $envValue
+     * @return void
      */
-    public static function setEnvironmentValue($envKey, $envValue)
+    public static function setEnvironmentValue(string $envKey, string $envValue): void
     {
         $path = app()->environmentFilePath();
         $escaped = preg_quote('="' . env($envKey) . '"', '/');
@@ -730,15 +731,5 @@ class StringHelper
             "{$envKey}=\"{$envValue}\"",
             file_get_contents($path)
         ));
-
-        $escaped = preg_quote('=' . env($envKey), '/');
-
-        file_put_contents($path, preg_replace(
-            "/^{$envKey}{$escaped}/m",
-            "{$envKey}={$envValue}",
-            file_get_contents($path)
-        ));
     }
-
-
 }

@@ -111,7 +111,7 @@ class SendEmailHelper
      * @param string $token
      * @return string
      */
-    public static function setToken(string $token)
+    public static function setToken(string $token): string
     {
         return self::$token = $token;
     }
@@ -120,7 +120,7 @@ class SendEmailHelper
      * @param string $email
      * @return string
      */
-    public static function setEmail(string $email)
+    public static function setEmail(string $email): string
     {
         return self::$email = $email;
     }
@@ -147,7 +147,7 @@ class SendEmailHelper
      * @param int $templateId
      * @return int
      */
-    public static function setTemplateId(int $templateId)
+    public static function setTemplateId(int $templateId): int
     {
         return self::$templateId = $templateId;
     }
@@ -156,7 +156,7 @@ class SendEmailHelper
      * @param int $subscriberId
      * @return int
      */
-    public static function setSubscriberId(int $subscriberId)
+    public static function setSubscriberId(int $subscriberId): int
     {
         return self::$subscriberId = $subscriberId;
     }
@@ -165,7 +165,7 @@ class SendEmailHelper
      * @param string $tracking
      * @return string
      */
-    public static function setTracking(string $tracking)
+    public static function setTracking(string $tracking): string
     {
         return self::$tracking = $tracking;
     }
@@ -174,7 +174,7 @@ class SendEmailHelper
      * @param string $unsub
      * @return string
      */
-    public static function setUnsub(string $unsub)
+    public static function setUnsub(string $unsub): string
     {
         return self::$unsub = $unsub;
     }
@@ -184,7 +184,7 @@ class SendEmailHelper
      * @return array
      * @throws PHPMailer\Exception
      */
-    public static function sendEmail(int $attach = null)
+    public static function sendEmail(?int $attach = null)
     {
         $subject = self::getSubject();
         $body = self::getBody();

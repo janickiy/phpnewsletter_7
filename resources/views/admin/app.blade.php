@@ -134,7 +134,7 @@
                         <li class="nav-item">
                             <a href="{{ URL::route('admin.macros.index') }}" class="nav-link{{ Request::is('macros*') ? ' active' : '' }}"
                                title="{{ trans('frontend.menu.macros') }}">
-                                <i class="nav-icon fas fa-user-friends"></i>
+                                <i class="nav-icon fas fa-scroll"></i>
                                 <p>{{ trans('frontend.menu.macros') }}</p>
                             </a>
                         </li>
