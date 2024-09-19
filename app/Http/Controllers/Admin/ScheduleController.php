@@ -132,7 +132,7 @@ class ScheduleController extends Controller
 
         $options = Templates::getOption();
         $category_options = Category::getOption();
-        $date_interval = date("d.m.Y H:i", strtotime($row->start_date)) . ' - ' . date("d.m.Y H:i", strtotime($row->end_date));
+        $date_interval = date("d.m.Y H:i", strtotime($row->event_start)) . ' - ' . date("d.m.Y H:i", strtotime($row->end_date));
         $infoAlert = trans('frontend.hint.schedule_edit') ?? null;
 
         return view('admin.schedule.create_edit', compact('categoryId', 'options', 'category_options', 'row', 'infoAlert', 'date_interval'))->with('title', trans('frontend.title.schedule_edit'));
@@ -149,7 +149,6 @@ class ScheduleController extends Controller
         if (!$schedule) abort(404);
 
         $date = explode(' - ', $request->date_interval);
-
         $schedule->event_name = $request->input('event_name');
         $schedule->event_start = date("Y-m-d H:i:s", strtotime($date[0]));
         $schedule->event_end = date("Y-m-d H:i:s", strtotime($date[1]));

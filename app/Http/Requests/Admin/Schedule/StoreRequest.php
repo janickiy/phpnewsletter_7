@@ -22,14 +22,14 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         $date = explode(' - ', $this->date_interval);
-        $this->start_date = $date[0];
-        $this->end_date = $date[1];
+        $this->event_end = $date[0];
+        $this->event_start = $date[1];
 
         return [
             'template_id' => 'required|integer',
             'categoryId' => 'required|array',
-            'end_date' => 'date_format:d.m.Y H:i|before:start_date',
-            'start_date' => 'date_format:d.m.Y H:i|after:tomorrow'
+            'event_end' => 'date_format:d.m.Y H:i|before:event_start',
+            'event_start' => 'date_format:d.m.Y H:i|after:tomorrow'
         ];
     }
 }

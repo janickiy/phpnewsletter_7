@@ -157,16 +157,16 @@ class DataTableController extends Controller
      */
     public function getLogs(): JsonResponse
     {
-        $row = Schedule::selectRaw('schedule.id, schedule.start_date, schedule.end_date, COUNT(ready_sent.id) AS count, SUM(ready_sent.success=1) AS sent, SUM(ready_sent.readMail=1) AS read_mail')
+        $row = Schedule::selectRaw('schedule.id, schedule.event_start, schedule.event_end, COUNT(ready_sent.id) AS count, SUM(ready_sent.success=1) AS sent, SUM(ready_sent.readMail=1) AS read_mail')
             ->join('ready_sent', 'schedule.id', '=', 'ready_sent.schedule_id')
             ->groupBy('ready_sent.schedule_id')
-            ->groupBy('schedule.start_date')
-            ->groupBy('schedule.end_date')
+            ->groupBy('schedule.event_start')
+            ->groupBy('schedule.event_end')
             ->groupBy('schedule.id');
 
         return Datatables::of($row)
             ->editColumn('count', function ($row) {
-                return '<a href="' . URL::route('admin.log.info', ['id' => $row->id]) . '">' . $row->count . '</a>';
+                return '<a href="' . route('admin.log.info', ['id' => $row->id]) . '">' . $row->count . '</a>';
             })
             ->addColumn('unsent', function ($row) {
                 return $row->count - $row->sent;
@@ -175,7 +175,7 @@ class DataTableController extends Controller
                 return $row->read_mail ?? 0;
             })
             ->addColumn('report', function ($row) {
-                return PermissionsHelper::has_permission(Auth::user()->role, 'admin') ? '<a href="' . URL::route('admin.log.report', ['id' => $row->id]) . '">' . trans('frontend.str.download') . '</a>' : '';
+                return PermissionsHelper::has_permission('admin') ? '<a href="' . route('admin.log.report', ['id' => $row->id]) . '">' . trans('frontend.str.download') . '</a>' : '';
             })
             ->rawColumns(['count', 'report'])->make(true);
     }
@@ -216,10 +216,10 @@ class DataTableController extends Controller
 
         return Datatables::of($row)
             ->editColumn('count', function ($row) {
-                return '<a href="' . URL::route('admin.redirect.info', ['url' => base64_encode($row->url)]) . '">' . $row->count . '</a>';
+                return '<a href="' . route('admin.redirect.info', ['url' => base64_encode($row->url)]) . '">' . $row->count . '</a>';
             })
             ->addColumn('report', function ($row) {
-                return PermissionsHelper::has_permission(Auth::user()->role, 'admin') ? '<a href="' . URL::route('admin.redirect.report', ['url' => base64_encode($row->url)]) . '">' . trans('frontend.str.download') . '</a>' : '';
+                return PermissionsHelper::has_permission('admin') ? '<a href="' . route('admin.redirect.report', ['url' => base64_encode($row->url)]) . '">' . trans('frontend.str.download') . '</a>' : '';
             })
             ->rawColumns(['count', 'report'])->make(true);
     }
@@ -246,7 +246,7 @@ class DataTableController extends Controller
 
         return Datatables::of($row)
             ->addColumn('actions', function ($row) {
-                $editBtn = '<a title="' . trans('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.macros.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
+                $editBtn = '<a title="' . trans('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . route('admin.macros.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
                 $deleteBtn = '<a title="' . trans('frontend.str.remove') . '" class="btn btn-xs btn-danger deleteRow" id="' . $row->id . '"><span class="fa fa-trash"></span></a>';
 
                 return '<div class="nobr"> ' . $editBtn . $deleteBtn . '</div>';
