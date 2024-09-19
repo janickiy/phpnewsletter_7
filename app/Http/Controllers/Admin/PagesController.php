@@ -52,6 +52,8 @@ class PagesController extends Controller
         $subform = view('include.subform');
         $subformJs = view('include.subform_js');
 
+        $subform = preg_replace('/<input name="_token" type="hidden"([^>]+)>/si', '', $subform);
+
         return view('admin.pages.subscription_form', compact('infoAlert','subform','subformJs'))->with('title', trans('frontend.title.subscription_form'));
     }
 }
