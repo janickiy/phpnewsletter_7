@@ -43,11 +43,9 @@ Route::group(['middleware' => ['install']], function () {
     Route::post('addsub', 'FrontendController@addSub')->name('frontend.addsub');
     Route::any('categories', [FrontendController::class, 'getCategories'])->name('frontend.categories');
     Route::any('ajax', [AjaxController::class, 'action'])->name('admin.ajax.action');
-
     Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('login', [AuthController::class, 'login'])->name('login.submit');
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
-
     Route::get('/', [TemplatesController::class, 'index'])->name('admin.templates.index');
 
     Route::group(['prefix' => 'template'], function () {
@@ -96,14 +94,10 @@ Route::group(['middleware' => ['install']], function () {
         });
     });
 
-
     Route::group(['prefix' => 'schedule'], function () {
         Route::get('', [ScheduleController::class, 'index'])->name('admin.schedule.index');
-
         Route::post('calendar-crud-ajax', [ScheduleController::class, 'calendarEvents'])->name('admin.schedule.calendarEvents');
-
         Route::get('calendar-event', [ScheduleController::class, 'list'])->name('admin.schedule.list');
-
         Route::get('create', [ScheduleController::class, 'create'])->name('admin.schedule.create');
         Route::post('store', [ScheduleController::class, 'store'])->name('admin.schedule.store');
         Route::get('edit/{id}', [ScheduleController::class, 'edit'])->name('admin.schedule.edit')->where('id', '[0-9]+');
@@ -151,10 +145,9 @@ Route::group(['middleware' => ['install']], function () {
             Route::post('store', [UsersController::class, 'store'])->name('admin.users.store');
             Route::get('edit/{id}', [UsersController::class, 'edit'])->name('admin.users.edit');
             Route::put('update', [UsersController::class, 'update'])->name('admin.users.update');
-            Route::delete('destroy', [UsersController::class, 'destroy'])->name('admin.users.destroy')->where('id', '[0-9]+');
+            Route::post('destroy', [UsersController::class, 'destroy'])->name('admin.users.destroy')->where('id', '[0-9]+');
         });
     });
-
 
     Route::group(['prefix' => 'pages'], function () {
         Route::get('faq', [PagesController::class, 'faq'])->name('admin.pages.faq');

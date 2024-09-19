@@ -131,7 +131,7 @@ class DataTableController extends Controller
                 $editBtn = '<a title="' . trans('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.users.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
 
                 if ($row->id != Auth::id())
-                    $deleteBtn = '<a title="' . trans('frontend.str.remove') . '" class="btn btn-xs btn-danger deleteRow" id="' . $row->id . '"><span class="fa fa-remove"></span></a>';
+                    $deleteBtn = '<a title="' . trans('frontend.str.remove') . '" class="btn btn-xs btn-danger deleteRow" id="' . $row->id . '"><span class="fa fa-trash"></span></a>';
                 else
                     $deleteBtn = '';
 
