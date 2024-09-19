@@ -58,9 +58,11 @@
                                     <small>{!! trans('frontend.note.personalization') !!}</small>
                                 </blockquote>
 
+                                @if($macrosList)
                                 <blockquote class="quote-secondary">
                                     <small>{!! trans('frontend.note.macros') !!} {!! $macrosList !!}</small>
                                 </blockquote>
+                                @endif
 
                             </div>
 

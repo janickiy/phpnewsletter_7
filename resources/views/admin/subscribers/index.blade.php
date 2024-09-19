@@ -205,6 +205,7 @@
                 },
                 'createdRow': function (row, data, dataIndex) {
                     $(row).attr('id', 'rowid_' + data['id']);
+                    if (data['activeStatus'] === 0) $(row).attr('class', 'table-danger');
                 },
                 aaSorting: [[1, 'asc']],
                 "processing": true,
