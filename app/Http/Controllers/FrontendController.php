@@ -164,7 +164,7 @@ class FrontendController extends Controller
             }
         }
 
-        return json_encode([
+        return response()->json([
             'result' => 'success',
             'msg' => trans('frontend.msg.subscription_is_formed')
         ]);
@@ -177,6 +177,6 @@ class FrontendController extends Controller
     {
         $category = Category::orderBy('name', 'desc')->get();
 
-        return json_encode(['items' => $category]);
+        return response()->json(['items' => $category]);
     }
 }

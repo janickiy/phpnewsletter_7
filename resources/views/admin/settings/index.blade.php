@@ -11,11 +11,9 @@
 
     <!-- Main content -->
     <section class="content">
-
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-
                     <div class="card">
                         <div class="card-header p-2">
                             <ul class="nav nav-pills">

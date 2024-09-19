@@ -4,9 +4,28 @@
 
 @section('css')
 
+    {!! Html::style('/plugins/highlightjs/styles/github.css') !!}
 
+    <style>
+
+        pre {
+            position: relative;
+            border: none !important;
+            padding: 0 !important;
+            margin-bottom: 15px !important;
+            font-size: 14px !important;
+        }
+
+        pre code {
+            background: #FBFBFB !important;
+            font-size: 13.5px !important;
+            white-space: pre;
+        }
+
+    </style>
 
 @endsection
+
 
 @section('content')
 
@@ -25,29 +44,30 @@
 
                             <div class="form-group">
 
-                                <textarea rows="3" id="myInput" name="body" cols="50">
+                            <pre>
+                                <code class="lang-html" id="codebox">
+{{ $subform }}
+{{ $subformJs }}
+                                </code>
+                            </pre>
 
-                                    @include('include.subform')
-                                    &lt;script src=&quot;//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js&quot;&gt;&lt;/script&gt;
-                                    @include('include.subform_js')
-                                </textarea>
 
                             </div>
 
-                            <button type="submit" class="btn btn-primary margin-bottom-10" onclick="myFunction()" onmouseout="outFunc()">
+                            <button type="submit" class="btn btn-primary margin-bottom-10"
+                                    onclick="copyToClipboard('#codebox')">
                                 <span id="myTooltip">{{ trans('frontend.str.copy_to_clipboard') }}</span>
                             </button>
 
+                            <!-- /.card-body -->
                         </div>
-                        <!-- /.card-body -->
+                        <!-- /.card -->
                     </div>
-                    <!-- /.card -->
+                    <!-- /.col -->
                 </div>
-                <!-- /.col -->
+                <!-- /.row -->
             </div>
-            <!-- /.row -->
-        </div>
-        <!-- /.container-fluid -->
+            <!-- /.container-fluid -->
 
     </section>
     <!-- /.content -->
@@ -56,24 +76,24 @@
 
 @section('js')
 
+    {!! Html::script('/plugins/highlightjs/highlight.js') !!}
+    {!! Html::script('/plugins/highlightjs/highlightjs-line-numbers.js') !!}
+
+    <script>hljs.highlightAll();</script>
+    <script>hljs.initLineNumbersOnLoad();</script>
+
     <script>
-        function myFunction() {
-            let copyText = document.getElementById("myInput");
-            copyText.select();
+
+        function copyToClipboard(element) {
+            let $temp = $("<input>");
+            $("body").append($temp);
+            $temp.val($(element).text()).select();
             document.execCommand("copy");
 
-            let tooltip = document.getElementById("myTooltip");
-            tooltip.innerHTML = "Copied: " + copyText.value;
-        }
-
-        function outFunc() {
-            let tooltip = document.getElementById("myTooltip");
-            tooltip.innerHTML = "{{ trans('frontend.str.copy_to_clipboard') }}";
+            $temp.remove();
         }
 
     </script>
-
-    @include('include.subform_js')
 
 @endsection
 

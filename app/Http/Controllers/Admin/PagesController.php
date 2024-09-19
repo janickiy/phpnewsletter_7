@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\View\View;
 use App\Helpers\StringHelper;
+use Blade;
 
 class PagesController extends Controller
 {
@@ -48,6 +49,9 @@ class PagesController extends Controller
     {
         $infoAlert = trans('frontend.hint.phpinfo') ?? null;
 
-        return view('admin.pages.subscription_form', compact('infoAlert'))->with('title', trans('frontend.title.subscription_form'));
+        $subform = view('include.subform');
+        $subformJs = view('include.subform_js');
+
+        return view('admin.pages.subscription_form', compact('infoAlert','subform','subformJs'))->with('title', trans('frontend.title.subscription_form'));
     }
 }
