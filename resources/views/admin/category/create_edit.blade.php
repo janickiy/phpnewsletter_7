@@ -20,7 +20,7 @@
                     <header class="card card-primary">
 
                         <!-- form start -->
-                        {!! Form::open(['url' => isset($row) ? URL::route('admin.category.update') : URL::route('admin.category.store'), 'method' => isset($row) ? 'put' : 'post']) !!}
+                        {!! Form::open(['url' => isset($row) ? route('admin.category.update') : route('admin.category.store'), 'method' => isset($row) ? 'put' : 'post']) !!}
 
                         {!! isset($row) ? Form::hidden('id', $row->id) : '' !!}
 
@@ -45,7 +45,7 @@
                             <button type="submit" class="btn btn-primary">
                                 {{ isset($row) ? trans('frontend.form.edit') : trans('frontend.form.add') }}
                             </button>
-                            <a class="btn btn-default float-sm-right" href="{{ URL::route('admin.category.index') }}">
+                            <a class="btn btn-default float-sm-right" href="{{ route('admin.category.index') }}">
                                 {{ trans('frontend.form.back') }}
                             </a>
                         </div>

@@ -20,7 +20,7 @@
                         <!-- /.card-header -->
                         <div class="card-body">
 
-                            <p>« <a href="{{ URL::route('admin.log.index') }}">{{ trans('frontend.str.back') }}</a></p>
+                            <p>« <a href="{{ route('admin.log.index') }}">{{ trans('frontend.str.back') }}</a></p>
 
                             <table id="itemList" class="table table-striped table-bordered table-hover">
                                 <thead>
@@ -97,7 +97,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ URL::route('admin.datatable.info_log', ['id' => $id]) }}'
+                    url: '{{ route('admin.datatable.info_log', ['id' => $id]) }}'
                 },
                 columns: [
                     {data: 'template', name: 'template'},

@@ -20,7 +20,7 @@
                     <header class="card card-primary">
 
                         <!-- form start -->
-                        {!! Form::open(['url' => URL::route('admin.subscribers.import_subscribers'), 'files' => true, 'method' => 'post']) !!}
+                        {!! Form::open(['url' => route('admin.subscribers.import_subscribers'), 'files' => true, 'method' => 'post']) !!}
 
                         <div class="card-body">
 
@@ -82,7 +82,7 @@
                             <button type="submit" class="btn btn-primary">
                                 {{ trans('frontend.form.send') }}
                             </button>
-                            <a class="btn btn-default float-sm-right" href="{{ URL::route('admin.subscribers.index') }}">
+                            <a class="btn btn-default float-sm-right" href="{{ route('admin.subscribers.index') }}">
                                 {{ trans('frontend.form.back') }}
                             </a>
                         </div>

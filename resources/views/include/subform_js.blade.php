@@ -3,7 +3,7 @@
     $(document).ready(function () {
 
         $.ajax({
-            url: "{{ URL::route('frontend.categories') }}",
+            url: "{{ route('frontend.categories') }}",
             method: "get",
             dataType: "json",
             success: function (data) {
@@ -32,7 +32,7 @@
             let sendData = aParams.join("&");
 
             $.ajax({
-                url: "{{ URL::route('frontend.addsub') }}",
+                url: "{{ route('frontend.addsub') }}",
                 method: "POST",
                 data: sendData,
                 dataType: "json",

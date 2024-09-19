@@ -29,7 +29,7 @@
                             </ul>
                         </div><!-- /.card-header -->
 
-                        {!! Form::open(['url' => URL::route('admin.settings.update'), 'method' => 'put', 'class' => 'form-horizontal']) !!}
+                        {!! Form::open(['url' => route('admin.settings.update'), 'method' => 'put', 'class' => 'form-horizontal']) !!}
 
                         <div class="card-body">
                             <div class="tab-content">

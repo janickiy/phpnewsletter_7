@@ -24,7 +24,7 @@
                         <!-- /.card-header -->
                         <div class="card-body">
                             <div class="pb-3">
-                                <a href="{{ URL::route('admin.macros.create') }}"
+                                <a href="{{ route('admin.macros.create') }}"
                                    class="btn btn-info btn-sm pull-left">
                                     <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_macros') }}
                                 </a>
@@ -102,7 +102,7 @@
                 "autoWidth": true,
                 'serverSide': true,
                 'ajax': {
-                    url: '{{ URL::route('admin.datatable.macros') }}'
+                    url: '{{ route('admin.datatable.macros') }}'
                 },
                 'columns': [
                     {data: 'name', name: 'name'},
@@ -129,7 +129,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: '{{ URL::route('admin.macros.destroy') }}',
+                            url: '{{ route('admin.macros.destroy') }}',
                             type: "POST",
                             dataType: "html",
                             data: {id: rowid},

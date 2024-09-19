@@ -54,7 +54,7 @@
                 $.ajax({
                     type: "POST",
                     cache: false,
-                    url: "{{ URL::route('admin.ajax.action') }}",
+                    url: "{{ route('admin.ajax.action') }}",
                     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                     data: {
                         action: "start_update",
@@ -84,7 +84,7 @@
             $.ajax({
                 type: "POST",
                 cache: false,
-                url: "{{ URL::route('admin.ajax.action') }}",
+                url: "{{ route('admin.ajax.action') }}",
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                 data: {
                     action: "start_update",
@@ -113,7 +113,7 @@
             $.ajax({
                 type: "POST",
                 cache: false,
-                url: "{{ URL::route('admin.ajax.action') }}",
+                url: "{{ route('admin.ajax.action') }}",
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                 data: {
                     action: "start_update",
@@ -142,7 +142,7 @@
             $.ajax({
                 type: "POST",
                 cache: false,
-                url: "{{ URL::route('admin.ajax.action') }}",
+                url: "{{ route('admin.ajax.action') }}",
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                 data: {
                     action: "start_update",
@@ -171,7 +171,7 @@
             $.ajax({
                 type: "POST",
                 cache: false,
-                url: "{{ URL::route('admin.ajax.action') }}",
+                url: "{{ route('admin.ajax.action') }}",
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                 data: {
                     action: "start_update",
@@ -200,7 +200,7 @@
             $.ajax({
                 type: "POST",
                 cache: false,
-                url: "{{ URL::route('admin.ajax.action') }}",
+                url: "{{ route('admin.ajax.action') }}",
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                 data: {
                     action: "start_update",
@@ -229,7 +229,7 @@
             $.ajax({
                 type: "POST",
                 cache: false,
-                url: "{{ URL::route('admin.ajax.action') }}",
+                url: "{{ route('admin.ajax.action') }}",
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                 data: {
                     action: "start_update",
@@ -258,7 +258,7 @@
             $.ajax({
                 type: "POST",
                 cache: false,
-                url: "{{ URL::route('admin.ajax.action') }}",
+                url: "{{ route('admin.ajax.action') }}",
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                 data: {
                     action: "start_update",

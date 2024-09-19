@@ -75,7 +75,7 @@
             let Lng = $(this).val();
 
             let request = $.ajax({
-                url: '{{ URL::route('install.ajax.action') }}',
+                url: '{{ route('install.ajax.action') }}',
                 method: "POST",
                 data: {
                     action: "change_lng",

@@ -23,12 +23,12 @@
                 <div class="col-lg-12"><p class="text-center">
                         <a class="btn btn-outline btn-default btn-lg"
                            title="{{ trans('frontend.str.import_subscribers') }}"
-                           href="{{ URL::route('admin.subscribers.import') }}">
+                           href="{{ route('admin.subscribers.import') }}">
                             <span class="fa fa-download fa-x"></span> {{ trans('frontend.str.import') }}
                         </a>
                         <a class="btn btn-outline btn-default btn-lg"
                            title="{{ trans('frontend.str.export_subscribers') }}"
-                           href="{{ URL::route('admin.subscribers.export') }}">
+                           href="{{ route('admin.subscribers.export') }}">
                             <span class="fa fa-upload fa-x"></span> {{ trans('frontend.str.export') }}
                         </a>
                         <a class="btn btn-outline btn-danger btn-lg"
@@ -47,13 +47,13 @@
                         <!-- /.card-header -->
                         <div class="card-body">
                             <div class="pb-3">
-                                <a href="{{ URL::route('admin.subscribers.create') }}"
+                                <a href="{{ route('admin.subscribers.create') }}"
                                    class="btn btn-info btn-sm pull-left">
                                     <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_subscriber') }}
                                 </a>
                             </div>
 
-                            {!! Form::open(['url' => URL::route('admin.subscribers.status'), 'method' => 'post']) !!}
+                            {!! Form::open(['url' => route('admin.subscribers.status'), 'method' => 'post']) !!}
 
                             <table id="itemList" class="table table-bordered table-striped">
                                 <thead>
@@ -212,7 +212,7 @@
                 "autoWidth": true,
                 'serverSide': true,
                 'ajax': {
-                    url: '{{ URL::route('admin.datatable.subscribers') }}'
+                    url: '{{ route('admin.datatable.subscribers') }}'
                 },
                 'columns': [
                     {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},
@@ -243,7 +243,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: '{{ URL::route('admin.subscribers.destroy') }}',
+                            url: '{{ route('admin.subscribers.destroy') }}',
                             type: "POST",
                             dataType: "html",
                             data: {id: rowid},
@@ -282,7 +282,7 @@
                 closeOnConfirm: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = "{{ URL::route('admin.subscribers.remove_all') }}";
+                    window.location.href = "{{ route('admin.subscribers.remove_all') }}";
                 }
             });
         }

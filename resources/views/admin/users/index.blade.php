@@ -24,7 +24,7 @@
                         <!-- /.card-header -->
                         <div class="card-body">
                             <div class="pb-3">
-                                <a href="{{ URL::route('admin.users.create') }}" class="btn btn-info btn-sm pull-left">
+                                <a href="{{ route('admin.users.create') }}" class="btn btn-info btn-sm pull-left">
                                     <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_user') }}
                                 </a>
                             </div>
@@ -100,7 +100,7 @@
                 "autoWidth": true,
                 'serverSide': true,
                 'ajax': {
-                    url: '{{ URL::route('admin.datatable.users') }}'
+                    url: '{{ route('admin.datatable.users') }}'
                 },
                 'columns': [
                     {data: 'login', name: 'login'},
@@ -130,7 +130,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: '{{ URL::route('admin.users.destroy') }}',
+                            url: '{{ route('admin.users.destroy') }}',
                             type: "POST",
                             dataType: "html",
                             data: {id: rowid},

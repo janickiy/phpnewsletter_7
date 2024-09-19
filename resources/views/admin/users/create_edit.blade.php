@@ -20,7 +20,7 @@
                     <header class="card card-primary">
 
                         <!-- form start -->
-                        {!! Form::open(['url' => isset($row) ? URL::route('admin.users.update') : URL::route('admin.users.store'), 'method' => isset($row) ? 'put' : 'post']) !!}
+                        {!! Form::open(['url' => isset($row) ? route('admin.users.update') : route('admin.users.store'), 'method' => isset($row) ? 'put' : 'post']) !!}
 
                         {!! isset($user) ? Form::hidden('id', $user->id) : '' !!}
 
@@ -43,7 +43,7 @@
 
                                 {!! Form::label('login', trans('frontend.form.login')) !!}
 
-                                {!! Form::text('login', old('login', $user->login ?? null), [ 'placeholder' => trans('frontend.form.login'), 'class' => 'form-control']) !!}
+                                {!! Form::text('login', old('login', $row->login ?? null), [ 'placeholder' => trans('frontend.form.login'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('login'))
                                     <p class="text-danger">{{ $errors->first('login') }}</p>
@@ -55,7 +55,7 @@
 
                                 {!! Form::label('description', trans('frontend.form.description')) !!}
 
-                                {!! Form::textarea('description', old('description', $user->description ?? null), [ 'placeholder' => trans('frontend.form.description'), 'rows' => 3, 'class' => 'form-control']) !!}
+                                {!! Form::textarea('description', old('description', $row->description ?? null), [ 'placeholder' => trans('frontend.form.description'), 'rows' => 3, 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('description'))
                                     <p class="text-danger">{{ $errors->first('description') }}</p>
@@ -63,13 +63,13 @@
 
                             </div>
 
-                            @if ((isset($user->id) && $user->id != Auth::user()->id) || !isset($user->id))
+                            @if ((isset($row->id) && $row->id != Auth::user()->id) || !isset($user->id))
 
                                 <div class="form-group">
 
                                     {!! Form::label('role', trans('frontend.form.role')) !!}
 
-                                    {!! Form::select('role', $options, $user->role ?? 'admin', ['placeholder' => trans('frontend.form.select_role'), 'class' => 'custom-select']) !!}
+                                    {!! Form::select('role', $options, $row->role ?? 'admin', ['placeholder' => trans('frontend.form.select_role'), 'class' => 'custom-select']) !!}
 
                                     @if ($errors->has('role'))
                                         <p class="text-danger">{{ $errors->first('role') }}</p>
@@ -108,9 +108,9 @@
 
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary">
-                                {{ isset($user) ? trans('frontend.form.edit') : trans('frontend.form.add') }}
+                                {{ isset($row) ? trans('frontend.form.edit') : trans('frontend.form.add') }}
                             </button>
-                            <a class="btn btn-default float-sm-right" href="{{ URL::route('admin.users.index') }}">
+                            <a class="btn btn-default float-sm-right" href="{{ route('admin.users.index') }}">
                                 {{ trans('frontend.form.back') }}
                             </a>
                         </div>

@@ -24,12 +24,12 @@
                         <!-- /.card-header -->
                         <div class="card-body">
                             <div class="pb-3">
-                                <a href="{{ URL::route('admin.templates.create') }}" class="btn btn-info btn-sm pull-left">
+                                <a href="{{ route('admin.templates.create') }}" class="btn btn-info btn-sm pull-left">
                                     <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_template') }}
                                 </a>
                             </div>
 
-                            {!! Form::open(['url' => URL::route('admin.templates.status'), 'method' => 'post']) !!}
+                            {!! Form::open(['url' => route('admin.templates.status'), 'method' => 'post']) !!}
 
                             <table id="itemList" class="table table-bordered table-striped">
                                 <thead>
@@ -179,7 +179,7 @@
                     $("#process").removeClass().addClass('showprocess');
 
                     let request = $.ajax({
-                        url: '{{ URL::route('admin.ajax.action') }}',
+                        url: '{{ route('admin.ajax.action') }}',
                         method: "POST",
                         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                         data: {
@@ -287,7 +287,7 @@
                 "autoWidth": true,
                 'serverSide': true,
                 'ajax': {
-                    url: '{{ URL::route('admin.datatable.templates') }}'
+                    url: '{{ route('admin.datatable.templates') }}'
                 },
                 'columns': [
                     {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},
@@ -318,7 +318,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: '{{ URL::route('admin.templates.destroy') }}',
+                            url: '{{ route('admin.templates.destroy') }}',
                             type: "POST",
                             dataType: "html",
                             data: {id: rowid},

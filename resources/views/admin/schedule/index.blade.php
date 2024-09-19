@@ -46,7 +46,7 @@
                     <!-- /.card-header -->
                     <div class="card-body">
                         <div class="pb-3">
-                            <a href="{{ URL::route('admin.schedule.create') }}" class="btn btn-info btn-sm pull-left">
+                            <a href="{{ route('admin.schedule.create') }}" class="btn btn-info btn-sm pull-left">
                                 <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_schedule') }}
                             </a>
                         </div>
@@ -89,7 +89,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '{{ URL::route('admin.schedule.destroy') }}',
+                        url: '{{ route('admin.schedule.destroy') }}',
                         type: "POST",
                         data: {id: rowid},
                         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},

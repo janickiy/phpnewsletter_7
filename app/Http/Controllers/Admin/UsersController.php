@@ -56,9 +56,9 @@ class UsersController extends Controller
      */
     public function edit(int $id): View
     {
-        $user = User::find($id);
+        $row = User::find($id);
 
-        if (!$user) abort(404);
+        if (!$row) abort(404);
 
         $options = [
             'admin' => trans('frontend.str.admin'),
@@ -68,7 +68,7 @@ class UsersController extends Controller
 
         $infoAlert = trans('frontend.hint.users_edit') ?? null;
 
-        return view('admin.users.create_edit', compact('user', 'options', 'infoAlert'))->with('title', trans('frontend.title.users_edit'));
+        return view('admin.users.create_edit', compact('row', 'options', 'infoAlert'))->with('title', trans('frontend.title.users_edit'));
     }
 
     /**

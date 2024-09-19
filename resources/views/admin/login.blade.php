@@ -34,7 +34,7 @@
             <p class="login-box-msg">{{ trans('auth.admin_area') }}</p>
 
 
-            {!! Form::open(['url' => URL::route('login'), 'method' => 'post']) !!}
+            {!! Form::open(['url' => route('login'), 'method' => 'post']) !!}
 
 
                 <div class="input-group mb-3">

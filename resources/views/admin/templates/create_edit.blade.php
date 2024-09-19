@@ -25,7 +25,7 @@
                     <header class="card card-primary">
 
                         <!-- form start -->
-                        {!! Form::open(['url' => isset($template) ? URL::route('admin.templates.update') : URL::route('admin.templates.store'), 'files' => true, 'method' => isset($template) ? 'put' : 'post', 'id' => 'tmplForm']) !!}
+                        {!! Form::open(['url' => isset($template) ? route('admin.templates.update') : route('admin.templates.store'), 'files' => true, 'method' => isset($template) ? 'put' : 'post', 'id' => 'tmplForm']) !!}
 
                         {!! isset($template) ? Form::hidden('id', $template->id) : '' !!}
 
@@ -135,7 +135,7 @@
                             <button type="submit" class="btn btn-primary">
                                 {{ isset($template) ? trans('frontend.form.edit') : trans('frontend.form.add') }}
                             </button>
-                            <a class="btn btn-default float-sm-right" href="{{ URL::route('admin.templates.index') }}">
+                            <a class="btn btn-default float-sm-right" href="{{ route('admin.templates.index') }}">
                                 {{ trans('frontend.form.back') }}
                             </a>
 
@@ -200,7 +200,7 @@
                 let idAttach = $(this).attr('data-num');
 
                 let request = $.ajax({
-                    url: '{{ URL::route('admin.ajax.action') }}',
+                    url: '{{ route('admin.ajax.action') }}',
                     method: "POST",
                     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                     data: {
@@ -248,7 +248,7 @@
 
                 let sendData = aParams.join("&");
                 let request = $.ajax({
-                    url: '{{ URL::route('admin.ajax.action') }}',
+                    url: '{{ route('admin.ajax.action') }}',
                     method: "POST",
                     data: sendData,
                     dataType: "json"
@@ -285,6 +285,8 @@
                             alert_msg += '</ul>';
                             alert_msg += '</div>';
                         }
+
+                        console.log(alert_msg);
 
                         $("#resultSend").html(alert_msg);
                         $("#process").removeClass();

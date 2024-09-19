@@ -110,7 +110,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ URL::route('admin.datatable.redirect') }}'
+                    url: '{{ route('admin.datatable.redirect') }}'
                 },
                 columns: [
                     {data: 'url', name: 'url'},

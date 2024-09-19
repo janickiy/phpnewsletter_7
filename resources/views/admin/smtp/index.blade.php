@@ -24,13 +24,13 @@
                         <!-- /.card-header -->
                         <div class="card-body">
                             <div class="pb-3">
-                                <a href="{{ URL::route('admin.smtp.create') }}"
+                                <a href="{{ route('admin.smtp.create') }}"
                                    class="btn btn-info btn-sm pull-left">
                                     <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_smtp_server') }}
                                 </a>
                             </div>
 
-                            {!! Form::open(['url' => URL::route('admin.smtp.status'), 'method' => 'post']) !!}
+                            {!! Form::open(['url' => route('admin.smtp.status'), 'method' => 'post']) !!}
 
                             <table id="itemList" class="table table-bordered table-striped">
                                 <thead>
@@ -194,7 +194,7 @@
                 "autoWidth": true,
                 'serverSide': true,
                 'ajax': {
-                    url: '{{ URL::route('admin.datatable.smtp') }}'
+                    url: '{{ route('admin.datatable.smtp') }}'
                 },
                 'columns': [
                     {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},
@@ -228,7 +228,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: '{{ URL::route('admin.smtp.destroy') }}',
+                            url: '{{ route('admin.smtp.destroy') }}',
                             type: "POST",
                             dataType: "html",
                             data: {id: rowid},

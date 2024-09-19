@@ -145,7 +145,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ URL::route('admin.datatable.logs') }}'
+                    url: '{{ route('admin.datatable.logs') }}'
                 },
                 columns: [
                     {data: 'start_date', name: 'start_date'},
@@ -183,7 +183,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ URL::route('admin.datatable.info_log') }}'
+                    url: '{{ route('admin.datatable.info_log') }}'
                 },
                 columns: [
                     {data: 'template', name: 'template'},
@@ -212,7 +212,7 @@
                 },
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = "{{ URL::route('admin.log.clear') }}";
+                    window.location.href = "{{ route('admin.log.clear') }}";
                 }
             })
         }
