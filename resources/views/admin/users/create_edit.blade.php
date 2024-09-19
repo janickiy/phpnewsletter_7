@@ -22,7 +22,7 @@
                         <!-- form start -->
                         {!! Form::open(['url' => isset($row) ? route('admin.users.update') : route('admin.users.store'), 'method' => isset($row) ? 'put' : 'post']) !!}
 
-                        {!! isset($user) ? Form::hidden('id', $user->id) : '' !!}
+                        {!! isset($row) ? Form::hidden('id', $row->id) : '' !!}
 
                         <div class="card-body">
 
@@ -63,7 +63,7 @@
 
                             </div>
 
-                            @if ((isset($row->id) && $row->id != Auth::user()->id) || !isset($user->id))
+                            @if ((isset($row->id) && $row->id != Auth::user()->id) || !isset($row->id))
 
                                 <div class="form-group">
 
