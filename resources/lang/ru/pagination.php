@@ -14,6 +14,16 @@ return [
     */
 
     'previous' => '&laquo; Назад',
-    'next'     => 'Вперёд &raquo;',
-
+    'next' => 'Вперёд &raquo;',
+    's_length_menu' => 'Отображено _MENU_ записей на страницу',
+    's_zero_records' => 'Ничего не найдено - извините',
+    's_info' => 'Показано с _START_ по _END_ из _TOTAL_ записей',
+    's_info_empty' => 'Показано с 0 по 0 из 0 записей',
+    's_infofiltered' => '(отфильтровано  _MAX_ всего записей)',
+    's_paginate' => [
+        "first" => "Первая",
+        "last" => "Посл.",
+        "next" => "След.",
+        "previous" => "Пред.",
+    ],
 ];

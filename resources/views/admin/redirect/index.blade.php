@@ -24,7 +24,7 @@
                         <!-- /.card-header -->
                         <div class="card-body">
 
-                            @if(PermissionsHelper::has_permission(Auth::user()->role,'admin'))
+                            @if(PermissionsHelper::has_permission('admin'))
 
                                 <div class="row">
                                     <div class="col-lg-12"><p class="text-center">
@@ -91,16 +91,16 @@
         $(function () {
             $('#itemList').dataTable({
                 "oLanguage": {
-                    "sLengthMenu": "Отображено _MENU_ записей на страницу",
-                    "sZeroRecords": "Ничего не найдено - извините",
-                    "sInfo": "Показано с _START_ по _END_ из _TOTAL_ записей",
-                    "sInfoEmpty": "Показано с 0 по 0 из 0 записей",
-                    "sInfoFiltered": "(отфильтровано  _MAX_ всего записей)",
+                    "sLengthMenu": "{{ trans('pagination.s_length_menu') }}",
+                    "sZeroRecords": "{{ trans('pagination.s_zero_records') }}",
+                    "sInfo": "{{ trans('pagination.s_info') }}",
+                    "sInfoEmpty": "{{ trans('pagination.s_info_empty') }}",
+                    "sInfoFiltered": "{{ trans('pagination.s_infofiltered') }}",
                     "oPaginate": {
-                        "sFirst": "Первая",
-                        "sLast": "Посл.",
-                        "sNext": "След.",
-                        "sPrevious": "Пред.",
+                        "sFirst": "{{ trans('pagination.s_paginate.first') }}",
+                        "sLast": "{{ trans('pagination.s_paginate.last') }}",
+                        "sNext": "{{ trans('pagination.s_paginate.next') }}",
+                        "sPrevious": "{{ trans('pagination.s_paginate.previous') }}",
                     },
                     "sSearch": ' <i class="fas fa-search" aria-hidden="true"></i>'
                 },
