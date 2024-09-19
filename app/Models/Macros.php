@@ -20,6 +20,7 @@ class Macros extends Model
         'type'
     ];
 
+
     /**
      * @return array
      */
@@ -32,6 +33,28 @@ class Macros extends Model
             self::TYPE_TAGS => trans('frontend.str.macros_type_tags'),
             self::TYPE_WRAP_PHRASE => trans('frontend.str.macros_type_wrap_phrase'),
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        switch ($this->type) {
+            case 1:
+                return trans('frontend.str.macros_type_url');
+
+            case 2:
+                return trans('frontend.str.macros_type_email');
+            case 3:
+                return trans('frontend.str.macros_type_hash_tags');
+            case 4:
+                return trans('frontend.str.macros_type_tags');
+            case 5:
+                return trans('frontend.str.macros_type_wrap_phrase');
+            default:
+                return '';
+        }
     }
 
     /**

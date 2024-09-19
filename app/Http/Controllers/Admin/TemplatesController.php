@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Helpers\StringHelper;
-use App\Models\{Templates, Attach, Category};
+use App\Models\{Macros, Templates, Attach, Category};
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -31,7 +31,15 @@ class TemplatesController extends Controller
     {
         $infoAlert = trans('frontend.hint.template_create') ?? null;
 
-        return view('admin.templates.create_edit', compact('infoAlert'))->with('title', trans('frontend.title.template_create'));
+        $list = [];
+
+        foreach (Macros::get() as $macro) {
+            $list[] = $macro->name . ' - ' . $macro->getType();
+        }
+
+        $macrosList = implode(', ', $list);
+
+        return view('admin.templates.create_edit', compact('infoAlert','macrosList'))->with('title', trans('frontend.title.template_create'));
     }
 
     /**
@@ -75,8 +83,15 @@ class TemplatesController extends Controller
 
         $attachment = $template->attach;
         $infoAlert = trans('frontend.hint.template_edit') ? trans('frontend.hint.template_edit') : null;
+        $list = [];
 
-        return view('admin.templates.create_edit', compact('template', 'attachment', 'infoAlert'))->with('title', trans('frontend.title.template_edit'));
+        foreach (Macros::get() as $macro) {
+            $list[] = '{{'. $macro->name . '}} - ' . $macro->getType();
+        }
+
+        $macrosList = implode(', ', $list);
+
+        return view('admin.templates.create_edit', compact('template', 'attachment', 'infoAlert', 'macrosList'))->with('title', trans('frontend.title.template_edit'));
     }
 
     /**

@@ -270,7 +270,8 @@ return [
         'sample_macros_type_wrap_phrase' => 'Быстрый выкуп #оригинальных картриджей#',
     ],
     'note' => [
-        'personalization' => '<strong>Персонализация:</strong> %NAME% - имя подписчика, %EMAIL% - E-mail адрес, %UNSUB% - ссылка для удаления рассылки, %SERVER_NAME% - адрес сайта, %REFERRAL:http://my_website.com/% - ссылка для статистика переходов по ссылкам'
+        'personalization' => '<strong>Персонализация:</strong> %NAME% - имя подписчика, %EMAIL% - E-mail адрес, %UNSUB% - ссылка для удаления рассылки, %SERVER_NAME% - адрес сайта, %REFERRAL:http://my_website.com/% - ссылка для статистика переходов по ссылкам',
+        'macros' => '<strong>Макросы:</strong>',
     ],
     'title' => [
         'category_index'  => 'Категория подписчиков',

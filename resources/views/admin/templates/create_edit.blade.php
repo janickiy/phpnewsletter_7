@@ -58,6 +58,10 @@
                                     <small>{!! trans('frontend.note.personalization') !!}</small>
                                 </blockquote>
 
+                                <blockquote class="quote-secondary">
+                                    <small>{!! trans('frontend.note.macros') !!} {!! $macrosList !!}</small>
+                                </blockquote>
+
                             </div>
 
                             <div class="form-group">

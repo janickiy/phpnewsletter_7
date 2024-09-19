@@ -266,7 +266,8 @@ return [
         'sample_macros_type_wrap_phrase' => 'Quick redemption of #original cartridges#',
     ],
     'note' => [
-        'personalization' => '<strong>Personalization:</strong> %NAME% - subscriber name, %EMAIL% - Email address, %UNSUB% - link to unsubscribe, %SERVER_NAME% - url address, %REFERRAL:http://my_website.com/% - link to the referral logs'
+        'personalization' => '<strong>Personalization:</strong> %NAME% - subscriber name, %EMAIL% - Email address, %UNSUB% - link to unsubscribe, %SERVER_NAME% - url address, %REFERRAL:http://my_website.com/% - link to the referral logs',
+        'macros' => '<strong>Macros:</strong>',
     ],
     'title' => [
         'category_index'  => 'Subscriber category',
