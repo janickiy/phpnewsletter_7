@@ -365,7 +365,7 @@ class SendEmailHelper
      * @return bool
      * @throws PHPMailer\Exception
      */
-    public static function checkConnection(string $host, string $email, string $username, string $password, int $port, string $authentication, string $secure, int $timeout = 5): bool
+    public static function checkConnection(string $host, string $email, string $username, ?string $password, int $port, string $authentication, string $secure, int $timeout = 5): bool
     {
         $m = new PHPMailer\PHPMailer();
         $m->isSMTP();

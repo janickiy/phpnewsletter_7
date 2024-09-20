@@ -33,17 +33,17 @@ class StoreRequest extends FormRequest
     }
 
     /**
-     * @return mixed
+     * @param Validator $validator
+     * @return void
      */
-    public function after(): array
+    public function withValidator(Validator $validator)
     {
-        return [
-            function (Validator $validator) {
+        if ($validator->fails() === false) {
+            $validator->after(function ($validator) {
                 if (SendEmailHelper::checkConnection($this->host, $this->email, $this->username, $this->password, $this->port, $this->authentication, $this->secure, $this->timeout) === false) {
                     $validator->errors()->add('connection', trans('message.unable_connect_to_smtp'));
                 }
-            }
-        ];
+            });
+        }
     }
-
 }
