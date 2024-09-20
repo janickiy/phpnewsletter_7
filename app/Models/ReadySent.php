@@ -19,7 +19,7 @@ class ReadySent extends Model
         'readMail',
         'date',
         'schedule_id',
-        'log_id'
+        'log_id',
     ];
 
     /**
@@ -44,5 +44,13 @@ class ReadySent extends Model
     public function schedule(): BelongsTo
     {
         return $this->belongsTo(Schedule::class, 'schedule_id');
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function log(): BelongsTo
+    {
+        return $this->belongsTo(Logs::class, 'log_id');
     }
 }

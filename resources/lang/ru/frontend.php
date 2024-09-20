@@ -242,6 +242,7 @@ return [
         'dkim_identity'  => 'Подписанная личность (E-mail)',
         'smtp_server'    => 'SMTP сервер',
         'template'       => 'Шаблон',
+        'precedence'     => 'Приоритет',
         'prior'  => 'Важность',
         'normal' => 'Нормальная',
         'low'  => 'Низкая',

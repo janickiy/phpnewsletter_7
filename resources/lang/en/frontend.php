@@ -247,6 +247,7 @@ return [
         'high' => 'high',
         'send' => 'send',
         'back' => 'back',
+        'precedence'  => 'Precedence',
         'description' => 'Description',
         'role' => 'Role',
         'password_again' => 'Password again',

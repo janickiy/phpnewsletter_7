@@ -225,7 +225,7 @@
             });
 
             $(document).on("click", "#send_test", function () {
-                let bodyContent = ('#body').val();
+                let bodyContent = $('#body').val();
                 let arr = $("#tmplForm").serializeArray();
                 let aParams = [];
                 let sParam;

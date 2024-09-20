@@ -445,7 +445,7 @@
                                                 </div>
                                                 <div class="form-check">
 
-                                                    {!! Form::radio('HOW_TO_SEND', 'plain', SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') == 'smtp' ? true : false, ['class' => 'form-check-input'] ) !!}
+                                                    {!! Form::radio('HOW_TO_SEND', 'smtp', SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') == 'smtp' ? true : false, ['class' => 'form-check-input'] ) !!}
 
                                                     <label class="form-check-label">SMTP</label>
                                                 </div>

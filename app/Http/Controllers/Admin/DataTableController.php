@@ -75,6 +75,9 @@ class DataTableController extends Controller
             ->editColumn('active', function ($row) {
                 return $row->active === 1 ? trans('frontend.str.yes') : trans('frontend.str.no');
             })
+            ->editColumn('activeStatus', function ($row) {
+                return $row->active;
+            })
             ->addColumn('action', function ($row) {
                 $editBtn = '<a title="' . trans('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.smtp.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
                 $deleteBtn = '<a class="btn btn-xs btn-danger deleteRow" id="' . $row->id . '"><span class="fa fa-trash"></span></a>';

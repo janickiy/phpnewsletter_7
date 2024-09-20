@@ -210,7 +210,9 @@
             open_modal.click(function (event) {
                 let idSelect = $('#select_action').val();
 
-                if (idSelect === '') {
+                alert(idSelect);
+
+                if (idSelect == '') {
                     event.preventDefault();
                     Swal.fire({
                         title: "Error",
@@ -222,7 +224,7 @@
                         closeOnConfirm: false
                     });
                 } else {
-                    if (idSelect === 1) {
+                    if (idSelect == 1) {
                         event.preventDefault();
                         let form = $(this).parents('form');
                         Swal.fire({
@@ -241,7 +243,7 @@
                         });
                     }
 
-                    if (idSelect === 0) {
+                    if (idSelect == 0) {
                         event.preventDefault();
 
                         let myModal = new bootstrap.Modal(document.getElementById('modal-lg'), {});

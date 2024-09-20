@@ -26,6 +26,9 @@ return new class extends Migration {
             $table->foreignId('schedule_id')
                 ->constrained('schedule')
                 ->onDelete('cascade');
+            $table->foreignId('log_id')
+                ->constrained('logs')
+                ->onDelete('cascade');
             $table->timestamps();
             $table->engine = 'MyISAM';
         });
