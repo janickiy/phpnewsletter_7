@@ -157,7 +157,8 @@ return [
         'macros_type_email' => 'Replacing email with link',
         'macros_type_hash_tags'  => 'Replacing hashtags with links',
         'macros_type_tags'       => 'Wrapping words with tags',
-        'macros_type_wrap_phrase'  => 'Wrap a phrase into a link',
+        'macros_type_wrap_phrase' => 'Wrap a phrase into a link',
+        'close' => 'Close',
     ],
     'msg' => [
         'are_you_sure' => 'Are you sure?',

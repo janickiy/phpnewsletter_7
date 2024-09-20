@@ -158,6 +158,7 @@ return [
         'macros_type_hash_tags'    => 'Замена хеш-тегов на ссылки',
         'macros_type_tags'         => 'Оборачивание слов тегами',
         'macros_type_wrap_phrase'  => 'Обернуть фразу в ссылку',
+        'close' => 'Закрыть',
     ],
     'msg' => [
         'are_you_sure' => 'Вы уверены?',

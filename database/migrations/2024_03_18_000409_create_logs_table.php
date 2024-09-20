@@ -13,9 +13,6 @@ return new class extends Migration
     {
         Schema::create('logs', function (Blueprint $table) {
             $table->increments('id');
-            $table->foreignId('subscriber_id')
-                ->constrained('subscribers')
-                ->onDelete('cascade');
             $table->timestamp('time');
             $table->engine = 'MyISAM';
         });
