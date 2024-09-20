@@ -63,17 +63,17 @@ class SendUnsentEmails extends Command implements Isolatable
                     ->join('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
                     ->join('schedule_category', function ($join) use ($row) {
                         $join->on('subscriptions.category_id', '=', 'schedule_category.category_id')
-                            ->where('schedule_category.schedule_id', '=', $row->id);
+                            ->where('schedule_category.schedule_id', $row->id);
                     })
                     ->leftJoin('ready_sent', function ($join) use ($row) {
                         $join->on('subscribers.id', '=', 'ready_sent.subscriber_id')
-                            ->where('ready_sent.schedule_id', '=', $row->id)
+                            ->where('ready_sent.schedule_id', $row->id)
                             ->where(function ($query) {
-                                $query->where('ready_sent.success', '=', 0);
+                                $query->where('ready_sent.success', 0);
                             });
                     })
                     ->whereNull('ready_sent.subscriber_id')
-                    ->where('subscribers.active', '=', 1)
+                    ->where('subscribers.active', 1)
                     ->whereRaw($interval)
                     ->groupBy('subscribers.id')
                     ->groupBy('subscribers.email')
@@ -87,13 +87,13 @@ class SendUnsentEmails extends Command implements Isolatable
                     ->join('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
                     ->join('schedule_category', function ($join) use ($row) {
                         $join->on('subscriptions.category_id', '=', 'schedule_category.category_id')
-                            ->where('schedule_category.schedule_id', '=', $row->id);
+                            ->where('schedule_category.schedule_id',  $row->id);
                     })
                     ->leftJoin('ready_sent', function ($join) use ($row) {
                         $join->on('subscribers.id', '=', 'ready_sent.subscriber_id')
-                            ->where('ready_sent.schedule_id', '=', $row->id)
+                            ->where('ready_sent.schedule_id', $row->id)
                             ->where(function ($query) {
-                                $query->where('ready_sent.success', '=', 0);
+                                $query->where('ready_sent.success', 0);
                             });
                     })
                     ->whereNull('ready_sent.subscriber_id')
@@ -119,7 +119,7 @@ class SendUnsentEmails extends Command implements Isolatable
                 SendEmailHelper::setSubscriberId($subscriber->id);
                 SendEmailHelper::setName($subscriber->name);
 
-                $result = SendEmailHelper::sendEmail($row->templateId);
+                $result = SendEmailHelper::sendEmail($row->template_id);
 
                 if ($result['result'] === true) {
                     ReadySent::where('schedule_id', $row->id)->update(['success' => 1]);
