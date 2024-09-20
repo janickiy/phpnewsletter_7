@@ -17,7 +17,7 @@ class RemoveSubscriber
     public function handle(Request $request, Closure $next)
     {
         if (file_exists(base_path('.env')) && SettingsHelper::getInstance()->getValueForKey('REMOVE_SUBSCRIBER')) {
-            $interval = "created_at < NOW() - INTERVAL '" . SettingsHelper::getInstance()->getValueForKey('DAYS_FOR_REMOVE_SUBSCRIBER') . "' DAY";
+            $interval = "created_at < NOW() - INTERVAL '" . (int)SettingsHelper::getInstance()->getValueForKey('DAYS_FOR_REMOVE_SUBSCRIBER') . "' DAY";
             $subscribers = Subscribers::query()->active()->whereRaw($interval);
 
             if ($subscribers->count() > 0) {

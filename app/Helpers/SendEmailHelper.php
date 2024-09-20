@@ -197,7 +197,7 @@ class SendEmailHelper
 
         $m = new PHPMailer\PHPMailer();
 
-        if (SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') == 'smtp') {
+        if (SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') === 'smtp') {
             $m->IsSMTP();
             $m->SMTPAuth = true;
             $m->SMTPKeepAlive = true;
@@ -231,7 +231,7 @@ class SendEmailHelper
 
                 $m->Timeout = $smtp[0]['timeout'];
             }
-        } elseif (SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') == 'sendmail' && SettingsHelper::getInstance()->getValueForKey('SENDMAIL_PATH') != '') {
+        } elseif (SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') === 'sendmail' && SettingsHelper::getInstance()->getValueForKey('SENDMAIL_PATH') !== '') {
             $m->IsSendmail();
             $m->Sendmail = SettingsHelper::getInstance()->getValueForKey('SENDMAIL_PATH');
         } else {
@@ -246,18 +246,18 @@ class SendEmailHelper
             $m->Priority = 5;
         else $m->Priority = 3;
 
-        if (SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') != 'smtp') $m->From = SettingsHelper::getInstance()->getValueForKey('EMAIL');
+        if (SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') !== 'smtp') $m->From = SettingsHelper::getInstance()->getValueForKey('EMAIL');
         $m->FromName = SettingsHelper::getInstance()->getValueForKey('FROM');
 
-        if (SettingsHelper::getInstance()->getValueForKey('LIST_OWNER') != '') $m->addCustomHeader("List-Owner: <" . SettingsHelper::getInstance()->getValueForKey('LIST_OWNER') . ">");
-        if (SettingsHelper::getInstance()->getValueForKey('RETURN_PATH') != '') $m->addCustomHeader("Return-Path: <" . SettingsHelper::getInstance()->getValueForKey('RETURN_PATH') . ">");
-        if (SettingsHelper::getInstance()->getValueForKey('CONTENT_TYPE') == 'html')
+        if (SettingsHelper::getInstance()->getValueForKey('LIST_OWNER') !== '') $m->addCustomHeader("List-Owner: <" . SettingsHelper::getInstance()->getValueForKey('LIST_OWNER') . ">");
+        if (SettingsHelper::getInstance()->getValueForKey('RETURN_PATH') !== '') $m->addCustomHeader("Return-Path: <" . SettingsHelper::getInstance()->getValueForKey('RETURN_PATH') . ">");
+        if (SettingsHelper::getInstance()->getValueForKey('CONTENT_TYPE') === 'html')
             $m->isHTML(true);
         else
             $m->isHTML(false);
 
         $subject = str_replace('%NAME%', $name, $subject);
-        $subject = SettingsHelper::getInstance()->getValueForKey('RENDOM_REPLACEMENT_SUBJECT') == 1 ? StringHelper::encodeString($subject) : $subject;
+        $subject = (int)SettingsHelper::getInstance()->getValueForKey('RENDOM_REPLACEMENT_SUBJECT') === 1 ? StringHelper::encodeString($subject) : $subject;
 
         if (SettingsHelper::getInstance()->getValueForKey('CHARSET') != 'utf-8') {
             $subject = iconv('utf-8', SettingsHelper::getInstance()->getValueForKey('CHARSET'), $subject);
@@ -265,28 +265,28 @@ class SendEmailHelper
 
         $m->Subject = $subject;
 
-        if (SettingsHelper::getInstance()->getValueForKey('SLEEP') > 0) sleep(SettingsHelper::getInstance()->getValueForKey('SLEEP'));
+        if ((int)SettingsHelper::getInstance()->getValueForKey('SLEEP') > 0) sleep((int)SettingsHelper::getInstance()->getValueForKey('SLEEP'));
         if (SettingsHelper::getInstance()->getValueForKey('ORGANIZATION') != '') $m->addCustomHeader("Organization: " . SettingsHelper::getInstance()->getValueForKey('ORGANIZATION'));
 
         $m->AddAddress($email);
 
-        if (SettingsHelper::getInstance()->getValueForKey('REQUEST_REPLY') == 1 && SettingsHelper::getInstance()->getValueForKey('EMAIL') != '') {
+        if ((int)SettingsHelper::getInstance()->getValueForKey('REQUEST_REPLY') === 1 && SettingsHelper::getInstance()->getValueForKey('EMAIL') !== '') {
             $m->addCustomHeader("Disposition-Notification-To: " . SettingsHelper::getInstance()->getValueForKey('EMAIL'));
             $m->ConfirmReadingTo = SettingsHelper::getInstance()->getValueForKey('EMAIL');
         }
 
-        if (SettingsHelper::getInstance()->getValueForKey('PRECEDENCE') == 'bulk')
+        if (SettingsHelper::getInstance()->getValueForKey('PRECEDENCE') === 'bulk')
             $m->addCustomHeader("Precedence: bulk");
-        elseif (SettingsHelper::getInstance()->getValueForKey('PRECEDENCE') == 'junk')
+        elseif (SettingsHelper::getInstance()->getValueForKey('PRECEDENCE') ==='junk')
             $m->addCustomHeader("Precedence: junk");
-        elseif (SettingsHelper::getInstance()->getValueForKey('PRECEDENCE') == 'list')
+        elseif (SettingsHelper::getInstance()->getValueForKey('PRECEDENCE') === 'list')
             $m->addCustomHeader("Precedence: list");
 
-        $UNSUB = SettingsHelper::getInstance()->getValueForKey('URL') . "unsubscribe/" . $subscriberId . "/" . $token;
+        $UNSUB = SettingsHelper::getInstance()->getValueForKey('URL') . substr(SettingsHelper::getInstance()->getValueForKey('URL'), -1) !== '/' ? '/' : ''  . "unsubscribe/" . $subscriberId . "/" . $token;
         $unsublink = str_replace('%UNSUB%', $UNSUB, SettingsHelper::getInstance()->getValueForKey('UNSUBLINK'));
 
         if (self::$unsub) {
-            if (SettingsHelper::getInstance()->getValueForKey('SHOW_UNSUBSCRIBE_LINK') == 1 && SettingsHelper::getInstance()->getValueForKey('UNSUBLINK') != '') $body .= "<br><br>" . $unsublink;
+            if ((int)SettingsHelper::getInstance()->getValueForKey('SHOW_UNSUBSCRIBE_LINK') === 1 && SettingsHelper::getInstance()->getValueForKey('UNSUBLINK') !== '') $body .= "<br><br>" . $unsublink;
             $m->addCustomHeader("List-Unsubscribe: " . $UNSUB);
         }
 
@@ -295,7 +295,6 @@ class SendEmailHelper
         }
 
         $msg = $body;
-
         $url_info = parse_url(SettingsHelper::getInstance()->getValueForKey('URL'));
 
         $msg = preg_replace_callback("/%REFERRAL\:(.+)%/isU", function ($matches) {
@@ -306,7 +305,7 @@ class SendEmailHelper
         $msg = str_replace('%SERVER_NAME%', $url_info['host'], $msg);
         $msg = str_replace('%USERID%', $subscriberId, $msg);
         $msg = str_replace('%URL_PATH%', SettingsHelper::getInstance()->getValueForKey('URL'), $msg);
-        $msg = SettingsHelper::getInstance()->getValueForKey('RANDOM_REPLACEMENT_BODY') == 1 ? StringHelper::encodeString($msg) : $msg;
+        $msg = (int)SettingsHelper::getInstance()->getValueForKey('RANDOM_REPLACEMENT_BODY') === 1 ? StringHelper::encodeString($msg) : $msg;
         $msg = StringHelper::macrosReplacement($msg);
 
         if ($attach) {
@@ -349,7 +348,7 @@ class SendEmailHelper
         $m->ClearAllRecipients();
         $m->ClearAttachments();
 
-        if (SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') == 'smtp') $m->SmtpClose();
+        if (SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') === 'smtp') $m->SmtpClose();
 
         return $result;
     }

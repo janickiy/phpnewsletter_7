@@ -42,7 +42,7 @@ class StringHelper
         $pos = strpos(substr($str, $chars), " ");
         $srttmpend = strlen($str) > $chars ? '...' : '';
 
-        return substr($str, 0, $chars + $pos) . (isset($srttmpend) ? $srttmpend : '');
+        return substr($str, 0, $chars + $pos) . ($srttmpend ?? '');
     }
 
     /**
@@ -54,10 +54,9 @@ class StringHelper
          * Converts shorthands like "2M" or "512K" to bytes
          *
          * @param int $size
-         * @return int|float
-         * @throws Exception
+         * @return false|float|int
          */
-        $normalize = function ($size) {
+        $normalize = function (int $size) {
             if (preg_match('/^(-?[\d\.]+)(|[KMG])$/i', $size, $match)) {
                 $pos = array_search($match[2], ["", "K", "M", "G"]);
                 $size = $match[1] * pow(1024, $pos);
