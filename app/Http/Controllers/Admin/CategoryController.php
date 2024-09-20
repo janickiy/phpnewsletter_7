@@ -85,8 +85,6 @@ class CategoryController extends Controller
      */
     public function destroy(Request $request): void
     {
-        Subscriptions::where('category_id', $request->id)->delete();
-        ScheduleCategory::where('category_id', $request->id)->delete();
-        Category::find($request->id)->delete();
+        Category::find($request->id)->remove();
     }
 }

@@ -120,8 +120,6 @@ class SubscribersController extends Controller
      */
     public function import(): View
     {
-        @set_time_limit(0);
-
         $charsets = Charsets::getOption();
         $category_options = Category::getOption();
         $maxUploadFileSize = StringHelper::maxUploadFileSize();
@@ -298,6 +296,7 @@ class SubscribersController extends Controller
                 break;
 
             case 2 :
+                Subscriptions::whereIN('subscriber_id', $temp)->delete();
                 Subscribers::whereIN('id', $temp)->delete();
                 break;
         }

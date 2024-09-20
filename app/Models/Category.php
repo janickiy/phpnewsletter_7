@@ -28,4 +28,11 @@ class Category extends Model
     {
         return self::orderBy('name')->get()->pluck('name', 'id');
     }
+
+    public function scopeRemove(): void
+    {
+        Subscriptions::where('category_id', $this->id)->delete();
+        ScheduleCategory::where('category_id', $this->id)->delete();
+        self::delete();
+    }
 }

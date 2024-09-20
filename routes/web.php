@@ -58,6 +58,7 @@ Route::group(['middleware' => ['install']], function () {
     });
 
     Route::get('test', [TestController::class, 'index'])->name('test');
+    Route::post('test', [TestController::class, 'import'])->name('admin.test.import');
 
     Route::middleware(['permission:admin|moderator'])->group(function () {
         Route::group(['prefix' => 'category'], function () {

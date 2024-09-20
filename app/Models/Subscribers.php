@@ -39,7 +39,7 @@ class Subscribers extends Model
      */
     public function subscriptions(): HasMany
     {
-        return $this->hasMany(Subscriptions::class,'subscriber_id');
+        return $this->hasMany(Subscriptions::class, 'subscriber_id');
     }
 
     /**
@@ -55,7 +55,7 @@ class Subscribers extends Model
 
             fclose($fp);
 
-            $strtmp =  explode("\n", $buffer);
+            $strtmp = explode("\n", $buffer);
             $count = 0;
 
             foreach ($strtmp as $val) {
@@ -123,14 +123,14 @@ class Subscribers extends Model
     {
         $ext = strtolower($f->file('import')->getClientOriginalExtension());
 
-        if ($ext == 'csv') {
+        if ($ext === 'csv') {
             $reader = new Csv();
 
             if ($f->charset) {
                 $reader->setInputEncoding($f->charset);
             }
 
-        } elseif ($ext == 'xlsx') {
+        } elseif ($ext === 'xlsx') {
             $reader = new Xlsx();
         } else {
             $reader = new Xls();
@@ -220,5 +220,17 @@ class Subscribers extends Model
         }
 
         return $subscribers;
+    }
+
+    /**
+     * @return void
+     */
+    public function scopeRemove(): void
+    {
+        foreach ($this->subscriptions as $subscription) {
+            $subscription->delete();
+        }
+
+        $this->delete();
     }
 }
