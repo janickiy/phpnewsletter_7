@@ -18,7 +18,6 @@ use App\Models\{
 use App\Helpers\{SendEmailHelper, SettingsHelper, StringHelper, UpdateHelper};
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 use Cookie;
 use Config;
 use Artisan;
@@ -234,12 +233,12 @@ class AjaxController extends Controller
                             SendEmailHelper::setTemplateId(0);
                             SendEmailHelper::setTracking(false);
                             $result = SendEmailHelper::sendEmail();
-                            $result_send = ['result' => $result['result'] === true ? 'success' : 'error', 'msg' => $result['error'] ? trans('frontend.msg.email_wasnt_sent') : trans('frontend.msg.email_sent')];
+                            $result_send = ['result' => $result['result'], 'msg' => $result['error'] ? trans('frontend.msg.email_wasnt_sent') : trans('frontend.msg.email_sent')];
                         } else {
                             $msg = implode(",", $errors);
 
                             return response()->json([
-                                'result' => 'errors',
+                                'result' => false,
                                 'msg' => $msg
                             ]);
                         }
@@ -248,7 +247,7 @@ class AjaxController extends Controller
                         $data['email'] = $email;
                         $data['template_id'] = 0;
                         $data['template'] = $subject;
-                        $data['success'] = isset($result['result']) && $result['result'] !== true ? 0 : 1;
+                        $data['success']  = isset($result['result']) && $result['result'] !== true ? 0 : 1;
                         $data['errorMsg'] = isset($result['result']) && $result['result'] !== true ? $result['error'] : '';
                         $data['schedule_id'] = 0;
                         $data['log_id'] = 0;
@@ -368,7 +367,7 @@ class AjaxController extends Controller
                             foreach ($subscribers as $subscriber) {
                                 if ($this->getProcess() === 'stop' || $this->getProcess() === 'pause') {
                                     return response()->json([
-                                        'result' => true,
+                                        'result'    => true,
                                         'completed' => true,
                                     ]);
                                 }
@@ -393,7 +392,7 @@ class AjaxController extends Controller
                                         'email' => $subscriber->email,
                                         'template_id' => $template->id,
                                         'template' => $template->name,
-                                        'success' => 1,
+                                        'success'  => 1,
                                         'schedule_id' => 0,
                                         'log_id' => $logId,
                                     ];
@@ -407,10 +406,10 @@ class AjaxController extends Controller
                                         'email' => $subscriber->email,
                                         'template_id' => $template->id,
                                         'template' => $template->name,
-                                        'success' => 0,
+                                        'success'  => 0,
                                         'errorMsg' => $result['error'],
                                         'schedule_id' => 0,
-                                        'log_id' => $logId,
+                                        'log_id'      => $logId,
                                     ];
                                 }
 
@@ -423,7 +422,7 @@ class AjaxController extends Controller
                                     $this->updateProcess('stop');
 
                                     return response()->json([
-                                        'result' => true,
+                                        'result'    => true,
                                         'completed' => true,
                                     ]);
                                 }
@@ -435,7 +434,7 @@ class AjaxController extends Controller
                             $this->updateProcess('stop');
 
                             return response()->json([
-                                'result' => true,
+                                'result'    => true,
                                 'completed' => true,
                             ]);
                         }
@@ -443,7 +442,7 @@ class AjaxController extends Controller
                         $this->updateProcess('stop');
 
                         return response()->json([
-                            'result' => true,
+                            'result'    => true,
                             'completed' => true,
                         ]);
 
@@ -518,10 +517,10 @@ class AjaxController extends Controller
                         return response()->json([
                             'result' => true,
                             'status' => 1,
-                            'total' => $total,
+                            'total'  => $total,
                             'success' => $success,
                             'unsuccessful' => $unsuccess,
-                            'time' => $datetime->format('H:i:s'),
+                            'time'     => $datetime->format('H:i:s'),
                             'leftsend' => $total > 0 ? round(($success + $unsuccess) / $total * 100, 2) : 0,
                         ]);
 
@@ -583,15 +582,13 @@ class AjaxController extends Controller
                                 'result' => false,
                             ]);
                         }
-
-                    case 'get-macros-value':
                 }
             }
         } catch (\Exception $e) {
             return response()->json([
                 'result' => false,
                 'errors' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            ]);
         }
     }
 

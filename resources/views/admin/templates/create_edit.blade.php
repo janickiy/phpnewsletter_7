@@ -149,11 +149,13 @@
                     </header>
 
                     <header class="card card-info">
-
                         <div class="card-header">
-                            <h3 class="card-title">{{ trans('frontend.str.send_test_letter') }}<span id="process" class="showprocess"></span></h3>
+                            <h3 class="card-title">{{ trans('frontend.str.send_test_letter') }}<span id="process"></span></h3>
                         </div>
                         <div class="card-body">
+
+                            <div id="resultSend"></div>
+
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text"><i class="fas fa-envelope"></i></span>
@@ -263,35 +265,19 @@
                     if (data.result != null) {
                         let alert_msg = '';
 
-                        if (data.result === 'success') {
-                            alert_msg += '<div class="alert alert-success fade in">';
-                            alert_msg += '<button class="close" data-dismiss="alert">×</button>';
-                            alert_msg += '<i class="fa-fw fa fa-check"></i>';
+                        if (data.result === true) {
+                            alert_msg += '<div class="alert alert-success alert-dismissible">';
+                            alert_msg += '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
                             alert_msg += data.msg;
                             alert_msg += '</div>';
-                        } else if (data.result === 'error') {
-                            alert_msg += '<div class="alert alert-danger fade in">';
-                            alert_msg += '<button class="close" data-dismiss="alert">×</button>';
-                            alert_msg += '<strong>{{ trans('frontend.str.error_alert') }} </strong>';
+                        } else {
+                            alert_msg += '<div class="alert alert-danger alert-dismissible">';
+                            alert_msg += '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
                             alert_msg += data.msg;
-                            alert_msg += '</div>';
-                        } else if (data.result === 'errors') {
-                            alert_msg += '<div class="alert alert-danger fade in">';
-                            alert_msg += '<button class="close" data-dismiss="alert">×</button>';
-                            alert_msg += '<strong>{{ trans('frontend.str.error_alert') }} </strong>';
-                            alert_msg += '<ul>';
-
-                            let arr = data.msg.split(',');
-
-                            for (let i = 0; i < arr.length; i++) {
-                                alert_msg += '<li> ' + arr[i] + '</li>';
-                            }
-
-                            alert_msg += '</ul>';
                             alert_msg += '</div>';
                         }
 
-                        console.log(alert_msg);
+                        console.log(data.msg);
 
                         $("#resultSend").html(alert_msg);
                         $("#process").removeClass();
