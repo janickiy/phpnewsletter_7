@@ -36,7 +36,8 @@
                                 <tr>
                                     <th style="width: 10px">
                                         <span>
-                                            <input type="checkbox" title="{{ trans('frontend.str.check_uncheck_all') }}" id="checkAll">
+                                            <input type="checkbox" title="{{ trans('frontend.str.check_uncheck_all') }}"
+                                                   id="checkAll">
                                         </span>
                                     </th>
                                     <th style="width: 10px">ID</th>
@@ -100,7 +101,8 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">{{ trans('frontend.str.online_newsletter_log') }}<span id="process"></span></h4>
+                    <h4 class="modal-title">{{ trans('frontend.str.online_newsletter_log') }}<span id="process"></span>
+                    </h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -118,7 +120,8 @@
                             </div>
                         </div>
                     </div>
-                    <p><span id="leftsend">0</span>% {{ trans('frontend.str.left') }}: <span id="timer2">00:00:00</span></p>
+                    <p><span id="leftsend">0</span>% {{ trans('frontend.str.left') }}: <span id="timer2">00:00:00</span>
+                    </p>
                     <div class="progress progress-sm progress-striped active">
                         <div class="progress-bar bg-color-darken" role="progressbar" style="width: 1%"></div>
                     </div>
@@ -127,16 +130,21 @@
                         <span style="color: green">{{ trans('frontend.str.good') }}: </span>
                         <span style="color: green" id="successful">0</span>
                         <span style="color: red">{{ trans('frontend.str.bad') }}: </span>
-                        <span style="color: red"  id="unsuccessful">0</span><br><br>
+                        <span style="color: red" id="unsuccessful">0</span><br><br>
                         <span id="divStatus" class="error"></span>
-                        <button id="sendout" class="btn btn-default btn-circle btn-modal btn-lg" style="margin-right: 15px;"  title="{{ trans('frontend.str.send_out_newsletter') }}"><i class="fa fa-play"></i></button>
-                        <button onClick="stopsend('stop');" id="stopsendout" class="btn btn-danger btn-circle btn-lg disabled"  disabled="disabled" title="{{ trans('frontend.str.stop_newsletter') }}">
+                        <button id="sendout" class="btn btn-default btn-circle btn-modal btn-lg"
+                                style="margin-right: 15px;" title="{{ trans('frontend.str.send_out_newsletter') }}"><i
+                                class="fa fa-play"></i></button>
+                        <button onClick="stopsend('stop');" id="stopsendout"
+                                class="btn btn-danger btn-circle btn-lg disabled" disabled="disabled"
+                                title="{{ trans('frontend.str.stop_newsletter') }}">
                             <i class="fa fa-stop"></i>
                         </button>
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ trans('frontend.str.close') }}</button>
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">{{ trans('frontend.str.close') }}</button>
                 </div>
             </div>
         </div>
@@ -235,7 +243,7 @@
                             closeOnConfirm: false
                         }).then((result) => {
                             if (result.isConfirmed) {
-                               form.submit();
+                                form.submit();
                             }
                         });
                     }
@@ -342,6 +350,122 @@
                 $('#apply').attr('disabled', false);
             else
                 $('#apply').attr('disabled', true);
+        }
+
+        function getCountProcess() {
+            let logId = $('#logId').val();
+
+            if (logId != 0 && completed === null) {
+                $.ajax({
+                    url: '{{ URL::route('admin.ajax.action') }}',
+                    cache: false,
+                    method: "POST",
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    data: {
+                        action: "count_send",
+                        logId: $('#logId').val(),
+                        categoryId: $('#categoryId').val(),
+                    },
+                    dataType: "json",
+                    success: function (json) {
+                        if (json.result === true) {
+                            let totalmail = json.total;
+                            let successful = json.success;
+                            let unsuccessful = json.unsuccessful;
+                            let timeleft = json.time;
+                            let leftsend = json.leftsend;
+
+                            $('#totalsendlog').text(totalmail);
+                            $('#unsuccessful').text(unsuccessful);
+                            $('#successful').text(successful);
+                            $('#timer2').text(timeleft);
+
+                            onlineLogProcess();
+
+                            $('.progress-bar').css('width', leftsend + '%');
+                            $('#leftsend').text(leftsend);
+
+                            setTimeout('getCountProcess()', 2000);
+                        } else {
+                            setTimeout('getCountProcess()', 1000);
+                        }
+                    }
+                });
+            }
+        }
+
+        function onlineLogProcess() {
+            if (completed === null) {
+                $.ajax({
+                    type: 'POST',
+                    cache: false,
+                    url: '{{ URL::route('admin.ajax.action') }}',
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    data: {
+                        action: "log_online",
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        let msg = '';
+
+                        for (let i = 0; i < data.item.length; i++) {
+                            if (data.item[i].email != 'undefined') {
+                                msg += data.item[i].email + ' - ' + data.item[i].status;
+                                msg += '<br>';
+                            }
+                            $('#onlinelog').html(msg);
+                        }
+                    },
+                });
+            }
+        }
+
+        function process() {
+            if (pausesend === false) {
+                let templateId = [];
+
+                $('input:checkbox:checked').each(function () {
+                    templateId.push($(this).val());
+                });
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route('admin.ajax.action') }}',
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    data: {
+                        action: "send_out",
+                        categoryId: $('#categoryId').val(),
+                        templateId: templateId,
+                        logId: $('#logId').val(),
+                    },
+                    cache: false,
+                    dataType: "json",
+                    success: function (json) {
+                        if (json.completed === true) {
+                            $("#process").removeClass();
+                            completed = json.completed;
+                            completeProcess();
+                        } else {
+                            setTimeout('process()', 3000);
+                        }
+                    },
+                    error: function (error) {
+                        completeProcess();
+                        $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
+                    },
+                });
+            }
+        }
+
+        function completeProcess() {
+            $("#pausesendout").addClass('disabled').attr('disabled', 'disabled');
+            $("#stopsendout").addClass('disabled').attr('disabled', 'disabled');
+            $("#sendout").removeClass('disabled').removeAttr('disabled');
+            $("#process").removeClass();
+            $("#timer2").text('00:00:00');
+            $('#leftsend').text(100);
+            $('.progress-bar').css('width', '0%');
+            $("#process").removeClass();
         }
 
     </script>

@@ -273,7 +273,7 @@ class AjaxController extends Controller
 
                         $logId = $request->input('logId');
 
-                        if ($logId == 0) {
+                        if ($logId === 0) {
                             return response()->json([
                                 'result' => false,
                             ]);
@@ -526,7 +526,7 @@ class AjaxController extends Controller
 
                     case 'log_online':
                         $readySent = ReadySent::orderBy('id', 'desc')
-                            ->where('logId', '>', 0)
+                            ->where('log_id', '>', 0)
                             ->limit(5)
                             ->get();
 
