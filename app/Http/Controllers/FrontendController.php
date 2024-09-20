@@ -72,7 +72,7 @@ class FrontendController extends Controller
     {
         $subscriber = Subscribers::find($subscriber);
 
-        if (!$subscriber || $subscriber->token != $token) abort(404);
+        if (!$subscriber || $subscriber->token !== $token) abort(404);
 
         $email = $subscriber->email;
         $subscriber->active = 0;
@@ -92,7 +92,7 @@ class FrontendController extends Controller
     {
         $subscriber = Subscribers::find($subscriber);
 
-        if (!$subscriber || $subscriber->token != $token) abort(404);
+        if (!$subscriber || $subscriber->token !== $token) abort(404);
 
         $subscriber->active = 1;
         $subscriber->save();
@@ -117,16 +117,14 @@ class FrontendController extends Controller
      */
     public function addSub(AddSubRequest $request): JsonResponse
     {
-
         $token = StringHelper::token();
-
-        $id = Subscribers::create(array_merge($request->all(), ['active' => SettingsHelper::getInstance()->getValueForKey('REQUIRE_SUB_CONFIRMATION') == 1 ? 0 : 1, 'token' => $token]))->id;
+        $id = Subscribers::create(array_merge($request->all(), ['active' => (int)SettingsHelper::getInstance()->getValueForKey('REQUIRE_SUB_CONFIRMATION') === 1 ? 0 : 1, 'token' => $token]))->id;
 
         if ($id) {
-            if (SettingsHelper::getInstance()->getValueForKey('REQUIRE_SUB_CONFIRMATION') == 1) {
+            if ((int)SettingsHelper::getInstance()->getValueForKey('REQUIRE_SUB_CONFIRMATION') === 1) {
                 SendEmailHelper::setSubject(SettingsHelper::getInstance()->getValueForKey('SUBJECT_TEXT_CONFIRM'));
 
-                $CONFIRM = SettingsHelper::getInstance()->getValueForKey('URL') . "subscribe/" . $id . "/" . $token;
+                $CONFIRM = SettingsHelper::getInstance()->getValueForKey('URL') . substr(SettingsHelper::getInstance()->getValueForKey('URL'), -1) !== '/' ? '/':''  . "subscribe/" . $id . "/" . $token;
                 $msg = str_replace(array("\r\n", "\r", "\n"), '<br>', SettingsHelper::getInstance()->getValueForKey('TEXT_CONFIRMATION'));
                 $msg = str_replace('%CONFIRM%', $CONFIRM, $msg);
 
@@ -140,7 +138,7 @@ class FrontendController extends Controller
                 SendEmailHelper::sendEmail();
             }
 
-            if (SettingsHelper::getInstance()->getValueForKey('NEW_SUBSCRIBER_NOTIFY') == 1) {
+            if ((int)SettingsHelper::getInstance()->getValueForKey('NEW_SUBSCRIBER_NOTIFY') === 1) {
                 $subject = trans('frontend.str.notification_newuser');
                 $subject = str_replace('%SITE%', $_SERVER['SERVER_NAME'], $subject);
                 $msg = trans('frontend.str.notification_newuser') . "\nName: " . $request->name . " \nE-mail: " . $request->email . "\n";
@@ -158,7 +156,7 @@ class FrontendController extends Controller
             if ($request->categoryId) {
                 foreach ($request->categoryId as $categoryId) {
                     if (is_numeric($categoryId)) {
-                        Subscriptions::create(['subscriberId' => $id, 'categoryId' => $categoryId]);
+                        Subscriptions::create(['subscriber_id' => $id, 'category_id' => $categoryId]);
                     }
                 }
             }

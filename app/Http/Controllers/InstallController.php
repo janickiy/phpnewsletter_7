@@ -93,11 +93,7 @@ class InstallController extends Controller
                 ->withErrors(trans('install.str.connection_to_database_cannot_be_established'));
         }
 
-
-
         Session::put('install.db_credentials', $dbCredentials);
-
-
 
         return redirect()->route('install.admin');
     }
