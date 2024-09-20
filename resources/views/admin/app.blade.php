@@ -24,7 +24,7 @@
     {!! Html::style('/plugins/flag-icon-css/css/flag-icon.min.css') !!}
 
     <!-- Custom style -->
-    {!! Html::style('/dist/css/admin.css') !!}
+    {!! Html::style('/dist/css/admin.css?v=3') !!}
 
     @yield('css')
 

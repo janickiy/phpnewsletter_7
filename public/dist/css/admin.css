@@ -8,7 +8,7 @@ a.opislink {
 }
 
 .showprocess {
-    background: url("./dist/img/select2-spinner.gif") no-repeat scroll 50% 50% rgba(0, 0, 0, 0);
+    background: url("../img/select2-spinner.gif") no-repeat scroll 50% 50% rgba(0, 0, 0, 0);
     height: 16px;
     width: 16px;
     padding: 16px;

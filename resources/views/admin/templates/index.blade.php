@@ -210,8 +210,6 @@
             open_modal.click(function (event) {
                 let idSelect = $('#select_action').val();
 
-                alert(idSelect);
-
                 if (idSelect == '') {
                     event.preventDefault();
                     Swal.fire({
