@@ -266,7 +266,7 @@ class SendEmailHelper
         $m->Subject = $subject;
 
         if ((int)SettingsHelper::getInstance()->getValueForKey('SLEEP') > 0) sleep((int)SettingsHelper::getInstance()->getValueForKey('SLEEP'));
-        if (SettingsHelper::getInstance()->getValueForKey('ORGANIZATION') != '') $m->addCustomHeader("Organization: " . SettingsHelper::getInstance()->getValueForKey('ORGANIZATION'));
+        if (SettingsHelper::getInstance()->getValueForKey('ORGANIZATION') !== '') $m->addCustomHeader("Organization: " . SettingsHelper::getInstance()->getValueForKey('ORGANIZATION'));
 
         $m->AddAddress($email);
 
@@ -315,7 +315,7 @@ class SendEmailHelper
                 if (Storage::exists($path)) {
                     $storagePath = Storage::disk('local')->path($path);
 
-                    if (SettingsHelper::getInstance()->getValueForKey('CHARSET') != 'utf-8') $f->name = iconv('utf-8', SettingsHelper::getInstance()->getValueForKey('CHARSET'), $f->name);
+                    if (SettingsHelper::getInstance()->getValueForKey('CHARSET') !== 'utf-8') $f->name = iconv('utf-8', SettingsHelper::getInstance()->getValueForKey('CHARSET'), $f->name);
 
                     $ext = pathinfo($f->file_name, PATHINFO_EXTENSION);;
                     $mime_type = StringHelper::getMimeType($ext);
@@ -325,8 +325,8 @@ class SendEmailHelper
             }
         }
 
-        if (SettingsHelper::getInstance()->getValueForKey('CHARSET') != 'utf-8') $msg = iconv('utf-8', SettingsHelper::getInstance()->getValueForKey('CHARSET'), $msg);
-        if (SettingsHelper::getInstance()->getValueForKey('CONTENT_TYPE') == 'html') {
+        if (SettingsHelper::getInstance()->getValueForKey('CHARSET') !== 'utf-8') $msg = iconv('utf-8', SettingsHelper::getInstance()->getValueForKey('CHARSET'), $msg);
+        if (SettingsHelper::getInstance()->getValueForKey('CONTENT_TYPE') === 'html') {
             if (self::$tracking) {
                 $IMG = '<img alt="" border="0" src="' . SettingsHelper::getInstance()->getValueForKey('URL') . 'pic/' . $subscriberId . '_' . $templateId . '" width="1" height="1">';
                 $msg .= $IMG;
@@ -357,7 +357,7 @@ class SendEmailHelper
      * @param string $host
      * @param string $email
      * @param string $username
-     * @param string $password
+     * @param string|null $password
      * @param int $port
      * @param string $authentication
      * @param string $secure
