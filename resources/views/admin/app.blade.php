@@ -91,7 +91,7 @@
         <!-- Brand Logo -->
         <a href="{{ route('admin.templates.index') }}" class="brand-link">
             <img src="{{ url('../../dist/img/logo.png') }}" alt="PHP Newsletter" class="brand-image">
-            <small>{{ env('VERSION') }}</span>
+            <span style="font-size: 0.7rem">{{ env('VERSION') }}</span>
         </a>
 
         <!-- Sidebar -->

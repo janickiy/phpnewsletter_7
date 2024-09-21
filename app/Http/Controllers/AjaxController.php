@@ -302,7 +302,7 @@ class AjaxController extends Controller
 
                         $categoryId = [];
 
-                        foreach ($request->categoryId as $id) {
+                        foreach ($request->categoryId ?? [] as $id) {
                             if (is_numeric($id)) {
                                 $categoryId[] = $id;
                             }
@@ -310,7 +310,7 @@ class AjaxController extends Controller
 
                         $templateId = [];
 
-                        foreach ($request->templateId as $id) {
+                        foreach ($request->templateId ?? [] as $id) {
                             if (is_numeric($id)) {
                                 $templateId[] = $id;
                             }
@@ -318,7 +318,7 @@ class AjaxController extends Controller
 
                         $templates = Templates::whereIN('id', $templateId)->get();
 
-                        foreach ($templates as $template) {
+                        foreach ($templates ?? [] as $template) {
                             if ($interval) {
                                 $subscribers = Subscribers::select('subscribers.email', 'subscribers.token', 'subscribers.id', 'subscribers.name')
                                     ->join('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
@@ -364,7 +364,7 @@ class AjaxController extends Controller
                                     ->get();
                             }
 
-                            foreach ($subscribers as $subscriber) {
+                            foreach ($subscribers ?? [] as $subscriber) {
                                 if ($this->getProcess() === 'stop' || $this->getProcess() === 'pause') {
                                     return response()->json([
                                         'result'    => true,
@@ -455,7 +455,7 @@ class AjaxController extends Controller
 
                         $categoryId = [];
 
-                        foreach ($request->categoryId as $id) {
+                        foreach ($request->categoryId ?? [] as $id) {
                             if (is_numeric($id)) {
                                 $categoryId[] = $id;
                             }
@@ -533,7 +533,7 @@ class AjaxController extends Controller
                         if ($readySent) {
                             $rows = [];
 
-                            foreach ($readySent as $row) {
+                            foreach ($readySent ?? [] as $row) {
                                 $rows[] = [
                                     'subscriber_id' => $row->subscriber_id,
                                     "email" => $row->email,

@@ -99,7 +99,7 @@ class SmtpController extends Controller
     {
         $temp = [];
 
-        foreach ($request->activate as $id) {
+        foreach ($request->activate ?? [] as $id) {
             if (is_numeric($id)) {
                 $temp[] = $id;
             }

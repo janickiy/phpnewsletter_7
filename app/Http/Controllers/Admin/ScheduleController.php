@@ -40,7 +40,7 @@ class ScheduleController extends Controller
 
         $items = [];
 
-        foreach ($data as $row) {
+        foreach ($data ?? [] as $row) {
             $items[] = [
                 'id' => $row->id,
                 'start' => $row->event_start, // Format as ISO 8601 with time zone
@@ -103,8 +103,8 @@ class ScheduleController extends Controller
             'event_name' => $request->input('event_name'),
         ]))->id;
 
-        if ($request->categoryId && $id) {
-            foreach ($request->categoryId as $categoryId) {
+        if ($id) {
+            foreach ($request->categoryId ?? [] as $categoryId) {
                 if (is_numeric($categoryId)) {
                     ScheduleCategory::create(['schedule_id' => $id, 'category_id' => $categoryId]);
                 }
@@ -126,7 +126,7 @@ class ScheduleController extends Controller
 
         $categoryId = [];
 
-        foreach ($row->categories as $category) {
+        foreach ($row->categories ?? [] as $category) {
             $categoryId[] = $category->id;
         }
 
@@ -157,11 +157,9 @@ class ScheduleController extends Controller
 
         ScheduleCategory::where('schedule_id', $request->id)->delete();
 
-        if ($request->categoryId) {
-            foreach ($request->categoryId as $categoryId) {
-                if (is_numeric($categoryId)) {
-                    ScheduleCategory::create(['schedule_id' => $request->id, 'category_id' => $categoryId]);
-                }
+        foreach ($request->categoryId ?? [] as $categoryId) {
+            if (is_numeric($categoryId)) {
+                ScheduleCategory::create(['schedule_id' => $request->id, 'category_id' => $categoryId]);
             }
         }
 

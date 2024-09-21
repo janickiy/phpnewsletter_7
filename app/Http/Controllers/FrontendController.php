@@ -124,7 +124,7 @@ class FrontendController extends Controller
             if ((int)SettingsHelper::getInstance()->getValueForKey('REQUIRE_SUB_CONFIRMATION') === 1) {
                 SendEmailHelper::setSubject(SettingsHelper::getInstance()->getValueForKey('SUBJECT_TEXT_CONFIRM'));
 
-                $CONFIRM = SettingsHelper::getInstance()->getValueForKey('URL') . substr(SettingsHelper::getInstance()->getValueForKey('URL'), -1) !== '/' ? '/':''  . "subscribe/" . $id . "/" . $token;
+                $CONFIRM = SettingsHelper::getInstance()->getValueForKey('URL') . substr(SettingsHelper::getInstance()->getValueForKey('URL'), -1) !== '/' ? '/' : '' . "subscribe/" . $id . "/" . $token;
                 $msg = str_replace(array("\r\n", "\r", "\n"), '<br>', SettingsHelper::getInstance()->getValueForKey('TEXT_CONFIRMATION'));
                 $msg = str_replace('%CONFIRM%', $CONFIRM, $msg);
 
@@ -153,11 +153,9 @@ class FrontendController extends Controller
                 SendEmailHelper::sendEmail();
             }
 
-            if ($request->categoryId) {
-                foreach ($request->categoryId as $categoryId) {
-                    if (is_numeric($categoryId)) {
-                        Subscriptions::create(['subscriber_id' => $id, 'category_id' => $categoryId]);
-                    }
+            foreach ($request->categoryId ?? [] as $categoryId) {
+                if (is_numeric($categoryId)) {
+                    Subscriptions::create(['subscriber_id' => $id, 'category_id' => $categoryId]);
                 }
             }
         }

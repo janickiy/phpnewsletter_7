@@ -19,7 +19,7 @@ class SettingsController extends Controller
     {
         $option_charset = [];
 
-        foreach (Charsets::orderBy('charset')->get() as $row) {
+        foreach (Charsets::orderBy('charset')->get() ?? [] as $row) {
             $option_charset[$row->charset] = StringHelper::charsetList($row->charset);
         }
 
@@ -48,12 +48,11 @@ class SettingsController extends Controller
         $array['REQUEST_REPLY'] = $request->input('REQUEST_REPLY') ? 1 : 0;
         $array['REMOVE_SUBSCRIBER'] = $request->input('REMOVE_SUBSCRIBER') ? 1 : 0;
 
-        foreach ($array as $key => $value) {
+        foreach ($array ?? [] as $key => $value) {
             Settings::setValue($key, $value);
         }
 
         if ($request->input('header_name')) {
-
             Customheaders::truncate();
 
             for ($i = 0; $i < count($request->header_name); $i++) {

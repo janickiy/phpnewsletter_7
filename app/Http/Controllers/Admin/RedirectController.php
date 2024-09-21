@@ -62,7 +62,7 @@ class RedirectController  extends Controller
 
         $i = 1;
 
-        foreach ($redirectLog as $row) {
+        foreach ($redirectLog ?? [] as $row) {
             $i++;
 
             $oSpreadsheet_Out->setActiveSheetIndex(0)

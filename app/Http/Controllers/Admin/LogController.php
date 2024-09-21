@@ -108,7 +108,7 @@ class LogController extends Controller
 
         $i = 2;
 
-        foreach ($readySent as $row) {
+        foreach ($readySent ?? [] as $row) {
             $i++;
 
             $oSpreadsheet_Out->setActiveSheetIndex(0)

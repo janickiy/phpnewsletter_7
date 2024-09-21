@@ -18,7 +18,7 @@ class Charsets extends Model
     {
         $charsets = [];
 
-        foreach (self::get() as $row) {
+        foreach (self::get() ?? [] as $row) {
             $charsets[$row->charset] = StringHelper::charsetList($row->charset);
         }
 

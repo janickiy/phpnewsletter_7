@@ -33,13 +33,13 @@ class TemplatesController extends Controller
 
         $list = [];
 
-        foreach (Macros::get() as $macro) {
+        foreach (Macros::get() ?? [] as $macro) {
             $list[] = $macro->name . ' - ' . $macro->getType();
         }
 
         $macrosList = implode(', ', $list);
 
-        return view('admin.templates.create_edit', compact('infoAlert','macrosList'))->with('title', trans('frontend.title.template_create'));
+        return view('admin.templates.create_edit', compact('infoAlert', 'macrosList'))->with('title', trans('frontend.title.template_create'));
     }
 
     /**
@@ -52,19 +52,17 @@ class TemplatesController extends Controller
 
         $attachFile = $request->file('attachfile');
 
-        if (!empty($attachFile)) {
-            foreach ($attachFile as $file) {
-                $filename = StringHelper::randomText(10) . '.' . $file->getClientOriginalExtension();
+        foreach ($attachFile ?? [] as $file) {
+            $filename = StringHelper::randomText(10) . '.' . $file->getClientOriginalExtension();
 
-                if (Storage::putFileAs(Attach::DIRECTORY, $file, $filename)) {
-                    $attach = [
-                        'name' => $file->getClientOriginalName(),
-                        'file_name' => $filename,
-                        'template_id' => $id,
-                    ];
+            if (Storage::putFileAs(Attach::DIRECTORY, $file, $filename)) {
+                $attach = [
+                    'name' => $file->getClientOriginalName(),
+                    'file_name' => $filename,
+                    'template_id' => $id,
+                ];
 
-                    Attach::create($attach);
-                }
+                Attach::create($attach);
             }
         }
 
@@ -85,8 +83,8 @@ class TemplatesController extends Controller
         $infoAlert = trans('frontend.hint.template_edit') ? trans('frontend.hint.template_edit') : null;
         $list = [];
 
-        foreach (Macros::get() as $macro) {
-            $list[] = '{{'. $macro->name . '}} - ' . $macro->getType();
+        foreach (Macros::get() ?? [] as $macro) {
+            $list[] = '{{' . $macro->name . '}} - ' . $macro->getType();
         }
 
         $macrosList = implode(', ', $list);
@@ -106,26 +104,23 @@ class TemplatesController extends Controller
 
         $attachFile = $request->file('attachfile');
 
-        if (isset($attachFile)) {
-            foreach ($attachFile as $file) {
-                $filename = StringHelper::randomText(10) . '.' . $file->getClientOriginalExtension();
+        foreach ($attachFile ?? [] as $file) {
+            $filename = StringHelper::randomText(10) . '.' . $file->getClientOriginalExtension();
 
-                if (Storage::putFileAs(Attach::DIRECTORY, $file, $filename)) {
-                    $attach = [
-                        'name' => $file->getClientOriginalName(),
-                        'file_name' => $filename,
-                        'template_id' => $request->id,
-                    ];
+            if (Storage::putFileAs(Attach::DIRECTORY, $file, $filename)) {
+                $attach = [
+                    'name' => $file->getClientOriginalName(),
+                    'file_name' => $filename,
+                    'template_id' => $request->id,
+                ];
 
-                    Attach::create($attach);
-                }
+                Attach::create($attach);
             }
         }
 
         $templates->name = $request->input('name');
         $templates->body = $request->input('body');
         $templates->prior = $request->input('prior');
-
         $templates->save();
 
         return redirect()->route('admin.templates.index')->with('success', trans('message.data_updated'));
@@ -148,7 +143,7 @@ class TemplatesController extends Controller
     {
         $templateId = [];
 
-        foreach ($request->templateId as $id) {
+        foreach ($request->templateId ?? [] as $id) {
             if (is_numeric($id)) {
                 $templateId[] = $id;
             }
@@ -157,7 +152,7 @@ class TemplatesController extends Controller
         if ($request->action == 1) {
             $templates = Templates::whereIN('id', $templateId)->get();
 
-            foreach ($templates as $template) {
+            foreach ($templates ?? [] as $template) {
                 $template->remove();
             }
         }

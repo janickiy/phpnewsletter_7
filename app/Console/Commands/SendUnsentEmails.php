@@ -39,8 +39,7 @@ class SendUnsentEmails extends Command implements Isolatable
             ->where('event_end', '>=', date('Y-m-d H:i:s'))
             ->get();
 
-        foreach ($schedule as $row) {
-
+        foreach ($schedule ?? [] as $row) {
             $order = (int)SettingsHelper::getInstance()->getValueForKey('RANDOM_SEND') === 1 ? 'RAND()' : 'subscribers.id';
             $limit = (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 ? (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') : null;
 
@@ -107,7 +106,7 @@ class SendUnsentEmails extends Command implements Isolatable
                     ->get();
             }
 
-            foreach ($subscribers as $subscriber) {
+            foreach ($subscribers ?? [] as $subscriber) {
                 if ((int)SettingsHelper::getInstance()->getValueForKey('sleep') > 0)
                     sleep((int)SettingsHelper::getInstance()->getValueForKey('sleep'));
 

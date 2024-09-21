@@ -22,15 +22,15 @@ class Locale
         if (!$raw_locale && !empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             preg_match_all('/([a-z-]+)(?:;q=([0-9.]+))?/', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $accept_langs);
 
-            foreach ($accept_langs[1] as $lang) {
+            foreach ($accept_langs[1] ?? [] as $lang) {
                 $code = substr($lang, 0, 2);
 
-                if ($code == 'en') {
+                if ($code === 'en') {
                     $raw_locale = 'en';
                     break;
                 }
 
-                if ($code == 'ru') {
+                if ($code === 'ru') {
                     $raw_locale = 'ru';
                     break;
                 }

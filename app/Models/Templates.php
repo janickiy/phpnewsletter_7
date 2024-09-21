@@ -64,7 +64,7 @@ class Templates extends Model
      */
     public function scopeRemove(): void
     {
-        foreach ($this->attach as $attach) {
+        foreach ($this->attach ?? [] as $attach) {
             $attach->remove();
         }
 

@@ -40,7 +40,7 @@ class SendEmails extends Command implements Isolatable
             ->where('event_end', '>=', Carbon::now()->toDateTimeString())
             ->get();
 
-        foreach ($schedule as $row) {
+        foreach ($schedule ?? [] as $row) {
             $order = (int)SettingsHelper::getInstance()->getValueForKey('RANDOM_SEND') === 1 ? 'RAND()' : 'subscribers.id';
             $limit = (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 ? SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') : null;
 
@@ -111,7 +111,7 @@ class SendEmails extends Command implements Isolatable
                 ;
             }
 
-            foreach ($subscribers as $subscriber) {
+            foreach ($subscribers ?? [] as $subscriber) {
                 if ((int)SettingsHelper::getInstance()->getValueForKey('sleep') > 0)
                     sleep((int)SettingsHelper::getInstance()->getValueForKey('sleep'));
 

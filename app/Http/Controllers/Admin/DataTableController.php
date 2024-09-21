@@ -103,7 +103,7 @@ class DataTableController extends Controller
             ->addColumn('subscriptions', function ($row) {
                 $categories = [];
 
-                foreach ($row->subscriptions as $subscription) {
+                foreach ($row->subscriptions ?? [] as $subscription) {
                     $categories[] = $subscription->category->name;
                 }
 

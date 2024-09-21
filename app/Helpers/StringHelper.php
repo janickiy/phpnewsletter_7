@@ -535,7 +535,7 @@ class StringHelper
 
         $array = preg_split('//u', $str, -1, PREG_SPLIT_NO_EMPTY);
 
-        foreach ($array as $char) {
+        foreach ($array ?? [] as $char) {
             srand((double)microtime() * 1000000);
             $random_number = rand(0, count($quotes) - 1);
 
@@ -604,7 +604,7 @@ class StringHelper
         $info_arr = [];
         $info_lines = explode("\n", strip_tags(ob_get_clean(), "<tr><td><h2>"));
         $cat = "General";
-        foreach ($info_lines as $line) {
+        foreach ($info_lines ?? [] as $line) {
             // new cat?
             preg_match("~<h2>(.*)</h2>~", $line, $title) ? $cat = $title[1] : null;
             if (preg_match("~<tr><td[^>]+>([^<]*)</td><td[^>]+>([^<]*)</td></tr>~", $line, $val)) {
@@ -718,7 +718,7 @@ class StringHelper
      */
     public static function macrosReplacement(string $str): string
     {
-        foreach (Macros::get() as $macros) {
+        foreach (Macros::get() ?? [] as $macros) {
             $str = str_replace("{{" . $macros->name . "}}", $macros->getValueByType(), $str);
         }
 

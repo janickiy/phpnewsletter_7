@@ -58,7 +58,7 @@ class Subscribers extends Model
             $strtmp = explode("\n", $buffer);
             $count = 0;
 
-            foreach ($strtmp as $val) {
+            foreach ($strtmp ?? [] as $val) {
                 $str = trim($val);
 
                 if ($f->charset) {
@@ -82,13 +82,12 @@ class Subscribers extends Model
                     if ($subscriber) {
                         Subscriptions::where('subscriber_id', $subscriber->id)->delete();
 
-                        if ($f->categoryId) {
-                            foreach ($f->categoryId as $categoryId) {
-                                if (is_numeric($categoryId)) {
-                                    Subscriptions::create(['subscriber_id' => $subscriber->id, 'category_id' => $categoryId]);
-                                }
+                        foreach ($f->categoryId ?? [] as $categoryId) {
+                            if (is_numeric($categoryId)) {
+                                Subscriptions::create(['subscriber_id' => $subscriber->id, 'category_id' => $categoryId]);
                             }
                         }
+
                     } else {
                         $data['name'] = $name;
                         $data['email'] = $email;
@@ -100,11 +99,9 @@ class Subscribers extends Model
 
                         if ($insertId) $count++;
 
-                        if ($f->categoryId) {
-                            foreach ($f->categoryId as $categoryId) {
-                                if (is_numeric($categoryId)) {
-                                    Subscriptions::create(['subscriber_id' => $insertId, 'category_id' => $categoryId]);
-                                }
+                        foreach ($f->categoryId ?? [] as $categoryId) {
+                            if (is_numeric($categoryId)) {
+                                Subscriptions::create(['subscriber_id' => $insertId, 'category_id' => $categoryId]);
                             }
                         }
                     }
@@ -143,17 +140,17 @@ class Subscribers extends Model
 
         $allDataInSheet = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
 
-        foreach ($allDataInSheet as $dataInSheet) {
+        foreach ($allDataInSheet ?? [] as $dataInSheet) {
             $email = trim($dataInSheet['A']);
             $name = trim($dataInSheet['B']);
 
             if (StringHelper::isEmail($email)) {
                 $subscribers = self::where('email', 'like', $email)->first();
 
-                if ($subscribers && $f->categoryId) {
+                if ($subscribers) {
                     Subscriptions::where('subscriber_id', $subscribers->id)->delete();
 
-                    foreach ($f->categoryId as $categoryId) {
+                    foreach ($f->categoryId ?? [] as $categoryId) {
                         if (is_numeric($categoryId)) {
                             Subscriptions::create([
                                 'subscriber_id' => $subscribers->id,
@@ -170,14 +167,12 @@ class Subscribers extends Model
                         'token' => StringHelper::token()
                     ])->id;
 
-                    if ($f->categoryId) {
-                        foreach ($f->categoryId as $category) {
-                            if (is_numeric($category)) {
-                                Subscriptions::create([
-                                    'subscriber_id' => $insertId,
-                                    'category_id' => $category,
-                                ]);
-                            }
+                    foreach ($f->categoryId ?? [] as $category) {
+                        if (is_numeric($category)) {
+                            Subscriptions::create([
+                                'subscriber_id' => $insertId,
+                                'category_id' => $category,
+                            ]);
                         }
                     }
 
@@ -197,7 +192,7 @@ class Subscribers extends Model
     {
         if ($categoryId) {
             $temp = [];
-            foreach ($categoryId as $id) {
+            foreach ($categoryId ?? [] as $id) {
                 if (is_numeric($id)) {
                     $temp[] = $id;
                 }
@@ -227,7 +222,7 @@ class Subscribers extends Model
      */
     public function scopeRemove(): void
     {
-        foreach ($this->subscriptions as $subscription) {
+        foreach ($this->subscriptions ?? [] as $subscription) {
             $subscription->delete();
         }
 

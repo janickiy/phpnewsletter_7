@@ -205,7 +205,7 @@ class InstallController extends Controller
     {
         $allLoaded = true;
 
-        foreach ($this->getRequirements() as $loaded) {
+        foreach ($this->getRequirements() ?? [] as $loaded) {
             if ($loaded === false) {
                 $allLoaded = false;
             }

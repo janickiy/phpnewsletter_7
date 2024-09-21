@@ -47,8 +47,8 @@ class SubscribersController extends Controller
     {
         $id = Subscribers::create(array_merge($request->all(), ['timeSent' => date('Y-m-d H:i:s'), 'active' => 1, 'token' => StringHelper::token()]))->id;
 
-        if ($request->categoryId && $id) {
-            foreach ($request->categoryId as $categoryId) {
+        if ($id) {
+            foreach ($request->categoryId ?? [] as $categoryId) {
                 if (is_numeric($categoryId)) {
                     Subscriptions::create(['subscriber_id' => $id, 'category_id' => $categoryId]);
                 }
@@ -71,7 +71,7 @@ class SubscribersController extends Controller
         $options = Category::getOption();
         $subscriberCategoryId = [];
 
-        foreach ($row->subscriptions as $subscription) {
+        foreach ($row->subscriptions ?? [] as $subscription) {
             $subscriberCategoryId[] = $subscription->category_id;
         }
 
@@ -93,7 +93,7 @@ class SubscribersController extends Controller
         if ($request->categoryId) {
             Subscriptions::where('subscriber_id', $request->id)->delete();
 
-            foreach ($request->categoryId as $categoryId) {
+            foreach ($request->categoryId ?? [] as $categoryId) {
                 if (is_numeric($categoryId)) Subscriptions::create(['subscriber_id' => $request->id, 'category_id' => $categoryId]);
             }
         }
@@ -173,17 +173,15 @@ class SubscribersController extends Controller
         $request->export_type;
         $subscribers = Subscribers::getSubscribersList($request->categoryId);
 
-        if ($request->export_type == 'text') {
+        if ($request->export_type === 'text') {
             $ext = 'txt';
             $filename = 'emailexport' . date("d_m_Y") . '.txt';
 
-            if ($subscribers) {
-                $contents = '';
-                foreach ($subscribers as $subscriber) {
-                    $contents .= "" . $subscriber->email . " " . $subscriber->name . "\r\n";
-                }
+            $contents = '';
+            foreach ($subscribers ?? [] as $subscriber) {
+                $contents .= "" . $subscriber->email . " " . $subscriber->name . "\r\n";
             }
-        } elseif ($request->export_type == 'excel') {
+        } elseif ($request->export_type === 'excel') {
             $ext = 'xlsx';
             $filename = 'emailexport' . date("d_m_Y") . '.xlsx';
             $oSpreadsheet_Out = new Spreadsheet();
@@ -203,7 +201,7 @@ class SubscribersController extends Controller
 
             $i = 1;
 
-            foreach ($subscribers as $subscriber) {
+            foreach ($subscribers ?? [] as $subscriber) {
                 $i++;
 
                 $oSpreadsheet_Out->setActiveSheetIndex(0)
@@ -221,7 +219,7 @@ class SubscribersController extends Controller
             ob_end_clean();
         }
 
-        if ($request->compress == 'zip') {
+        if ($request->compress === 'zip') {
             header('Content-type: application/zip');
             header('Content-Disposition: attachment; filename=emailexport_' . date("d_m_Y") . '.zip');
 
@@ -283,7 +281,7 @@ class SubscribersController extends Controller
     {
         $temp = [];
 
-        foreach ($request->activate as $id) {
+        foreach ($request->activate ?? [] as $id) {
             if (is_numeric($id)) {
                 $temp[] = $id;
             }

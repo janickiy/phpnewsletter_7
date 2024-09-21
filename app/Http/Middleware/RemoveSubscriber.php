@@ -21,7 +21,7 @@ class RemoveSubscriber
             $subscribers = Subscribers::query()->active()->whereRaw($interval);
 
             if ($subscribers->count() > 0) {
-                foreach ($subscribers->get() as $subscriber) {
+                foreach ($subscribers->get() ?? [] as $subscriber) {
                     Subscriptions::where('subscriber_id',$subscriber->id)->delete();
                 }
 

@@ -259,7 +259,7 @@ class SendEmailHelper
         $subject = str_replace('%NAME%', $name, $subject);
         $subject = (int)SettingsHelper::getInstance()->getValueForKey('RENDOM_REPLACEMENT_SUBJECT') === 1 ? StringHelper::encodeString($subject) : $subject;
 
-        if (SettingsHelper::getInstance()->getValueForKey('CHARSET') != 'utf-8') {
+        if (SettingsHelper::getInstance()->getValueForKey('CHARSET') !== 'utf-8') {
             $subject = iconv('utf-8', SettingsHelper::getInstance()->getValueForKey('CHARSET'), $subject);
         }
 
@@ -290,7 +290,7 @@ class SendEmailHelper
             $m->addCustomHeader("List-Unsubscribe: " . $UNSUB);
         }
 
-        foreach (Customheaders::get() as $customheader) {
+        foreach (Customheaders::get() ?? [] as $customheader) {
             $m->addCustomHeader($customheader->name . ": " . $customheader->value);
         }
 
@@ -309,7 +309,7 @@ class SendEmailHelper
         $msg = StringHelper::macrosReplacement($msg);
 
         if ($attach) {
-            foreach (Attach::where('template_id', $attach)->get() as $f) {
+            foreach (Attach::where('template_id', $attach)->get() ?? [] as $f) {
                 $path = Attach::DIRECTORY . '/' . $f->file_name;
 
                 if (Storage::exists($path)) {
