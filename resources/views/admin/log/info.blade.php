@@ -90,8 +90,7 @@
                 },
                 'createdRow': function (row, data, dataIndex) {
                     $(row).attr('id', 'rowid_' + data['id']);
-                    if (data['status'] == 0) $(row).attr('class', 'danger');
-                    else if (data['read'] == 1) $(row).attr('class', 'success');
+                    if (data['status'] === 0) $(row).attr('class', 'table-danger');
                 },
                 aaSorting: [[2, 'desc']],
                 processing: true,

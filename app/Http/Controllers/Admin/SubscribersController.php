@@ -134,6 +134,8 @@ class SubscribersController extends Controller
      */
     public function importSubscribers(ImportRequest $request): RedirectResponse
     {
+        set_time_limit(0);
+
         $extension = strtolower($request->file('import')->getClientOriginalExtension());
 
         switch ($extension) {
@@ -171,6 +173,8 @@ class SubscribersController extends Controller
      */
     public function exportSubscribers(Request $request)
     {
+        set_time_limit(0);
+
         $request->export_type;
         $subscribers = Subscribers::getSubscribersList($request->categoryId);
 

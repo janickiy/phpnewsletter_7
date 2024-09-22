@@ -169,7 +169,7 @@ class Subscribers extends Model
             return $reader->load($file);
         };
 
-        $processed = static function (Spreadsheet $spreadsheet) use ($iterator, $processed_data): int {
+        $processed = static function (Spreadsheet $spreadsheet) use ($iterator, $processed_data, $request): int {
             $count = 0;
             $sheetNames = [];
             foreach ($iterator($spreadsheet->getSheetNames()) ?? [] as $item_name) {
@@ -192,7 +192,7 @@ class Subscribers extends Model
 
                         if ($subscriber) {
                             $subscriber->remove();
-                            foreach ($f->categoryId ?? [] as $categoryId) {
+                            foreach ($request->categoryId ?? [] as $categoryId) {
                                 if (is_numeric($categoryId)) {
                                     Subscriptions::create([
                                         'subscriber_id' => $subscriber->id,
@@ -201,6 +201,7 @@ class Subscribers extends Model
                                 }
                             }
                         } else {
+
                             $insertId = Subscribers::create([
                                 'name' => $name,
                                 'email' => $email,

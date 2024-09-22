@@ -47,6 +47,7 @@
                             <pre>
                                 <code class="lang-html" id="codebox">
 {{ $subform }}
+&lt;script src=&quot;//ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js&quot;&gt;&lt;/script&gt;
 {{ $subformJs }}
                                 </code>
                             </pre>
