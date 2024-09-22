@@ -140,6 +140,7 @@ class SubscribersController extends Controller
             case 'csv':
             case 'xls':
             case 'xlsx':
+            case 'ods':
                 $result = Subscribers::importFromExcel($request);
                 break;
 

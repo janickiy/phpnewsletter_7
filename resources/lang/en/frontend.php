@@ -328,7 +328,7 @@ return [
         'template_index' => 'This section displays a list of templates that you can use for newsletters.',
         'category_index' => 'A subscriber category is a section used for sorting subscribers and on which you can bind newsletter topics.',
         'subscribers_index'  => 'A subscriber is a person who has been added or subscribed to the subscriber category. Your existing subscribers are shown below.',
-        'subscribers_import' => 'You can import subscribers from a text file or from an MS Excel file. The following Excel formats are supported: xls (Excel 97-2003) and xlsx (Excel 2007) The size of the Excel file should not exceed 1 MB. The format of the cells in the file is shown in the figure below. ',
+        'subscribers_import' => 'You can import subscribers from a text file or from an MS Excel file and Ods. The following Excel formats are supported: xls (Excel 97-2003), xlsx (Excel 2007), Csv и OpenDocument Format (ODF). The format of the cells in the file is shown in the figure below.',
         'log_index' => 'Here you can view statistics for each newsletter. Important! Accounting for the number of letters read is possible only for outgoing letters in html format, as well as if email clients do not block the automatic downloading of images.',
         'redirect_index' => 'Here you can view click statistics on links, number of redirects followed.',
         'smtp_index' => 'Add SMTP servers for mailing. If you have added more than one SMTP server, mailing will be done through the SMTP server list randomly.',

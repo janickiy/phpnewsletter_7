@@ -53,10 +53,10 @@ class StringHelper
         /**
          * Converts shorthands like "2M" or "512K" to bytes
          *
-         * @param int $size
+         * @param $size
          * @return false|float|int
          */
-        $normalize = function (int $size) {
+        $normalize = function ($size) {
             if (preg_match('/^(-?[\d\.]+)(|[KMG])$/i', $size, $match)) {
                 $pos = array_search($match[2], ["", "K", "M", "G"]);
                 $size = $match[1] * pow(1024, $pos);

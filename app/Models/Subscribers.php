@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use App\Helpers\StringHelper;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Illuminate\Http\Request;;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use PhpOffice\PhpSpreadsheet\Reader\Csv;
-use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
-use PhpOffice\PhpSpreadsheet\Reader\Xls;
 
 class Subscribers extends Model
 {
@@ -113,75 +114,124 @@ class Subscribers extends Model
     }
 
     /**
-     * @param object $f
-     * @return false|int
+     * @param Request $request
+     * @return int
      */
-    public static function importFromExcel(object $f): false|int
+    public static function importFromExcel(Request $request): int
     {
-        $ext = strtolower($f->file('import')->getClientOriginalExtension());
+        $iterator = static function ($data): \Generator {
+            yield from new \ArrayIterator($data);
+        };
 
-        if ($ext === 'csv') {
-            $reader = new Csv();
+        $processed_data = static function (Worksheet $data) use ($iterator): ?array {
+            $key_lists = [];
+            $init_data = [];
+            foreach ($iterator($data->toArray()) as $item) {
+                if (empty($key_lists)) {
+                    if (is_null($item[0])) break;
 
-            if ($f->charset) {
-                $reader->setInputEncoding($f->charset);
-            }
-
-        } elseif ($ext === 'xlsx') {
-            $reader = new Xlsx();
-        } else {
-            $reader = new Xls();
-        }
-
-        $count = 0;
-        $spreadsheet = $reader->load($f->file('import'));
-
-        if (!$spreadsheet) return false;
-
-        $allDataInSheet = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
-
-        foreach ($allDataInSheet ?? [] as $dataInSheet) {
-            $email = trim($dataInSheet['A']);
-            $name = trim($dataInSheet['B']);
-
-            if (StringHelper::isEmail($email)) {
-                $subscribers = self::where('email', 'like', $email)->first();
-
-                if ($subscribers) {
-                    Subscriptions::where('subscriber_id', $subscribers->id)->delete();
-
-                    foreach ($f->categoryId ?? [] as $categoryId) {
-                        if (is_numeric($categoryId)) {
-                            Subscriptions::create([
-                                'subscriber_id' => $subscribers->id,
-                                'category_id' => $categoryId,
-                            ]);
-                        }
-                    }
+                    $item = array_map(static fn($_item) => trim((string)$_item), $item);
+                    $key_lists = $item;
                 } else {
-                    $insertId = self::create([
-                        'name' => $name,
-                        'email' => $email,
-                        'active' => 1,
-                        'timeSent' => date('Y-m-d H:i:s'),
-                        'token' => StringHelper::token()
-                    ])->id;
+                    if (empty($key_lists)) break;
 
-                    foreach ($f->categoryId ?? [] as $category) {
-                        if (is_numeric($category)) {
-                            Subscriptions::create([
-                                'subscriber_id' => $insertId,
-                                'category_id' => $category,
-                            ]);
-                        }
-                    }
-
-                    $count++;
+                    $item = array_map(static fn($_item) => trim((string)$_item), $item);
+                    $init_data[] = array_combine($key_lists, $item);
                 }
             }
-        }
 
-        return $count;
+            return (empty($init_data))
+                ? null
+                : $init_data;
+        };
+
+        $extension = strtolower($request->file('import')->getClientOriginalExtension());
+        $open_file = static function (string $file) use ($extension): ?Spreadsheet {
+
+            switch ($extension) {
+                case 'xlsx':
+                    $inputFileType = 'Xlsx';
+                    break;
+                case 'xls':
+                    $inputFileType = 'Xls';
+                    break;
+                case 'csv':
+                    $inputFileType = 'Csv';
+                    break;
+                case 'ods':
+                    $inputFileType = 'Ods';
+                    break;
+            }
+
+            $reader = IOFactory::createReader($inputFileType);
+            $reader->setReadDataOnly(false);
+
+            return $reader->load($file);
+        };
+
+        $processed = static function (Spreadsheet $spreadsheet) use ($iterator, $processed_data): int {
+            $count = 0;
+            $sheetNames = [];
+            foreach ($iterator($spreadsheet->getSheetNames()) ?? [] as $item_name) {
+                $sheetNames[] = $item_name;
+            }
+
+            $sheetCount = $spreadsheet->getSheetCount();
+
+            $i = 0;
+            while ($i < $sheetCount) {
+                $options = $processed_data($spreadsheet->getSheet($i));
+
+                foreach ($options ?? [] as $option) {
+                    $keys = array_keys($option);
+                    $email = $option[$keys[0]];
+                    $name = $option[$keys[1]];
+
+                    if (StringHelper::isEmail($email)) {
+                        $subscriber = Subscribers::where('email', 'like', $email)->first();
+
+                        if ($subscriber) {
+                            $subscriber->remove();
+                            foreach ($f->categoryId ?? [] as $categoryId) {
+                                if (is_numeric($categoryId)) {
+                                    Subscriptions::create([
+                                        'subscriber_id' => $subscriber->id,
+                                        'category_id' => $categoryId,
+                                    ]);
+                                }
+                            }
+                        } else {
+                            $insertId = Subscribers::create([
+                                'name' => $name,
+                                'email' => $email,
+                                'active' => 1,
+                                'timeSent' => date('Y-m-d H:i:s'),
+                                'token' => StringHelper::token()
+                            ])->id;
+
+                            foreach ($request->categoryId ?? [] as $category) {
+                                if (is_numeric($category)) {
+                                    Subscriptions::create([
+                                        'subscriber_id' => $insertId,
+                                        'category_id' => $category,
+                                    ]);
+                                }
+                            }
+
+                            $count++;
+                        }
+                    }
+                }
+
+                $i++;
+            }
+
+            return $count;
+        };
+
+        $worksheetData = $open_file($request->file('import'));
+
+        return $processed($worksheetData);
     }
 
     /**

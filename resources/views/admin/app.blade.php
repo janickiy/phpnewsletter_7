@@ -114,7 +114,7 @@
                          with font-awesome or any other icon font library -->
 
                     <li class="nav-item">
-                        <a href="{{ route('admin.templates.index') }}" class="nav-link{{ Request::is('template*') ? ' active' : '' }}"
+                        <a href="{{ route('admin.templates.index') }}" class="nav-link{{ Request::is('template*') || Request::is('/') ? ' active' : '' }}"
                            title="{{ trans('frontend.menu.templates') }}">
                             <i class="nav-icon fas fa-envelope"></i>
                             <p>{{ trans('frontend.menu.templates') }}</p>
