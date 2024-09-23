@@ -432,7 +432,6 @@ class AjaxController extends Controller
                         }
 
                         if ((int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailcount) {
-
                             $this->updateProcess('stop');
 
                             return response()->json([

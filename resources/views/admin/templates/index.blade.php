@@ -195,13 +195,23 @@
                         dataType: "json"
                     });
 
+                    request.fail(function( jqXHR, textStatus ) {
+                        completeProcess();
+                        $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
+                        console.log(jqXHR);
+                        console.log(textStatus);
+                    });
+
                     request.done(function (data) {
                         if (data.result != null && data.result === true) {
                             $('#logId').val(data.logId);
 
                             getCountProcess();
                             onlineLogProcess();
-                            process();
+
+                            setTimeout(() => {
+                                process();
+                            }, 10000);
                         } else {
                             completeProcess();
                             $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
@@ -236,9 +246,12 @@
                         $('#leftsend').text(0);
                         $("#process").removeClass();
                     },
-                    error: function (error) {
+                    error: function (jqXHR, textStatus, errorThrown) {
                         completeProcess();
                         $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
+                        console.log(jqXHR);
+                        console.log(textStatus);
+                        console.log(errorThrown);
                     },
                 });
             });
@@ -424,7 +437,14 @@
                                 getCountProcess();
                             }, 1000);
                         }
-                    }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        completeProcess();
+                        $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
+                        console.log(jqXHR);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                    },
                 });
             }
         }
@@ -450,6 +470,13 @@
                             }
                             $('#onlinelog').html(msg);
                         }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        completeProcess();
+                        $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
+                        console.log(jqXHR);
+                        console.log(textStatus);
+                        console.log(errorThrown);
                     },
                 });
             }
@@ -478,21 +505,16 @@
                     success: function (json) {
                         if (json.completed === true) {
                             $("#process").removeClass();
-                            completed = json.completed;
                             completeProcess();
-                        } else {
-                            setTimeout(() => {
-                                alert(1);
-                            }, 3000);
-
-
-                            //setTimeout('alert(1)', 3000);
                         }
                     },
-                    timeout: 25000,
-                    error: function (error) {
-                        completeProcess();
-                        $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
+                    timeout: 10000,
+                    error: function (jqXHR, textStatus, errorThrown) {
+                      //  completeProcess();
+                      //  $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
+                        console.log(jqXHR);
+                        console.log(textStatus);
+                        console.log(errorThrown);
                     },
                 });
             }
