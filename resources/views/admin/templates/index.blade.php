@@ -399,7 +399,7 @@
 
             if (logId != 0 && completed === null) {
                 $.ajax({
-                    url: '{{ URL::route('admin.ajax.action') }}',
+                    url: '{{ route('admin.ajax.action') }}',
                     cache: false,
                     method: "POST",
                     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
@@ -454,7 +454,7 @@
                 $.ajax({
                     type: 'POST',
                     cache: false,
-                    url: '{{ URL::route('admin.ajax.action') }}',
+                    url: '{{ route('admin.ajax.action') }}',
                     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                     data: {
                         action: "log_online",

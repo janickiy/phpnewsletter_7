@@ -52,7 +52,7 @@
     <script>
 
         $( "#accept_license" ).click(function() {
-            var checked = $('#accept_license').is(":checked");
+            let checked = $('#accept_license').is(":checked");
 
             if (checked) {
                 $("#next_button").removeClass("disabled");
