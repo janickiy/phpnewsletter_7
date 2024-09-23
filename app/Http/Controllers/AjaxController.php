@@ -34,6 +34,8 @@ class AjaxController extends Controller
      */
     public function action(Request $request): JsonResponse
     {
+        @set_time_limit(0);
+
         try {
             $update = new UpdateHelper(app()->getLocale(), env('VERSION'));
 
@@ -259,11 +261,11 @@ class AjaxController extends Controller
                         );
 
                     case 'send_out':
-                        $fh = fopen(__FILE__, 'r');
+                      //  $fh = fopen(__FILE__, 'r');
 
-                        if (!flock($fh, LOCK_EX | LOCK_NB)) {
-                            exit('Script is already running');
-                        }
+                      //  if (!flock($fh, LOCK_EX | LOCK_NB)) {
+                          //  exit('Script is already running');
+                      //  }
 
                         if (!$request->templateId || !$request->categoryId) {
                             return response()->json([

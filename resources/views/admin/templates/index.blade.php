@@ -131,11 +131,11 @@
                         <span style="color: green" id="successful">0</span>
                         <span style="color: red">{{ trans('frontend.str.bad') }}: </span>
                         <span style="color: red" id="unsuccessful">0</span><br><br>
-                        <span id="divStatus" class="error"></span>
+                        <span id="divStatus" class="error"></span><br>
                         <button id="sendout" class="btn btn-default btn-circle btn-modal btn-lg"
                                 style="margin-right: 15px;" title="{{ trans('frontend.str.send_out_newsletter') }}"><i
                                 class="fa fa-play"></i></button>
-                        <button onClick="stopsend('stop');" id="stopsendout"
+                        <button id="stopsendout"
                                 class="btn btn-danger btn-circle btn-lg disabled" disabled="disabled"
                                 title="{{ trans('frontend.str.stop_newsletter') }}">
                             <i class="fa fa-stop"></i>
@@ -208,10 +208,39 @@
                         }
                         console.log(data);
                     });
-
                 } else {
                     $("#divStatus").html('{{ trans('frontend.str.no_newsletter_selected') }}');
                 }
+            });
+
+            $("#stopsendout").on('click', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route('admin.ajax.action') }}',
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    data: {
+                        action: "process",
+                        command: "stop",
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        pausesend = true;
+                        $("#process").removeClass();
+                        $("#pausesendout").addClass('disabled').attr('disabled', 'disabled');
+                        $("#stopsendout").addClass('disabled').attr('disabled', 'disabled');
+                        $("#sendout").removeClass('disabled').removeAttr('disabled');
+                        $("#refreshemail").addClass('disabled').attr('disabled', 'disabled');
+
+                        $('#timer2').text('00:00:00');
+                        $('.progress-bar').css('width', '0%');
+                        $('#leftsend').text(0);
+                        $("#process").removeClass();
+                    },
+                    error: function (error) {
+                        completeProcess();
+                        $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
+                    },
+                });
             });
 
             open_modal.click(function (event) {
@@ -385,9 +414,15 @@
                             $('.progress-bar').css('width', leftsend + '%');
                             $('#leftsend').text(leftsend);
 
-                            setTimeout('getCountProcess()', 2000);
+                            setTimeout(() => {
+                                getCountProcess();
+                            }, 2000);
+
+                            // setTimeout('', 2000);
                         } else {
-                            setTimeout('getCountProcess()', 1000);
+                            setTimeout(() => {
+                                getCountProcess();
+                            }, 1000);
                         }
                     }
                 });
@@ -446,9 +481,15 @@
                             completed = json.completed;
                             completeProcess();
                         } else {
-                            setTimeout('process()', 3000);
+                            setTimeout(() => {
+                                alert(1);
+                            }, 3000);
+
+
+                            //setTimeout('alert(1)', 3000);
                         }
                     },
+                    timeout: 25000,
                     error: function (error) {
                         completeProcess();
                         $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
@@ -458,6 +499,7 @@
         }
 
         function completeProcess() {
+            completed = true;
             $("#pausesendout").addClass('disabled').attr('disabled', 'disabled');
             $("#stopsendout").addClass('disabled').attr('disabled', 'disabled');
             $("#sendout").removeClass('disabled').removeAttr('disabled');
