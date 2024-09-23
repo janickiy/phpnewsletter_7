@@ -253,7 +253,7 @@ class SendEmailHelper
         if (SettingsHelper::getInstance()->getValueForKey('LIST_OWNER') !== '') $m->addCustomHeader("List-Owner: <" . SettingsHelper::getInstance()->getValueForKey('LIST_OWNER') . ">");
         if (SettingsHelper::getInstance()->getValueForKey('RETURN_PATH') !== '') $m->addCustomHeader("Return-Path: <" . SettingsHelper::getInstance()->getValueForKey('RETURN_PATH') . ">");
         if (SettingsHelper::getInstance()->getValueForKey('CONTENT_TYPE') === 'html')
-            $m->isHTML(true);
+            $m->isHTML();
         else
             $m->isHTML(false);
 
@@ -305,7 +305,7 @@ class SendEmailHelper
         $msg = str_replace('%UNSUB%', $UNSUB, $msg);
         $msg = str_replace('%SERVER_NAME%', $url_info['host'], $msg);
         $msg = str_replace('%USERID%', $subscriberId, $msg);
-        $msg = str_replace('%URL_PATH%', SettingsHelper::getInstance()->getValueForKey('URL'), $msg);
+        $msg = str_replace('%URL_PATH%', URL::to('/'), $msg);
         $msg = (int)SettingsHelper::getInstance()->getValueForKey('RANDOM_REPLACEMENT_BODY') === 1 ? StringHelper::encodeString($msg) : $msg;
         $msg = StringHelper::macrosReplacement($msg);
 
@@ -320,7 +320,6 @@ class SendEmailHelper
 
                     $ext = pathinfo($f->file_name, PATHINFO_EXTENSION);;
                     $mime_type = StringHelper::getMimeType($ext);
-
                     $m->AddAttachment($storagePath, $f->name, 'base64', $mime_type);
                 }
             }

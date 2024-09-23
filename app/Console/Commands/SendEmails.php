@@ -8,6 +8,8 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Isolatable;
 use Carbon\Carbon;
 
+use URL;
+
 class SendEmails extends Command implements Isolatable
 {
     /**
@@ -31,7 +33,7 @@ class SendEmails extends Command implements Isolatable
     {
         @set_time_limit(0);
 
-        $this->line('start sending emails');
+        $this->line(URL::to('/'));
 
         $mailcountno = 0;
         $mailcount = 0;

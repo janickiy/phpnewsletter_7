@@ -394,7 +394,7 @@ class AjaxController extends Controller
                                         'email' => $subscriber->email,
                                         'template_id' => $template->id,
                                         'template' => $template->name,
-                                        'success'  => 1,
+                                        'success' => 1,
                                         'schedule_id' => 0,
                                         'log_id' => $logId,
                                     ];
