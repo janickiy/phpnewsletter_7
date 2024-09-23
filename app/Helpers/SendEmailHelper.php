@@ -5,6 +5,7 @@ namespace App\Helpers;
 use PHPMailer\PHPMailer;
 use App\Models\{Attach, Smtp, Customheaders};
 use Illuminate\Support\Facades\Storage;
+use URL;
 
 class SendEmailHelper
 {
@@ -219,14 +220,14 @@ class SendEmailHelper
                 $m->Username = $smtp[0]['username'];
                 $m->Password = $smtp[0]['password'];
 
-                if ($smtp[0]['secure'] == 'ssl')
+                if ($smtp[0]['secure'] === 'ssl')
                     $m->SMTPSecure = 'ssl';
-                elseif ($smtp[0]['secure'] == 'tls')
+                elseif ($smtp[0]['secure'] === 'tls')
                     $m->SMTPSecure = 'tls';
 
-                if ($smtp[0]['authentication'] == 'plain')
+                if ($smtp[0]['authentication'] === 'plain')
                     $m->AuthType = 'PLAIN';
-                elseif ($smtp[0]['authentication'] == 'cram-md5')
+                elseif ($smtp[0]['authentication'] === 'cram-md5')
                     $m->AuthType = 'CRAM-MD5';
 
                 $m->Timeout = $smtp[0]['timeout'];
@@ -282,7 +283,7 @@ class SendEmailHelper
         elseif (SettingsHelper::getInstance()->getValueForKey('PRECEDENCE') === 'list')
             $m->addCustomHeader("Precedence: list");
 
-        $UNSUB = SettingsHelper::getInstance()->getValueForKey('URL') . substr(SettingsHelper::getInstance()->getValueForKey('URL'), -1) !== '/' ? '/' : ''  . "unsubscribe/" . $subscriberId . "/" . $token;
+        $UNSUB = URL::route('frontend.unsubscribe',['subscriber' => $subscriberId, 'token' => $token]);
         $unsublink = str_replace('%UNSUB%', $UNSUB, SettingsHelper::getInstance()->getValueForKey('UNSUBLINK'));
 
         if (self::$unsub) {
@@ -328,7 +329,8 @@ class SendEmailHelper
         if (SettingsHelper::getInstance()->getValueForKey('CHARSET') !== 'utf-8') $msg = iconv('utf-8', SettingsHelper::getInstance()->getValueForKey('CHARSET'), $msg);
         if (SettingsHelper::getInstance()->getValueForKey('CONTENT_TYPE') === 'html') {
             if (self::$tracking) {
-                $IMG = '<img alt="" border="0" src="' . SettingsHelper::getInstance()->getValueForKey('URL') . 'pic/' . $subscriberId . '_' . $templateId . '" width="1" height="1">';
+                $imageUrl = URL::route('frontend.pic',['subscriber' =>  $subscriberId, 'template' => $templateId]);
+                $IMG = '<img alt="" border="0" src="' . $imageUrl . '" width="1" height="1">';
                 $msg .= $IMG;
             }
         } else {

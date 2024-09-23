@@ -99,7 +99,7 @@ class SendEmails extends Command implements Isolatable
                                     ->orWhere('ready_sent.success', 0);
                             });
                     })
-                    ->whereNull('ready_sent.subscriberId')
+                    ->whereNull('ready_sent.subscriber_id')
                     ->where('subscribers.active', 1)
                     ->groupBy('subscribers.id')
                     ->groupBy('subscribers.email')

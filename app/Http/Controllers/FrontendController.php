@@ -19,6 +19,7 @@ use App\Http\Requests\Frontend\AddSubRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
+use URL;
 
 class FrontendController extends Controller
 {
@@ -124,7 +125,7 @@ class FrontendController extends Controller
             if ((int)SettingsHelper::getInstance()->getValueForKey('REQUIRE_SUB_CONFIRMATION') === 1) {
                 SendEmailHelper::setSubject(SettingsHelper::getInstance()->getValueForKey('SUBJECT_TEXT_CONFIRM'));
 
-                $CONFIRM = SettingsHelper::getInstance()->getValueForKey('URL') . substr(SettingsHelper::getInstance()->getValueForKey('URL'), -1) !== '/' ? '/' : '' . "subscribe/" . $id . "/" . $token;
+                $CONFIRM = URL::route('frontend.subscribe',['subscriber' => $id, 'token' => $token]);
                 $msg = str_replace(array("\r\n", "\r", "\n"), '<br>', SettingsHelper::getInstance()->getValueForKey('TEXT_CONFIRMATION'));
                 $msg = str_replace('%CONFIRM%', $CONFIRM, $msg);
 
