@@ -332,7 +332,7 @@ return [
         'log_index' => 'Here you can view statistics for each newsletter. Important! Accounting for the number of letters read is possible only for outgoing letters in html format, as well as if email clients do not block the automatic downloading of images.',
         'redirect_index' => 'Here you can view click statistics on links, number of redirects followed.',
         'smtp_index' => 'Add SMTP servers for mailing. If you have added more than one SMTP server, mailing will be done through the SMTP server list randomly.',
-        'cron_job_list' => 'Please note that all the cron jobs below must be added on your server in order for the application to work properly.<br>Please consult your web hosting support in order to understand how these cron jobs must be added on your server.',
+        'cron_job_list' => 'Please note that all the cron jobs below must be added on your server in order for the application to work properly. Please consult your web hosting support in order to understand how these cron jobs must be added on your server.',
         'phpinfo'   => '',
         'faq_index' => '',
         'update_index' => '',
