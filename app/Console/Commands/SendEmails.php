@@ -122,8 +122,8 @@ class SendEmails extends Command implements Isolatable
                 $sendEmail->body = $row->template->body;
                 $sendEmail->subject = $row->template->name;
                 $sendEmail->prior = $row->template->prior;
-                $sendEmail->email = $row->email;
-                $sendEmail->token = $row->token;
+                $sendEmail->email = $subscriber->email;
+                $sendEmail->token = $subscriber->token;
                 $sendEmail->subscriberId = $subscriber->id;
                 $sendEmail->name = $subscriber->name;
                 $sendEmail->templateId = $row->template->id;
