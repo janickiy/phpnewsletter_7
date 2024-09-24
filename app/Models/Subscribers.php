@@ -9,9 +9,13 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Illuminate\Http\Request;;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Subscribers extends Model
 {
+    use HasFactory, Notifiable;
+
     protected $table = 'subscribers';
 
     protected $fillable = [

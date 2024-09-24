@@ -9,192 +9,42 @@ use URL;
 
 class SendEmailHelper
 {
-    private static $subject;
+    public string $subject;
 
-    private static $body;
+    public string $body;
 
-    private static $email;
+    public string $email;
 
-    private static $prior;
+    public int $prior;
 
-    private static $name = 'USERNAME';
+    public string $name = 'USERNAME';
 
-    private static $templateId = 0;
+    public int $templateId = 0;
 
-    private static $subscriberId = 0;
+    public int $subscriberId = 0;
 
-    private static $token = '';
+    public string $token = '';
 
-    private static $tracking = true;
+    public bool $tracking = true;
 
-    private static $unsub = true;
+    public bool $unsub = true;
 
-    /**
-     * @return mixed
-     */
-    public static function getSubject()
-    {
-        return self::$subject;
-    }
-
-    public static function getToken()
-    {
-        return self::$token;
-    }
-
-    /**
-     * @return mixed
-     */
-    public static function getBody()
-    {
-        return self::$body;
-    }
-
-    /**
-     * @return mixed
-     */
-    public static function getEmail()
-    {
-        return self::$email;
-    }
-
-    /**
-     * @return mixed
-     */
-    public static function getPrior()
-    {
-        return self::$prior;
-    }
-
-    /**
-     * @return string
-     */
-    public static function getName()
-    {
-        return self::$name;
-    }
-
-    /**
-     * @return int
-     */
-    public static function getTemplateId()
-    {
-        return self::$templateId;
-    }
-
-    /**
-     * @return int
-     */
-    public static function getSubscriberId()
-    {
-        return self::$subscriberId;
-    }
-
-    /**
-     * @param string $subject
-     * @return string
-     */
-    public static function setSubject(string $subject)
-    {
-        return self::$subject = $subject;
-    }
-
-    /**
-     * @param string $body
-     * @return string
-     */
-    public static function setBody(string $body)
-    {
-        return self::$body = $body;
-    }
-
-    /**
-     * @param string $token
-     * @return string
-     */
-    public static function setToken(string $token): string
-    {
-        return self::$token = $token;
-    }
-
-    /**
-     * @param string $email
-     * @return string
-     */
-    public static function setEmail(string $email): string
-    {
-        return self::$email = $email;
-    }
-
-    /**
-     * @param int $prior
-     * @return int
-     */
-    public static function setPrior(int $prior)
-    {
-        return self::$prior = $prior;
-    }
-
-    /**
-     * @param string $name
-     * @return string
-     */
-    public static function setName(string $name)
-    {
-        return self::$name = $name;
-    }
-
-    /**
-     * @param int $templateId
-     * @return int
-     */
-    public static function setTemplateId(int $templateId): int
-    {
-        return self::$templateId = $templateId;
-    }
-
-    /**
-     * @param int $subscriberId
-     * @return int
-     */
-    public static function setSubscriberId(int $subscriberId): int
-    {
-        return self::$subscriberId = $subscriberId;
-    }
-
-    /**
-     * @param string $tracking
-     * @return string
-     */
-    public static function setTracking(string $tracking): string
-    {
-        return self::$tracking = $tracking;
-    }
-
-    /**
-     * @param string $unsub
-     * @return string
-     */
-    public static function setUnsub(string $unsub): string
-    {
-        return self::$unsub = $unsub;
-    }
 
     /**
      * @param int|null $attach
      * @return array
      * @throws PHPMailer\Exception
      */
-    public static function sendEmail(?int $attach = null)
+    public  function sendEmail(?int $attach = null)
     {
-        $subject = self::getSubject();
-        $body = self::getBody();
-        $email = self::getEmail();
-        $prior = self::getPrior();
-        $name = self::getName();
-        $templateId = self::getTemplateId();
-        $subscriberId = self::getSubscriberId();
-        $token = self::getToken();
+        $subject = $this->subject;
+        $body = $this->body;
+        $email = $this->email;
+        $prior = $this->prior;
+        $name = $this->name;
+        $templateId = $this->templateId;
+        $subscriberId = $this->subscriberId;
+        $token = $this->token;
 
         $m = new PHPMailer\PHPMailer();
 
@@ -211,9 +61,8 @@ class SendEmailHelper
                 $smtp_r = $smtp_q->limit(1)->get();
             }
 
-            if ($smtp_r) $smtp = $smtp_r->toArray();
-
-            if (isset($smtp[0]['host']) && isset($smtp[0]['port']) && isset($smtp[0]['port']) && isset($smtp[0]['username']) && isset($smtp[0]['password'])) {
+            if ($smtp_r)  {
+                $smtp = $smtp_r->toArray();
                 $m->Host = $smtp[0]['host'];
                 $m->Port = $smtp[0]['port'];
                 $m->From = $smtp[0]['email'];
@@ -286,7 +135,7 @@ class SendEmailHelper
         $UNSUB = URL::route('frontend.unsubscribe',['subscriber' => $subscriberId, 'token' => $token]);
         $unsublink = str_replace('%UNSUB%', $UNSUB, SettingsHelper::getInstance()->getValueForKey('UNSUBLINK'));
 
-        if (self::$unsub) {
+        if ($this->unsub) {
             if ((int)SettingsHelper::getInstance()->getValueForKey('SHOW_UNSUBSCRIBE_LINK') === 1 && SettingsHelper::getInstance()->getValueForKey('UNSUBLINK') !== '') $body .= "<br><br>" . $unsublink;
             $m->addCustomHeader("List-Unsubscribe: " . $UNSUB);
         }
@@ -327,7 +176,7 @@ class SendEmailHelper
 
         if (SettingsHelper::getInstance()->getValueForKey('CHARSET') !== 'utf-8') $msg = iconv('utf-8', SettingsHelper::getInstance()->getValueForKey('CHARSET'), $msg);
         if (SettingsHelper::getInstance()->getValueForKey('CONTENT_TYPE') === 'html') {
-            if (self::$tracking) {
+            if ($this->tracking) {
                 $imageUrl = URL::route('frontend.pic',['subscriber' =>  $subscriberId, 'template' => $templateId]);
                 $IMG = '<img alt="" border="0" src="' . $imageUrl . '" width="1" height="1">';
                 $msg .= $IMG;

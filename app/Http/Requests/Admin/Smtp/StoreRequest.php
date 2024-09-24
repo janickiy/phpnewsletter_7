@@ -27,6 +27,7 @@ class StoreRequest extends FormRequest
             'host' => 'required|max:255',
             'username' => 'required',
             'email' => 'required|email',
+            'password' => 'required',
             'port' => 'required|numeric',
             'timeout' => 'required|numeric',
         ];

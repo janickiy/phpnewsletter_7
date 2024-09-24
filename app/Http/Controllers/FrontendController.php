@@ -118,25 +118,27 @@ class FrontendController extends Controller
      */
     public function addSub(AddSubRequest $request): JsonResponse
     {
+        $sendMail = new SendEmailHelper();
+
         $token = StringHelper::token();
         $id = Subscribers::create(array_merge($request->all(), ['active' => (int)SettingsHelper::getInstance()->getValueForKey('REQUIRE_SUB_CONFIRMATION') === 1 ? 0 : 1, 'token' => $token]))->id;
 
         if ($id) {
             if ((int)SettingsHelper::getInstance()->getValueForKey('REQUIRE_SUB_CONFIRMATION') === 1) {
-                SendEmailHelper::setSubject(SettingsHelper::getInstance()->getValueForKey('SUBJECT_TEXT_CONFIRM'));
+                $sendMail->setSubject(SettingsHelper::getInstance()->getValueForKey('SUBJECT_TEXT_CONFIRM'));
 
                 $CONFIRM = URL::route('frontend.subscribe',['subscriber' => $id, 'token' => $token]);
                 $msg = str_replace(array("\r\n", "\r", "\n"), '<br>', SettingsHelper::getInstance()->getValueForKey('TEXT_CONFIRMATION'));
                 $msg = str_replace('%CONFIRM%', $CONFIRM, $msg);
 
-                SendEmailHelper::setBody($msg);
-                SendEmailHelper::setEmail($request->email);
-                SendEmailHelper::setToken($token);
-                SendEmailHelper::setSubscriberId($id);
-                SendEmailHelper::setName($request->name);
-                SendEmailHelper::setUnsub(false);
-                SendEmailHelper::setTracking(false);
-                SendEmailHelper::sendEmail();
+                $sendMail->body = $msg;
+                $sendMail->email = $request->email;
+                $sendMail->token = $token;
+                $sendMail->subscriberId = $id;
+                $sendMail->name = $request->name;
+                $sendMail->unsub = false;
+                $sendMail->tracking = false;
+                $sendMail->sendEmail();
             }
 
             if ((int)SettingsHelper::getInstance()->getValueForKey('NEW_SUBSCRIBER_NOTIFY') === 1) {
@@ -145,13 +147,13 @@ class FrontendController extends Controller
                 $msg = trans('frontend.str.notification_newuser') . "\nName: " . $request->name . " \nE-mail: " . $request->email . "\n";
                 $msg = str_replace('%SITE%', $_SERVER['SERVER_NAME'], $msg);
 
-                SendEmailHelper::setSubject($subject);
-                SendEmailHelper::setBody($msg);
-                SendEmailHelper::setEmail(SettingsHelper::getInstance()->getValueForKey('EMAIL'));
-                SendEmailHelper::setName(SettingsHelper::getInstance()->getValueForKey('FROM'));
-                SendEmailHelper::setTracking(false);
-                SendEmailHelper::setUnsub(false);
-                SendEmailHelper::sendEmail();
+                $sendMail->subject = $subject;
+                $sendMail->body = $msg;
+                $sendMail->email = SettingsHelper::getInstance()->getValueForKey('EMAIL');
+                $sendMail->name = SettingsHelper::getInstance()->getValueForKey('FROM');
+                $sendMail->tracking = false;
+                $sendMail->unsub = false;
+                $sendMail->sendEmail();
             }
 
             foreach ($request->categoryId ?? [] as $categoryId) {

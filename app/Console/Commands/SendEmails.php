@@ -17,7 +17,7 @@ class SendEmails extends Command implements Isolatable
      *
      * @var string
      */
-    protected $signature = 'email:send';
+    protected $signature = 'emails:send';
 
     /**
      * The console command description.
@@ -114,19 +114,20 @@ class SendEmails extends Command implements Isolatable
             }
 
             foreach ($subscribers ?? [] as $subscriber) {
-                if ((int)SettingsHelper::getInstance()->getValueForKey('sleep') > 0)
+                if ((int)SettingsHelper::getInstance()->getValueForKey('sleep') > 0) {
                     sleep((int)SettingsHelper::getInstance()->getValueForKey('sleep'));
+                }
 
-                SendEmailHelper::setBody($row->template->body);
-                SendEmailHelper::setSubject($row->template->name);
-                SendEmailHelper::setPrior($row->template->prior);
-                SendEmailHelper::setEmail($subscriber->email);
-                SendEmailHelper::setToken($subscriber->token);
-                SendEmailHelper::setSubscriberId($subscriber->id);
-                SendEmailHelper::setName($subscriber->name);
-                SendEmailHelper::setTemplateId($row->template->id);
-
-                $result = SendEmailHelper::sendEmail($row->templateId);
+                $sendEmail = new SendEmailHelper();
+                $sendEmail->body = $row->template->body;
+                $sendEmail->subject = $row->template->name;
+                $sendEmail->prior = $row->template->prior;
+                $sendEmail->email = $row->email;
+                $sendEmail->token = $row->token;
+                $sendEmail->subscriberId = $subscriber->id;
+                $sendEmail->name = $subscriber->name;
+                $sendEmail->templateId = $row->template->id;
+                $result = $sendEmail->sendEmail();
 
                 $data = [];
 

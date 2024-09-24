@@ -107,18 +107,19 @@ class SendUnsentEmails extends Command implements Isolatable
             }
 
             foreach ($subscribers ?? [] as $subscriber) {
-                if ((int)SettingsHelper::getInstance()->getValueForKey('sleep') > 0)
+                if ((int)SettingsHelper::getInstance()->getValueForKey('sleep') > 0) {
                     sleep((int)SettingsHelper::getInstance()->getValueForKey('sleep'));
+                }
 
-                SendEmailHelper::setBody($row->template->body);
-                SendEmailHelper::setSubject($row->template->name);
-                SendEmailHelper::setPrior($row->template->prior);
-                SendEmailHelper::setEmail($subscriber->email);
-                SendEmailHelper::setToken($subscriber->token);
-                SendEmailHelper::setSubscriberId($subscriber->id);
-                SendEmailHelper::setName($subscriber->name);
-
-                $result = SendEmailHelper::sendEmail($row->template_id);
+                $sendMail = new SendEmailHelper();
+                $sendMail->body = $row->template->body;
+                $sendMail->subject = $row->template->name;
+                $sendMail->prior = $row->template->prior;
+                $sendMail->email = $subscriber->email;
+                $sendMail->token = $subscriber->token;
+                $sendMail->subscriberId = $subscriber->id;
+                $sendMail->name = $subscriber->name;
+                $result = $sendMail->sendEmail();
 
                 if ($result['result'] === true) {
                     ReadySent::where('schedule_id', $row->id)->update(['success' => 1]);
