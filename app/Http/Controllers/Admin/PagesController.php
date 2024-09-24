@@ -21,12 +21,10 @@ class PagesController extends Controller
      */
     public function cronJobList(): View
     {
-
         $infoAlert = trans('frontend.hint.cron_job_list') ?? null;
         $path = base_path() ? base_path() . '/artisan' : ' /home/phpnewsletter/artisan';
 
-        $cronJob[] = ['description' => 'Email sender, runs each minute', 'cron' => '/usr/bin/php -q ' . $path . ' email:send >/dev/null 2>&1'];
-        $cronJob[] = ['description' => 'Resending unsent emails, runs each 10 minutes', 'cron' => '/usr/bin/php -q ' . $path . ' email:unsent >/dev/null 2>&1'];
+        $cronJob[] = ['description' => 'Task Scheduling', 'cron' => '/usr/bin/php -q ' . $path . ' schedule:run >/dev/null 2>&1'];
 
         return view('admin.pages.cron_job_list', compact('cronJob', 'infoAlert'))->with('title', 'Crontab');
     }
