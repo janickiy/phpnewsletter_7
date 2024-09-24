@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
          $schedule->command('emails:send')->everyMinute()->withoutOverlapping();
-         $schedule->command('emails:send')->everyTenMinutes()->withoutOverlapping();
+         $schedule->command('emails:unsent')->everyTenMinutes()->withoutOverlapping();
     }
 
     /**

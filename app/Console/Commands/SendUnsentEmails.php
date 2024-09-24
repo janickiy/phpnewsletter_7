@@ -14,7 +14,7 @@ class SendUnsentEmails extends Command implements Isolatable
      *
      * @var string
      */
-    protected $signature = 'email:unsent';
+    protected $signature = 'emails:unsent';
 
     /**
      * The console command description.
