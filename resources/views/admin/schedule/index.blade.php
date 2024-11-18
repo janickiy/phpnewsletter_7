@@ -25,8 +25,10 @@
         justify-content: space-around;
         font-size: 1.75rem;
         padding-top: 4px;
+	color: #fff
     }
     .event-actions {
+	color: #fff !important
         color: #00008B
     }
 </style>

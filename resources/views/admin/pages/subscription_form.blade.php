@@ -77,24 +77,34 @@
 
 @section('js')
 
-    {!! Html::script('/plugins/highlightjs/highlight.js') !!}
-    {!! Html::script('/plugins/highlightjs/highlightjs-line-numbers.js') !!}
+    <!-- {!! Html::script('/plugins/highlightjs/highlight.js') !!} -->
+    <!-- {!! Html::script('/plugins/highlightjs/highlightjs-line-numbers.js') !!} -->
+
+    {!! Html::script('https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js') !!}
+    {!! Html::script('https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.6.0/highlightjs-line-numbers.min.js') !!}
 
     <script>hljs.highlightAll();</script>
     <script>hljs.initLineNumbersOnLoad();</script>
 
     <script>
-
-        function copyToClipboard(element) {
+        async function copyToClipboard(element) {
             let $temp = $("<input>");
             $("body").append($temp);
             $temp.val($(element).text()).select();
-            document.execCommand("copy");
+
+            const type = "text/plain";
+            const content = $temp.prop('value')
+            const blob = new Blob([content], { type });
+            const copyContent = [new ClipboardItem({ [ type ]: blob })];
+
+            if (navigator.clipboard) {
+                navigator.clipboard.write(copyContent);
+            } else {
+                document.execCommand("copy");
+            }
 
             $temp.remove();
         }
-
     </script>
 
 @endsection
-

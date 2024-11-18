@@ -22,11 +22,11 @@ class Category extends Model
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public static function getOption(): mixed
+    public static function getOption(): array
     {
-        return self::orderBy('name')->get()->pluck('name', 'id');
+        return self::orderBy('name')->get()->pluck('name', 'id')->toArray();
     }
 
     public function scopeRemove(): void

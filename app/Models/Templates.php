@@ -36,11 +36,11 @@ class Templates extends Model
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public static function getOption()
+    public static function getOption(): array
     {
-        return self::orderBy('name')->get()->pluck('name', 'id');
+        return self::orderBy('name')->get()->pluck('name', 'id')->toArray();
     }
 
     /**
