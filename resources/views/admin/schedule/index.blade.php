@@ -15,9 +15,15 @@
     .event-class .event-actions {
         display: none;
     }
-    .fc-day-today  {
+    .fc-day-today {
         color: #fff !important;
         background-color: #0f0 !important;
+    }
+    .fc-day-today a,
+    .fc-day-today .p-2,
+    .fc-day-today .p-2 .event-actions,
+    .fc-day-today .p-2 .event-actions b {
+        color: #fff !important;
     }
 
     .event-class:hover .event-actions {
@@ -25,10 +31,8 @@
         justify-content: space-around;
         font-size: 1.75rem;
         padding-top: 4px;
-	color: #fff
     }
     .event-actions {
-	color: #fff !important
         color: #00008B
     }
 </style>
