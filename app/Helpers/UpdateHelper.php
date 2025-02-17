@@ -5,7 +5,7 @@ namespace App\Helpers;
 class UpdateHelper
 {
     private $language;
-    private $url = 'http://license.janicky.com/';
+    private $url = 'http://license.janickiy.com/';
     private $currenversion;
 
     public function __construct(string $language, string $currenversion)

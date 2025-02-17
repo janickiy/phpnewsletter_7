@@ -319,7 +319,7 @@
     <!-- /.content-wrapper -->
 
     <footer class="main-footer">
-        <strong>&copy; 2006-{{ date('Y') }} <a href="https://janicky.com">PHP Newsletter</a>, {{ trans('frontend.str.author') }}</strong>
+        <strong>&copy; 2006-{{ date('Y') }} <a href="https://janickiy.com">PHP Newsletter</a>, {{ trans('frontend.str.author') }}</strong>
     </footer>
 
     <!-- Control Sidebar -->
