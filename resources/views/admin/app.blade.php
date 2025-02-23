@@ -90,7 +90,7 @@
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
         <a href="{{ route('admin.templates.index') }}" class="brand-link">
-            <img src="{{ url('../../dist/img/logo.png') }}" alt="PHP Newsletter" class="brand-image">
+            <img src="{{ url('/dist/img/logo.png') }}" alt="PHP Newsletter" class="brand-image">
             <span style="font-size: 0.7rem">{{ env('VERSION') }}</span>
         </a>
 

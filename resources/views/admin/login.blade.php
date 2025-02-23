@@ -28,7 +28,7 @@
     <div class="card card-outline card-primary">
         <div class="card-header text-center">
 
-            <img src="{{ url('../../dist/img/logo.png') }}" alt="">
+            <img src="{{ url('/dist/img/logo.png') }}" alt="">
         </div>
         <div class="card-body">
             <p class="login-box-msg">{{ trans('auth.admin_area') }}</p>
