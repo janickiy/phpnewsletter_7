@@ -16,9 +16,9 @@ class SmtpController extends Controller
      */
     public function index(): View
     {
-        $infoAlert = trans('frontend.hint.smtp_index') ?? null;
+        $infoAlert = __('frontend.hint.smtp_index') ?? null;
 
-        return view('admin.smtp.index', compact('infoAlert'))->with('title', trans('frontend.title.smtp_index'));
+        return view('admin.smtp.index', compact('infoAlert'))->with('title', __('frontend.title.smtp_index'));
     }
 
     /**
@@ -26,9 +26,9 @@ class SmtpController extends Controller
      */
     public function create(): View
     {
-        $infoAlert = trans('frontend.hint.smtp_create') ?? null;
+        $infoAlert = __('frontend.hint.smtp_create') ?? null;
 
-        return view('admin.smtp.create_edit', compact('infoAlert'))->with('title', trans('frontend.title.smtp_create'));
+        return view('admin.smtp.create_edit', compact('infoAlert'))->with('title', __('frontend.title.smtp_create'));
     }
 
     /**
@@ -40,7 +40,7 @@ class SmtpController extends Controller
     {
         Smtp::create($request->all());
 
-        return redirect()->route('admin.smtp.index')->with('success', trans('message.information_successfully_added'));
+        return redirect()->route('admin.smtp.index')->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -53,9 +53,9 @@ class SmtpController extends Controller
 
         if (!$row) abort(404);
 
-        $infoAlert = trans('frontend.hint.smtp_edit') ?? null;
+        $infoAlert = __('frontend.hint.smtp_edit') ?? null;
 
-        return view('admin.smtp.create_edit', compact('row', 'infoAlert'))->with('title', trans('frontend.title.smtp_edit'));
+        return view('admin.smtp.create_edit', compact('row', 'infoAlert'))->with('title', __('frontend.title.smtp_edit'));
     }
 
     /**
@@ -79,7 +79,7 @@ class SmtpController extends Controller
         $row->timeout = $request->input('timeout');
         $row->save();
 
-        return redirect()->route('admin.smtp.index')->with('success', trans('message.data_updated'));
+        return redirect()->route('admin.smtp.index')->with('success', __('message.data_updated'));
     }
 
     /**
@@ -116,6 +116,6 @@ class SmtpController extends Controller
                 break;
         }
 
-        return redirect()->route('admin.smtp.index')->with('success', trans('message.actions_completed'));
+        return redirect()->route('admin.smtp.index')->with('success', __('message.actions_completed'));
     }
 }

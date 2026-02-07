@@ -26,20 +26,20 @@
                             <div class="pb-3">
                                 <a href="{{ route('admin.category.create') }}"
                                    class="btn btn-info btn-sm pull-left">
-                                    <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_category') }}
+                                    <span class="fa fa-plus"> &nbsp;</span> {{ __('frontend.str.add_category') }}
                                 </a>
                             </div>
                             <table id="itemList" class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
-                                    <th>{{ trans('frontend.str.name') }}</th>
-                                    <th>{{ trans('frontend.str.subscribers_number') }}</th>
-                                    <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
+                                    <th>{{ __('frontend.str.name') }}</th>
+                                    <th>{{ __('frontend.str.subscribers_number') }}</th>
+                                    <th style="width: 10%">{{ __('frontend.str.action') }}</th>
                                 </tr>
                                 </thead>
                                 <tfoot>
                                 <tr>
-                                    <th>{{ trans('frontend.str.name') }}</th>
+                                    <th>{{ __('frontend.str.name') }}</th>
                                     <th>{{ trans('frontend.str.subscribers_number') }}</th>
                                     <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
                                 </tr>

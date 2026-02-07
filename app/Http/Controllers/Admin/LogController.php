@@ -22,9 +22,9 @@ class LogController extends Controller
      */
     public function index(): View
     {
-        $infoAlert = trans('frontend.hint.log_index') ?? null;
+        $infoAlert = __('frontend.hint.log_index') ?? null;
 
-        return view('admin.log.index', compact('infoAlert'))->with('title', trans('frontend.title.log_index'));
+        return view('admin.log.index', compact('infoAlert'))->with('title', __('frontend.title.log_index'));
     }
 
     /**
@@ -35,7 +35,7 @@ class LogController extends Controller
         ReadySent::truncate();
         Logs::truncate();
 
-        return redirect()->route('admin.log.index')->with('success', trans('message.log_cleared'));
+        return redirect()->route('admin.log.index')->with('success', __('message.log_cleared'));
     }
 
     /**
@@ -68,7 +68,7 @@ class LogController extends Controller
 
         $oSpreadsheet_Out->getProperties()->setCreator('Alexander Yanitsky')
             ->setLastModifiedBy('PHP Newsletter')
-            ->setTitle(trans('frontend.str.log'))
+            ->setTitle(__('frontend.str.log'))
             ->setSubject('Office 2007 XLSX Document')
             ->setDescription('Document for Office 2007 XLSX, generated using PHP classes.')
             ->setKeywords('office 2007 openxml php')
@@ -76,7 +76,7 @@ class LogController extends Controller
 
         // Add some data
         $oSpreadsheet_Out->setActiveSheetIndex(0)
-            ->setCellValue('A1', trans('frontend.str.total') . ": $total\n" . trans('frontend.str.sent') . ": " . $count . "%\n" . trans('frontend.str.spent_time') . ": $totaltime->totaltime\n" . trans('frontend.str.read') . ": " . $readmail)
+            ->setCellValue('A1', __('frontend.str.total') . ": $total\n" . __('frontend.str.sent') . ": " . $count . "%\n" . __('frontend.str.spent_time') . ": $totaltime->totaltime\n" . __('frontend.str.read') . ": " . $readmail)
             ->setCellValue('A2', trans('frontend.str.email'))
             ->setCellValue('B2', trans('frontend.str.time'))
             ->setCellValue('C2', trans('frontend.str.status'))

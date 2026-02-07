@@ -90,7 +90,7 @@ class InstallController extends Controller
         if (!$this->dbCredentialsAreValid($dbCredentials)) {
             return redirect()->route('install.database')
                 ->withInput()
-                ->withErrors(trans('install.str.connection_to_database_cannot_be_established'));
+                ->withErrors(__('install.str.connection_to_database_cannot_be_established'));
         }
 
         Session::put('install.db_credentials', $dbCredentials);
@@ -125,7 +125,7 @@ class InstallController extends Controller
             $env = str_replace('DB_DATABASE=' . env('DB_DATABASE'), 'DB_DATABASE=' . $db['database'], $env);
             $env = str_replace('DB_USERNAME=' . env('DB_USERNAME'), 'DB_USERNAME=' . $db['username'], $env);
             $env = str_replace('DB_PASSWORD=' . env('DB_PASSWORD'), 'DB_PASSWORD="' . $db['password'] . '"', $env);
-            $env = str_replace('VERSION=', 'VERSION="7.0.1"', $env);
+            $env = str_replace('VERSION=', 'VERSION="7.1.0"', $env);
             $env = str_replace('APP_URL=', 'APP_URL=' . StringHelper::getUrl(), $env);
 
             file_put_contents($path, $env);
@@ -179,7 +179,7 @@ class InstallController extends Controller
     private function getRequirements(): array
     {
         $requirements = [
-            'PHP Version (>= 8.1.0)' => version_compare(phpversion(), '8.1.0', '>='),
+            'PHP Version (>= 8.2.0)' => version_compare(phpversion(), '8.2.0', '>='),
             'Zip' => extension_loaded('zip'),
             'iconv' => extension_loaded("iconv"),
             'PDO Extension' => extension_loaded('PDO'),

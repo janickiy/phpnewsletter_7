@@ -26,13 +26,13 @@
 
                         <div class="card-body">
 
-                            <p>*-{{ trans('frontend.form.required_fields') }}</p>
+                            <p>*-{{ __('frontend.form.required_fields') }}</p>
 
                             <div class="form-group">
 
-                                {!! Form::label('name', trans('frontend.form.name')) !!}
+                                {!! Form::label('name', __('frontend.form.name')) !!}
 
-                                {!! Form::text('name', old('name', $row->name ?? null), ['class' => 'form-control', 'placeholder' => trans('frontend.form.name')]) !!}
+                                {!! Form::text('name', old('name', $row->name ?? null), ['class' => 'form-control', 'placeholder' => __('frontend.form.name')]) !!}
 
                                 @if ($errors->has('name'))
                                     <p class="text-danger">{{ $errors->first('name') }}</p>
@@ -41,9 +41,9 @@
 
                             <div class="form-group">
 
-                                {!! Form::label('login', trans('frontend.form.login')) !!}
+                                {!! Form::label('login', __('frontend.form.login')) !!}
 
-                                {!! Form::text('login', old('login', $row->login ?? null), [ 'placeholder' => trans('frontend.form.login'), 'class' => 'form-control']) !!}
+                                {!! Form::text('login', old('login', $row->login ?? null), [ 'placeholder' => __('frontend.form.login'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('login'))
                                     <p class="text-danger">{{ $errors->first('login') }}</p>
@@ -53,9 +53,9 @@
 
                             <div class="form-group">
 
-                                {!! Form::label('description', trans('frontend.form.description')) !!}
+                                {!! Form::label('description', __('frontend.form.description')) !!}
 
-                                {!! Form::textarea('description', old('description', $row->description ?? null), [ 'placeholder' => trans('frontend.form.description'), 'rows' => 3, 'class' => 'form-control']) !!}
+                                {!! Form::textarea('description', old('description', $row->description ?? null), [ 'placeholder' => __('frontend.form.description'), 'rows' => 3, 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('description'))
                                     <p class="text-danger">{{ $errors->first('description') }}</p>
@@ -67,7 +67,7 @@
 
                                 <div class="form-group">
 
-                                    {!! Form::label('role', trans('frontend.form.role')) !!}
+                                    {!! Form::label('role', __('frontend.form.role')) !!}
 
                                     {!! Form::select('role', $options, $row->role ?? 'admin', ['placeholder' => trans('frontend.form.select_role'), 'class' => 'custom-select']) !!}
 

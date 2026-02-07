@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ trans('frontend.str.admin_panel') }} | @yield('title')</title>
+    <title>{{ __('frontend.str.admin_panel') }} | @yield('title')</title>
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -44,7 +44,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" data-widget="fullscreen" title="{{ trans('frontend.str.expand_full_screen') }}"
+                <a class="nav-link" data-widget="fullscreen" title="{{ __('frontend.str.expand_full_screen') }}"
                    href="#" role="button">
                     <i class="fas fa-expand-arrows-alt"></i>
                 </a>
@@ -77,7 +77,7 @@
 
             <!-- Notifications Dropdown Menu -->
             <li class="nav-item">
-                <a class="nav-link" title="{{ trans('frontend.str.signout') }}" href="{{ route('logout') }}"
+                <a class="nav-link" title="{{ __('frontend.str.signout') }}" href="{{ route('logout') }}"
                    role="button">
                     <i class="fas fa-sign-out-alt"></i>
                 </a>
@@ -115,9 +115,9 @@
 
                     <li class="nav-item">
                         <a href="{{ route('admin.templates.index') }}" class="nav-link{{ Request::is('template*') || Request::is('/') ? ' active' : '' }}"
-                           title="{{ trans('frontend.menu.templates') }}">
+                           title="{{ __('frontend.menu.templates') }}">
                             <i class="nav-icon fas fa-envelope"></i>
-                            <p>{{ trans('frontend.menu.templates') }}</p>
+                            <p>{{ __('frontend.menu.templates') }}</p>
                         </a>
                     </li>
 
@@ -125,7 +125,7 @@
 
                         <li class="nav-item">
                             <a href="{{ route('admin.subscribers.index') }}" class="nav-link{{ Request::is('subscribers*') ? ' active' : '' }}"
-                               title="{{ trans('frontend.menu.subscribers') }}">
+                               title="{{ __('frontend.menu.subscribers') }}">
                                 <i class="nav-icon fas fa-user-friends"></i>
                                 <p>{{ trans('frontend.menu.subscribers') }}</p>
                             </a>

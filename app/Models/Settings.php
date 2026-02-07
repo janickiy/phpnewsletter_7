@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Http\Traits\StaticTableName;
 use Illuminate\Database\Eloquent\Model;
 use App\Helpers\StringHelper;
 
 class Settings extends Model
 {
+    use StaticTableName;
+
     protected $table = 'settings';
 
     public $timestamps = false;

@@ -26,12 +26,12 @@
 
                         <div class="card-body">
 
-                            <p>*-{{ trans('frontend.form.required_fields') }}</p>
+                            <p>*-{{ __('frontend.form.required_fields') }}</p>
 
                             <div class="form-group">
-                                {!! Form::label('name', trans('frontend.form.macros_name') . '*') !!}
+                                {!! Form::label('name', __('frontend.form.macros_name') . '*') !!}
 
-                                {!! Form::text('name', old('name', $row->name ?? null), ['class' => 'form-control', 'placeholder' => trans('frontend.form.name')]) !!}
+                                {!! Form::text('name', old('name', $row->name ?? null), ['class' => 'form-control', 'placeholder' => __('frontend.form.name')]) !!}
 
                                 @if ($errors->has('name'))
                                     <p class="text-danger">{{ $errors->first('name') }}</p>
@@ -40,9 +40,9 @@
 
                             <div class="form-group">
 
-                                {!! Form::label('value', trans('frontend.form.value') . '*') !!}
+                                {!! Form::label('value', __('frontend.form.value') . '*') !!}
 
-                                {!! Form::textarea('value', old('value', $row->value ?? null), [ 'placeholder' => trans('frontend.form.value'), 'rows' => 3, 'class' => 'form-control']) !!}
+                                {!! Form::textarea('value', old('value', $row->value ?? null), [ 'placeholder' => __('frontend.form.value'), 'rows' => 3, 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('value'))
                                     <p class="text-danger">{{ $errors->first('value') }}</p>
@@ -52,9 +52,9 @@
 
                             <div class="form-group">
 
-                                {!! Form::label('type', trans('frontend.form.macros_type') . '*') !!}
+                                {!! Form::label('type', __('frontend.form.macros_type') . '*') !!}
 
-                                {!! Form::select('type', $options, $row->type ?? null, ['placeholder' => trans('frontend.form.macros_type'), 'class' => 'custom-select']) !!}
+                                {!! Form::select('type', $options, $row->type ?? null, ['placeholder' => __('frontend.form.macros_type'), 'class' => 'custom-select']) !!}
 
                                 @if ($errors->has('type'))
                                     <p class="text-danger">{{ $errors->first('type') }}</p>
@@ -66,7 +66,7 @@
 
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary">
-                                {{ isset($row) ? trans('frontend.form.edit') : trans('frontend.form.add') }}
+                                {{ isset($row) ? __('frontend.form.edit') : __('frontend.form.add') }}
                             </button>
                             <a class="btn btn-default float-sm-right" href="{{ route('admin.macros.index') }}">
                                 {{ trans('frontend.form.back') }}

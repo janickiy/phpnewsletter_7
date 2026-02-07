@@ -26,7 +26,7 @@
                             <div class="pb-3">
                                 <a href="{{ route('admin.smtp.create') }}"
                                    class="btn btn-info btn-sm pull-left">
-                                    <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_smtp_server') }}
+                                    <span class="fa fa-plus"> &nbsp;</span> {{ __('frontend.str.add_smtp_server') }}
                                 </a>
                             </div>
 
@@ -37,15 +37,15 @@
                                 <tr>
                                     <th style="width: 10px">
                                     <span>
-                                       <input type="checkbox" title="{{ trans('frontend.str.check_uncheck_all') }}" id="checkAll">
+                                       <input type="checkbox" title="{{ __('frontend.str.check_uncheck_all') }}" id="checkAll">
                                     </span>
                                     </th>
-                                    <th>{{ trans('frontend.str.smtp_server') }}</th>
+                                    <th>{{ __('frontend.str.smtp_server') }}</th>
                                     <th>E-mail</th>
-                                    <th>{{ trans('frontend.str.login') }}</th>
-                                    <th>{{ trans('frontend.str.port') }}</th>
-                                    <th>{{ trans('frontend.str.connection_timeout') }}</th>
-                                    <th>{{ trans('frontend.str.connection') }}</th>
+                                    <th>{{ __('frontend.str.login') }}</th>
+                                    <th>{{ __('frontend.str.port') }}</th>
+                                    <th>{{ __('frontend.str.connection_timeout') }}</th>
+                                    <th>{{ __('frontend.str.connection') }}</th>
                                     <th>{{ trans('frontend.str.authentication_method') }}</th>
                                     <th>{{ trans('frontend.str.status') }}</th>
                                     <th style="width: 10%">{{ trans('frontend.str.action') }}</th>

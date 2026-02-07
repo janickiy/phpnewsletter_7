@@ -79,7 +79,7 @@ class FrontendController extends Controller
         $subscriber->active = 0;
         $subscriber->save();
 
-        $msg = str_replace('%EMAIL%', $email, trans('frontend.str.address_has_been_deleted'));
+        $msg = str_replace('%EMAIL%', $email, __('frontend.str.address_has_been_deleted'));
 
         return view('frontend.unsubscribe', compact('msg'));
     }
@@ -142,9 +142,9 @@ class FrontendController extends Controller
             }
 
             if ((int)SettingsHelper::getInstance()->getValueForKey('NEW_SUBSCRIBER_NOTIFY') === 1) {
-                $subject = trans('frontend.str.notification_newuser');
+                $subject = __('frontend.str.notification_newuser');
                 $subject = str_replace('%SITE%', $_SERVER['SERVER_NAME'], $subject);
-                $msg = trans('frontend.str.notification_newuser') . "\nName: " . $request->name . " \nE-mail: " . $request->email . "\n";
+                $msg = __('frontend.str.notification_newuser') . "\nName: " . $request->name . " \nE-mail: " . $request->email . "\n";
                 $msg = str_replace('%SITE%', $_SERVER['SERVER_NAME'], $msg);
 
                 $sendMail->subject = $subject;
@@ -165,7 +165,7 @@ class FrontendController extends Controller
 
         return response()->json([
             'result' => 'success',
-            'msg' => trans('frontend.msg.subscription_is_formed')
+            'msg' => __('frontend.msg.subscription_is_formed')
         ]);
     }
 

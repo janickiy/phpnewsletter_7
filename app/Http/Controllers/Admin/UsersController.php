@@ -18,9 +18,9 @@ class UsersController extends Controller
      */
     public function index(): View
     {
-        $infoAlert = trans('frontend.hint.users_index') ?? null;
+        $infoAlert = __('frontend.hint.users_index') ?? null;
 
-        return view('admin.users.index', compact('infoAlert'))->with('title', trans('frontend.title.users_index'));
+        return view('admin.users.index', compact('infoAlert'))->with('title', __('frontend.title.users_index'));
     }
 
     /**
@@ -29,14 +29,14 @@ class UsersController extends Controller
     public function create(): View
     {
         $options = [
-            'admin' => trans('frontend.str.admin'),
-            'moderator' => trans('frontend.str.moderator'),
-            'editor' => trans('frontend.str.editor'),
+            'admin' => __('frontend.str.admin'),
+            'moderator' => __('frontend.str.moderator'),
+            'editor' => __('frontend.str.editor'),
         ];
 
-        $infoAlert = trans('frontend.hint.users_create') ?? null;
+        $infoAlert = __('frontend.hint.users_create') ?? null;
 
-        return view('admin.users.create_edit', compact('options', 'infoAlert'))->with('title', trans('frontend.title.users_create'));
+        return view('admin.users.create_edit', compact('options', 'infoAlert'))->with('title', __('frontend.title.users_create'));
     }
 
     /**
@@ -47,7 +47,7 @@ class UsersController extends Controller
     {
         User::create(array_merge($request->all(), ['password' => Hash::make($request->password)]));
 
-        return redirect()->route('admin.users.index')->with('success', trans('message.information_successfully_added'));
+        return redirect()->route('admin.users.index')->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -61,9 +61,9 @@ class UsersController extends Controller
         if (!$row) abort(404);
 
         $options = [
-            'admin' => trans('frontend.str.admin'),
-            'moderator' => trans('frontend.str.moderator'),
-            'editor' => trans('frontend.str.editor'),
+            'admin' => __('frontend.str.admin'),
+            'moderator' => __('frontend.str.moderator'),
+            'editor' => __('frontend.str.editor'),
         ];
 
         $infoAlert = trans('frontend.hint.users_edit') ?? null;

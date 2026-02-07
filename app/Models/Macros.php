@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Http\Traits\StaticTableName;
 use Illuminate\Database\Eloquent\Model;
 
 class Macros extends Model
 {
+    use StaticTableName;
+
     public const TYPE_URL = 1;
     public const TYPE_EMAIL = 2;
     public const TYPE_HASH_TAGS = 3;
@@ -27,11 +30,11 @@ class Macros extends Model
     public static function getOption(): array
     {
         return [
-            self::TYPE_URL => trans('frontend.str.macros_type_url'),
-            self::TYPE_EMAIL => trans('frontend.str.macros_type_email'),
-            self::TYPE_HASH_TAGS => trans('frontend.str.macros_type_hash_tags'),
-            self::TYPE_TAGS => trans('frontend.str.macros_type_tags'),
-            self::TYPE_WRAP_PHRASE => trans('frontend.str.macros_type_wrap_phrase'),
+            self::TYPE_URL => __('frontend.str.macros_type_url'),
+            self::TYPE_EMAIL => __('frontend.str.macros_type_email'),
+            self::TYPE_HASH_TAGS => __('frontend.str.macros_type_hash_tags'),
+            self::TYPE_TAGS => __('frontend.str.macros_type_tags'),
+            self::TYPE_WRAP_PHRASE => __('frontend.str.macros_type_wrap_phrase'),
         ];
     }
 
@@ -42,16 +45,16 @@ class Macros extends Model
     {
         switch ($this->type) {
             case 1:
-                return trans('frontend.str.macros_type_url');
+                return __('frontend.str.macros_type_url');
 
             case 2:
-                return trans('frontend.str.macros_type_email');
+                return __('frontend.str.macros_type_email');
             case 3:
-                return trans('frontend.str.macros_type_hash_tags');
+                return __('frontend.str.macros_type_hash_tags');
             case 4:
-                return trans('frontend.str.macros_type_tags');
+                return __('frontend.str.macros_type_tags');
             case 5:
-                return trans('frontend.str.macros_type_wrap_phrase');
+                return __('frontend.str.macros_type_wrap_phrase');
             default:
                 return '';
         }

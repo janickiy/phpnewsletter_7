@@ -17,9 +17,9 @@ class RedirectController  extends Controller
      */
     public function index(): View
     {
-        $infoAlert = trans('frontend.hint.redirect_index') ?? null;
+        $infoAlert = __('frontend.hint.redirect_index') ?? null;
 
-        return view('admin.redirect.index', compact('infoAlert'))->with('title',trans('frontend.title.redirect_index'));
+        return view('admin.redirect.index', compact('infoAlert'))->with('title',__('frontend.title.redirect_index'));
     }
 
     /**
@@ -29,7 +29,7 @@ class RedirectController  extends Controller
     {
         Redirect::truncate();
 
-        return redirect()->route('admin.redirect.index')->with('success', trans('message.statistics_cleared'));
+        return redirect()->route('admin.redirect.index')->with('success', __('message.statistics_cleared'));
     }
 
     /**
@@ -50,7 +50,7 @@ class RedirectController  extends Controller
 
         $oSpreadsheet_Out->getProperties()->setCreator('Alexander Yanitsky')
             ->setLastModifiedBy('PHP Newsletter')
-            ->setTitle(trans('str.redirect'))
+            ->setTitle(__('str.redirect'))
             ->setSubject('Office 2007 XLSX Document')
             ->setDescription('Document for Office 2007 XLSX, generated using PHP classes.')
             ->setKeywords('office 2007 openxml php')
@@ -58,7 +58,7 @@ class RedirectController  extends Controller
 
         $oSpreadsheet_Out->setActiveSheetIndex(0)
             ->setCellValue('A1', 'E-mail')
-            ->setCellValue('B1', trans('frontend.str.time'));
+            ->setCellValue('B1', __('frontend.str.time'));
 
         $i = 1;
 

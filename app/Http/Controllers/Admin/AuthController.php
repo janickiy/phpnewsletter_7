@@ -20,7 +20,7 @@ class AuthController extends Controller
      */
     public function showLoginForm(): View
     {
-        return view('admin.login')->with('title', trans('frontend.str.auth'));
+        return view('admin.login')->with('title', __('frontend.str.auth'));
     }
 
     /**
@@ -41,7 +41,7 @@ class AuthController extends Controller
             return redirect()->intended(route('admin.templates.index'));
         }
         // if unsuccessful, then redirect back to the login with the form data
-        redirect()->route('login')->with('error', trans('auth.failed'));
+        redirect()->route('login')->with('error', __('auth.failed'));
     }
 
     /**

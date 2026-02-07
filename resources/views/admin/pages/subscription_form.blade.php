@@ -57,7 +57,7 @@
 
                             <button type="submit" class="btn btn-primary margin-bottom-10"
                                     onclick="copyToClipboard('#codebox')">
-                                <span id="myTooltip">{{ trans('frontend.str.copy_to_clipboard') }}</span>
+                                <span id="myTooltip">{{ __('frontend.str.copy_to_clipboard') }}</span>
                             </button>
 
                             <!-- /.card-body -->

@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+
+use App\Http\Traits\StaticTableName;
 use App\Helpers\StringHelper;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Illuminate\Http\Request;;
+use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
@@ -14,7 +16,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Subscribers extends Model
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, StaticTableName;
 
     protected $table = 'subscribers';
 
@@ -60,7 +62,7 @@ class Subscribers extends Model
 
             fclose($fp);
 
-            $strtmp = explode("\n", $buffer);
+            $strTmp = explode("\n", $buffer);
             $count = 0;
 
             foreach ($strtmp ?? [] as $val) {

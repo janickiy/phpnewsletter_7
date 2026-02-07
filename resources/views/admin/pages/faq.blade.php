@@ -20,7 +20,7 @@
                         <!-- /.card-header -->
                         <div class="card-body">
 
-                            {!! trans('faq.str') !!}
+                            {!! __('faq.str') !!}
 
                         </div>
                         <!-- /.card-body -->

@@ -8,8 +8,6 @@ use App\Http\Requests\Admin\Category\{
 };
 use App\Models\{
     Category,
-    Subscriptions,
-    ScheduleCategory,
 };
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,9 +20,9 @@ class CategoryController extends Controller
      */
     public function index(): View
     {
-        $infoAlert = trans('frontend.hint.category_index') ?? null;
+        $infoAlert = __('frontend.hint.category_index') ?? null;
 
-        return view('admin.category.index', compact('infoAlert'))->with('title', trans('frontend.title.category_index'));
+        return view('admin.category.index', compact('infoAlert'))->with('title', __('frontend.title.category_index'));
     }
 
     /**
@@ -32,9 +30,9 @@ class CategoryController extends Controller
      */
     public function create(): View
     {
-        $infoAlert = trans('frontend.hint.category_create') ?? null;
+        $infoAlert = __('frontend.hint.category_create') ?? null;
 
-        return view('admin.category.create_edit', compact('infoAlert'))->with('title', trans('frontend.title.category_create'));
+        return view('admin.category.create_edit', compact('infoAlert'))->with('title', __('frontend.title.category_create'));
     }
 
     /**
@@ -45,7 +43,7 @@ class CategoryController extends Controller
     {
         Category::create($request->all());
 
-        return redirect()->route('admin.category.index')->with('success', trans('message.information_successfully_added'));
+        return redirect()->route('admin.category.index')->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -58,9 +56,9 @@ class CategoryController extends Controller
 
         if (!$row) abort(404);
 
-        $infoAlert = trans('frontend.hint.category_create') ?? null;
+        $infoAlert = __('frontend.hint.category_create') ?? null;
 
-        return view('admin.category.create_edit', compact('row', 'infoAlert'))->with('title', trans('frontend.title.category_edit'));
+        return view('admin.category.create_edit', compact('row', 'infoAlert'))->with('title', __('frontend.title.category_edit'));
     }
 
     /**
@@ -76,7 +74,7 @@ class CategoryController extends Controller
         $row->name = $request->input('name');
         $row->save();
 
-        return redirect()->route('admin.category.index')->with('success', trans('message.data_updated'));
+        return redirect()->route('admin.category.index')->with('success', __('message.data_updated'));
     }
 
     /**

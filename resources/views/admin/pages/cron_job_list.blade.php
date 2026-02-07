@@ -24,7 +24,7 @@
                                 <thead>
                                 <tr>
                                     <th>Cronjob</th>
-                                    <th>{{ trans('frontend.str.description') }}</th>
+                                    <th>{{ __('frontend.str.description') }}</th>
                                 </tr>
                                 </thead>
 

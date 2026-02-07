@@ -16,9 +16,9 @@ class MacrosController extends Controller
      */
     public function index(): View
     {
-        $infoAlert = trans('frontend.hint.macros_index') ?? null;
+        $infoAlert = __('frontend.hint.macros_index') ?? null;
 
-        return view('admin.macros.index', compact('infoAlert'))->with('title', trans('frontend.title.macros_index'));
+        return view('admin.macros.index', compact('infoAlert'))->with('title', __('frontend.title.macros_index'));
     }
 
     /**
@@ -26,10 +26,10 @@ class MacrosController extends Controller
      */
     public function create(): View
     {
-        $infoAlert = trans('frontend.hint.macros_create') ?? null;
+        $infoAlert = __('frontend.hint.macros_create') ?? null;
         $options = Macros::getOption();
 
-        return view('admin.macros.create_edit', compact('infoAlert', 'options'))->with('title', trans('frontend.title.macros_create'));
+        return view('admin.macros.create_edit', compact('infoAlert', 'options'))->with('title', __('frontend.title.macros_create'));
     }
 
     /**
@@ -40,7 +40,7 @@ class MacrosController extends Controller
     {
         Macros::create($request->all());
 
-        return redirect()->route('admin.macros.index')->with('success', trans('message.information_successfully_added'));
+        return redirect()->route('admin.macros.index')->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -54,9 +54,9 @@ class MacrosController extends Controller
         if (!$row) abort(404);
 
         $options = Macros::getOption();
-        $infoAlert = trans('frontend.hint.macros_create') ?? null;
+        $infoAlert = __('frontend.hint.macros_create') ?? null;
 
-        return view('admin.macros.create_edit', compact('row', 'infoAlert', 'options'))->with('title', trans('frontend.title.macros_edit'));
+        return view('admin.macros.create_edit', compact('row', 'infoAlert', 'options'))->with('title', __('frontend.title.macros_edit'));
     }
 
     /**
@@ -74,7 +74,7 @@ class MacrosController extends Controller
         $row->type = $request->input('type');
         $row->save();
 
-        return redirect()->route('admin.macros.index')->with('success', trans('message.data_updated'));
+        return redirect()->route('admin.macros.index')->with('success', __('message.data_updated'));
     }
 
     /**

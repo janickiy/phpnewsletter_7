@@ -20,17 +20,17 @@
                         <!-- /.card-header -->
                         <div class="card-body">
 
-                            <p>« <a href="{{ route('admin.log.index') }}">{{ trans('frontend.str.back') }}</a></p>
+                            <p>« <a href="{{ route('admin.log.index') }}">{{ __('frontend.str.back') }}</a></p>
 
                             <table id="itemList" class="table table-striped table-bordered table-hover">
                                 <thead>
                                 <tr>
-                                    <th>{{ trans('frontend.str.newsletter') }}</th>
+                                    <th>{{ __('frontend.str.newsletter') }}</th>
                                     <th>E-mail</th>
-                                    <th>{{ trans('frontend.str.time') }}</th>
-                                    <th>{{ trans('frontend.str.status') }}</th>
-                                    <th>{{ trans('frontend.str.read') }}</th>
-                                    <th>{{ trans('frontend.str.error') }}</th>
+                                    <th>{{ __('frontend.str.time') }}</th>
+                                    <th>{{ __('frontend.str.status') }}</th>
+                                    <th>{{ __('frontend.str.read') }}</th>
+                                    <th>{{ __('frontend.str.error') }}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -75,9 +75,9 @@
                 "sDom": "flrtip",
                 "autoWidth": true,
                 "oLanguage": {
-                    "sLengthMenu": "{{ trans('pagination.s_length_menu') }}",
-                    "sZeroRecords": "{{ trans('pagination.s_zero_records') }}",
-                    "sInfo": "{{ trans('pagination.s_info') }}",
+                    "sLengthMenu": "{{ __('pagination.s_length_menu') }}",
+                    "sZeroRecords": "{{ __('pagination.s_zero_records') }}",
+                    "sInfo": "{{ __('pagination.s_info') }}",
                     "sInfoEmpty": "{{ trans('pagination.s_info_empty') }}",
                     "sInfoFiltered": "{{ trans('pagination.s_infofiltered') }}",
                     "oPaginate": {

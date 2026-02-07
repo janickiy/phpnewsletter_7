@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Http\Traits\StaticTableName;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Helpers\StringHelper;
 
 class Templates extends Model
 {
+    use StaticTableName;
+
     protected $table = 'templates';
 
     protected $fillable = [
@@ -44,7 +47,6 @@ class Templates extends Model
     }
 
     /**
-     * @param int $prior
      * @return string
      */
     public function getPrior(): string

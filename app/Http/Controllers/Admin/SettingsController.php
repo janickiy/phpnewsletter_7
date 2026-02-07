@@ -24,9 +24,9 @@ class SettingsController extends Controller
         }
 
         $customheaders = Customheaders::get();
-        $infoAlert = trans('frontend.hint.settings_index') ?? null;
+        $infoAlert = __('frontend.hint.settings_index') ?? null;
 
-        return view('admin.settings.index', compact('option_charset', 'customheaders', 'infoAlert'))->with('title',  trans('frontend.title.settings_index'));
+        return view('admin.settings.index', compact('option_charset', 'customheaders', 'infoAlert'))->with('title',  __('frontend.title.settings_index'));
     }
 
     /**
@@ -78,6 +78,6 @@ class SettingsController extends Controller
             Customheaders::truncate();
         }
 
-        return redirect()->route('admin.settings.index')->with('success', trans('message.data_updated'));
+        return redirect()->route('admin.settings.index')->with('success', __('message.data_updated'));
     }
 }

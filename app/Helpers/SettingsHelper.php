@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Models\Settings;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Collection;
 
 class SettingsHelper
 {
@@ -46,29 +47,26 @@ class SettingsHelper
      * @param bool $cache
      * @return array
      */
-    private static function loadSettingsFromCache(bool $cache = false): mixed
+    private static function loadSettingsFromCache(bool $cache = false): Collection
     {
         if ($cache === true) {
             return Cache::remember(self::CACHE_KEY, 180, function () {
                 try {
                     $settings = Settings::all();
                 } catch (QueryException $e) {
-                    return [];
+                    return collect();
                 }
 
                 if ($settings === null) {
-                    return [];
+                    return collect();
                 }
 
-                $result = $settings->pluck('value', 'name');
-
-                return $result;
+                return  $settings->pluck('value', 'name');
             });
         } else {
             $settings = Settings::all();
-            $result = $settings->pluck('value', 'name');
 
-            return $result;
+            return $settings->pluck('value', 'name');
         }
     }
 

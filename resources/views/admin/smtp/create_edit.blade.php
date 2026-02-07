@@ -26,12 +26,12 @@
 
                         <div class="card-body">
 
-                            <p>*-{{ trans('frontend.form.required_fields') }}</p>
+                            <p>*-{{ __('frontend.form.required_fields') }}</p>
 
                             <div class="form-group">
-                                {!! Form::label('host', trans('frontend.form.smtp_server') . '*') !!}
+                                {!! Form::label('host', __('frontend.form.smtp_server') . '*') !!}
 
-                                {!! Form::text('host', old('host', $row->host ?? null), [ 'placeholder' => trans('frontend.form.smtp_server'), 'class' => 'form-control']) !!}
+                                {!! Form::text('host', old('host', $row->host ?? null), [ 'placeholder' => __('frontend.form.smtp_server'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('host'))
                                     <p class="text-danger">{{ $errors->first('host') }}</p>
@@ -49,9 +49,9 @@
                             </div>
 
                             <div class="form-group">
-                                {!! Form::label('username', trans('frontend.form.login') . '*') !!}
+                                {!! Form::label('username', __('frontend.form.login') . '*') !!}
 
-                                {!! Form::text('username', old('username', $row->username ?? null), [ 'placeholder' => trans('frontend.form.login'), 'class' => 'form-control']) !!}
+                                {!! Form::text('username', old('username', $row->username ?? null), [ 'placeholder' => __('frontend.form.login'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('username'))
                                     <p class="text-danger">{{ $errors->first('username') }}</p>
@@ -60,9 +60,9 @@
 
                             <div class="form-group">
 
-                                {!! Form::label('password', trans('frontend.form.password')) !!}
+                                {!! Form::label('password', __('frontend.form.password')) !!}
 
-                                {!! Form::text('password', old('password', $row->password ?? null), [ 'placeholder' => trans('frontend.form.password'), 'class' => 'form-control']) !!}
+                                {!! Form::text('password', old('password', $row->password ?? null), [ 'placeholder' => __('frontend.form.password'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('password'))
                                     <p class="text-danger">{{ $errors->first('password') }}</p>
@@ -70,7 +70,7 @@
                             </div>
 
                             <div class="form-group">
-                                {!! Form::label('port', trans('frontend.form.port') . '*') !!}
+                                {!! Form::label('port', __('frontend.form.port') . '*') !!}
 
                                 {!! Form::text('port', old('port', $row->port ?? 25), [ 'placeholder' => trans('frontend.form.port'), 'class' => 'form-control']) !!}
 

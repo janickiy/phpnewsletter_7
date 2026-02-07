@@ -32,8 +32,8 @@ class SendUnsentEmails extends Command implements Isolatable
 
         $this->line('start unsent sending emails');
 
-        $mailcountno = 0;
-        $mailcount = 0;
+        $mailCountNo = 0;
+        $mailCount = 0;
 
         $schedule = Schedule::where('event_start', '<=', date('Y-m-d H:i:s'))
             ->where('event_end', '>=', date('Y-m-d H:i:s'))
@@ -125,22 +125,22 @@ class SendUnsentEmails extends Command implements Isolatable
                     ReadySent::where('schedule_id', $row->id)->update(['success' => 1]);
                     Subscribers::where('id', $subscriber->id)->update(['timeSent' => date('Y-m-d H:i:s')]);
 
-                    $mailcount++;
+                    $mailCount++;
                 } else {
-                    $mailcountno++;
+                    $mailCountNo++;
                 }
 
-                if ((int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailcount) {
+                if ((int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailCount) {
                     break;
                 }
             }
 
-            if ((int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailcount) {
+            if ((int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailCount) {
                 break;
             }
         }
 
-        $this->line("sent: " . $mailcount);
-        $this->line("no sent: " . $mailcountno);
+        $this->line("sent: " . $mailCount);
+        $this->line("no sent: " . $mailCountNo);
     }
 }

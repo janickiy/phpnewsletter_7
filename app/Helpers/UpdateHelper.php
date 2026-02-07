@@ -5,13 +5,13 @@ namespace App\Helpers;
 class UpdateHelper
 {
     private $language;
-    private $url = 'http://license.janickiy.com/';
-    private $currenversion;
+    private string $url = 'http://license.janickiy.com/';
+    private string $currentVersion;
 
-    public function __construct(string $language, string $currenversion)
+    public function __construct(string $language, string $currentVersion)
     {
         $this->language = $language;
-        $this->currenversion = $currenversion;
+        $this->currentVersion = $currentVersion;
     }
 
     /**
@@ -19,20 +19,7 @@ class UpdateHelper
      */
     public function checkNewVersion(): bool
     {
-        $result = false;
-        $newversion = $this->getVersion();
-
-        if ($newversion) {
-            preg_match("/(\d+)\.(\d+)\.(\d+)/", $this->currenversion, $out1);
-            preg_match("/(\d+)\.(\d+)\.(\d+)/", $newversion, $out2);
-
-            $v1 = ($out1[1] * 10000 + $out1[2] * 100 + $out1[3]);
-            $v2 = ($out2[1] * 10000 + $out2[2] * 100 + $out2[3]);
-
-            if ($v2 > $v1) $result = true;
-        }
-
-        return $result;
+        return $this->checkVersion($this->getVersion(), $this->currentVersion);
     }
 
     /**
@@ -40,20 +27,7 @@ class UpdateHelper
      */
     public function checkUpgrade(): bool
     {
-        $result = false;
-        $newversion = $this->getUpgradeVersion();
-
-        if ($newversion) {
-            preg_match("/(\d+)\.(\d+)\.(\d+)/", $this->currenversion, $out1);
-            preg_match("/(\d+)\.(\d+)\.(\d+)/", $newversion, $out2);
-
-            $v1 = ($out1[1] * 10000 + $out1[2] * 100 + $out1[3]);
-            $v2 = ($out2[1] * 10000 + $out2[2] * 100 + $out2[3]);
-
-            if ($v2 > $v1) $result = true;
-        }
-
-        return $result;
+        return $this->checkVersion($this->getUpgradeVersion(), $this->currentVersion);
     }
 
     /**
@@ -61,7 +35,7 @@ class UpdateHelper
      */
     public function getUrlInfo(): string
     {
-        return $this->url . '?id=5&version=' . urlencode($this->currenversion) . '&lang=' . $this->language . '&ip=' . $this->getIP();
+        return $this->url . '?id=5&version=' . urlencode($this->currentVersion) . '&lang=' . $this->language . '&ip=' . $this->getIP();
     }
 
     /**
@@ -69,7 +43,7 @@ class UpdateHelper
      * @param int $timeout
      * @return mixed|string
      */
-    public function getDataContents(string $url, int $timeout = 10)
+    public function getDataContents(string $url, int $timeout = 10): mixed
     {
         $ch = curl_init($url);
 
@@ -96,7 +70,7 @@ class UpdateHelper
      */
     public function checkTree(): bool
     {
-        preg_match("/(\d+)\.(\d+)\.(\d+)/", $this->currenversion, $out);
+        preg_match("/(\d+)\.(\d+)\.(\d+)/", $this->currentVersion, $out);
 
         if ($out[1] < $out[2]) {
             return false;
@@ -192,5 +166,25 @@ class UpdateHelper
             $ip = "unknown";
 
         return $ip;
+    }
+
+    /**
+     * @param string $version
+     * @param string $currentVersion
+     * @return bool
+     */
+    private function checkVersion(string $version, string $currentVersion): bool
+    {
+        if ($version) {
+            preg_match("/(\d+)\.(\d+)\.(\d+)/", $currentVersion, $out1);
+            preg_match("/(\d+)\.(\d+)\.(\d+)/", $version, $out2);
+
+            $v1 = ($out1[1] * 10000 + $out1[2] * 100 + $out1[3]);
+            $v2 = ($out2[1] * 10000 + $out2[2] * 100 + $out2[3]);
+
+            if ($v2 > $v1) return true;
+        }
+
+        return false;
     }
 }

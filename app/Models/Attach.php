@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+
+use App\Http\Traits\StaticTableName;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Storage;
 
 class Attach extends Model
 {
+    use StaticTableName;
+
     public const DIRECTORY = 'public/attach';
 
     protected $table = 'attach';

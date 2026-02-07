@@ -2,16 +2,33 @@
 
 namespace App\Console\Commands;
 
+
+use App\DTO\ReadySentCreateData;
+use App\Repositories\ReadySentRepository;
+use App\Repositories\ScheduleRepository;
+use App\Repositories\SubscribersRepository;
 use App\Helpers\{SendEmailHelper, SettingsHelper};
-use App\Models\{ReadySent, Schedule, Subscribers};
+use App\Models\Subscribers;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Isolatable;
-use Carbon\Carbon;
-
 use URL;
 
 class SendEmails extends Command implements Isolatable
 {
+    /**
+     * @param ScheduleRepository $scheduleRepository
+     * @param SubscribersRepository $subscribersRepository
+     * @param ReadySentRepository $readySentRepository
+     */
+    public function __construct(
+        private ScheduleRepository    $scheduleRepository,
+        private SubscribersRepository $subscribersRepository,
+        private ReadySentRepository   $readySentRepository,
+    )
+    {
+        parent::__construct();
+    }
+
     /**
      * The name and signature of the console command.
      *
@@ -35,12 +52,10 @@ class SendEmails extends Command implements Isolatable
 
         $this->line(URL::to('/'));
 
-        $mailcountno = 0;
-        $mailcount = 0;
+        $mailCountNo = 0;
+        $mailCount = 0;
 
-        $schedule = Schedule::where('event_start' , '<=' , Carbon::now()->toDateTimeString())
-            ->where('event_end', '>=', Carbon::now()->toDateTimeString())
-            ->get();
+        $schedule = $this->scheduleRepository->getScheduleEvent();
 
         foreach ($schedule ?? [] as $row) {
             $order = (int)SettingsHelper::getInstance()->getValueForKey('RANDOM_SEND') === 1 ? 'RAND()' : 'subscribers.id';
@@ -60,58 +75,7 @@ class SendEmails extends Command implements Isolatable
                     $interval = null;
             }
 
-            if ($interval) {
-                $subscribers = Subscribers::select(['subscribers.email', 'subscribers.id', 'subscribers.token', 'subscribers.name'])
-                    ->join('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
-                    ->join('schedule_category', function ($join) use ($row) {
-                        $join->on('subscriptions.category_id', '=', 'schedule_category.category_id')
-                            ->where('schedule_category.scheduleId', $row->id);
-                    })
-                    ->leftJoin('ready_sent', function ($join) use ($row) {
-                        $join->on('subscribers.id', '=', 'ready_sent.subscriber_id')
-                            ->where('ready_sent.schedule_id', $row->id)
-                            ->where(function ($query) {
-                                $query->where('ready_sent.success', 1)
-                                    ->orWhere('ready_sent.success', 0);
-                            });
-                    })
-                    ->whereNull('ready_sent.subscriber_id')
-                    ->where('subscribers.active', 1)
-                    ->whereRaw($interval)
-                    ->groupBy('subscribers.id')
-                    ->groupBy('subscribers.email')
-                    ->groupBy('subscribers.token')
-                    ->groupBy('subscribers.name')
-                    ->orderByRaw($order)
-                    ->take($limit)
-                    ->get()
-                ;
-            } else {
-                $subscribers = Subscribers::select(['subscribers.email', 'subscribers.id', 'subscribers.token', 'subscribers.name'])
-                    ->join('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
-                    ->join('schedule_category', function ($join) use ($row) {
-                        $join->on('subscriptions.category_id', '=', 'schedule_category.category_id')
-                            ->where('schedule_category.schedule_id', $row->id);
-                    })
-                    ->leftJoin('ready_sent', function ($join) use ($row) {
-                        $join->on('subscribers.id', '=', 'ready_sent.subscriber_id')
-                            ->where('ready_sent.schedule_id', $row->id)
-                            ->where(function ($query) {
-                                $query->where('ready_sent.success', 1)
-                                    ->orWhere('ready_sent.success', 0);
-                            });
-                    })
-                    ->whereNull('ready_sent.subscriber_id')
-                    ->where('subscribers.active', 1)
-                    ->groupBy('subscribers.id')
-                    ->groupBy('subscribers.email')
-                    ->groupBy('subscribers.token')
-                    ->groupBy('subscribers.name')
-                    ->orderByRaw($order)
-                    ->take($limit)
-                    ->get()
-                ;
-            }
+            $subscribers = $this->subscribersRepository->getSubscribersNotReadySent($order, $limit, $interval);
 
             foreach ($subscribers ?? [] as $subscriber) {
                 if ((int)SettingsHelper::getInstance()->getValueForKey('sleep') > 0) {
@@ -129,48 +93,49 @@ class SendEmails extends Command implements Isolatable
                 $sendEmail->templateId = $row->template->id;
                 $result = $sendEmail->sendEmail();
 
-                $data = [];
-
                 if ($result['result'] === true) {
-                    $data['subscriber_id'] = $subscriber->id;
-                    $data['email'] = $subscriber->email;
-                    $data['template_id'] = $row->template_id;
-                    $data['template'] = $row->template->name;
-                    $data['success'] = 1;
-                    $data['schedule_id'] = $row->id;
-                    $data['log_id'] = 0;
+                    $this->readySentRepository->add(new ReadySentCreateData(
+                        subscriberId: $subscriber->id,
+                        templateId: $row->template_id,
+                        success: 1,
+                        scheduleId: $row->id,
+                        logId: 0,
+                        email: $subscriber->email,
+                        template: $row->template->name,
+                        errorMsg: $result['error'],
+                        readMail: null
+                    ));
 
                     Subscribers::where('id', $subscriber->id)->update(['timeSent' => date('Y-m-d H:i:s')]);
 
-                    $mailcount++;
+                    $mailCount++;
                 } else {
-                    $data['subscriber_id'] = $subscriber->id;
-                    $data['email'] = $subscriber->email;
-                    $data['template_id'] = $row->template_id;
-                    $data['template'] = $row->template->name;
-                    $data['success'] = 0;
-                    $data['errorMsg'] = $result['error'];
-                    $data['schedule_id'] = $row->id;
-                    $data['log_id'] = 0;
+                    $this->readySentRepository->add(new ReadySentCreateData(
+                        subscriberId: $subscriber->id,
+                        templateId: $row->template_id,
+                        success: 0,
+                        scheduleId: $row->id,
+                        logId: 0,
+                        email: $subscriber->email,
+                        template: $row->template->name,
+                        errorMsg: $result['error'],
+                        readMail: null
+                    ));
 
-                    $mailcountno++;
+                    $mailCountNo++;
                 }
 
-                ReadySent::create($data);
-
-                unset($data);
-
-                if ((int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailcount) {
+                if ((int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailCount) {
                     break;
                 }
             }
 
-            if ((int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailcount) {
+            if ((int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailCount) {
                 break;
             }
         }
 
-        $this->line("sent: " . $mailcount);
-        $this->line("no sent: " . $mailcountno);
+        $this->line("sent: " . $mailCount);
+        $this->line("no sent: " . $mailCountNo);
     }
 }

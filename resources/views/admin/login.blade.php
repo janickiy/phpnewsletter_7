@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PHP Newsletter | {{ trans('frontend.title.auth') }}</title>
+    <title>PHP Newsletter | {{ __('frontend.title.auth') }}</title>
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -31,7 +31,7 @@
             <img src="{{ url('/dist/img/logo.png') }}" alt="">
         </div>
         <div class="card-body">
-            <p class="login-box-msg">{{ trans('auth.admin_area') }}</p>
+            <p class="login-box-msg">{{ __('auth.admin_area') }}</p>
 
 
             {!! Form::open(['url' => route('login'), 'method' => 'post']) !!}
@@ -39,7 +39,7 @@
 
                 <div class="input-group mb-3">
 
-                    {!! Form::text('login', old('login'), [ 'placeholder' => trans('frontend.form.login'), 'class' => 'form-control']) !!}
+                    {!! Form::text('login', old('login'), [ 'placeholder' => __('frontend.form.login'), 'class' => 'form-control']) !!}
 
                     <div class="input-group-append">
                         <div class="input-group-text">
@@ -54,7 +54,7 @@
                 </div>
                 <div class="input-group mb-3">
 
-                    {!! Form::password('password',['class' => 'form-control', 'placeholder' => trans('frontend.form.password'), 'type' => 'password']) !!}
+                    {!! Form::password('password',['class' => 'form-control', 'placeholder' => __('frontend.form.password'), 'type' => 'password']) !!}
 
                     <div class="input-group-append">
                         <div class="input-group-text">
@@ -73,7 +73,7 @@
                             {!! Form::checkbox('remember', 1, old('remember') ? true : false , ['id' => "remember"]) !!}
 
                             <label for="remember">
-                                {{ trans('frontend.str.remember_me') }}
+                                {{ __('frontend.str.remember_me') }}
                             </label>
                         </div>
                     </div>

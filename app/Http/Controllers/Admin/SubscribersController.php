@@ -23,9 +23,9 @@ class SubscribersController extends Controller
      */
     public function index(): View
     {
-        $infoAlert = trans('frontend.hint.subscribers_index') ?? null;
+        $infoAlert = __('frontend.hint.subscribers_index') ?? null;
 
-        return view('admin.subscribers.index', compact('infoAlert'))->with('title', trans('frontend.title.subscribers_index'));
+        return view('admin.subscribers.index', compact('infoAlert'))->with('title', __('frontend.title.subscribers_index'));
     }
 
     /**
@@ -34,9 +34,9 @@ class SubscribersController extends Controller
     public function create(): View
     {
         $options = Category::getOption();
-        $infoAlert = trans('frontend.hint.subscribers_create') ?? null;
+        $infoAlert = __('frontend.hint.subscribers_create') ?? null;
 
-        return view('admin.subscribers.create_edit', compact('options', 'infoAlert'))->with('title', trans('frontend.title.subscribers_create'));
+        return view('admin.subscribers.create_edit', compact('options', 'infoAlert'))->with('title', __('frontend.title.subscribers_create'));
     }
 
     /**
@@ -55,7 +55,7 @@ class SubscribersController extends Controller
             }
         }
 
-        return redirect()->route('admin.subscribers.index')->with('success', trans('message.information_successfully_added'));
+        return redirect()->route('admin.subscribers.index')->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -75,7 +75,7 @@ class SubscribersController extends Controller
             $subscriberCategoryId[] = $subscription->category_id;
         }
 
-        $infoAlert = trans('frontend.hint.subscribers_edit') ?? null;
+        $infoAlert = __('frontend.hint.subscribers_edit') ?? null;
 
         return view('admin.subscribers.create_edit', compact('options', 'row', 'subscriberCategoryId', 'infoAlert'))->with('title', trans('frontend.title.subscribers_edit'));
     }

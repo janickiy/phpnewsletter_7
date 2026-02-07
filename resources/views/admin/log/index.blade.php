@@ -30,8 +30,8 @@
                                     <div class="col-lg-12">
                                         <p class="text-center">
                                             <a class="btn btn-outline btn-danger btn-lg" onclick="confirmation()"
-                                               title="{{ trans('frontend.str.log_clear') }}">
-                                                <span class="fa fa-trash fa-2x"></span> {{ trans('frontend.str.log_clear') }}
+                                               title="{{ __('frontend.str.log_clear') }}">
+                                                <span class="fa fa-trash fa-2x"></span> {{ __('frontend.str.log_clear') }}
                                             </a>
                                         </p>
                                     </div>
@@ -42,9 +42,9 @@
                             <table id="itemList" class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
-                                    <th>{{ trans('frontend.str.time') }}</th>
-                                    <th>{{ trans('frontend.str.total') }}</th>
-                                    <th>{{ trans('frontend.str.sent') }}</th>
+                                    <th>{{ __('frontend.str.time') }}</th>
+                                    <th>{{ __('frontend.str.total') }}</th>
+                                    <th>{{ __('frontend.str.sent') }}</th>
                                     <th>{{ trans('frontend.str.unsent') }}</th>
                                     <th>{{ trans('frontend.str.read') }}</th>
                                     <th>{{ trans('frontend.str.excel_report') }}</th>

@@ -20,9 +20,9 @@ class TemplatesController extends Controller
     {
         $categoryOptions = Category::getOption();
 
-        $infoAlert = trans('frontend.hint.template_index') ?? null;
+        $infoAlert = __('frontend.hint.template_index') ?? null;
 
-        return view('admin.templates.index', compact('infoAlert', 'categoryOptions'))->with('title', trans('frontend.title.template_index'));
+        return view('admin.templates.index', compact('infoAlert', 'categoryOptions'))->with('title', __('frontend.title.template_index'));
     }
 
     /**
@@ -30,7 +30,7 @@ class TemplatesController extends Controller
      */
     public function create(): View
     {
-        $infoAlert = trans('frontend.hint.template_create') ?? null;
+        $infoAlert = __('frontend.hint.template_create') ?? null;
 
         $list = [];
 
@@ -40,7 +40,7 @@ class TemplatesController extends Controller
 
         $macrosList = implode(', ', $list);
 
-        return view('admin.templates.create_edit', compact('infoAlert', 'macrosList'))->with('title', trans('frontend.title.template_create'));
+        return view('admin.templates.create_edit', compact('infoAlert', 'macrosList'))->with('title', __('frontend.title.template_create'));
     }
 
     /**
@@ -67,7 +67,7 @@ class TemplatesController extends Controller
             }
         }
 
-        return redirect()->route('admin.templates.index')->with('success', trans('message.information_successfully_added'));
+        return redirect()->route('admin.templates.index')->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -81,7 +81,7 @@ class TemplatesController extends Controller
         if (!$template) abort(404);
 
         $attachment = $template->attach;
-        $infoAlert = trans('frontend.hint.template_edit') ? trans('frontend.hint.template_edit') : null;
+        $infoAlert = __('frontend.hint.template_edit') ? __('frontend.hint.template_edit') : null;
         $list = [];
 
         foreach (Macros::get() ?? [] as $macro) {
@@ -90,7 +90,7 @@ class TemplatesController extends Controller
 
         $macrosList = implode(', ', $list);
 
-        return view('admin.templates.create_edit', compact('template', 'attachment', 'infoAlert', 'macrosList'))->with('title', trans('frontend.title.template_edit'));
+        return view('admin.templates.create_edit', compact('template', 'attachment', 'infoAlert', 'macrosList'))->with('title', __('frontend.title.template_edit'));
     }
 
     /**
@@ -124,7 +124,7 @@ class TemplatesController extends Controller
         $templates->prior = $request->input('prior');
         $templates->save();
 
-        return redirect()->route('admin.templates.index')->with('success', trans('message.data_updated'));
+        return redirect()->route('admin.templates.index')->with('success', __('message.data_updated'));
     }
 
     /**
@@ -158,6 +158,6 @@ class TemplatesController extends Controller
             }
         }
 
-        return redirect()->route('admin.templates.index')->with('success', trans('message.actions_completed'));
+        return redirect()->route('admin.templates.index')->with('success', __('message.actions_completed'));
     }
 }

@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Http\Traits\StaticTableName;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Subscriptions extends Model
 {
+    use StaticTableName;
+
     protected $table = 'subscriptions';
 
     public $timestamps = false;

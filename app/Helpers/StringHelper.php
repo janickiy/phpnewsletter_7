@@ -12,7 +12,7 @@ class StringHelper
      * @param int $max
      * @return null|string
      */
-    public static function randomText(int $max = 6): null|string
+    public static function randomText(int $max = 6): ?string
     {
         $chars = "qazxswedcvfrtgbnhyujmkiolp1234567890QAZXSWEDCVFRTGBNHYUJMKIOLP";
         $size = strlen($chars) - 1;
@@ -39,10 +39,11 @@ class StringHelper
      */
     public static function shortText(string $str, int $chars = 500): string
     {
-        $pos = strpos(substr($str, $chars), " ");
-        $srttmpend = strlen($str) > $chars ? '...' : '';
+        $string = str_replace(' ', '', $str);
+        $pos = mb_strpos(mb_substr($string, $chars), " ");
+        $srtStrlen = mb_strlen($string) > $chars ? '...' : '';
 
-        return substr($str, 0, $chars + $pos) . ($srttmpend ?? '');
+        return mb_substr($str, 0, $chars + $pos) . ($srtStrlen ?? '');
     }
 
     /**
@@ -564,8 +565,8 @@ class StringHelper
      */
     static public function getDomain(string $url): string
     {
-        $parce = parse_url($url);
-        return isset($parce['host']) ? $parce['host'] : $parce['path'];
+        $parse = parse_url($url);
+        return isset($parse['host']) ? $parse['host'] : $parse['path'];
     }
 
     /**
@@ -574,8 +575,8 @@ class StringHelper
      */
     static public function getScheme(string $url): string
     {
-        $parce = parse_url($url);
-        return isset($parce['scheme']) ? $parce['scheme'] : 'http';
+        $parse = parse_url($url);
+        return isset($parse['scheme']) ? $parse['scheme'] : 'http';
     }
 
     /**

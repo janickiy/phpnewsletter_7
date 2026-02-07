@@ -48,8 +48,8 @@
 
         $(function () {
             $("#start_update").on("click", function () {
-                $("#btn_refresh").html('<div class="progress"><div id="progress_bar" class="progress-bar bg-primary progress-bar-striped" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width: 1%"></div></div><p class="text-muted" id="status_process">{{ trans('frontend.str.start_update') }}</p>');
-                $("#status_process").text('{{ trans('frontend.msg.downloading') }} update.zip ...');
+                $("#btn_refresh").html('<div class="progress"><div id="progress_bar" class="progress-bar bg-primary progress-bar-striped" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width: 1%"></div></div><p class="text-muted" id="status_process">{{ __('frontend.str.start_update') }}</p>');
+                $("#status_process").text('{{ __('frontend.msg.downloading') }} update.zip ...');
 
                 $.ajax({
                     type: "POST",
@@ -64,7 +64,7 @@
                         if (data.result === true) {
                             $('.progress-bar').css('width', '15%');
                             $("#status_process").text(data.status);
-                            uploapFiles2();
+                            uploadFiles2();
                         } else {
                             $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                         }
@@ -78,8 +78,8 @@
             });
         });
 
-        function uploapFiles2() {
-            $("#status_process").text('{{ trans('frontend.msg.downloading') }} puplic.zip ...');
+        function uploadFiles2() {
+            $("#status_process").text('{{ __('frontend.msg.downloading') }} puplic.zip ...');
 
             $.ajax({
                 type: "POST",
@@ -88,7 +88,7 @@
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                 data: {
                     action: "start_update",
-                    p: "uploap_files_2",
+                    p: "upload_files_2",
                 },
                 success: function (data) {
                     if (data.result === true) {
@@ -108,7 +108,7 @@
         }
 
         function uploadFiles3() {
-            $("#status_process").text('{{ trans('frontend.msg.downloading') }} vendor.zip ...');
+            $("#status_process").text('{{ __('frontend.msg.downloading') }} vendor.zip ...');
 
             $.ajax({
                 type: "POST",
@@ -117,7 +117,7 @@
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                 data: {
                     action: "start_update",
-                    p: "uploap_files_3",
+                    p: "upload_files_3",
                 },
                 success: function (data) {
                     if (data.result === true) {
@@ -137,7 +137,7 @@
         }
 
         function updateFiles() {
-            $("#status_process").text('{{ trans('frontend.msg.unzipping') }} update.zip ...');
+            $("#status_process").text('{{ __('frontend.msg.unzipping') }} update.zip ...');
 
             $.ajax({
                 type: "POST",
@@ -166,7 +166,7 @@
         }
 
         function updateFiles2() {
-            $("#status_process").text('{{ trans('frontend.msg.unzipping') }} puplic.zip ...');
+            $("#status_process").text('{{ __('frontend.msg.unzipping') }} public.zip ...');
 
             $.ajax({
                 type: "POST",

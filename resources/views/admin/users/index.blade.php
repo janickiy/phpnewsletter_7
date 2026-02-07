@@ -25,18 +25,18 @@
                         <div class="card-body">
                             <div class="pb-3">
                                 <a href="{{ route('admin.users.create') }}" class="btn btn-info btn-sm pull-left">
-                                    <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_user') }}
+                                    <span class="fa fa-plus"> &nbsp;</span> {{ __('frontend.str.add_user') }}
                                 </a>
                             </div>
                             <table id="itemList" class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
-                                    <th>{{ trans('frontend.str.login') }}</th>
-                                    <th>{{ trans('frontend.str.name') }}</th>
-                                    <th>{{ trans('frontend.str.description') }}</th>
-                                    <th>{{ trans('frontend.str.role') }}</th>
-                                    <th>{{ trans('frontend.str.added') }}</th>
-                                    <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
+                                    <th>{{ __('frontend.str.login') }}</th>
+                                    <th>{{ __('frontend.str.name') }}</th>
+                                    <th>{{ __('frontend.str.description') }}</th>
+                                    <th>{{ __('frontend.str.role') }}</th>
+                                    <th>{{ __('frontend.str.added') }}</th>
+                                    <th style="width: 10%">{{ __('frontend.str.action') }}</th>
                                 </tr>
                                 </thead>
                                 <tfoot>
@@ -79,8 +79,8 @@
 
             $("#itemList").DataTable({
                 "oLanguage": {
-                    "sLengthMenu": "{{ trans('pagination.s_length_menu') }}",
-                    "sZeroRecords": "{{ trans('pagination.s_zero_records') }}",
+                    "sLengthMenu": "{{ __('pagination.s_length_menu') }}",
+                    "sZeroRecords": "{{ __('pagination.s_zero_records') }}",
                     "sInfo": "{{ trans('pagination.s_info') }}",
                     "sInfoEmpty": "{{ trans('pagination.s_info_empty') }}",
                     "sInfoFiltered": "{{ trans('pagination.s_infofiltered') }}",

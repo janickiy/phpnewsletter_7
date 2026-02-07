@@ -23,7 +23,7 @@ class DataTableController extends Controller
                 return '<input type="checkbox" class="check" value="' . $row->id . '" name="templateId[]">';
             })
             ->addColumn('action', function ($row) {
-                $editBtn = '<a title="' . trans('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.templates.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
+                $editBtn = '<a title="' . __('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.templates.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
                 return $editBtn;
 
             })
@@ -35,7 +35,7 @@ class DataTableController extends Controller
                 return $row->getPrior();
             })
             ->addColumn('attach', function ($row) {
-                return count($row->attach) > 0 ? trans('frontend.str.yes') : trans('frontend.str.no');
+                return count($row->attach) > 0 ? __('frontend.str.yes') : __('frontend.str.no');
             })
             ->rawColumns(['action', 'name', 'checkbox'])->make(true);
     }
@@ -53,8 +53,8 @@ class DataTableController extends Controller
 
         return Datatables::of($row)
             ->addColumn('actions', function ($row) {
-                $editBtn = '<a title="' . trans('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.category.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
-                $deleteBtn = '<a title="' . trans('frontend.str.remove') . '" class="btn btn-xs btn-danger deleteRow" id="' . $row->id . '"><span class="fa fa-trash"></span></a>';
+                $editBtn = '<a title="' . __('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.category.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
+                $deleteBtn = '<a title="' . __('frontend.str.remove') . '" class="btn btn-xs btn-danger deleteRow" id="' . $row->id . '"><span class="fa fa-trash"></span></a>';
 
                 return '<div class="nobr"> ' . $editBtn . $deleteBtn . '</div>';
             })
@@ -73,7 +73,7 @@ class DataTableController extends Controller
                 return '<input type="checkbox" class="check" value="' . $row->id . '" name="activate[]">';
             })
             ->editColumn('active', function ($row) {
-                return $row->active === 1 ? trans('frontend.str.yes') : trans('frontend.str.no');
+                return $row->active === 1 ? __('frontend.str.yes') : __('frontend.str.no');
             })
             ->editColumn('activeStatus', function ($row) {
                 return $row->active;
