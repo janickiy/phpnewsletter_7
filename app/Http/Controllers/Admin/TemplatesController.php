@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Helpers\StringHelper;
+use App\Repositories\CategoryRepository;
 use App\Models\{Macros, Templates, Attach, Category};
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,8 @@ use Storage;
 
 class TemplatesController extends Controller
 {
+
+
     /**
      * @return View
      */

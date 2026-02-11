@@ -4,7 +4,7 @@ namespace App\Http\Requests\Admin\Category;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class EditRequest extends FormRequest
+class DeleteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,6 @@ class EditRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required',
             'id'   => 'required|integer|exists:categories,id',
         ];
     }

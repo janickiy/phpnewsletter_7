@@ -2,19 +2,24 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Repositories\CategoryRepository;
 use App\Http\Requests\Admin\Category\{
     StoreRequest,
-    EditRequest
+    EditRequest,
+    DeleteRequest
 };
-use App\Models\{
-    Category,
-};
+
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Exception;
 
 class CategoryController extends Controller
 {
+    public function __construct(private CategoryRepository $categoryRepository)
+    {
+        parent::__construct();
+    }
+
     /**
      * @return View
      */
@@ -41,7 +46,16 @@ class CategoryController extends Controller
      */
     public function store(StoreRequest $request): RedirectResponse
     {
-        Category::create($request->all());
+        try {
+            $this->categoryRepository->create($request->all());
+        } catch (Exception $e) {
+            report($e);
+
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage())
+                ->withInput();
+        }
 
         return redirect()->route('admin.category.index')->with('success', __('message.information_successfully_added'));
     }
@@ -52,7 +66,7 @@ class CategoryController extends Controller
      */
     public function edit(int $id): View
     {
-        $row = Category::find($id);
+        $row = $this->categoryRepository->find($id);
 
         if (!$row) abort(404);
 
@@ -67,22 +81,26 @@ class CategoryController extends Controller
      */
     public function update(EditRequest $request): RedirectResponse
     {
-        $row = Category::find($request->id);
+        try {
+            $this->categoryRepository->update($request->id, $request->all());
+        } catch (Exception $e) {
+            report($e);
 
-        if (!$row) abort(404);
-
-        $row->name = $request->input('name');
-        $row->save();
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage())
+                ->withInput();
+        }
 
         return redirect()->route('admin.category.index')->with('success', __('message.data_updated'));
     }
 
     /**
-     * @param Request $request
+     * @param DeleteRequest $request
      * @return void
      */
-    public function destroy(Request $request): void
+    public function destroy(DeleteRequest $request): void
     {
-        Category::find($request->id)->remove();
+        $this->categoryRepository->delete($request->id);
     }
 }

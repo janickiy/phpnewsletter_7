@@ -15,6 +15,27 @@ class SubscribersRepository extends BaseRepository
     }
 
     /**
+     * @param array $data
+     * @return Subscribers|null
+     */
+    public function add(array $data): ?Subscribers
+    {
+        $model = $this->model->create($data);
+
+        if ($model) {
+            foreach ($data['categoryId'] ?? [] as $categoryId) {
+                if (is_numeric($categoryId)) {
+                    Subscriptions::create(['subscriber_id' => $model->id, 'category_id' => $categoryId]);
+                }
+            }
+
+            return $model;
+        }
+
+        return null;
+    }
+
+    /**
      * @param int $logId
      * @param int $templateId
      * @param array $categoryId

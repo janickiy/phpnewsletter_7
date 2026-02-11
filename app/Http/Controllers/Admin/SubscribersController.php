@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Repositories\CategoryRepository;
+use App\Repositories\SubscribersRepository;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use App\Models\{
@@ -15,9 +17,19 @@ use App\Http\Requests\Admin\Subscribers\{ImportRequest, StoreRequest, EditReques
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Http\Request;
+use Exception;
 
 class SubscribersController extends Controller
 {
+    public function __construct(
+        private SubscribersRepository $subscribersRepository,
+        private CategoryRepository    $categoryRepository
+    )
+    {
+        parent::__construct();
+    }
+
+
     /**
      * @return View
      */
@@ -33,7 +45,7 @@ class SubscribersController extends Controller
      */
     public function create(): View
     {
-        $options = Category::getOption();
+        $options = $this->categoryRepository->getOption();
         $infoAlert = __('frontend.hint.subscribers_create') ?? null;
 
         return view('admin.subscribers.create_edit', compact('options', 'infoAlert'))->with('title', __('frontend.title.subscribers_create'));
@@ -45,14 +57,19 @@ class SubscribersController extends Controller
      */
     public function store(StoreRequest $request): RedirectResponse
     {
-        $id = Subscribers::create(array_merge($request->all(), ['timeSent' => date('Y-m-d H:i:s'), 'active' => 1, 'token' => StringHelper::token()]))->id;
+        try {
+            $this->subscribersRepository->create(array_merge($request->all(), [
+                'timeSent' => date('Y-m-d H:i:s'),
+                'active' => 1,
+                'token' => StringHelper::token()
+            ]));
+        } catch (Exception $e) {
+            report($e);
 
-        if ($id) {
-            foreach ($request->categoryId ?? [] as $categoryId) {
-                if (is_numeric($categoryId)) {
-                    Subscriptions::create(['subscriber_id' => $id, 'category_id' => $categoryId]);
-                }
-            }
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage())
+                ->withInput();
         }
 
         return redirect()->route('admin.subscribers.index')->with('success', __('message.information_successfully_added'));
@@ -68,7 +85,7 @@ class SubscribersController extends Controller
 
         if (!$row) abort(404);
 
-        $options = Category::getOption();
+        $options = $this->categoryRepository->getOption();
         $subscriberCategoryId = [];
 
         foreach ($row->subscriptions ?? [] as $subscription) {
