@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\Templates;
 
 
-class TemplatesRepository extends BaseRepository
+class TemplateRepository extends BaseRepository
 {
     public function __construct(Templates $model)
     {

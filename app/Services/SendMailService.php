@@ -10,7 +10,7 @@ use App\Models\Subscribers;
 use App\Models\Templates;
 use App\Repositories\{
     ReadySentRepository,
-    SubscribersRepository,
+    SubscriberRepository,
     ProcessRepository,
 };
 use App\Helpers\SendEmailHelper;
@@ -24,13 +24,13 @@ class SendMailService
 {
     /**
      * @param ReadySentRepository $readySentRepository
-     * @param SubscribersRepository $subscribersRepository
+     * @param SubscriberRepository $subscribersRepository
      * @param ProcessRepository $processRepository
      */
     public function __construct(
-        private ReadySentRepository   $readySentRepository,
-        private SubscribersRepository $subscribersRepository,
-        private ProcessRepository     $processRepository,
+        private ReadySentRepository  $readySentRepository,
+        private SubscriberRepository $subscribersRepository,
+        private ProcessRepository    $processRepository,
     )
     {
     }

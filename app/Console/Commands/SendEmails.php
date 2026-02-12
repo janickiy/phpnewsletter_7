@@ -6,7 +6,7 @@ namespace App\Console\Commands;
 use App\DTO\ReadySentCreateData;
 use App\Repositories\ReadySentRepository;
 use App\Repositories\ScheduleRepository;
-use App\Repositories\SubscribersRepository;
+use App\Repositories\SubscriberRepository;
 use App\Helpers\{SendEmailHelper, SettingsHelper};
 use App\Models\Subscribers;
 use Illuminate\Console\Command;
@@ -17,13 +17,13 @@ class SendEmails extends Command implements Isolatable
 {
     /**
      * @param ScheduleRepository $scheduleRepository
-     * @param SubscribersRepository $subscribersRepository
+     * @param SubscriberRepository $subscribersRepository
      * @param ReadySentRepository $readySentRepository
      */
     public function __construct(
-        private ScheduleRepository    $scheduleRepository,
-        private SubscribersRepository $subscribersRepository,
-        private ReadySentRepository   $readySentRepository,
+        private ScheduleRepository   $scheduleRepository,
+        private SubscriberRepository $subscribersRepository,
+        private ReadySentRepository  $readySentRepository,
     )
     {
         parent::__construct();

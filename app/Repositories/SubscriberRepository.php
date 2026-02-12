@@ -7,7 +7,7 @@ use App\Models\Subscriptions;
 use Illuminate\Support\Collection;
 
 
-class SubscribersRepository extends BaseRepository
+class SubscriberRepository extends BaseRepository
 {
     public function __construct(Subscribers $model)
     {
@@ -33,6 +33,25 @@ class SubscribersRepository extends BaseRepository
         }
 
         return null;
+    }
+
+    /**
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    public function update(array $data, $id): bool
+    {
+        $model = $this->find($id);
+
+        if ($model) {
+            $model->name = $data['name'];
+            $model->email = $data['email'];
+
+            return $model->save();
+        }
+
+        return false;
     }
 
     /**
@@ -135,4 +154,48 @@ class SubscribersRepository extends BaseRepository
             ->get();
     }
 
+    /**
+     * @param int $subscriber_id
+     * @return array
+     */
+    public function getSubscriberCategoryIdList(int $subscriber_id): array
+    {
+        $rows = Subscriptions::query()->where('subscriber_id', $subscriber_id)->get();
+
+        $array = [];
+
+        foreach ($rows->subscriptions ?? [] as $subscription) {
+            $array[] = $subscription->category_id;
+        }
+
+        return $array;
+    }
+
+    /**
+     * @param int $action
+     * @param array|null $Ids
+     * @return void
+     */
+    public function updateStatus(int $action, ?array $Ids): void
+    {
+        $subscriberIds = [];
+
+        foreach ($Ids ?? [] as $id) {
+            if (is_numeric($id)) {
+                $subscriberIds[] = $id;
+            }
+        }
+
+        switch ($action) {
+            case  0 :
+            case  1 :
+                $this->model->whereIN('id', $subscriberIds)->update(['active' => $action]);
+                break;
+
+            case 2 :
+                Subscriptions::whereIN('subscriber_id', $subscriberIds)->delete();
+                $this->model->whereIN('id', $subscriberIds)->delete();
+                break;
+        }
+    }
 }

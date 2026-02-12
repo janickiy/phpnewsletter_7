@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
@@ -17,9 +18,9 @@ abstract class BaseRepository implements RepositoryInterface
 
     /**
      * @param array $data
-     * @return mixed
+     * @return Builder|Model
      */
-    public function create(array $data): mixed
+    public function create(array $data): Builder|Model
     {
         return $this->model->create($data);
     }
@@ -27,9 +28,9 @@ abstract class BaseRepository implements RepositoryInterface
     /**
      * @param int $id
      * @param array $data
-     * @return Model|null
+     * @return bool
      */
-    public function update(int $id, array $data): ?Model
+    public function updateAll(int $id, array $data): bool
     {
         $model = $this->model->find($id);
 
@@ -38,9 +39,9 @@ abstract class BaseRepository implements RepositoryInterface
                 $model->$key = $value;
             }
 
-            $model->save();
+            return $model->save();
         }
-        return null;
+        return false;
     }
 
     /**
@@ -73,4 +74,10 @@ abstract class BaseRepository implements RepositoryInterface
         }
         return false;
     }
+
+    public function truncate(): void
+    {
+        $this->model->truncate();
+    }
+
 }

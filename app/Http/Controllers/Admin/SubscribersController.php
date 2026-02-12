@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Repositories\CategoryRepository;
-use App\Repositories\SubscribersRepository;
+use App\Repositories\SubscriberRepository;
+use App\Repositories\SubscriptionRepository;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use App\Models\{
     Category,
@@ -22,8 +24,9 @@ use Exception;
 class SubscribersController extends Controller
 {
     public function __construct(
-        private SubscribersRepository $subscribersRepository,
-        private CategoryRepository    $categoryRepository
+        private SubscriberRepository   $subscribersRepository,
+        private CategoryRepository     $categoryRepository,
+        private SubscriptionRepository $subscriptionRepository
     )
     {
         parent::__construct();
@@ -81,16 +84,12 @@ class SubscribersController extends Controller
      */
     public function edit(int $id): View
     {
-        $row = Subscribers::find($id);
+        $row = $this->subscribersRepository->find($id);
 
         if (!$row) abort(404);
 
         $options = $this->categoryRepository->getOption();
-        $subscriberCategoryId = [];
-
-        foreach ($row->subscriptions ?? [] as $subscription) {
-            $subscriberCategoryId[] = $subscription->category_id;
-        }
+        $subscriberCategoryId = $this->subscribersRepository->getSubscriberCategoryIdList($id);
 
         $infoAlert = __('frontend.hint.subscribers_edit') ?? null;
 
@@ -100,24 +99,26 @@ class SubscribersController extends Controller
     /**
      * @param EditRequest $request
      * @return RedirectResponse
+     * @throws \Throwable
      */
     public function update(EditRequest $request): RedirectResponse
     {
-        $row = Subscribers::find($request->id);
+        try {
+           DB::transaction(function () use ($request) {
+               $this->subscribersRepository->update($request->id, $request->all());
 
-        if (!$row) abort(404);
+               if ($request->categoryId) {
+                   $this->subscriptionRepository->update($request->categoryId, $request->id);
+               }
+           });
+        } catch (Exception $e) {
+            report($e);
 
-        if ($request->categoryId) {
-            Subscriptions::where('subscriber_id', $request->id)->delete();
-
-            foreach ($request->categoryId ?? [] as $categoryId) {
-                if (is_numeric($categoryId)) Subscriptions::create(['subscriber_id' => $request->id, 'category_id' => $categoryId]);
-            }
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage())
+                ->withInput();
         }
-
-        $row->name = $request->input('name');
-        $row->email = $request->input('email');
-        $row->save();
 
         return redirect()->route('admin.subscribers.index')->with('success', trans('message.data_updated'));
     }
@@ -125,11 +126,14 @@ class SubscribersController extends Controller
     /**
      * @param int $id
      * @return void
+     * @throws \Throwable
      */
     public function destroy(int $id): void
     {
-        Subscriptions::where('subscriber_id', $id)->delete();
-        Subscribers::find($id)->delete();
+        DB::transaction(function () use ($id) {
+            $this->subscriptionRepository->removeBySubscriberId($id);
+            $this->subscribersRepository->delete($id);
+        });
     }
 
     /**
@@ -195,17 +199,18 @@ class SubscribersController extends Controller
         $request->export_type;
         $subscribers = Subscribers::getSubscribersList($request->categoryId);
 
-        if ($request->export_type === 'text') {
+
+        if ($request->export_type == 'text') {
             $ext = 'txt';
-            $filename = 'emailexport' . date("d_m_Y") . '.txt';
+            $filename = 'exportEmail' . date("d_m_Y") . '.txt';
 
             $contents = '';
             foreach ($subscribers ?? [] as $subscriber) {
                 $contents .= "" . $subscriber->email . " " . $subscriber->name . "\r\n";
             }
-        } elseif ($request->export_type === 'excel') {
+        } elseif ($request->export_type == 'excel') {
             $ext = 'xlsx';
-            $filename = 'emailexport' . date("d_m_Y") . '.xlsx';
+            $filename = 'exportEmail' . date("d_m_Y") . '.xlsx';
             $oSpreadsheet_Out = new Spreadsheet();
 
             $oSpreadsheet_Out->getProperties()->setCreator('Alexander Yanitsky')
@@ -241,9 +246,9 @@ class SubscribersController extends Controller
             ob_end_clean();
         }
 
-        if ($request->compress === 'zip') {
+        if ($request->compress == 'zip') {
             header('Content-type: application/zip');
-            header('Content-Disposition: attachment; filename=emailexport_' . date("d_m_Y") . '.zip');
+            header('Content-Disposition: attachment; filename=exportEmail_' . date("d_m_Y") . '.zip');
 
             $fout = fopen("php://output", "wb");
 
@@ -289,8 +294,8 @@ class SubscribersController extends Controller
      */
     public function removeAll(): RedirectResponse
     {
-        Subscribers::truncate();
-        Subscriptions::truncate();
+        $this->subscribersRepository->truncate();
+        $this->subscriptionRepository->truncate();
 
         return redirect()->route('admin.subscribers.index')->with('success', trans('message.data_successfully_deleted'));
     }
@@ -301,25 +306,7 @@ class SubscribersController extends Controller
      */
     public function status(Request $request): RedirectResponse
     {
-        $temp = [];
-
-        foreach ($request->activate ?? [] as $id) {
-            if (is_numeric($id)) {
-                $temp[] = $id;
-            }
-        }
-
-        switch ($request->action) {
-            case  0 :
-            case  1 :
-                Subscribers::whereIN('id', $temp)->update(['active' => $request->action]);
-                break;
-
-            case 2 :
-                Subscriptions::whereIN('subscriber_id', $temp)->delete();
-                Subscribers::whereIN('id', $temp)->delete();
-                break;
-        }
+        $this->subscribersRepository->updateStatus($request->action, $request->activate);
 
         return redirect()->route('admin.subscribers.index')->with('success', trans('message.actions_completed'));
     }
