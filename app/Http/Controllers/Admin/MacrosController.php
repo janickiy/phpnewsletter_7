@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\Admin\Category\StoreRequest;
 use App\Http\Requests\Admin\Category\EditRequest;
 use App\Models\Macros;
+
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class MacrosController extends Controller
 {
+
+
     /**
      * @return View
      */

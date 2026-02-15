@@ -30,17 +30,14 @@ abstract class BaseRepository implements RepositoryInterface
      * @param array $data
      * @return bool
      */
-    public function updateAll(int $id, array $data): bool
+    public function update(int $id, array $data): bool
     {
         $model = $this->model->find($id);
 
         if ($model) {
-            foreach ($data as $key => $value) {
-                $model->$key = $value;
-            }
-
-            return $model->save();
+            return $model->fill($data)->save();
         }
+
         return false;
     }
 

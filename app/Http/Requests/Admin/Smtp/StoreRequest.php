@@ -42,7 +42,7 @@ class StoreRequest extends FormRequest
         if ($validator->fails() === false) {
             $validator->after(function ($validator) {
                 if (SendEmailHelper::checkConnection($this->host, $this->email, $this->username, $this->password, $this->port, $this->authentication, $this->secure, $this->timeout) === false) {
-                    $validator->errors()->add('connection', trans('message.unable_connect_to_smtp'));
+                    $validator->errors()->add('connection', __('message.unable_connect_to_smtp'));
                 }
             });
         }

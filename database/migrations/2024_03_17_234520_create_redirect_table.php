@@ -15,7 +15,6 @@ return new class extends Migration {
             $table->string('url');
             $table->string('email');
             $table->timestamps();
-            $table->engine = 'MyISAM';
         });
     }
 

@@ -26,7 +26,7 @@ class StoreRequest extends FormRequest
         $this->event_start = $date[1];
 
         return [
-            'template_id' => 'required|integer',
+            'template_id' => 'required|integer|exists:templates,id',
             'categoryId' => 'required|array',
             'event_end' => 'date_format:d.m.Y H:i|before:event_start',
             'event_start' => 'date_format:d.m.Y H:i|after:tomorrow'

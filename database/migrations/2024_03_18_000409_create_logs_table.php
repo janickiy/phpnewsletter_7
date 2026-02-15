@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('logs', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamp('time');
-            $table->engine = 'MyISAM';
         });
     }
 

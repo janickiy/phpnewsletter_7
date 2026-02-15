@@ -15,33 +15,35 @@ class AttachRepository extends BaseRepository
     /**
      * @param int $id
      * @param array $data
-     * @return Attach|null
+     * @return bool
      */
-    public function update(int $id, array $data): ?Attach
+    public function updateWithMapping(int $id, array $data): bool
     {
-        $model = $this->model->find($id);
-
-        if ($model) {
-            $model->name = $data['name'];
-
-            $model->save();
-
-            return $model;
-        }
-        return null;
+        return $this->update($id, $this->mapping($data));
     }
 
     /**
      * @param int $id
-     * @return bool|mixed
+     * @return bool
      */
-    public function remove(int $id): ?bool
+    public function remove(int $id): bool
     {
         $model = $this->model->find($id);
 
-        if ($model) {
-            $model->remove();
+        if (!$model) {
+            return false;
         }
+
+        $model->remove();
+
+        return true;
+    }
+
+    private function mapping(array $data): array
+    {
+        return collect($data)
+            ->only($this->model->getFillable())
+            ->all();
     }
 
 }

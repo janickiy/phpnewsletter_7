@@ -33,7 +33,7 @@ class Settings extends Model
      * @param mixed $value
      * @return void
      */
-    public static function setValue(string $key, mixed $value): void
+    public function setValue(string $key, mixed $value): void
     {
         $setting = self::where('name', $key)->first();
 

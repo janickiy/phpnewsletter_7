@@ -30,20 +30,11 @@ class ReadySentRepository extends BaseRepository
     /**
      * @param int $id
      * @param array $data
-     * @return ReadySent|null
+     * @return bool
      */
-    public function update(int $id, array $data): ?ReadySent
+    public function update(int $id, array $data): bool
     {
-        $model = $this->model->find($id);
-
-        if ($model) {
-            $model->name = $data['name'];
-
-            $model->save();
-
-            return $model;
-        }
-        return null;
+        return $this->update($id, ['name' => $data['name']]);
     }
 
     /**
@@ -69,17 +60,16 @@ class ReadySentRepository extends BaseRepository
             ->get();
 
         if ($readySent) {
-            return [
-                'result' => false,
-            ];
+            return ['result' => false];
         }
+
         $rows = [];
 
-        foreach ($readySent ?? [] as $row) {
+        foreach ($readySent as $row) {
             $rows[] = [
                 'subscriber_id' => $row->subscriber_id,
                 "email" => $row->email,
-                "status" => $row->success == 1 ? trans('frontend.str.sent') : trans('frontend.str.not_sent'),
+                "status" => $row->success === 1 ? trans('frontend.str.sent') : trans('frontend.str.not_sent'),
             ];
         }
 
@@ -88,6 +78,4 @@ class ReadySentRepository extends BaseRepository
             'item' => $rows
         ];
     }
-
-
 }

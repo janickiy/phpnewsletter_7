@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('value');
             $table->tinyInteger('type');
             $table->timestamps();
-            $table->engine = 'MyISAM';
         });
     }
 

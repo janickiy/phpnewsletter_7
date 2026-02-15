@@ -12,6 +12,10 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, StaticTableName;
 
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_MODERATOR = 'moderator';
+    public const ROLE_EDITOR = 'editor';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -24,6 +28,17 @@ class User extends Authenticatable
         'role',
         'password',
     ];
+
+    public function getRoleLabelAttribute(): string
+    {
+        $roles = [
+            self::ROLE_ADMIN => __('frontend.str.admin'),
+            self::ROLE_MODERATOR => __('frontend.str.moderator'),
+            self::ROLE_EDITOR => __('frontend.str.editor'),
+        ];
+
+        return $roles[$this->role] ?? $this->role;
+    }
 
     /**
      * The attributes that should be hidden for serialization.

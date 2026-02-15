@@ -141,16 +141,7 @@ class DataTableController extends Controller
                 return '<div class="nobr"> ' . $editBtn . $deleteBtn . '</div>';
             })
             ->editColumn('role', function ($row) {
-                switch ($row->role) {
-                    case 'admin':
-                        return trans('frontend.str.admin');
-                    case 'editor':
-                        return trans('frontend.str.editor');
-                    case 'moderator':
-                        return trans('frontend.str.moderator');
-                    default:
-                        return '';
-                }
+                return $row->role_label;
             })
             ->rawColumns(['action', 'id'])->make(true);
     }

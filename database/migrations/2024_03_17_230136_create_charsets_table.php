@@ -13,7 +13,6 @@ return new class extends Migration {
         Schema::create('charsets', function (Blueprint $table) {
             $table->id();
             $table->string('charset');
-            $table->engine = 'MyISAM';
         });
     }
 

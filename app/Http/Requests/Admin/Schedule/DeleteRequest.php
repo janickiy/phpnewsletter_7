@@ -4,7 +4,7 @@ namespace App\Http\Requests\Admin\Schedule;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class EditRequest extends FormRequest
+class DeleteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,15 +21,7 @@ class EditRequest extends FormRequest
      */
     public function rules(): array
     {
-        $date = explode(' - ', $this->date_interval);
-        $this->event_start = $date[0];
-        $this->event_end = $date[1];
-
         return [
-            'template_id' => 'required|integer|exists:templates,id',
-            'categoryId' => 'required|array',
-            'event_end' => 'date_format:d.m.Y H:i|before:event_start',
-            'event_start' => 'date_format:d.m.Y H:i|after:tomorrow',
             'id' => 'required|integer|exists:schedule,id',
         ];
     }

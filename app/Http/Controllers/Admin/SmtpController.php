@@ -2,15 +2,24 @@
 
 namespace App\Http\Controllers\Admin;
 
+
+use App\Repositories\SmtpRepository;
 use App\Http\Requests\Admin\Smtp\EditRequest;
 use App\Http\Requests\Admin\Smtp\StoreRequest;
 use App\Models\Smtp;
+use App\Http\Requests\Admin\Smtp\StatusRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Exception;
 
 class SmtpController extends Controller
 {
+    public function __construct(private SmtpRepository $smtpRepository)
+    {
+        parent::__construct();
+    }
+
     /**
      * @return View
      */
@@ -34,11 +43,19 @@ class SmtpController extends Controller
     /**
      * @param StoreRequest $request
      * @return RedirectResponse
-     * @throws \PHPMailer\PHPMailer\Exception
      */
     public function store(StoreRequest $request): RedirectResponse
     {
-        Smtp::create($request->all());
+        try {
+            $this->smtpRepository->create($request->all());
+        } catch (Exception $e) {
+            report($e);
+
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage())
+                ->withInput();
+        }
 
         return redirect()->route('admin.smtp.index')->with('success', __('message.information_successfully_added'));
     }
@@ -61,23 +78,19 @@ class SmtpController extends Controller
     /**
      * @param EditRequest $request
      * @return RedirectResponse
-     * @throws \PHPMailer\PHPMailer\Exception
      */
     public function update(EditRequest $request): RedirectResponse
     {
-        $row = Smtp::find($request->id);
+        try {
+            $this->smtpRepository->updateWithMapping($request->id, $request->all());
+        } catch (Exception $e) {
+            report($e);
 
-        if (!$row) abort(404);
-
-        $row->host = $request->input('host');
-        $row->email = $request->input('email');
-        $row->username = $request->input('username');
-        $row->password = $request->input('password');
-        $row->port = $request->input('port');
-        $row->authentication = $request->input('authentication');
-        $row->secure = $request->input('secure');
-        $row->timeout = $request->input('timeout');
-        $row->save();
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage())
+                ->withInput();
+        }
 
         return redirect()->route('admin.smtp.index')->with('success', __('message.data_updated'));
     }
@@ -88,33 +101,16 @@ class SmtpController extends Controller
      */
     public function destroy(Request $request): void
     {
-        Smtp::find($request->id)->delete();
+        $this->smtpRepository->delete($request->id);
     }
 
     /**
-     * @param Request $request
+     * @param StatusRequest $request
      * @return RedirectResponse
      */
-    public function status(Request $request)
+    public function status(StatusRequest $request): RedirectResponse
     {
-        $temp = [];
-
-        foreach ($request->activate ?? [] as $id) {
-            if (is_numeric($id)) {
-                $temp[] = $id;
-            }
-        }
-
-        switch ($request->action) {
-            case  0 :
-            case  1 :
-                Smtp::whereIN('id', $temp)->update(['active' => $request->action]);
-                break;
-
-            case 2 :
-                Smtp::whereIN('id', $temp)->delete();
-                break;
-        }
+        $this->smtpRepository->updateStatus($request->action, $request->activate);
 
         return redirect()->route('admin.smtp.index')->with('success', __('message.actions_completed'));
     }

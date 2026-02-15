@@ -16,7 +16,6 @@ use App\Http\Controllers\Admin\{
     MacrosController,
     UsersController,
     UpdateController,
-    TestController,
 };
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\InstallController;
@@ -40,7 +39,7 @@ Route::group(['middleware' => ['install']], function () {
     Route::get('subscribe/{subscriber}/{token}', [FrontendController::class, 'subscribe'])->name('frontend.subscribe')->where('subscriber', '[0-9]+')->where('token', '[a-z0-9]+');
     Route::any('form', [FrontendController::class, 'form'])->name('frontend.form');
     Route::any('categories', [FrontendController::class, 'getCategories'])->name('frontend.categories');
-    Route::post('addsub', 'FrontendController@addSub')->name('frontend.addsub');
+    Route::post('add-sub', 'FrontendController@addSub')->name('frontend.addsub');
     Route::any('categories', [FrontendController::class, 'getCategories'])->name('frontend.categories');
     Route::any('ajax', [AjaxController::class, 'action'])->name('admin.ajax.action');
     Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -56,9 +55,6 @@ Route::group(['middleware' => ['install']], function () {
         Route::post('destroy', [TemplatesController::class, 'destroy'])->name('admin.templates.destroy');
         Route::post('status', [TemplatesController::class, 'status'])->name('admin.templates.status');
     });
-
-    Route::get('test', [TestController::class, 'index'])->name('test');
-    Route::post('test', [TestController::class, 'import'])->name('admin.test.import');
 
     Route::middleware(['permission:admin|moderator'])->group(function () {
         Route::group(['prefix' => 'category'], function () {

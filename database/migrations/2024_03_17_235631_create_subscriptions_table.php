@@ -18,7 +18,6 @@ return new class extends Migration {
                 ->constrained('categories')
                 ->onDelete('cascade');
             $table->primary(['category_id', 'subscriber_id']);
-            $table->engine = 'MyISAM';
         });
     }
 

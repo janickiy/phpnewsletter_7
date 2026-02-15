@@ -2,26 +2,35 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Helpers\StringHelper;
+
 use App\Repositories\CategoryRepository;
-use App\Models\{Macros, Templates, Attach, Category};
+use App\Repositories\TemplateRepository;
+use App\Services\TemplateService;
+use App\Models\{Macros, Templates};
+use App\Http\Requests\Admin\Templates\StoreRequest;
+use App\Http\Requests\Admin\Templates\UpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use App\Http\Requests\Admin\Templates\StoreRequest;
-use App\Http\Requests\Admin\Templates\UpdateRequest;
-use Storage;
+use Exception;
 
 class TemplatesController extends Controller
 {
-
+    public function __construct(
+        private TemplateRepository $templateRepository,
+        private CategoryRepository $categoryRepository,
+        private TemplateService    $templateService,
+    )
+    {
+        parent::__construct();
+    }
 
     /**
      * @return View
      */
     public function index(): View
     {
-        $categoryOptions = Category::getOption();
+        $categoryOptions = $this->categoryRepository->getOption();
 
         $infoAlert = __('frontend.hint.template_index') ?? null;
 
@@ -35,13 +44,7 @@ class TemplatesController extends Controller
     {
         $infoAlert = __('frontend.hint.template_create') ?? null;
 
-        $list = [];
-
-        foreach (Macros::get() ?? [] as $macro) {
-            $list[] = $macro->name . ' - ' . $macro->getType();
-        }
-
-        $macrosList = implode(', ', $list);
+        $macrosList = $this->getMacros();
 
         return view('admin.templates.create_edit', compact('infoAlert', 'macrosList'))->with('title', __('frontend.title.template_create'));
     }
@@ -52,22 +55,16 @@ class TemplatesController extends Controller
      */
     public function store(StoreRequest $request): RedirectResponse
     {
-        $id = Templates::create($request->all())->id;
+        try {
+            $template = $this->templateRepository->create($request->all());
+            $this->templateService->addAttach($request, $template->id);
+        } catch (Exception $e) {
+            report($e);
 
-        $attachFile = $request->file('attachfile');
-
-        foreach ($attachFile ?? [] as $file) {
-            $filename = StringHelper::randomText(10) . '.' . $file->getClientOriginalExtension();
-
-            if (Storage::putFileAs(Attach::DIRECTORY, $file, $filename)) {
-                $attach = [
-                    'name' => $file->getClientOriginalName(),
-                    'file_name' => $filename,
-                    'template_id' => $id,
-                ];
-
-                Attach::create($attach);
-            }
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage())
+                ->withInput();
         }
 
         return redirect()->route('admin.templates.index')->with('success', __('message.information_successfully_added'));
@@ -79,19 +76,13 @@ class TemplatesController extends Controller
      */
     public function edit(int $id): View
     {
-        $template = Templates::find($id);
+        $template = $this->templateRepository->find($id);
 
         if (!$template) abort(404);
 
         $attachment = $template->attach;
         $infoAlert = __('frontend.hint.template_edit') ? __('frontend.hint.template_edit') : null;
-        $list = [];
-
-        foreach (Macros::get() ?? [] as $macro) {
-            $list[] = '{{' . $macro->name . '}} - ' . $macro->getType();
-        }
-
-        $macrosList = implode(', ', $list);
+        $macrosList = $this->getMacros();
 
         return view('admin.templates.create_edit', compact('template', 'attachment', 'infoAlert', 'macrosList'))->with('title', __('frontend.title.template_edit'));
     }
@@ -102,30 +93,17 @@ class TemplatesController extends Controller
      */
     public function update(UpdateRequest $request): RedirectResponse
     {
-        $templates = Templates::find($request->id);
+        try {
+            $this->templateRepository->updateWithMapping($request->id, $request->all());
+            $this->templateService->updateAttach($request, $request->id);
+        } catch (Exception $e) {
+            report($e);
 
-        if (!$templates) abort(404);
-
-        $attachFile = $request->file('attachfile');
-
-        foreach ($attachFile ?? [] as $file) {
-            $filename = StringHelper::randomText(10) . '.' . $file->getClientOriginalExtension();
-
-            if (Storage::putFileAs(Attach::DIRECTORY, $file, $filename)) {
-                $attach = [
-                    'name' => $file->getClientOriginalName(),
-                    'file_name' => $filename,
-                    'template_id' => $request->id,
-                ];
-
-                Attach::create($attach);
-            }
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage())
+                ->withInput();
         }
-
-        $templates->name = $request->input('name');
-        $templates->body = $request->input('body');
-        $templates->prior = $request->input('prior');
-        $templates->save();
 
         return redirect()->route('admin.templates.index')->with('success', __('message.data_updated'));
     }
@@ -136,7 +114,7 @@ class TemplatesController extends Controller
      */
     public function destroy(Request $request): void
     {
-        Templates::find($request->id)->remove();
+        $this->templateRepository->remove($request->id);
     }
 
     /**
@@ -162,5 +140,19 @@ class TemplatesController extends Controller
         }
 
         return redirect()->route('admin.templates.index')->with('success', __('message.actions_completed'));
+    }
+
+    /**
+     * @return string
+     */
+    private function getMacros(): string
+    {
+        $list = [];
+
+        foreach (Macros::get() as $macro) {
+            $list[] = '{{' . $macro->name . '}} - ' . $macro->getType();
+        }
+
+        return implode(', ', $list);
     }
 }

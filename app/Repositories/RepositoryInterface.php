@@ -14,7 +14,7 @@ interface RepositoryInterface
 
     public function create(array $data): Builder|Model;
 
-    public function updateAll(int $id, array $data): bool;
+    public function update(int $id, array $data): bool;
 
     public function delete(int $id): bool;
 

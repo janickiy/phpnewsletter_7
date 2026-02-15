@@ -2,16 +2,23 @@
 
 namespace App\Http\Controllers\Admin;
 
+
+use App\Repositories\SettingsRepository;
 use App\Models\Charsets;
 use App\Models\Customheaders;
 use App\Helpers\StringHelper;
-use App\Models\Settings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
+use Exception;
 
 class SettingsController extends Controller
 {
+    public function __construct(private SettingsRepository $settingsRepository)
+    {
+        parent::__construct();
+    }
+
     /**
      * @return View
      */
@@ -23,10 +30,10 @@ class SettingsController extends Controller
             $option_charset[$row->charset] = StringHelper::charsetList($row->charset);
         }
 
-        $customheaders = Customheaders::get();
+        $customHeaders = Customheaders::get();
         $infoAlert = __('frontend.hint.settings_index') ?? null;
 
-        return view('admin.settings.index', compact('option_charset', 'customheaders', 'infoAlert'))->with('title',  __('frontend.title.settings_index'));
+        return view('admin.settings.index', compact('option_charset', 'customHeaders', 'infoAlert'))->with('title',  __('frontend.title.settings_index'));
     }
 
     /**
@@ -35,47 +42,15 @@ class SettingsController extends Controller
      */
     public function update(Request $request): RedirectResponse
     {
-        $array = $request->all();
-        $array['REQUIRE_SUB_CONFIRMATION'] = $request->input('REQUIRE_SUB_CONFIRMATION') ? 1 : 0;
-        $array['SHOW_UNSUBSCRIBE_LINK'] = $request->input('SHOW_UNSUBSCRIBE_LINK') ? 1 : 0;
-        $array['REQUEST_REPLY'] = $request->input('REQUEST_REPL') ? 1 : 0;
-        $array['NEW_SUBSCRIBER_NOTIFY'] = $request->input('NEW_SUBSCRIBER_NOTIFY') ? 1 : 0;
-        $array['RANDOM_SEND'] = $request->input('RANDOM_SEND') ? 1 : 0;
-        $array['RENDOM_REPLACEMENT_SUBJECT'] = $request->input('RENDOM_REPLACEMENT_SUBJECT') ? 1 : 0;
-        $array['RANDOM_REPLACEMENT_BODY'] = $request->input('RANDOM_REPLACEMENT_BODY') ? 1 : 0;
-        $array['ADD_DKIM'] = $request->input('ADD_DKIM') ? 1 : 0;
-        $array['LIMIT_SEND'] = $request->input('LIMIT_SEND') ? 1 : 0;
-        $array['REQUEST_REPLY'] = $request->input('REQUEST_REPLY') ? 1 : 0;
-        $array['REMOVE_SUBSCRIBER'] = $request->input('REMOVE_SUBSCRIBER') ? 1 : 0;
+        try {
+            $this->settingsRepository->setSettings($request->all());
+        } catch (Exception $e) {
+            report($e);
 
-        foreach ($array ?? [] as $key => $value) {
-            Settings::setValue($key, $value);
-        }
-
-        if ($request->input('header_name')) {
-            Customheaders::truncate();
-
-            for ($i = 0; $i < count($request->header_name); $i++) {
-                $name = $request->header_name;
-                $value = $request->header_value;
-                $name[$i] = trim($name[$i]);
-                $value[$i] = trim($value[$i]);
-
-                if (preg_match("/^[\-a-zA-Z]+$/", $name[$i])) {
-                    $value[$i] = str_replace(';', '', $value[$i]);
-                    $value[$i] = str_replace(':', '', $value[$i]);
-                    if ($name[$i] && $value[$i]) {
-                        $fields = [
-                            'name' => $name[$i],
-                            'value' => $value[$i]
-                        ];
-
-                        Customheaders::create($fields);
-                    }
-                }
-            }
-        } else {
-            Customheaders::truncate();
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage())
+                ->withInput();
         }
 
         return redirect()->route('admin.settings.index')->with('success', __('message.data_updated'));

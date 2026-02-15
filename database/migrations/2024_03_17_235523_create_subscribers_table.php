@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('token', 32);
             $table->timestamp('timeSent')->nullable();
             $table->timestamps();
-            $table->engine = 'MyISAM';
         });
     }
 

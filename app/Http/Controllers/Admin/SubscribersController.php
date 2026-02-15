@@ -2,31 +2,33 @@
 
 namespace App\Http\Controllers\Admin;
 
+
 use App\Repositories\CategoryRepository;
 use App\Repositories\SubscriberRepository;
 use App\Repositories\SubscriptionRepository;
+use App\Services\DownloadService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use App\Models\{
-    Category,
     Subscribers,
-    Subscriptions,
     Charsets,
 };
 use App\Helpers\StringHelper;
-use App\Http\Requests\Admin\Subscribers\{ImportRequest, StoreRequest, EditRequest};
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\IOFactory;
+use App\Http\Requests\Admin\Subscribers\{ImportRequest, StoreRequest, EditRequest};;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Exception;
+
 
 class SubscribersController extends Controller
 {
     public function __construct(
         private SubscriberRepository   $subscribersRepository,
         private CategoryRepository     $categoryRepository,
-        private SubscriptionRepository $subscriptionRepository
+        private SubscriptionRepository $subscriptionRepository,
+        private DownloadService        $downloadService,
     )
     {
         parent::__construct();
@@ -93,7 +95,7 @@ class SubscribersController extends Controller
 
         $infoAlert = __('frontend.hint.subscribers_edit') ?? null;
 
-        return view('admin.subscribers.create_edit', compact('options', 'row', 'subscriberCategoryId', 'infoAlert'))->with('title', trans('frontend.title.subscribers_edit'));
+        return view('admin.subscribers.create_edit', compact('options', 'row', 'subscriberCategoryId', 'infoAlert'))->with('title', __('frontend.title.subscribers_edit'));
     }
 
     /**
@@ -104,13 +106,13 @@ class SubscribersController extends Controller
     public function update(EditRequest $request): RedirectResponse
     {
         try {
-           DB::transaction(function () use ($request) {
-               $this->subscribersRepository->update($request->id, $request->all());
+            DB::transaction(function () use ($request) {
+                $this->subscribersRepository->update($request->id, $request->all());
 
-               if ($request->categoryId) {
-                   $this->subscriptionRepository->update($request->categoryId, $request->id);
-               }
-           });
+                if ($request->categoryId) {
+                    $this->subscriptionRepository->update($request->categoryId, $request->id);
+                }
+            });
         } catch (Exception $e) {
             report($e);
 
@@ -120,7 +122,7 @@ class SubscribersController extends Controller
                 ->withInput();
         }
 
-        return redirect()->route('admin.subscribers.index')->with('success', trans('message.data_updated'));
+        return redirect()->route('admin.subscribers.index')->with('success', __('message.data_updated'));
     }
 
     /**
@@ -142,11 +144,11 @@ class SubscribersController extends Controller
     public function import(): View
     {
         $charsets = Charsets::getOption();
-        $category_options = Category::getOption();
+        $category_options = $this->categoryRepository->getOption();
         $maxUploadFileSize = StringHelper::maxUploadFileSize();
         $infoAlert = trans('frontend.hint.subscribers_import') ?? null;
 
-        return view('admin.subscribers.import', compact('charsets', 'category_options', 'maxUploadFileSize', 'infoAlert'))->with('title', trans('frontend.title.subscribers_import'));
+        return view('admin.subscribers.import', compact('charsets', 'category_options', 'maxUploadFileSize', 'infoAlert'))->with('title', __('frontend.title.subscribers_import'));
     }
 
     /**
@@ -172,9 +174,9 @@ class SubscribersController extends Controller
         }
 
         if ($result === false)
-            return redirect()->route('admin.subscribers.index')->with('error', trans('message.error_import_file'));
+            return redirect()->route('admin.subscribers.index')->with('error', __('message.error_import_file'));
         else
-            return redirect()->route('admin.subscribers.index')->with('success', trans('message.import_completed') . $result);
+            return redirect()->route('admin.subscribers.index')->with('success', __('message.import_completed') . $result);
     }
 
     /**
@@ -182,111 +184,22 @@ class SubscribersController extends Controller
      */
     public function export(): View
     {
-        $options = Category::getOption();
-        $infoAlert = trans('frontend.hint.subscribers_export') ?? null;
+        $options = $this->categoryRepository->getOption();
+        $infoAlert = __('frontend.hint.subscribers_export') ?? null;
 
-        return view('admin.subscribers.export', compact('options', 'infoAlert'))->with('title', trans('frontend.title.subscribers_export'));
+        return view('admin.subscribers.export', compact('options', 'infoAlert'))->with('title', __('frontend.title.subscribers_export'));
     }
+
 
     /**
      * @param Request $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Foundation\Application|\Illuminate\Http\Response|void
+     * @return Response|StreamedResponse
      */
-    public function exportSubscribers(Request $request)
+    public function exportSubscribers(Request $request): Response|StreamedResponse
     {
         set_time_limit(0);
 
-        $request->export_type;
-        $subscribers = Subscribers::getSubscribersList($request->categoryId);
-
-
-        if ($request->export_type == 'text') {
-            $ext = 'txt';
-            $filename = 'exportEmail' . date("d_m_Y") . '.txt';
-
-            $contents = '';
-            foreach ($subscribers ?? [] as $subscriber) {
-                $contents .= "" . $subscriber->email . " " . $subscriber->name . "\r\n";
-            }
-        } elseif ($request->export_type == 'excel') {
-            $ext = 'xlsx';
-            $filename = 'exportEmail' . date("d_m_Y") . '.xlsx';
-            $oSpreadsheet_Out = new Spreadsheet();
-
-            $oSpreadsheet_Out->getProperties()->setCreator('Alexander Yanitsky')
-                ->setLastModifiedBy('PHP Newsletter')
-                ->setTitle('Office 2007 XLSX Document')
-                ->setSubject('Office 2007 XLSX Document')
-                ->setDescription('Document for Office 2007 XLSX, generated using PHP classes.')
-                ->setKeywords('office 2007 openxml php')
-                ->setCategory('Email export file');
-
-            // Add some data
-            $oSpreadsheet_Out->setActiveSheetIndex(0)
-                ->setCellValue('A1', 'Email')
-                ->setCellValue('B1', trans('frontend.str.name'));
-
-            $i = 1;
-
-            foreach ($subscribers ?? [] as $subscriber) {
-                $i++;
-
-                $oSpreadsheet_Out->setActiveSheetIndex(0)
-                    ->setCellValue('A' . $i, $subscriber->email)
-                    ->setCellValue('B' . $i, $subscriber->name);
-            }
-
-            $oSpreadsheet_Out->getActiveSheet()->getColumnDimension('A')->setWidth(30);
-            $oSpreadsheet_Out->getActiveSheet()->getColumnDimension('B')->setWidth(30);
-
-            $oWriter = IOFactory::createWriter($oSpreadsheet_Out, 'Xlsx');
-            ob_start();
-            $oWriter->save('php://output');
-            $contents = ob_get_contents();
-            ob_end_clean();
-        }
-
-        if ($request->compress == 'zip') {
-            header('Content-type: application/zip');
-            header('Content-Disposition: attachment; filename=exportEmail_' . date("d_m_Y") . '.zip');
-
-            $fout = fopen("php://output", "wb");
-
-            if ($fout !== false) {
-                fwrite($fout, "\x1F\x8B\x08\x08" . pack("V", '') . "\0\xFF", 10);
-
-                $oname = str_replace("\0", "", $filename);
-                fwrite($fout, $oname . "\0", 1 + strlen($oname));
-
-                $fltr = stream_filter_append($fout, "zlib.deflate", STREAM_FILTER_WRITE, -1);
-                $hctx = hash_init("crc32b");
-
-                if (!ini_get("safe_mode")) set_time_limit(0);
-
-                hash_update($hctx, $contents);
-                $fsize = strlen($contents);
-
-                fwrite($fout, $contents, $fsize);
-
-                stream_filter_remove($fltr);
-
-                $crc = hash_final($hctx, TRUE);
-
-                fwrite($fout, $crc[3] . $crc[2] . $crc[1] . $crc[0], 4);
-                fwrite($fout, pack("V", $fsize), 4);
-
-                fclose($fout);
-
-                exit();
-            }
-
-        } else {
-            return response($contents, 200, [
-                'Content-Disposition' => 'attachment; filename=' . $filename,
-                'Cache-Control' => 'max-age=0',
-                'Content-Type' => StringHelper::getMimeType($ext),
-            ]);
-        }
+        return $this->downloadService->exportSubscribers($request);
     }
 
     /**
@@ -297,7 +210,7 @@ class SubscribersController extends Controller
         $this->subscribersRepository->truncate();
         $this->subscriptionRepository->truncate();
 
-        return redirect()->route('admin.subscribers.index')->with('success', trans('message.data_successfully_deleted'));
+        return redirect()->route('admin.subscribers.index')->with('success', __('message.data_successfully_deleted'));
     }
 
     /**
@@ -308,6 +221,6 @@ class SubscribersController extends Controller
     {
         $this->subscribersRepository->updateStatus($request->action, $request->activate);
 
-        return redirect()->route('admin.subscribers.index')->with('success', trans('message.actions_completed'));
+        return redirect()->route('admin.subscribers.index')->with('success', __('message.actions_completed'));
     }
 }

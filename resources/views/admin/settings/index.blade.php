@@ -497,7 +497,7 @@
                                 <div class="tab-pane" id="s3">
                                     <div id="headerslist">
 
-                                        @foreach($customheaders as $header)
+                                        @foreach($customHeaders ?? [] as $header)
 
                                             <div class="header-row">
                                                 <div class="form-group row">

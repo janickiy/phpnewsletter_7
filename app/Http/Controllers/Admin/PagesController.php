@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\View\View;
 use App\Helpers\StringHelper;
-use Blade;
 
 class PagesController extends Controller
 {
@@ -23,7 +22,6 @@ class PagesController extends Controller
     {
         $infoAlert = __('frontend.hint.cron_job_list') ?? null;
         $path = base_path() ? base_path() . '/artisan' : ' /home/phpnewsletter/artisan';
-
         $cronJob[] = ['description' => 'Task Scheduling', 'cron' => '/usr/bin/php -q ' . $path . ' schedule:run >/dev/null 2>&1'];
 
         return view('admin.pages.cron_job_list', compact('cronJob', 'infoAlert'))->with('title', 'Crontab');

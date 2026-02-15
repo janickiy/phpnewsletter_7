@@ -15,7 +15,6 @@ return new class extends Migration
             $table->increments('id');
             $table->string('name');
             $table->text('value');
-            $table->engine = 'MyISAM';
         });
     }
 

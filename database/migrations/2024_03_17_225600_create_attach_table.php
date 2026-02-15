@@ -16,7 +16,6 @@ return new class extends Migration {
             $table->string('file_name');
             $table->integer('template_id');
             $table->timestamps();
-            $table->engine = 'MyISAM';
         });
 
         Schema::table('attach', function (Blueprint $table) {

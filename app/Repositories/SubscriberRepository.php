@@ -164,7 +164,7 @@ class SubscriberRepository extends BaseRepository
 
         $array = [];
 
-        foreach ($rows->subscriptions ?? [] as $subscription) {
+        foreach ($rows->subscriptions as $subscription) {
             $array[] = $subscription->category_id;
         }
 
