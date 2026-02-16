@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Admin\Schedule;
 
+use App\Models\Schedule;
+use App\Models\Templates;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EditRequest extends FormRequest
@@ -26,11 +28,11 @@ class EditRequest extends FormRequest
         $this->event_end = $date[1];
 
         return [
-            'template_id' => 'required|integer|exists:templates,id',
+            'template_id' => 'required|integer|exists:' . Templates::getTableName() . ',id',
             'categoryId' => 'required|array',
             'event_end' => 'date_format:d.m.Y H:i|before:event_start',
             'event_start' => 'date_format:d.m.Y H:i|after:tomorrow',
-            'id' => 'required|integer|exists:schedule,id',
+            'id' => 'required|integer|exists:' . Schedule::getTableName() . ',id',
         ];
     }
 }

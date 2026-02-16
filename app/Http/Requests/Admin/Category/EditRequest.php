@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Category;
 
+use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EditRequest extends FormRequest
@@ -23,7 +24,7 @@ class EditRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'id'   => 'required|integer|exists:categories,id',
+            'id'   => 'required|integer|exists:' . Category::getTableName() . ',id',
         ];
     }
 }

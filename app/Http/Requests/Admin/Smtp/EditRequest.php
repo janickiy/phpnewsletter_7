@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Smtp;
 
 use App\Helpers\SendEmailHelper;
+use App\Models\Smtp;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
@@ -29,6 +30,7 @@ class EditRequest extends FormRequest
             'email' => 'required|email',
             'port' => 'required|numeric',
             'timeout' => 'required|numeric',
+            'id' => 'required|integer|exists:' . Smtp::getTableName() . ',id',
         ];
     }
 

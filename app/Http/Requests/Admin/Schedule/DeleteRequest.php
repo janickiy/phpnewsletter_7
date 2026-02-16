@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Schedule;
 
+use App\Models\Schedule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DeleteRequest extends FormRequest
@@ -22,7 +23,7 @@ class DeleteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|integer|exists:schedule,id',
+            'id' => 'required|integer|exists:' . Schedule::getTableName() . ',id',
         ];
     }
 }

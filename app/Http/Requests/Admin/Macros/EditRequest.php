@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Macros;
 
+use App\Models\Macros;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EditRequest extends FormRequest
@@ -22,7 +23,7 @@ class EditRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'  => 'required|regex:/^[a-zA-Z0-9_]+$/|unique:macros,name,' . $this->id,
+            'name'  => 'required|regex:/^[a-zA-Z0-9_]+$/|unique:' . Macros::getTableName() . ',name,' . $this->id,
             'value' => 'required',
             'type'  => 'required|integer',
         ];

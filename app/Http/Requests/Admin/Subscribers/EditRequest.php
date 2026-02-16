@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Admin\Subscribers;
 
+
+use App\Models\Subscribers;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EditRequest extends FormRequest
@@ -24,7 +26,7 @@ class EditRequest extends FormRequest
         return [
             'email' => 'required|email|unique:subscribers,email,' . $this->id,
             'categoryId' => 'array|nullable',
-            'id' => 'required|integer'
+            'id' => 'required|integer|exists:' . Subscribers::getTableName() . ',id',
         ];
     }
 }
