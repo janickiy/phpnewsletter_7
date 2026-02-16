@@ -53,11 +53,11 @@ class Templates extends Model
     {
         switch ($this->prior) {
             case 1:
-                return trans('frontend.str.high');
+                return __('frontend.str.high');
             case 2:
-                return trans('frontend.str.low');
+                return __('frontend.str.low');
             default:
-                return trans('frontend.str.normal');
+                return __('frontend.str.normal');
         }
     }
 

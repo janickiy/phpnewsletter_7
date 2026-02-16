@@ -66,6 +66,7 @@ class SubscriberRepository extends BaseRepository
     public function getSubscribers(int $logId, int $templateId, array $categoryId, int $order, int $limit, ?string $interval = null): ?Collection
     {
         $q = $this->model->select('subscribers.email', 'subscribers.token', 'subscribers.id', 'subscribers.name')
+            ->distinct()
             ->join('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
             ->leftJoin('ready_sent', function ($join) use ($templateId, $logId) {
                 $join->on('subscribers.id', '=', 'ready_sent.subscriber_id')
@@ -83,11 +84,7 @@ class SubscriberRepository extends BaseRepository
             $q->whereRaw($interval);
         }
 
-        return $q->groupBy('subscribers.id')
-            ->groupBy('subscribers.email')
-            ->groupBy('subscribers.token')
-            ->groupBy('subscribers.name')
-            ->orderByRaw($order)
+        return $q->orderByRaw($order)
             ->take($limit)
             ->get();
     }
@@ -169,7 +166,7 @@ class SubscriberRepository extends BaseRepository
             'subscribers.id',
             'subscribers.token',
             'subscribers.name',
-        ])
+             ])
             ->distinct()
             ->join('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
             ->join('schedule_category', function ($join) use ($scheduleId) {

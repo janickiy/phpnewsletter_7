@@ -51,8 +51,8 @@ class RedirectController  extends Controller
      */
     public function info(string $url): View
     {
-        $infoAlert = trans('frontend.hint.redirectlog_info') ?? null;
+        $infoAlert = __('frontend.hint.redirectlog_info') ?? null;
 
-        return view('admin.redirect.info', compact('url','infoAlert'))->with('title', trans('frontend.title.redirect_info'));
+        return view('admin.redirect.info', compact('url','infoAlert'))->with('title', __('frontend.title.redirect_info'));
     }
 }

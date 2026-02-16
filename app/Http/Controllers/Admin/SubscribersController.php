@@ -151,7 +151,7 @@ class SubscribersController extends Controller
         $charsets = Charsets::getOption();
         $category_options = $this->categoryRepository->getOption();
         $maxUploadFileSize = StringHelper::maxUploadFileSize();
-        $infoAlert = trans('frontend.hint.subscribers_import') ?? null;
+        $infoAlert = __('frontend.hint.subscribers_import') ?? null;
 
         return view('admin.subscribers.import', compact('charsets', 'category_options', 'maxUploadFileSize', 'infoAlert'))->with('title', __('frontend.title.subscribers_import'));
     }

@@ -69,7 +69,7 @@ class ReadySentRepository extends BaseRepository
             $rows[] = [
                 'subscriber_id' => $row->subscriber_id,
                 "email" => $row->email,
-                "status" => $row->success === 1 ? trans('frontend.str.sent') : trans('frontend.str.not_sent'),
+                "status" => $row->success === 1 ? __('frontend.str.sent') : __('frontend.str.not_sent'),
             ];
         }
 

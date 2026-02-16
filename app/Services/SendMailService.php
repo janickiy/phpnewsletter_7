@@ -6,8 +6,10 @@ namespace App\Services;
 use App\Enums\ProcessStatus;
 use App\DTO\ReadySentCreateData;
 use App\Helpers\SettingsHelper;
+use App\Models\ReadySent;
 use App\Models\Subscribers;
 use App\Models\Templates;
+use Illuminate\Support\Facades\DB;
 use App\Repositories\{
     ReadySentRepository,
     SubscriberRepository,
@@ -139,27 +141,13 @@ class SendMailService
                 $interval = null;
         }
 
-        $categoryId = [];
-
-        foreach ($request->categoryId ?? [] as $id) {
-            if (is_numeric($id)) {
-                $categoryId[] = $id;
-            }
-        }
-
-        $templateId = [];
-
-        foreach ($request->templateId ?? [] as $id) {
-            if (is_numeric($id)) {
-                $templateId[] = $id;
-            }
-        }
-
-        $templates = Templates::whereIN('id', $templateId)->get();
+        $templates = Templates::whereIN('id', $request->templateId)->get();
 
         foreach ($templates ?? [] as $template) {
 
-            $subscribers = $this->subscribersRepository->getSubscribers($logId, $template->id, $categoryId, $order, $limit, $interval);
+            $subscribers = $this->subscribersRepository->getSubscribers($logId, $template->id, $request->categoryId, $order, $limit, $interval);
+
+            $subscriberUpdates = [];
 
             foreach ($subscribers ?? [] as $subscriber) {
                 if ($this->processRepository->getProcess(Auth::user('web')->id) === 'stop' || $this->processRepository->getProcess(Auth::user('web')->id) === 'pause') {
@@ -197,8 +185,7 @@ class SendMailService
                     ));
 
                     $mailCount++;
-
-                    Subscribers::find($subscriber->id)->update(['timeSent' => date('Y-m-d H:i:s')]);
+                    $subscriberUpdates[$subscriber->id] = now()->format('Y-m-d H:i:s');
                 } else {
                     $this->readySentRepository->add(new ReadySentCreateData(
                         subscriberId: $subscriber->id,
@@ -215,13 +202,15 @@ class SendMailService
 
                 if ((int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailCount) {
                     $this->processRepository->updateByUserId(Auth::user('web')->id, ProcessStatus::Stop->value);
-
+                    $this->resultSend($subscriberUpdates);
                     return [
                         'result' => true,
                         'completed' => true,
                     ];
                 }
             }
+
+            $this->resultSend($subscriberUpdates);
         }
 
         if ((int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailCount) {
@@ -298,5 +287,34 @@ class SendMailService
             'time' => $datetime->format('H:i:s'),
             'leftsend' => $total > 0 ? round(($success + $unsuccess) / $total * 100, 2) : 0,
         ];
+    }
+
+    /**
+     * @param array $subscriberUpdates
+     * @return void
+     */
+    private function resultSend(array $subscriberUpdates): void
+    {
+        if (!empty($subscriberUpdates)) {
+            $ids = array_keys($subscriberUpdates);
+
+            $caseSql  = "CASE id ";
+            $bindings = [];
+
+            foreach ($subscriberUpdates as $id => $ts) {
+                $caseSql .= "WHEN ? THEN ? ";
+                $bindings[] = (int)$id;
+                $bindings[] = $ts;
+            }
+            $caseSql .= "END";
+
+            $inSql = implode(',', array_fill(0, count($ids), '?'));
+            $bindings = array_merge($bindings, $ids);
+
+            DB::statement(
+                "UPDATE " . Subscribers::getTableName() . " SET timeSent = {$caseSql} WHERE id IN ({$inSql})",
+                $bindings
+            );
+        }
     }
 }

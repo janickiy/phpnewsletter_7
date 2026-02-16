@@ -56,15 +56,15 @@ class DownloadService
         // Add some data
         $oSpreadsheet_Out->setActiveSheetIndex(0)
             ->setCellValue('A1', __('frontend.str.total') . ": $total\n" . __('frontend.str.sent') . ": " . $count . "%\n" . __('frontend.str.spent_time') . ": $totalTime->total\n" . __('frontend.str.read') . ": " . $readMail)
-            ->setCellValue('A2', trans('frontend.str.email'))
-            ->setCellValue('B2', trans('frontend.str.time'))
-            ->setCellValue('C2', trans('frontend.str.status'))
-            ->setCellValue('A2', trans('frontend.str.newsletter'))
-            ->setCellValue('B2', trans('frontend.str.email'))
-            ->setCellValue('C2', trans('frontend.str.time'))
-            ->setCellValue('D2', trans('frontend.str.status'))
-            ->setCellValue('E2', trans('frontend.str.read'))
-            ->setCellValue('F2', trans('frontend.str.error'))
+            ->setCellValue('A2', __('frontend.str.email'))
+            ->setCellValue('B2', __('frontend.str.time'))
+            ->setCellValue('C2', __('frontend.str.status'))
+            ->setCellValue('A2', __('frontend.str.newsletter'))
+            ->setCellValue('B2', __('frontend.str.email'))
+            ->setCellValue('C2', __('frontend.str.time'))
+            ->setCellValue('D2', __('frontend.str.status'))
+            ->setCellValue('E2', __('frontend.str.read'))
+            ->setCellValue('F2', __('frontend.str.error'))
             ->mergeCells('A1:F1');
 
         $oSpreadsheet_Out->setActiveSheetIndex(0)->getStyle('A1')->getAlignment()->applyFromArray(['wrapText' => TRUE]);
@@ -94,8 +94,8 @@ class DownloadService
                 ->setCellValue('A' . $i, $row->template)
                 ->setCellValue('B' . $i, $row->email)
                 ->setCellValue('C' . $i, $row->created_at)
-                ->setCellValue('D' . $i, $row->success === 1 ? trans('frontend.str.send_status_yes') : trans('frontend.str.send_status_no'))
-                ->setCellValue('E' . $i, $row->readMail === 1 ? trans('frontend.str.yes') : trans('frontend.str.no'))
+                ->setCellValue('D' . $i, $row->success === 1 ? __('frontend.str.send_status_yes') : __('frontend.str.send_status_no'))
+                ->setCellValue('E' . $i, $row->readMail === 1 ? __('frontend.str.yes') : __('frontend.str.no'))
                 ->setCellValue('F' . $i, $row->errorMsg);
 
             $oSpreadsheet_Out->setActiveSheetIndex(0)->getStyle('D' . $i)->getAlignment()->applyFromArray(['horizontal' => Alignment::HORIZONTAL_CENTER]);
@@ -209,7 +209,7 @@ class DownloadService
             // Add some data
             $oSpreadsheet_Out->setActiveSheetIndex(0)
                 ->setCellValue('A1', 'Email')
-                ->setCellValue('B1', trans('frontend.str.name'));
+                ->setCellValue('B1', __('frontend.str.name'));
 
             $i = 1;
 
@@ -282,15 +282,15 @@ class DownloadService
     private function getSubscribersList(?array $Ids): Collection
     {
         if ($Ids) {
-            $subscribers = Subscribers::select('subscribers.name', 'subscribers.email')
-                ->leftJoin('subscriptions', function ($join) {
-                    $join->on('subscribers.id', '=', 'subscriptions.subscriber_id');
+            $subscribers = Subscribers::query()
+                ->select('subscribers.name', 'subscribers.email')
+                ->distinct()
+                ->leftJoin('subscriptions', function ($join) use ($Ids) {
+                    $join->on('subscribers.id', '=', 'subscriptions.subscriber_id')
+                        ->whereIn('subscriptions.category_id', $Ids);
                 })
                 ->where('subscribers.active', 1)
-                ->whereIn('subscriptions.category_id', $Ids)
-                ->groupBy('subscribers.email')
-                ->groupBy('subscribers.id')
-                ->groupBy('subscribers.name')
+                ->whereNotNull('subscriptions.subscriber_id')
                 ->get();
         } else {
             $subscribers = Subscribers::select('name', 'email')

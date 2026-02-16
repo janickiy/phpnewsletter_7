@@ -79,7 +79,7 @@ class DataTableController extends Controller
                 return $row->active;
             })
             ->addColumn('action', function ($row) {
-                $editBtn = '<a title="' . trans('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.smtp.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
+                $editBtn = '<a title="' . __('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.smtp.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
                 $deleteBtn = '<a class="btn btn-xs btn-danger deleteRow" id="' . $row->id . '"><span class="fa fa-trash"></span></a>';
 
                 return '<div class="nobr"> ' . $editBtn . $deleteBtn . '</div>';
@@ -110,13 +110,13 @@ class DataTableController extends Controller
                 return implode(', ', $categories);
             })
             ->editColumn('active', function ($row) {
-                return $row->active === 1 ? trans('frontend.str.yes') : trans('frontend.str.no');
+                return $row->active === 1 ? __('frontend.str.yes') : __('frontend.str.no');
             })
             ->editColumn('activeStatus', function ($row) {
                 return $row->active;
             })
             ->addColumn('action', function ($row) {
-                $editBtn = '<a title="' . trans('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.subscribers.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
+                $editBtn = '<a title="' . __('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.subscribers.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
                 return $editBtn;
             })
             ->rawColumns(['action', 'checkbox'])->make(true);
@@ -131,10 +131,10 @@ class DataTableController extends Controller
 
         return Datatables::of($row)
             ->addColumn('action', function ($row) {
-                $editBtn = '<a title="' . trans('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.users.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
+                $editBtn = '<a title="' . __('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . URL::route('admin.users.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
 
                 if ($row->id != Auth::id())
-                    $deleteBtn = '<a title="' . trans('frontend.str.remove') . '" class="btn btn-xs btn-danger deleteRow" id="' . $row->id . '"><span class="fa fa-trash"></span></a>';
+                    $deleteBtn = '<a title="' . __('frontend.str.remove') . '" class="btn btn-xs btn-danger deleteRow" id="' . $row->id . '"><span class="fa fa-trash"></span></a>';
                 else
                     $deleteBtn = '';
 
@@ -169,7 +169,7 @@ class DataTableController extends Controller
                 return $row->read_mail ?? 0;
             })
             ->addColumn('report', function ($row) {
-                return PermissionsHelper::has_permission('admin') ? '<a href="' . route('admin.log.report', ['id' => $row->id]) . '">' . trans('frontend.str.download') . '</a>' : '';
+                return PermissionsHelper::has_permission('admin') ? '<a href="' . route('admin.log.report', ['id' => $row->id]) . '">' . __('frontend.str.download') . '</a>' : '';
             })
             ->rawColumns(['count', 'report'])->make(true);
     }
@@ -184,10 +184,10 @@ class DataTableController extends Controller
 
         return Datatables::of($row)
             ->editColumn('success', function ($row) {
-                return $row->success === 1 ? trans('frontend.str.send_status_yes') : trans('frontend.str.send_status_no');
+                return $row->success === 1 ? __('frontend.str.send_status_yes') : __('frontend.str.send_status_no');
             })
             ->editColumn('readMail', function ($row) {
-                return $row->readMail === 1 ? trans('frontend.str.yes') : trans('frontend.str.no');
+                return $row->readMail === 1 ? __('frontend.str.yes') : __('frontend.str.no');
             })
             ->addColumn('status', function ($row) {
                 return $row->success;
@@ -213,7 +213,7 @@ class DataTableController extends Controller
                 return '<a href="' . route('admin.redirect.info', ['url' => base64_encode($row->url)]) . '">' . $row->count . '</a>';
             })
             ->addColumn('report', function ($row) {
-                return PermissionsHelper::has_permission('admin') ? '<a href="' . route('admin.redirect.report', ['url' => base64_encode($row->url)]) . '">' . trans('frontend.str.download') . '</a>' : '';
+                return PermissionsHelper::has_permission('admin') ? '<a href="' . route('admin.redirect.report', ['url' => base64_encode($row->url)]) . '">' . __('frontend.str.download') . '</a>' : '';
             })
             ->rawColumns(['count', 'report'])->make(true);
     }
@@ -240,8 +240,8 @@ class DataTableController extends Controller
 
         return Datatables::of($row)
             ->addColumn('actions', function ($row) {
-                $editBtn = '<a title="' . trans('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . route('admin.macros.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
-                $deleteBtn = '<a title="' . trans('frontend.str.remove') . '" class="btn btn-xs btn-danger deleteRow" id="' . $row->id . '"><span class="fa fa-trash"></span></a>';
+                $editBtn = '<a title="' . __('frontend.str.edit') . '" class="btn btn-xs btn-primary"  href="' . route('admin.macros.edit', ['id' => $row->id]) . '"><span  class="fa fa-edit"></span></a> &nbsp;';
+                $deleteBtn = '<a title="' . __('frontend.str.remove') . '" class="btn btn-xs btn-danger deleteRow" id="' . $row->id . '"><span class="fa fa-trash"></span></a>';
 
                 return '<div class="nobr"> ' . $editBtn . $deleteBtn . '</div>';
             })

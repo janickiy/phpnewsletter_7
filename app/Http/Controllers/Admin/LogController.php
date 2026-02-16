@@ -55,8 +55,8 @@ class LogController extends Controller
      */
     public function info(int $id): View
     {
-        $infoAlert = trans('frontend.hint.log_info') ?? null;
+        $infoAlert = __('frontend.hint.log_info') ?? null;
 
-        return view('admin.log.info', compact('id', 'infoAlert'))->with('title', trans('frontend.title.log_info'));
+        return view('admin.log.info', compact('id', 'infoAlert'))->with('title', __('frontend.title.log_info'));
     }
 }
