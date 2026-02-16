@@ -11,6 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('ready_sent', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->foreignId('subscriber_id')
                 ->constrained('subscribers')
@@ -20,7 +21,7 @@ return new class extends Migration {
                 ->constrained('templates')
                 ->onDelete('cascade');
             $table->string('template');
-            $table->tinyInteger('success');
+            $table->tinyInteger('success')->default(0);
             $table->text('errorMsg')->nullable();
             $table->tinyInteger('readMail')->nullable();
             $table->foreignId('schedule_id')
@@ -30,7 +31,7 @@ return new class extends Migration {
                 ->constrained('logs')
                 ->onDelete('cascade');
             $table->timestamps();
-            $table->engine = 'MyISAM';
+            $table->index(['schedule_id', 'success', 'subscriber_id'], 'idx_rs_sched_success_sub');
         });
     }
 

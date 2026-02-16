@@ -124,7 +124,12 @@ class SubscriberRepository extends BaseRepository
      */
     public function getSubscribersNotReadySent(int $scheduleId, string $order, ?int $limit = null, ?string $interval = null): ?Collection
     {
-        $q = $this->model->select(['subscribers.email', 'subscribers.id', 'subscribers.token', 'subscribers.name'])
+        $q = $this->model->select([
+            'subscribers.email',
+            'subscribers.id',
+            'subscribers.token',
+            'subscribers.name'])
+            ->distinct()
             ->join('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
             ->join('schedule_category', function ($join) use ($scheduleId) {
                 $join->on('subscriptions.category_id', '=', 'schedule_category.category_id')
@@ -145,12 +150,46 @@ class SubscriberRepository extends BaseRepository
             $q->whereRaw($interval);
         }
 
-        return $q->groupBy('subscribers.id')
-            ->groupBy('subscribers.email')
-            ->groupBy('subscribers.token')
-            ->groupBy('subscribers.name')
-            ->orderByRaw($order)
+        return $q->orderByRaw($order)
             ->take($limit)
+            ->get();
+    }
+
+    /**
+     * @param int $scheduleId
+     * @param string $order
+     * @param int|null $limit
+     * @param string|null $interval
+     * @return Collection|null
+     */
+    public function getSubscribersUnSent(int $scheduleId, string $order, ?int $limit = null, ?string $interval = null): ?Collection
+    {
+        $q = $this->model->select([
+            'subscribers.email',
+            'subscribers.id',
+            'subscribers.token',
+            'subscribers.name',
+        ])
+            ->distinct()
+            ->join('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
+            ->join('schedule_category', function ($join) use ($scheduleId) {
+                $join->on('subscriptions.category_id', '=', 'schedule_category.category_id')
+                    ->where('schedule_category.schedule_id', $scheduleId);
+            })
+            ->leftJoin('ready_sent', function ($join) use ($scheduleId) {
+                $join->on('subscribers.id', '=', 'ready_sent.subscriber_id')
+                    ->where('ready_sent.schedule_id', $scheduleId)
+                    ->where('ready_sent.success', 0);
+            })
+            ->whereNull('ready_sent.subscriber_id')
+            ->where('subscribers.active', 1);
+
+        if ($interval) {
+            $q->whereRaw($interval);
+        }
+
+        return $q->orderByRaw($order)
+            ->limit($limit)
             ->get();
     }
 

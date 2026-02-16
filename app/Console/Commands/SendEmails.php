@@ -11,6 +11,7 @@ use App\Helpers\{SendEmailHelper, SettingsHelper};
 use App\Models\Subscribers;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Isolatable;
+use Illuminate\Support\Facades\DB;
 use URL;
 
 class SendEmails extends Command implements Isolatable
@@ -75,8 +76,9 @@ class SendEmails extends Command implements Isolatable
                     $interval = null;
             }
 
-            $subscribers = $this->subscribersRepository->getSubscribersNotReadySent($order, $limit, $interval);
+            $subscribers = $this->subscribersRepository->getSubscribersNotReadySent($row->id, $order, $limit, $interval);
 
+            $subscriberUpdates = [];
             foreach ($subscribers ?? [] as $subscriber) {
                 if ((int)SettingsHelper::getInstance()->getValueForKey('sleep') > 0) {
                     sleep((int)SettingsHelper::getInstance()->getValueForKey('sleep'));
@@ -106,8 +108,7 @@ class SendEmails extends Command implements Isolatable
                         readMail: null
                     ));
 
-                    Subscribers::where('id', $subscriber->id)->update(['timeSent' => date('Y-m-d H:i:s')]);
-
+                    $subscriberUpdates[$subscriber->id] = now()->format('Y-m-d H:i:s');
                     $mailCount++;
                 } else {
                     $this->readySentRepository->add(new ReadySentCreateData(
@@ -126,9 +127,12 @@ class SendEmails extends Command implements Isolatable
                 }
 
                 if ((int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailCount) {
+                    $this->resultSend($subscriberUpdates);
                     break;
                 }
             }
+
+            $this->resultSend($subscriberUpdates);
 
             if ((int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailCount) {
                 break;
@@ -137,5 +141,34 @@ class SendEmails extends Command implements Isolatable
 
         $this->line("sent: " . $mailCount);
         $this->line("no sent: " . $mailCountNo);
+    }
+
+    /**
+     * @param array $subscriberUpdates
+     * @return void
+     */
+    private function resultSend(array $subscriberUpdates): void
+    {
+        if (!empty($subscriberUpdates)) {
+            $ids = array_keys($subscriberUpdates);
+
+            $caseSql  = "CASE id ";
+            $bindings = [];
+
+            foreach ($subscriberUpdates as $id => $ts) {
+                $caseSql .= "WHEN ? THEN ? ";
+                $bindings[] = (int)$id;
+                $bindings[] = $ts;
+            }
+            $caseSql .= "END";
+
+            $inSql = implode(',', array_fill(0, count($ids), '?'));
+            $bindings = array_merge($bindings, $ids);
+
+            DB::statement(
+                "UPDATE " . Subscribers::getTableName() . " SET timeSent = {$caseSql} WHERE id IN ({$inSql})",
+                $bindings
+            );
+        }
     }
 }

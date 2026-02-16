@@ -6,7 +6,7 @@ namespace App\Models;
 use App\Http\Traits\StaticTableName;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class Attach extends Model
 {

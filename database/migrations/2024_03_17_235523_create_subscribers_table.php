@@ -12,13 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('subscribers', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->string('name', 100)->nullable();
-            $table->string('email');
+            $table->string('email')->unique();
             $table->tinyInteger('active')->default(1);
             $table->string('token', 32);
             $table->timestamp('timeSent')->nullable();
             $table->timestamps();
+            $table->index(['active', 'id'], 'idx_subscribers_active_id');
+            $table->index('token', 'idx_subscribers_token');
         });
     }
 

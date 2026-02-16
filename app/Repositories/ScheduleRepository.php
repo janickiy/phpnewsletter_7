@@ -143,5 +143,4 @@ class ScheduleRepository extends BaseRepository
             })
             ->all();
     }
-
 }

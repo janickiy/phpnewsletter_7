@@ -11,13 +11,15 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('subscriptions', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->foreignId('subscriber_id')
                 ->constrained('subscribers')
                 ->onDelete('cascade');
             $table->foreignId('category_id')
                 ->constrained('categories')
                 ->onDelete('cascade');
-            $table->primary(['category_id', 'subscriber_id']);
+            $table->primary(['category_id', 'subscriber_id'], 'pk_subscriptions');
+            $table->index(['subscriber_id', 'category_id'], 'idx_subs_subscriber_category');
         });
     }
 
