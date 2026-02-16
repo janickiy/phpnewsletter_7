@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Services\SubscriberService;
 use App\Repositories\CategoryRepository;
 use App\Repositories\SubscriberRepository;
 use App\Repositories\SubscriptionRepository;
@@ -16,7 +17,10 @@ use App\Models\{
     Charsets,
 };
 use App\Helpers\StringHelper;
-use App\Http\Requests\Admin\Subscribers\{ImportRequest, StoreRequest, EditRequest};;
+use App\Http\Requests\Admin\Subscribers\{ImportRequest, StoreRequest, EditRequest};
+
+;
+
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Exception;
@@ -29,6 +33,7 @@ class SubscribersController extends Controller
         private CategoryRepository     $categoryRepository,
         private SubscriptionRepository $subscriptionRepository,
         private DownloadService        $downloadService,
+        private SubscriberService      $subscriberService,
     )
     {
         parent::__construct();
@@ -110,7 +115,7 @@ class SubscribersController extends Controller
                 $this->subscribersRepository->update($request->id, $request->all());
 
                 if ($request->categoryId) {
-                    $this->subscriptionRepository->update($request->categoryId, $request->id);
+                    $this->subscriptionRepository->updateSubscriptions($request->categoryId, $request->id);
                 }
             });
         } catch (Exception $e) {
@@ -166,11 +171,11 @@ class SubscribersController extends Controller
             case 'xls':
             case 'xlsx':
             case 'ods':
-                $result = Subscribers::importFromExcel($request);
+                $result = $this->subscriberService->importFromExcel($request);
                 break;
 
             default:
-                $result = Subscribers::importFromText($request);
+                $result = $this->subscriberService->importFromText($request);
         }
 
         if ($result === false)

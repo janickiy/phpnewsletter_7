@@ -4,10 +4,10 @@ namespace App\Repositories;
 
 use App\Models\Schedule;
 use App\Models\ScheduleCategory;
-use Carbon\Carbon;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Carbon\Carbon;
 
 class ScheduleRepository extends BaseRepository
 {
@@ -29,7 +29,7 @@ class ScheduleRepository extends BaseRepository
             'event_end' => date("Y-m-d H:i:s", strtotime($date[1])),
         ]));
 
-        foreach ($request->categoryId ?? [] as $categoryId) {
+        foreach ($data['categoryId'] ?? [] as $categoryId) {
             if (is_numeric($categoryId)) {
                 ScheduleCategory::create(['schedule_id' => $model->id, 'category_id' => $categoryId]);
             }
@@ -133,7 +133,6 @@ class ScheduleRepository extends BaseRepository
             ->merge([
                 'event_start' => date("Y-m-d H:i:s", strtotime($date[0])),
                 'event_end' => date("Y-m-d H:i:s", strtotime($date[1])),
-
             ])
             ->only($this->model->getFillable())
             ->map(function ($value, $key) {

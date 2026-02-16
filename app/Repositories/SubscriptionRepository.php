@@ -16,7 +16,7 @@ class SubscriptionRepository extends BaseRepository
      * @param int $subscriberId
      * @return void
      */
-    public function update(?array $categoryIds, int $subscriberId): void
+    public function updateSubscriptions(?array $categoryIds, int $subscriberId): void
     {
         $this->model->where('subscriber_id', $subscriberId)->delete();
 

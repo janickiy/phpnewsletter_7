@@ -8,6 +8,7 @@ use App\Models\Redirect;
 use App\Models\Subscribers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -182,15 +183,14 @@ class DownloadService
     public function exportSubscribers(Request $request): Response|StreamedResponse
     {
         $request->export_type;
-        $subscribers = Subscribers::getSubscribersList($request->categoryId);
-
+        $subscribers = $this->getSubscribersList($request->categoryId);
 
         if ($request->export_type == 'text') {
             $ext = 'txt';
             $filename = 'exportEmail' . date("d_m_Y") . '.txt';
 
             $contents = '';
-            foreach ($subscribers ?? [] as $subscriber) {
+            foreach ($subscribers as $subscriber) {
                 $contents .= "" . $subscriber->email . " " . $subscriber->name . "\r\n";
             }
         } elseif ($request->export_type == 'excel') {
@@ -273,5 +273,31 @@ class DownloadService
                 'Content-Type' => StringHelper::getMimeType($ext),
             ]);
         }
+    }
+
+    /**
+     * @param array|null $Ids
+     * @return Collection
+     */
+    private function getSubscribersList(?array $Ids): Collection
+    {
+        if ($Ids) {
+            $subscribers = Subscribers::select('subscribers.name', 'subscribers.email')
+                ->leftJoin('subscriptions', function ($join) {
+                    $join->on('subscribers.id', '=', 'subscriptions.subscriber_id');
+                })
+                ->where('subscribers.active', 1)
+                ->whereIn('subscriptions.category_id', $Ids)
+                ->groupBy('subscribers.email')
+                ->groupBy('subscribers.id')
+                ->groupBy('subscribers.name')
+                ->get();
+        } else {
+            $subscribers = Subscribers::select('name', 'email')
+                ->active()
+                ->get();
+        }
+
+        return $subscribers;
     }
 }

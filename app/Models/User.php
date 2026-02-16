@@ -40,6 +40,15 @@ class User extends Authenticatable
         return $roles[$this->role] ?? $this->role;
     }
 
+    public static function getOptions(): array
+    {
+        return [
+            self::ROLE_ADMIN => __('frontend.str.admin'),
+            self::ROLE_MODERATOR => __('frontend.str.moderator'),
+            self::ROLE_EDITOR => __('frontend.str.editor'),
+        ];
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Admin;
 use App\Repositories\CategoryRepository;
 use App\Repositories\TemplateRepository;
 use App\Services\TemplateService;
-use App\Models\{Macros, Templates};
+use App\Models\Macros;
 use App\Http\Requests\Admin\Templates\StoreRequest;
 use App\Http\Requests\Admin\Templates\UpdateRequest;
 use Illuminate\Http\RedirectResponse;
@@ -57,7 +57,7 @@ class TemplatesController extends Controller
     {
         try {
             $template = $this->templateRepository->create($request->all());
-            $this->templateService->addAttach($request, $template->id);
+            $this->templateService->storeAttach($request, $template->id);
         } catch (Exception $e) {
             report($e);
 
@@ -95,7 +95,7 @@ class TemplatesController extends Controller
     {
         try {
             $this->templateRepository->updateWithMapping($request->id, $request->all());
-            $this->templateService->updateAttach($request, $request->id);
+            $this->templateService->storeAttach($request, $request->id);
         } catch (Exception $e) {
             report($e);
 
@@ -123,21 +123,7 @@ class TemplatesController extends Controller
      */
     public function status(Request $request): RedirectResponse
     {
-        $templateId = [];
-
-        foreach ($request->templateId ?? [] as $id) {
-            if (is_numeric($id)) {
-                $templateId[] = $id;
-            }
-        }
-
-        if ($request->action == 1) {
-            $templates = Templates::whereIN('id', $templateId)->get();
-
-            foreach ($templates ?? [] as $template) {
-                $template->remove();
-            }
-        }
+        $this->templateRepository->updateStatus($request->templateId, $request->action);
 
         return redirect()->route('admin.templates.index')->with('success', __('message.actions_completed'));
     }

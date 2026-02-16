@@ -162,39 +162,29 @@ class SubscriberRepository extends BaseRepository
     {
         $rows = Subscriptions::query()->where('subscriber_id', $subscriber_id)->get();
 
-        $array = [];
-
+        $Ids = [];
         foreach ($rows->subscriptions as $subscription) {
-            $array[] = $subscription->category_id;
+            $Ids[] = $subscription->category_id;
         }
 
-        return $array;
+        return $Ids;
     }
 
     /**
      * @param int $action
-     * @param array|null $Ids
+     * @param array $Ids
      * @return void
      */
-    public function updateStatus(int $action, ?array $Ids): void
+    public function updateStatus(int $action, array $Ids = []): void
     {
-        $subscriberIds = [];
-
-        foreach ($Ids ?? [] as $id) {
-            if (is_numeric($id)) {
-                $subscriberIds[] = $id;
-            }
-        }
-
         switch ($action) {
             case  0 :
             case  1 :
-                $this->model->whereIN('id', $subscriberIds)->update(['active' => $action]);
+                $this->model->whereIN('id', $Ids)->update(['active' => $action]);
                 break;
-
             case 2 :
-                Subscriptions::whereIN('subscriber_id', $subscriberIds)->delete();
-                $this->model->whereIN('id', $subscriberIds)->delete();
+                Subscriptions::whereIN('subscriber_id', $Ids)->delete();
+                $this->model->whereIN('id', $Ids)->delete();
                 break;
         }
     }

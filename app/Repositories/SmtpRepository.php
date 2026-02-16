@@ -29,22 +29,14 @@ class SmtpRepository extends BaseRepository
      */
     public function updateStatus(int $action, array $Ids): void
     {
-        $idList = [];
-
-        foreach ($Ids as $id) {
-            if (is_numeric($id)) {
-                $idList[] = $id;
-            }
-        }
-
         switch ($action) {
             case  0 :
             case  1 :
-                $this->model->whereIN('id', $idList)->update(['active' => $action]);
+                $this->model->whereIN('id', $Ids)->update(['active' => $action]);
                 break;
 
             case 2 :
-                $this->model->whereIN('id', $idList)->delete();
+                $this->model->whereIN('id', $Ids)->delete();
                 break;
         }
     }

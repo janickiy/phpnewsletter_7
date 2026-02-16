@@ -3,16 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
+use App\Repositories\UserRepository;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Requests\Admin\Users\StoreRequest;
 use App\Http\Requests\Admin\Users\UpdateRequest;
-use Hash;
 
 class UsersController extends Controller
 {
+    public function __construct(private UserRepository $userRepository)
+    {
+        parent::__construct();
+    }
+
     /**
      * @return View
      */
@@ -28,12 +33,7 @@ class UsersController extends Controller
      */
     public function create(): View
     {
-        $options = [
-            'admin' => __('frontend.str.admin'),
-            'moderator' => __('frontend.str.moderator'),
-            'editor' => __('frontend.str.editor'),
-        ];
-
+        $options = User::getOptions();
         $infoAlert = __('frontend.hint.users_create') ?? null;
 
         return view('admin.users.create_edit', compact('options', 'infoAlert'))->with('title', __('frontend.title.users_create'));
@@ -45,7 +45,7 @@ class UsersController extends Controller
      */
     public function store(StoreRequest $request): RedirectResponse
     {
-        User::create(array_merge($request->all(), ['password' => Hash::make($request->password)]));
+        $this->userRepository->createWithMapping($request->all());
 
         return redirect()->route('admin.users.index')->with('success', __('message.information_successfully_added'));
     }
@@ -56,19 +56,14 @@ class UsersController extends Controller
      */
     public function edit(int $id): View
     {
-        $row = User::find($id);
+        $row = $this->userRepository->find($id);
 
         if (!$row) abort(404);
 
-        $options = [
-            'admin' => __('frontend.str.admin'),
-            'moderator' => __('frontend.str.moderator'),
-            'editor' => __('frontend.str.editor'),
-        ];
+        $options = User::getOptions();
+        $infoAlert = __('frontend.hint.users_edit') ?? null;
 
-        $infoAlert = trans('frontend.hint.users_edit') ?? null;
-
-        return view('admin.users.create_edit', compact('row', 'options', 'infoAlert'))->with('title', trans('frontend.title.users_edit'));
+        return view('admin.users.create_edit', compact('row', 'options', 'infoAlert'))->with('title', __('frontend.title.users_edit'));
     }
 
     /**
@@ -77,22 +72,9 @@ class UsersController extends Controller
      */
     public function update(UpdateRequest $request): RedirectResponse
     {
-        $user = User::find($request->id);
+        $this->userRepository->updateWithMapping($request->id, $request->all());
 
-        if (!$user) abort(404);
-
-        $user->login = $request->input('login');
-        $user->name = $request->input('name');
-
-        if (!empty($request->role)) $user->role = $request->input('role');
-
-        if (!empty($request->password)) {
-            $user->password = Hash::make($request->password);
-        }
-
-        $user->save();
-
-        return redirect()->route('admin.users.index')->with('success', trans('message.data_updated'));
+        return redirect()->route('admin.users.index')->with('success', __('message.data_updated'));
     }
 
     /**
@@ -101,6 +83,6 @@ class UsersController extends Controller
      */
     public function destroy(Request $request): void
     {
-        if ($request->id != Auth::id()) User::find($request->id)->delete();
+        if ($request->id !== Auth::id()) $this->userRepository->delete($request->id);
     }
 }

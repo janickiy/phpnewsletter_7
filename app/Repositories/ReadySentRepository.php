@@ -59,7 +59,7 @@ class ReadySentRepository extends BaseRepository
             ->limit($limit)
             ->get();
 
-        if ($readySent) {
+        if (!$readySent) {
             return ['result' => false];
         }
 

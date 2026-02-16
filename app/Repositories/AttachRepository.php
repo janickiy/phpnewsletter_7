@@ -14,16 +14,6 @@ class AttachRepository extends BaseRepository
 
     /**
      * @param int $id
-     * @param array $data
-     * @return bool
-     */
-    public function updateWithMapping(int $id, array $data): bool
-    {
-        return $this->update($id, $this->mapping($data));
-    }
-
-    /**
-     * @param int $id
      * @return bool
      */
     public function remove(int $id): bool
@@ -38,12 +28,4 @@ class AttachRepository extends BaseRepository
 
         return true;
     }
-
-    private function mapping(array $data): array
-    {
-        return collect($data)
-            ->only($this->model->getFillable())
-            ->all();
-    }
-
 }

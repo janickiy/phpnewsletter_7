@@ -6,7 +6,6 @@ namespace App\Http\Controllers\Admin;
 use App\Repositories\SmtpRepository;
 use App\Http\Requests\Admin\Smtp\EditRequest;
 use App\Http\Requests\Admin\Smtp\StoreRequest;
-use App\Models\Smtp;
 use App\Http\Requests\Admin\Smtp\StatusRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -66,7 +65,7 @@ class SmtpController extends Controller
      */
     public function edit(int $id): View
     {
-        $row = Smtp::find($id);
+        $row = $this->smtpRepository->find($id);
 
         if (!$row) abort(404);
 

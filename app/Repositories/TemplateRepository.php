@@ -30,6 +30,22 @@ class TemplateRepository extends BaseRepository
     }
 
     /**
+     * @param array $Ids
+     * @param int $action
+     * @return void
+     */
+    public function updateStatus(array $Ids, int $action): void
+    {
+        if ($action === 1) {
+            $templates = $this->model->whereIN('id', $Ids)->get();
+
+            foreach ($templates as $template) {
+                $template->remove();
+            }
+        }
+    }
+
+    /**
      * @param int $id
      * @return void
      */
