@@ -15,6 +15,16 @@ class SubscriberRepository extends BaseRepository
     }
 
     /**
+     * @param int $id
+     * @param array $data
+     * @return bool
+     */
+    public function updateWithMapping(int $id, array $data): bool
+    {
+        return $this->update($id, $this->mapping($data));
+    }
+
+    /**
      * @param array $data
      * @return Subscribers|null
      */
@@ -33,25 +43,6 @@ class SubscriberRepository extends BaseRepository
         }
 
         return null;
-    }
-
-    /**
-     * @param array $data
-     * @param $id
-     * @return bool
-     */
-    public function update(array $data, $id): bool
-    {
-        $model = $this->find($id);
-
-        if ($model) {
-            $model->name = $data['name'];
-            $model->email = $data['email'];
-
-            return $model->save();
-        }
-
-        return false;
     }
 
     /**
@@ -223,5 +214,16 @@ class SubscriberRepository extends BaseRepository
                 $this->model->whereIN('id', $Ids)->delete();
                 break;
         }
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    private function mapping(array $data): array
+    {
+        return collect($data)
+            ->only($this->model->getFillable())
+            ->all();
     }
 }

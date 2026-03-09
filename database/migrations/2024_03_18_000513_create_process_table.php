@@ -10,12 +10,17 @@ return new class extends Migration {
      */
     public function up(): void
     {
+
         Schema::create('process', function (Blueprint $table) {
             $table->increments('id');
             $table->enum('command', ['start', 'pause', 'stop'])->default('start');
-            $table->foreignId('user_id')
-                ->constrained('users')
+
+            $table->unsignedInteger('user_id');
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
                 ->onDelete('cascade');
+
             $table->timestamps();
         });
     }

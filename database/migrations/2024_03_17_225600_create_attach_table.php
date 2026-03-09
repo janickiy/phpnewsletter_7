@@ -11,16 +11,18 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('attach', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id();
             $table->string('name');
             $table->string('file_name');
-            $table->integer('template_id');
-            $table->timestamps();
-        });
 
-        Schema::table('attach', function (Blueprint $table) {
-            $table->foreign('template_id')->references('id')->on('templates');
+            $table->unsignedInteger('template_id');
+
+            $table->foreign('template_id')
+                ->references('id')
+                ->on('templates')
+                ->onDelete('cascade');
+
+            $table->timestamps();
         });
     }
 

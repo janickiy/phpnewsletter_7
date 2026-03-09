@@ -12,14 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('schedule_category', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
+            $table->unsignedInteger('schedule_id');
+            $table->unsignedBigInteger('category_id');
 
-            $table->foreignId('schedule_id')
-                ->constrained('schedule')
+            $table->foreign('schedule_id')
+                ->references('id')
+                ->on('schedule')
                 ->onDelete('cascade');
 
-            $table->foreignId('category_id')
-                ->constrained('categories')
+            $table->foreign('category_id')
+                ->references('id')
+                ->on('categories')
                 ->onDelete('cascade');
 
             $table->primary(['schedule_id', 'category_id'], 'pk_schedule_category');

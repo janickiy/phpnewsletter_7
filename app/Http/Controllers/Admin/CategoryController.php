@@ -82,7 +82,7 @@ class CategoryController extends Controller
     public function update(EditRequest $request): RedirectResponse
     {
         try {
-            $this->categoryRepository->update($request->id, $request->all());
+            $this->categoryRepository->updateWithMapping($request->id, $request->all());
         } catch (Exception $e) {
             report($e);
 
