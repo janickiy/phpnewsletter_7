@@ -9,7 +9,7 @@
     ]])
 
     <div class="step-content">
-        <h3>{{ trans('install.str.access_rights') }}</h3>
+        <h3>{{ __('install.str.access_rights') }}</h3>
         <hr>
         <ul class="list-group mb-4">
             @foreach($folders as $path => $isWritable)
@@ -26,7 +26,7 @@
             @endforeach
         </ul>
         <a class="btn btn-primary float-right" href="{{ route('install.database') }}">
-            {{ trans('install.button.next') }}
+            {{ __('install.button.next') }}
             <i class="fa fa-arrow-right"></i>
         </a>
         <div class="clearfix"></div>

@@ -85,12 +85,12 @@
                     "sZeroRecords": "{{ __('pagination.s_zero_records') }}",
                     "sInfo": "{{ __('pagination.s_info') }}",
                     "sInfoEmpty": "{{ __('pagination.s_info_empty') }}",
-                    "sInfoFiltered": "{{ trans('pagination.s_infofiltered') }}",
+                    "sInfoFiltered": "{{ __('pagination.s_infofiltered') }}",
                     "oPaginate": {
-                        "sFirst": "{{ trans('pagination.s_paginate.first') }}",
-                        "sLast": "{{ trans('pagination.s_paginate.last') }}",
-                        "sNext": "{{ trans('pagination.s_paginate.next') }}",
-                        "sPrevious": "{{ trans('pagination.s_paginate.previous') }}",
+                        "sFirst": "{{ __('pagination.s_paginate.first') }}",
+                        "sLast": "{{ __('pagination.s_paginate.last') }}",
+                        "sNext": "{{ __('pagination.s_paginate.next') }}",
+                        "sPrevious": "{{ __('pagination.s_paginate.previous') }}",
                     },
                     "sSearch": ' <i class="fas fa-search" aria-hidden="true"></i>'
                 },
@@ -114,12 +114,12 @@
             $('#itemList').on('click', 'a.deleteRow', function () {
                 let rowid = $(this).attr('id');
                 Swal.fire({
-                    title: "{{ trans('frontend.msg.are_you_sure') }}",
-                    text: "{{ trans('frontend.msg.will_not_be_able_to_ecover_information') }}",
+                    title: "{{ __('frontend.msg.are_you_sure') }}",
+                    text: "{{ __('frontend.msg.will_not_be_able_to_ecover_information') }}",
                     showCancelButton: true,
                     icon: 'warning',
-                    cancelButtonText: "{{ trans('frontend.str.cancel') }}",
-                    confirmButtonText: "{{ trans('frontend.msg.yes_remove') }}",
+                    cancelButtonText: "{{ __('frontend.str.cancel') }}",
+                    confirmButtonText: "{{ __('frontend.msg.yes_remove') }}",
                     reverseButtons: true,
                     confirmButtonColor: "#DD6B55",
                     customClass: {
@@ -136,10 +136,10 @@
                             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                             success: function () {
                                 $("#rowid_" + rowid).remove();
-                                Swal.fire("{{ trans('frontend.msg.done') }}", "{{ trans('frontend.msg.data_successfully_deleted') }}", 'success');
+                                Swal.fire("{{ __('frontend.msg.done') }}", "{{ __('frontend.msg.data_successfully_deleted') }}", 'success');
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
-                                Swal.fire("{{ trans('frontend.msg.error_deleting') }}", "{{ trans('frontend.msg.try_again') }}", 'error');
+                                Swal.fire("{{ __('frontend.msg.error_deleting') }}", "{{ __('frontend.msg.try_again') }}", 'error');
                                 console.log(ajaxOptions);
                                 console.log(thrownError);
                             }

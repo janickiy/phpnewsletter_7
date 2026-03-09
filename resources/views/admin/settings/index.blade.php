@@ -18,13 +18,13 @@
                         <div class="card-header p-2">
                             <ul class="nav nav-pills">
                                 <li class="nav-item">
-                                    <a class="nav-link active" href="#s1" data-toggle="tab">{{ trans('frontend.str.interface_settings') }}</a>
+                                    <a class="nav-link active" href="#s1" data-toggle="tab">{{ __('frontend.str.interface_settings') }}</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#s2" data-toggle="tab">{{ trans('frontend.str.mailing_options') }}</a>
+                                    <a class="nav-link" href="#s2" data-toggle="tab">{{ __('frontend.str.mailing_options') }}</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#s3" data-toggle="tab">{{ trans('frontend.str.additional_headers') }}</a>
+                                    <a class="nav-link" href="#s3" data-toggle="tab">{{ __('frontend.str.additional_headers') }}</a>
                                 </li>
                             </ul>
                         </div><!-- /.card-header -->
@@ -36,7 +36,7 @@
                                 <div class="active tab-pane" id="s1">
                                     <div class="form-group row">
 
-                                        {!! Form::label('EMAIL', trans('frontend.str.sender_email'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('EMAIL', __('frontend.str.sender_email'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 
@@ -52,11 +52,11 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('FROM', trans('frontend.str.sender_name'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('FROM', __('frontend.str.sender_name'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('FROM', SettingsHelper::getInstance()->getValueForKey('FROM'), ['placeholder' => trans("frontend.str.sender_name"), 'class' => 'form-control']) !!}
+                                            {!! Form::text('FROM', SettingsHelper::getInstance()->getValueForKey('FROM'), ['placeholder' => __("frontend.str.sender_name"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('FROM'))
                                                 <span class="text-danger">{{ $errors->first('FROM') }}</span>
@@ -67,11 +67,11 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('RETURN_PATH', trans('frontend.form.return_path'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('RETURN_PATH', __('frontend.form.return_path'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('RETURN_PATH', SettingsHelper::getInstance()->getValueForKey('RETURN_PATH'), ['placeholder' => trans("frontend.form.return_path"), 'class' => 'form-control']) !!}
+                                            {!! Form::text('RETURN_PATH', SettingsHelper::getInstance()->getValueForKey('RETURN_PATH'), ['placeholder' => __("frontend.form.return_path"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('RETURN_PATH'))
                                                 <span class="text-danger">{{ $errors->first('RETURN_PATH') }}</span>
@@ -83,11 +83,11 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('LIST_OWNER', trans('frontend.form.list_owner'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('LIST_OWNER', __('frontend.form.list_owner'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('LIST_OWNER', SettingsHelper::getInstance()->getValueForKey('LIST_OWNER'), ['placeholder' => trans("frontend.form.list_owner"), 'class' => 'form-control']) !!}
+                                            {!! Form::text('LIST_OWNER', SettingsHelper::getInstance()->getValueForKey('LIST_OWNER'), ['placeholder' => __("frontend.form.list_owner"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('LIST_OWNER'))
                                                 <span class="text-danger">{{ $errors->first('LIST_OWNER') }}</span>
@@ -99,11 +99,11 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('ORGANIZATION', trans('frontend.form.organization'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('ORGANIZATION', __('frontend.form.organization'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('ORGANIZATION', SettingsHelper::getInstance()->getValueForKey('ORGANIZATION'), ['placeholder' => trans("frontend.form.organization"), 'class' => 'form-control']) !!}
+                                            {!! Form::text('ORGANIZATION', SettingsHelper::getInstance()->getValueForKey('ORGANIZATION'), ['placeholder' => __("frontend.form.organization"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('ORGANIZATION'))
                                                 <span class="text-danger">{{ $errors->first('ORGANIZATION') }}</span>
@@ -115,11 +115,11 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('SUBJECT_TEXT_CONFIRM', trans('frontend.form.subject_text_confirm'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('SUBJECT_TEXT_CONFIRM', __('frontend.form.subject_text_confirm'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('SUBJECT_TEXT_CONFIRM', SettingsHelper::getInstance()->getValueForKey('SUBJECT_TEXT_CONFIRM'), ['placeholder' => trans("frontend.form.subject_text_confirm"), 'class' => 'form-control']) !!}
+                                            {!! Form::text('SUBJECT_TEXT_CONFIRM', SettingsHelper::getInstance()->getValueForKey('SUBJECT_TEXT_CONFIRM'), ['placeholder' => __("frontend.form.subject_text_confirm"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('SUBJECT_TEXT_CONFIRM'))
                                                 <span
@@ -132,11 +132,11 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('TEXT_CONFIRMATION', trans('frontend.form.text_confirmation'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('TEXT_CONFIRMATION', __('frontend.form.text_confirmation'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::textarea('TEXT_CONFIRMATION', SettingsHelper::getInstance()->getValueForKey('TEXT_CONFIRMATION'), ['rows' => "4", 'placeholder' => trans("frontend.form.text_confirmation"), 'class' => 'form-control']) !!}
+                                            {!! Form::textarea('TEXT_CONFIRMATION', SettingsHelper::getInstance()->getValueForKey('TEXT_CONFIRMATION'), ['rows' => "4", 'placeholder' => __("frontend.form.text_confirmation"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('TEXT_CONFIRMATION'))
                                                 <span
@@ -154,7 +154,7 @@
 
                                                 {!! Form::checkbox('REQUIRE_SUB_CONFIRMATION', 1, SettingsHelper::getInstance()->getValueForKey('REQUIRE_SUB_CONFIRMATION') == 1 ? true : false, ['class' => 'form-check-input']) !!}
 
-                                                {!! Form::label('REQUIRE_SUB_CONFIRMATION', trans('frontend.form.require_subscription_confirmation'), ['class' => 'form-check-label']) !!}
+                                                {!! Form::label('REQUIRE_SUB_CONFIRMATION', __('frontend.form.require_subscription_confirmation'), ['class' => 'form-check-label']) !!}
 
                                             </div>
                                         </div>
@@ -163,11 +163,11 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('UNSUBLINK', trans('frontend.form.unsublink_text'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('UNSUBLINK', __('frontend.form.unsublink_text'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::textarea('UNSUBLINK', SettingsHelper::getInstance()->getValueForKey('UNSUBLINK'), ['rows' => "4", 'placeholder' => trans("frontend.form.unsublink_text"), 'class' => 'form-control']) !!}
+                                            {!! Form::textarea('UNSUBLINK', SettingsHelper::getInstance()->getValueForKey('UNSUBLINK'), ['rows' => "4", 'placeholder' => __("frontend.form.unsublink_text"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('UNSUBLINK'))
                                                 <span class="text-danger">{{ $errors->first('UNSUBLINK') }}</span>
@@ -188,7 +188,7 @@
 
                                                 {!! Form::checkbox('SHOW_UNSUBSCRIBE_LINK', 1, SettingsHelper::getInstance()->getValueForKey('SHOW_UNSUBSCRIBE_LINK') == 1 ? true : false, ['class' => 'form-check-input']) !!}
 
-                                                {!! Form::label('SHOW_UNSUBSCRIBE_LINK', trans('frontend.form.show_unsubscribe_link'), ['class' => 'form-check-label']) !!}
+                                                {!! Form::label('SHOW_UNSUBSCRIBE_LINK', __('frontend.form.show_unsubscribe_link'), ['class' => 'form-check-label']) !!}
 
                                             </div>
                                         </div>
@@ -202,7 +202,7 @@
 
                                                 {!! Form::checkbox('REQUEST_REPLY', 1, SettingsHelper::getInstance()->getValueForKey('REQUEST_REPLY') == 1 ? true : false, ['class' => 'form-check-input']) !!}
 
-                                                {!! Form::label('REQUEST_REPLY', trans('frontend.form.request_reply'), ['class' => 'form-check-label']) !!}
+                                                {!! Form::label('REQUEST_REPLY', __('frontend.form.request_reply'), ['class' => 'form-check-label']) !!}
 
                                             </div>
                                         </div>
@@ -216,7 +216,7 @@
 
                                                 {!! Form::checkbox('NEW_SUBSCRIBER_NOTIFY', 1, SettingsHelper::getInstance()->getValueForKey('NEW_SUBSCRIBER_NOTIFY') == 1 ? true : false, ['class' => 'form-check-input']) !!}
 
-                                                {!! Form::label('NEW_SUBSCRIBER_NOTIFY', trans('frontend.form.new_subscriber_notify'), ['class' => 'form-check-label']) !!}
+                                                {!! Form::label('NEW_SUBSCRIBER_NOTIFY', __('frontend.form.new_subscriber_notify'), ['class' => 'form-check-label']) !!}
 
                                             </div>
                                         </div>
@@ -225,7 +225,7 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('TEXT_CONFIRMATION', trans('frontend.form.text_confirmation'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('TEXT_CONFIRMATION', __('frontend.form.text_confirmation'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-md-7">
 
@@ -240,10 +240,10 @@
                                         <div class="col-md-3">
 
                                             {!! Form::select('INTERVAL_TYPE', [
-                                                            'no' => trans('frontend.str.no'),
-                                                            'minute' => trans('frontend.form.minute'),
-                                                            'hour' => trans('frontend.form.hour'),
-                                                            'day' => trans('frontend.form.day'),
+                                                            'no' => __('frontend.str.no'),
+                                                            'minute' => __('frontend.form.minute'),
+                                                            'hour' => __('frontend.form.hour'),
+                                                            'day' => __('frontend.form.day'),
                                                             ], SettingsHelper::getInstance()->getValueForKey('INTERVAL_TYPE') ? SettingsHelper::getInstance()->getValueForKey('INTERVAL_TYPE') : 'no', ['class' => 'form-control']
                                                             ) !!}
 
@@ -257,7 +257,7 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('LIMIT_NUMBER', trans('frontend.form.limit_number'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('LIMIT_NUMBER', __('frontend.form.limit_number'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 
@@ -283,11 +283,11 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('SLEEP', trans('frontend.form.sleep'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('SLEEP', __('frontend.form.sleep'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('SLEEP', SettingsHelper::getInstance()->getValueForKey('ORGANIZATION'), ['placeholder' => trans("frontend.form.sleep"), 'class' => 'form-control']) !!}
+                                            {!! Form::text('SLEEP', SettingsHelper::getInstance()->getValueForKey('ORGANIZATION'), ['placeholder' => __("frontend.form.sleep"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('SLEEP'))
                                                 <span class="text-danger">{{ $errors->first('SLEEP') }}</span>
@@ -299,7 +299,7 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('DAYS_FOR_REMOVE_SUBSCRIBER', trans('frontend.form.limit_number'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('DAYS_FOR_REMOVE_SUBSCRIBER', __('frontend.form.limit_number'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 
@@ -330,7 +330,7 @@
 
                                                 {!! Form::checkbox('RANDOM_SEND', 1, SettingsHelper::getInstance()->getValueForKey('RANDOM_SEND') == 1 ? true : false, ['class' => 'form-check-input']) !!}
 
-                                                {!! Form::label('RANDOM_SEND', trans('frontend.form.random_send'), ['class' => 'form-check-label']) !!}
+                                                {!! Form::label('RANDOM_SEND', __('frontend.form.random_send'), ['class' => 'form-check-label']) !!}
 
                                             </div>
                                         </div>
@@ -344,7 +344,7 @@
 
                                                 {!! Form::checkbox('RENDOM_REPLACEMENT_SUBJECT', 1, SettingsHelper::getInstance()->getValueForKey('RENDOM_REPLACEMENT_SUBJECT') == 1 ? true : false, ['class' => 'form-check-input']) !!}
 
-                                                {!! Form::label('RENDOM_REPLACEMENT_SUBJECT', trans('frontend.form.rendom_replacement_subject'), ['class' => 'form-check-label']) !!}
+                                                {!! Form::label('RENDOM_REPLACEMENT_SUBJECT', __('frontend.form.rendom_replacement_subject'), ['class' => 'form-check-label']) !!}
 
                                             </div>
                                         </div>
@@ -358,7 +358,7 @@
 
                                                 {!! Form::checkbox('RANDOM_REPLACEMENT_BODY', 1, SettingsHelper::getInstance()->getValueForKey('RANDOM_REPLACEMENT_BODY') == 1 ? true : false, ['class' => 'form-check-input']) !!}
 
-                                                {!! Form::label('RANDOM_REPLACEMENT_BODY', trans('frontend.form.random_replacement_body'), ['class' => 'form-check-label']) !!}
+                                                {!! Form::label('RANDOM_REPLACEMENT_BODY', __('frontend.form.random_replacement_body'), ['class' => 'form-check-label']) !!}
 
                                             </div>
                                         </div>
@@ -367,12 +367,12 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('PRECEDENCE', trans('frontend.form.precedence'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('PRECEDENCE', __('frontend.form.precedence'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 
                                             {!! Form::select('PRECEDENCE', [
-                                                                             'no' => trans('frontend.str.no'),
+                                                                             'no' => __('frontend.str.no'),
                                                                              'bulk' => 'bulk',
                                                                              'junk' => 'junk',
                                                                               'list' => 'list',
@@ -389,7 +389,7 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('CHARSET', trans('frontend.form.charset'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('CHARSET', __('frontend.form.charset'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 
@@ -405,7 +405,7 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('CONTENT_TYPE', trans('frontend.form.content_type'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('CONTENT_TYPE', __('frontend.form.content_type'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 
@@ -431,7 +431,7 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('HOW_TO_SEND', trans('frontend.form.how_to_send'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('HOW_TO_SEND', __('frontend.form.how_to_send'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 
@@ -462,11 +462,11 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('SENDMAIL_PATH', trans('frontend.form.sendmail_path'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('SENDMAIL_PATH', __('frontend.form.sendmail_path'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('SENDMAIL_PATH', SettingsHelper::getInstance()->getValueForKey('SENDMAIL_PATH'), ['placeholder' => trans('frontend.form.sendmail_path'), 'class' => 'form-control']) !!}
+                                            {!! Form::text('SENDMAIL_PATH', SettingsHelper::getInstance()->getValueForKey('SENDMAIL_PATH'), ['placeholder' => __('frontend.form.sendmail_path'), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('SENDMAIL_PATH'))
                                                 <span class="text-danger">{{ $errors->first('SENDMAIL_PATH') }}</span>
@@ -502,7 +502,7 @@
                                             <div class="header-row">
                                                 <div class="form-group row">
 
-                                                    {!! Form::label('header_name[]', trans('frontend.form.name'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                                    {!! Form::label('header_name[]', __('frontend.form.name'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                                     <div class="col-md-3">
 
@@ -510,7 +510,7 @@
 
                                                     </div>
 
-                                                    {!! Form::label('header_value[]', trans('frontend.form.value'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                                    {!! Form::label('header_value[]', __('frontend.form.value'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                                     <div class="col-md-3">
 
@@ -519,7 +519,7 @@
                                                     </div>
 
                                                     <div class="col-md-2">
-                                                        <a class="btn btn-outline btn-danger removeBlock" title="{{ trans('frontend.form.remove') }}"> - </a>
+                                                        <a class="btn btn-outline btn-danger removeBlock" title="{{ __('frontend.form.remove') }}"> - </a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -528,7 +528,7 @@
 
                                         <div class="form-group">
                                             <div class="col-lg-12">
-                                                <input class="btn btn-default" id="add_field" type="button" value="+ {{ trans('frontend.form.add') }}">
+                                                <input class="btn btn-default" id="add_field" type="button" value="+ {{ __('frontend.form.add') }}">
                                             </div>
                                         </div>
 
@@ -541,7 +541,7 @@
 
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary">
-                                {{ trans('frontend.str.apply') }}
+                                {{ __('frontend.str.apply') }}
                             </button>
                         </div>
 
@@ -569,11 +569,11 @@
             $(document).on("click", '#add_field', function () {
                 let html = '<div class="header-row"><div class="form-group row">';
 
-                html += '<label class="col-sm-2 col-form-label">{{ trans('frontend.str.name') }}</label>';
+                html += '<label class="col-sm-2 col-form-label">{{ __('frontend.str.name') }}</label>';
                 html += '<div class="col-md-3"><input class="form-control" type="text" value="" name="header_name[]"></div>';
-                html += '<label class="col-sm-2 col-form-label">{{ trans('frontend.str.value') }}</label>';
+                html += '<label class="col-sm-2 col-form-label">{{ __('frontend.str.value') }}</label>';
                 html += '<div class="col-md-3"><input class="form-control" type="text" value="" name="header_value[]"></div>';
-                html += '<div class="col-md-2"><a class="btn btn-outline btn-danger removeBlock" title="{{ trans('frontend.form.remove') }}"> - </a></div>';
+                html += '<div class="col-md-2"><a class="btn btn-outline btn-danger removeBlock" title="{{ __('frontend.form.remove') }}"> - </a></div>';
                 html += '</div></div>';
 
                 $('#headerslist').prepend(html);

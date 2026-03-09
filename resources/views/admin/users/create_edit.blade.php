@@ -69,7 +69,7 @@
 
                                     {!! Form::label('role', __('frontend.form.role')) !!}
 
-                                    {!! Form::select('role', $options, $row->role ?? 'admin', ['placeholder' => trans('frontend.form.select_role'), 'class' => 'custom-select']) !!}
+                                    {!! Form::select('role', $options, $row->role ?? 'admin', ['placeholder' => __('frontend.form.select_role'), 'class' => 'custom-select']) !!}
 
                                     @if ($errors->has('role'))
                                         <p class="text-danger">{{ $errors->first('role') }}</p>
@@ -79,7 +79,7 @@
 
                                 <div class="form-group">
 
-                                    {!! Form::label('password', trans('frontend.form.password')) !!}
+                                    {!! Form::label('password', __('frontend.form.password')) !!}
 
                                     {!! Form::password('password', ['class' => 'form-control']) !!}
 
@@ -91,7 +91,7 @@
 
                                 <div class="form-group">
 
-                                    {!! Form::label('password_again', trans('frontend.form.password_again')) !!}
+                                    {!! Form::label('password_again', __('frontend.form.password_again')) !!}
 
                                     {!! Form::password('password_again', ['class' => 'form-control']) !!}
 
@@ -108,10 +108,10 @@
 
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary">
-                                {{ isset($row) ? trans('frontend.form.edit') : trans('frontend.form.add') }}
+                                {{ isset($row) ? __('frontend.form.edit') : __('frontend.form.add') }}
                             </button>
                             <a class="btn btn-default float-sm-right" href="{{ route('admin.users.index') }}">
-                                {{ trans('frontend.form.back') }}
+                                {{ __('frontend.form.back') }}
                             </a>
                         </div>
 

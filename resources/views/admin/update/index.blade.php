@@ -195,7 +195,7 @@
         }
 
         function updateFiles3() {
-            $("#status_process").text('{{ trans('frontend.msg.unzipping') }} vendor.zip ...');
+            $("#status_process").text('{{ __('frontend.msg.unzipping') }} vendor.zip ...');
 
             $.ajax({
                 type: "POST",
@@ -224,7 +224,7 @@
         }
 
         function updateBD() {
-            $("#status_process").text('{{ trans('frontend.msg.update_bd') }}');
+            $("#status_process").text('{{ __('frontend.msg.update_bd') }}');
 
             $.ajax({
                 type: "POST",
@@ -253,7 +253,7 @@
         }
 
         function clearCache() {
-            $("#status_process").text('{{ trans('frontend.msg.completing_update') }}');
+            $("#status_process").text('{{ __('frontend.msg.completing_update') }}');
 
             $.ajax({
                 type: "POST",
@@ -268,7 +268,7 @@
                     if (data.result === true) {
                         $('.progress-bar').css('width', '100%');
                         $('#progress_bar').delay(3000).fadeOut();
-                        $('#status_process').delay(3000).text('{{ trans('frontend.msg.update_completed') }}');
+                        $('#status_process').delay(3000).text('{{ __('frontend.msg.update_completed') }}');
                     } else {
                         $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
                     }

@@ -24,18 +24,18 @@
 
                         <div class="card-body">
 
-                            <p>*-{{ trans('frontend.form.required_fields') }}</p>
+                            <p>*-{{ __('frontend.form.required_fields') }}</p>
 
                             <div class="form-group">
 
-                                {!! Form::label('export_type', trans('frontend.form.format')) !!}
+                                {!! Form::label('export_type', __('frontend.form.format')) !!}
 
                                 <div class="inline-group">
                                     <label class="radio">
 
                                         {{ Form::radio('export_type', 'text', true) }}
 
-                                        <i></i>{{ trans('frontend.form.text') }}
+                                        <i></i>{{ __('frontend.form.text') }}
                                     </label>
                                     <label class="radio">
 
@@ -52,14 +52,14 @@
 
                             <div class="form-group">
 
-                                {!! Form::label('compress', trans('frontend.form.format')) !!}
+                                {!! Form::label('compress', __('frontend.form.format')) !!}
 
                                 <div class="inline-group">
                                     <label class="radio">
 
                                         {{ Form::radio('compress', 'none', true) }}
 
-                                        <i></i>{{ trans('frontend.str.no') }}
+                                        <i></i>{{ __('frontend.str.no') }}
                                     </label>
                                     <label class="radio">
 
@@ -73,9 +73,9 @@
 
                             <div class="form-group">
 
-                                {!! Form::label('categoryId[]', trans('frontend.form.subscribers_category')) !!}
+                                {!! Form::label('categoryId[]', __('frontend.form.subscribers_category')) !!}
 
-                                {!! Form::select('categoryId[]', $options, null, ['multiple'=>'multiple', 'placeholder' => trans('frontend.form.select_category'), 'class' => 'form-control']) !!}
+                                {!! Form::select('categoryId[]', $options, null, ['multiple'=>'multiple', 'placeholder' => __('frontend.form.select_category'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('categoryId'))
                                     <p class="text-danger">{{ $errors->first('categoryId') }}</p>
@@ -88,10 +88,10 @@
 
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary">
-                                {{ trans('frontend.form.send') }}
+                                {{ __('frontend.form.send') }}
                             </button>
                             <a class="btn btn-default float-sm-right" href="{{ route('admin.subscribers.index') }}">
-                                {{ trans('frontend.form.back') }}
+                                {{ __('frontend.form.back') }}
                             </a>
                         </div>
 

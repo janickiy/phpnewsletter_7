@@ -20,21 +20,21 @@
                         <!-- /.card-header -->
                         <div class="card-body">
 
-                            <p>« <a href="{{ route('admin.redirect.index') }}">{{ trans('frontend.str.back') }}</a></p>
+                            <p>« <a href="{{ route('admin.redirect.index') }}">{{ __('frontend.str.back') }}</a></p>
 
                             <table id="itemList" class="table table-striped table-bordered table-hover">
                                 <thead>
                                 <tr>
                                     <th>ID</th>
                                     <th>Email</th>
-                                    <th>{{ trans('frontend.str.time') }}</th>
+                                    <th>{{ __('frontend.str.time') }}</th>
                                 </tr>
                                 </thead>
                                 <tfoot>
                                 <tr>
                                     <th>ID</th>
                                     <th>Email</th>
-                                    <th>{{ trans('frontend.str.time') }}</th>
+                                    <th>{{ __('frontend.str.time') }}</th>
                                 </tr>
                                 </tfoot>
                             </table>
@@ -78,16 +78,16 @@
                 "sDom": "flrtip",
                 "autoWidth": true,
                 "oLanguage": {
-                    "sLengthMenu": "{{ trans('pagination.s_length_menu') }}",
-                    "sZeroRecords": "{{ trans('pagination.s_zero_records') }}",
-                    "sInfo": "{{ trans('pagination.s_info') }}",
-                    "sInfoEmpty": "{{ trans('pagination.s_info_empty') }}",
-                    "sInfoFiltered": "{{ trans('pagination.s_infofiltered') }}",
+                    "sLengthMenu": "{{ __('pagination.s_length_menu') }}",
+                    "sZeroRecords": "{{ __('pagination.s_zero_records') }}",
+                    "sInfo": "{{ __('pagination.s_info') }}",
+                    "sInfoEmpty": "{{ __('pagination.s_info_empty') }}",
+                    "sInfoFiltered": "{{ __('pagination.s_infofiltered') }}",
                     "oPaginate": {
-                        "sFirst": "{{ trans('pagination.s_paginate.first') }}",
-                        "sLast": "{{ trans('pagination.s_paginate.last') }}",
-                        "sNext": "{{ trans('pagination.s_paginate.next') }}",
-                        "sPrevious": "{{ trans('pagination.s_paginate.previous') }}",
+                        "sFirst": "{{ __('pagination.s_paginate.first') }}",
+                        "sLast": "{{ __('pagination.s_paginate.last') }}",
+                        "sNext": "{{ __('pagination.s_paginate.next') }}",
+                        "sPrevious": "{{ __('pagination.s_paginate.previous') }}",
                     },
                     "sSearch": ' <i class="fas fa-search" aria-hidden="true"></i>'
                 },

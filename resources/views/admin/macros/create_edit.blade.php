@@ -69,7 +69,7 @@
                                 {{ isset($row) ? __('frontend.form.edit') : __('frontend.form.add') }}
                             </button>
                             <a class="btn btn-default float-sm-right" href="{{ route('admin.macros.index') }}">
-                                {{ trans('frontend.form.back') }}
+                                {{ __('frontend.form.back') }}
                             </a>
                         </div>
 
@@ -100,15 +100,15 @@
         function getValue(value) {
             switch (value) {
                 case '1':
-                    return '{{ trans('frontend.form.sample_macros_type_url') }}';
+                    return '{{ __('frontend.form.sample_macros_type_url') }}';
                 case '2':
-                    return '{{ trans('frontend.form.sample_macros_type_email') }}';
+                    return '{{ __('frontend.form.sample_macros_type_email') }}';
                 case '3':
-                    return '{{ trans('frontend.form.sample_macros_type_hash_tags') }}';
+                    return '{{ __('frontend.form.sample_macros_type_hash_tags') }}';
                 case '4':
-                    return '{{ trans('frontend.form.sample_macros_type_tags') }}';
+                    return '{{ __('frontend.form.sample_macros_type_tags') }}';
                 case '5':
-                    return '{{ trans('frontend.form.sample_macros_type_wrap_phrase') }}';
+                    return '{{ __('frontend.form.sample_macros_type_wrap_phrase') }}';
             }
         }
 

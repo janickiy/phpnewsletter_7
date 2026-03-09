@@ -27,12 +27,12 @@
 
                         <div class="card-body">
 
-                            <p>*-{{ trans('frontend.form.required_fields') }}</p>
+                            <p>*-{{ __('frontend.form.required_fields') }}</p>
 
                             <div class="form-group">
-                                {!! Form::label('event_name', trans('frontend.form.name') . '*') !!}
+                                {!! Form::label('event_name', __('frontend.form.name') . '*') !!}
 
-                                {!! Form::text('event_name', old('event_name', $row->event_name ?? null), ['class' => 'form-control', 'placeholder' => trans('frontend.form.name')]) !!}
+                                {!! Form::text('event_name', old('event_name', $row->event_name ?? null), ['class' => 'form-control', 'placeholder' => __('frontend.form.name')]) !!}
 
                                 @if ($errors->has('event_name'))
                                     <p class="text-danger">{{ $errors->first('event_name') }}</p>
@@ -41,9 +41,9 @@
 
                             <div class="form-group">
 
-                                {!! Form::label('template_id',  trans('frontend.form.template')) !!}
+                                {!! Form::label('template_id',  __('frontend.form.template')) !!}
 
-                                {!! Form::select('template_id', $options, old('template_id', $row->template_id ?? null), ['placeholder' => trans('frontend.form.select'), 'class' => 'custom-select']) !!}
+                                {!! Form::select('template_id', $options, old('template_id', $row->template_id ?? null), ['placeholder' => __('frontend.form.select'), 'class' => 'custom-select']) !!}
 
                                 @if ($errors->has('template_id'))
                                     <p class="text-danger">{{ $errors->first('template_id') }}</p>
@@ -73,9 +73,9 @@
 
                             <div class="form-group">
 
-                                {!! Form::label('categoryId[]',  trans('frontend.form.subscribers_category')) !!}
+                                {!! Form::label('categoryId[]',  __('frontend.form.subscribers_category')) !!}
 
-                                {!! Form::select('categoryId[]', $category_options, old('categoryId', $categoryId ?? null), ['multiple' => 'multiple', 'placeholder' => trans('frontend.form.select_category'), 'class' => 'form-control']) !!}
+                                {!! Form::select('categoryId[]', $category_options, old('categoryId', $categoryId ?? null), ['multiple' => 'multiple', 'placeholder' => __('frontend.form.select_category'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('categoryId'))
                                     <p class="text-danger">{{ $errors->first('categoryId') }}</p>
@@ -87,10 +87,10 @@
 
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary">
-                                {{ isset($row) ? trans('frontend.form.edit') : trans('frontend.form.add') }}
+                                {{ isset($row) ? __('frontend.form.edit') : __('frontend.form.add') }}
                             </button>
                             <a class="btn btn-default float-sm-right" href="{{ route('admin.schedule.index') }}">
-                                {{ trans('frontend.form.back') }}
+                                {{ __('frontend.form.back') }}
                             </a>
                         </div>
 

@@ -53,7 +53,7 @@
                     <div class="card-body">
                         <div class="pb-3">
                             <a href="{{ route('admin.schedule.create') }}" class="btn btn-info btn-sm pull-left">
-                                <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_schedule') }}
+                                <span class="fa fa-plus"> &nbsp;</span> {{ __('frontend.str.add_schedule') }}
                             </a>
                         </div>
 
@@ -101,10 +101,10 @@
                         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                         success: function () {
                             $("#rowid_" + rowid).remove();
-                            Swal.fire("{{ trans('frontend.msg.done') }}", "{{ trans('frontend.msg.data_successfully_deleted') }}", 'success');
+                            Swal.fire("{{ __('frontend.msg.done') }}", "{{ __('frontend.msg.data_successfully_deleted') }}", 'success');
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
-                            Swal.fire("{{ trans('frontend.msg.error_deleting') }}", "{{ trans('frontend.msg.try_again') }}", 'error');
+                            Swal.fire("{{ __('frontend.msg.error_deleting') }}", "{{ __('frontend.msg.try_again') }}", 'error');
                             console.log(ajaxOptions);
                             console.log(thrownError);
                         }

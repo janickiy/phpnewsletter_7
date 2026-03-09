@@ -29,8 +29,8 @@
                                 <div class="row">
                                     <div class="col-lg-12"><p class="text-center">
                                             <a class="btn btn-outline btn-danger btn-lg"
-                                               title="{{ trans('frontend.str.log_clear') }}" onclick="confirmation()">
-                                                <span class="fa fa-trash fa-2x"></span> {{ trans('frontend.str.redirect_clear') }}
+                                               title="{{ __('frontend.str.log_clear') }}" onclick="confirmation()">
+                                                <span class="fa fa-trash fa-2x"></span> {{ __('frontend.str.redirect_clear') }}
                                             </a>
                                         </p>
                                     </div>
@@ -42,15 +42,15 @@
                                 <thead>
                                 <tr>
                                     <th>URL</th>
-                                    <th>{{ trans('frontend.str.redirect_number') }}</th>
-                                    <th>{{ trans('frontend.str.excel_report') }}</th>
+                                    <th>{{ __('frontend.str.redirect_number') }}</th>
+                                    <th>{{ __('frontend.str.excel_report') }}</th>
                                 </tr>
                                 </thead>
                                 <tfoot>
                                 <tr>
                                     <th>URL</th>
-                                    <th>{{ trans('frontend.str.redirect_number') }}</th>
-                                    <th>{{ trans('frontend.str.excel_report') }}</th>
+                                    <th>{{ __('frontend.str.redirect_number') }}</th>
+                                    <th>{{ __('frontend.str.excel_report') }}</th>
                                 </tr>
                                 </tfoot>
                             </table>
@@ -91,16 +91,16 @@
         $(function () {
             $('#itemList').dataTable({
                 "oLanguage": {
-                    "sLengthMenu": "{{ trans('pagination.s_length_menu') }}",
-                    "sZeroRecords": "{{ trans('pagination.s_zero_records') }}",
-                    "sInfo": "{{ trans('pagination.s_info') }}",
-                    "sInfoEmpty": "{{ trans('pagination.s_info_empty') }}",
-                    "sInfoFiltered": "{{ trans('pagination.s_infofiltered') }}",
+                    "sLengthMenu": "{{ __('pagination.s_length_menu') }}",
+                    "sZeroRecords": "{{ __('pagination.s_zero_records') }}",
+                    "sInfo": "{{ __('pagination.s_info') }}",
+                    "sInfoEmpty": "{{ __('pagination.s_info_empty') }}",
+                    "sInfoFiltered": "{{ __('pagination.s_infofiltered') }}",
                     "oPaginate": {
-                        "sFirst": "{{ trans('pagination.s_paginate.first') }}",
-                        "sLast": "{{ trans('pagination.s_paginate.last') }}",
-                        "sNext": "{{ trans('pagination.s_paginate.next') }}",
-                        "sPrevious": "{{ trans('pagination.s_paginate.previous') }}",
+                        "sFirst": "{{ __('pagination.s_paginate.first') }}",
+                        "sLast": "{{ __('pagination.s_paginate.last') }}",
+                        "sNext": "{{ __('pagination.s_paginate.next') }}",
+                        "sPrevious": "{{ __('pagination.s_paginate.previous') }}",
                     },
                     "sSearch": ' <i class="fas fa-search" aria-hidden="true"></i>'
                 },

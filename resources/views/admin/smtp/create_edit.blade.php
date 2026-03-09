@@ -72,7 +72,7 @@
                             <div class="form-group">
                                 {!! Form::label('port', __('frontend.form.port') . '*') !!}
 
-                                {!! Form::text('port', old('port', $row->port ?? 25), [ 'placeholder' => trans('frontend.form.port'), 'class' => 'form-control']) !!}
+                                {!! Form::text('port', old('port', $row->port ?? 25), [ 'placeholder' => __('frontend.form.port'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('port'))
                                     <p class="text-danger">{{ $errors->first('port') }}</p>
@@ -80,9 +80,9 @@
                             </div>
 
                             <div class="form-group">
-                                {!! Form::label('timeout', trans('frontend.form.timeout') . '*') !!}
+                                {!! Form::label('timeout', __('frontend.form.timeout') . '*') !!}
 
-                                {!! Form::text('timeout', old('timeout', $row->timeout ?? 5), [ 'placeholder' => trans('frontend.form.timeout'), 'class' => 'form-control']) !!}
+                                {!! Form::text('timeout', old('timeout', $row->timeout ?? 5), [ 'placeholder' => __('frontend.form.timeout'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('timeout'))
                                     <p class="text-danger">{{ $errors->first('timeout') }}</p>
@@ -90,7 +90,7 @@
                             </div>
 
                             <div class="form-group">
-                                {!! Form::label('secure', trans('frontend.form.secure_connection')) !!}
+                                {!! Form::label('secure', __('frontend.form.secure_connection')) !!}
 
                                 <div class="inline-group">
                                     <label class="radio">
@@ -98,7 +98,7 @@
                                         {!! Form::radio('secure', 'no', old('secure', (isset($row) && ($row->secure == 'no') or !isset($row)) ? true : false )) !!}
 
                                         <i></i>
-                                        {{ trans('frontend.str.no') }}</label>
+                                        {{ __('frontend.str.no') }}</label>
                                     <label class="radio">
 
                                         {!! Form::radio('secure', 'ssl', old('secure', (isset($row) && ($row->secure == 'ssl')) ? true : false )) !!}
@@ -115,24 +115,24 @@
 
                             <div class="form-group">
 
-                                {!! Form::label('authentication', trans('frontend.form.authentication_method')) !!}
+                                {!! Form::label('authentication', __('frontend.form.authentication_method')) !!}
 
                                 <div class="inline-group">
                                     <label class="radio">
 
                                         {!! Form::radio('authentication', 'no', old('authentication', (isset($row) && ($row->authentication == 'no') or !isset($row)) ? true : false )) !!}
 
-                                        <i></i>LOGIN ({{ trans('frontend.form.low_secrecy') }})</label>
+                                        <i></i>LOGIN ({{ __('frontend.form.low_secrecy') }})</label>
                                     <label class="radio">
 
                                         {!! Form::radio('authentication', 'plain', old('authentication' , (isset($row) && ($row->authentication == 'plain')) ? true : false )) !!}
 
-                                        <i></i>PLAIN ({{ trans('frontend.form.medium_secrecy') }})</label>
+                                        <i></i>PLAIN ({{ __('frontend.form.medium_secrecy') }})</label>
                                     <label class="radio">
 
                                         {!! Form::radio('authentication', 'crammd5', old('authentication' , (isset($row) && ($row->authentication == 'crammd5')) ? true : false )) !!}
 
-                                        <i></i>CRAM-MD5 ({{ trans('frontend.form.high_secrecy') }})</label>
+                                        <i></i>CRAM-MD5 ({{ __('frontend.form.high_secrecy') }})</label>
                                 </div>
 
                             </div>
@@ -142,10 +142,10 @@
 
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary">
-                                {{ isset($row) ? trans('frontend.form.edit') : trans('frontend.form.add') }}
+                                {{ isset($row) ? __('frontend.form.edit') : __('frontend.form.add') }}
                             </button>
                             <a class="btn btn-default float-sm-right" href="{{ route('admin.smtp.index') }}">
-                                {{ trans('frontend.form.back') }}
+                                {{ __('frontend.form.back') }}
                             </a>
                         </div>
 

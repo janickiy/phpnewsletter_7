@@ -13,12 +13,12 @@
     {!! Form::open(['route' => 'install.install']) !!}
 
     <div class="step-content">
-        <h3>{{ trans('install.str.install') }}</h3>
+        <h3>{{ __('install.str.install') }}</h3>
         <hr>
-        <strong>{{ trans('install.str.ready_to_install') }}</strong>
-        <p>{{ trans('install.str.administration') }}:</p>
+        <strong>{{ __('install.str.ready_to_install') }}</strong>
+        <p>{{ __('install.str.administration') }}:</p>
         <div class="form-group">
-            <label for="app_name">{{ trans('install.str.login') }}</label>
+            <label for="app_name">{{ __('install.str.login') }}</label>
 
             {!! Form::text('login', old('login'), ['class' => "form-control", 'id' => "login"]) !!}
 
@@ -29,7 +29,7 @@
         </div>
         <div class="form-group">
 
-            {!! Form::label('app_name', trans('install.str.password')) !!}
+            {!! Form::label('app_name', __('install.str.password')) !!}
 
             {!! Form::password('password', ['class' => "form-control", 'id' => "password"]) !!}
 
@@ -39,7 +39,7 @@
         </div>
         <div class="form-group">
 
-            {!! Form::label('app_name', trans('install.str.confirm_password')) !!}
+            {!! Form::label('app_name', __('install.str.confirm_password')) !!}
 
             {!! Form::password('confirm_password', ['class' => "form-control", 'id' => "confirm_password"]) !!}
 
@@ -49,7 +49,7 @@
         </div>
         <button class="btn btn-green pull-right" data-toggle="loader" data-loading-text="Installing" type="submit">
             <i class="fa fa-play"></i>
-            {{ trans('install.button.install') }}
+            {{ __('install.button.install') }}
         </button>
         <div class="clearfix"></div>
     </div>

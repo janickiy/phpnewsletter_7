@@ -25,7 +25,7 @@
                         <div class="card-body">
                             <div class="pb-3">
                                 <a href="{{ route('admin.templates.create') }}" class="btn btn-info btn-sm pull-left">
-                                    <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_template') }}
+                                    <span class="fa fa-plus"> &nbsp;</span> {{ __('frontend.str.add_template') }}
                                 </a>
                             </div>
 
@@ -36,26 +36,26 @@
                                 <tr>
                                     <th style="width: 10px">
                                         <span>
-                                            <input type="checkbox" title="{{ trans('frontend.str.check_uncheck_all') }}"
+                                            <input type="checkbox" title="{{ __('frontend.str.check_uncheck_all') }}"
                                                    id="checkAll">
                                         </span>
                                     </th>
                                     <th style="width: 10px">ID</th>
-                                    <th>{{ trans('frontend.str.template') }}</th>
-                                    <th>{{ trans('frontend.str.importance') }}</th>
-                                    <th>{{ trans('frontend.str.attachments') }}</th>
-                                    <th>{{ trans('frontend.str.date') }}</th>
-                                    <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
+                                    <th>{{ __('frontend.str.template') }}</th>
+                                    <th>{{ __('frontend.str.importance') }}</th>
+                                    <th>{{ __('frontend.str.attachments') }}</th>
+                                    <th>{{ __('frontend.str.date') }}</th>
+                                    <th style="width: 10%">{{ __('frontend.str.action') }}</th>
                                 </tr>
                                 </thead>
                                 <tfoot>
                                 <th style="width: 10px"></th>
                                 <th style="width: 10px">ID</th>
-                                <th>{{ trans('frontend.str.template') }}</th>
-                                <th>{{ trans('frontend.str.importance') }}</th>
-                                <th>{{ trans('frontend.str.attachments') }}</th>
-                                <th>{{ trans('frontend.str.date') }}</th>
-                                <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
+                                <th>{{ __('frontend.str.template') }}</th>
+                                <th>{{ __('frontend.str.importance') }}</th>
+                                <th>{{ __('frontend.str.attachments') }}</th>
+                                <th>{{ __('frontend.str.date') }}</th>
+                                <th style="width: 10%">{{ __('frontend.str.action') }}</th>
                                 </tfoot>
                             </table>
 
@@ -65,13 +65,13 @@
                                         <div class="control-group">
 
                                             {!! Form::select('action',[
-                                            '0' => trans('frontend.str.send'),
-                                            '1' => trans('frontend.str.remove')
-                                            ],null,['class' => 'span3 form-control', 'id' => 'select_action','placeholder' => '--' . trans('frontend.str.action') . '--'],[0 => ['data-id' => 'sendmail', 'class' => 'open_modal']]) !!}
+                                            '0' => __('frontend.str.send'),
+                                            '1' => __('frontend.str.remove')
+                                            ],null,['class' => 'span3 form-control', 'id' => 'select_action','placeholder' => '--' . __('frontend.str.action') . '--'],[0 => ['data-id' => 'sendmail', 'class' => 'open_modal']]) !!}
 
                                             <span class="help-inline">
 
-                                            {!! Form::submit(trans('frontend.str.apply'), ['class' => 'btn btn-success', 'disabled' => "", 'id' => 'apply']) !!}
+                                            {!! Form::submit(__('frontend.str.apply'), ['class' => 'btn btn-success', 'disabled' => "", 'id' => 'apply']) !!}
 
                                             </span>
 
@@ -101,7 +101,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">{{ trans('frontend.str.online_newsletter_log') }}<span id="process"></span>
+                    <h4 class="modal-title">{{ __('frontend.str.online_newsletter_log') }}<span id="process"></span>
                     </h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -114,37 +114,37 @@
                             <div class="form-inline">
                                 <div class="control-group">
 
-                                    {!! Form::select('categoryId[]', $categoryOptions, null, ['id' => 'categoryId','multiple'=>'multiple', 'placeholder' => trans('frontend.form.select_category'), 'class' => 'form-control custom-scroll', 'style' => 'width: 100%']) !!}
+                                    {!! Form::select('categoryId[]', $categoryOptions, null, ['id' => 'categoryId','multiple'=>'multiple', 'placeholder' => __('frontend.form.select_category'), 'class' => 'form-control custom-scroll', 'style' => 'width: 100%']) !!}
 
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <p><span id="leftsend">0</span>% {{ trans('frontend.str.left') }}: <span id="timer2">00:00:00</span>
+                    <p><span id="leftsend">0</span>% {{ __('frontend.str.left') }}: <span id="timer2">00:00:00</span>
                     </p>
                     <div class="progress progress-sm progress-striped active">
                         <div class="progress-bar bg-color-darken" role="progressbar" style="width: 1%"></div>
                     </div>
-                    <div class="online_statistics">{{ trans('frontend.str.total') }}:
+                    <div class="online_statistics">{{ __('frontend.str.total') }}:
                         <span id="totalsendlog">0</span>
-                        <span style="color: green">{{ trans('frontend.str.good') }}: </span>
+                        <span style="color: green">{{ __('frontend.str.good') }}: </span>
                         <span style="color: green" id="successful">0</span>
-                        <span style="color: red">{{ trans('frontend.str.bad') }}: </span>
+                        <span style="color: red">{{ __('frontend.str.bad') }}: </span>
                         <span style="color: red" id="unsuccessful">0</span><br><br>
                         <span id="divStatus" class="error"></span><br>
                         <button id="sendout" class="btn btn-default btn-circle btn-modal btn-lg"
-                                style="margin-right: 15px;" title="{{ trans('frontend.str.send_out_newsletter') }}"><i
+                                style="margin-right: 15px;" title="{{ __('frontend.str.send_out_newsletter') }}"><i
                                 class="fa fa-play"></i></button>
                         <button id="stopsendout"
                                 class="btn btn-danger btn-circle btn-lg disabled" disabled="disabled"
-                                title="{{ trans('frontend.str.stop_newsletter') }}">
+                                title="{{ __('frontend.str.stop_newsletter') }}">
                             <i class="fa fa-stop"></i>
                         </button>
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default"
-                            data-dismiss="modal">{{ trans('frontend.str.close') }}</button>
+                            data-dismiss="modal">{{ __('frontend.str.close') }}</button>
                 </div>
             </div>
         </div>
@@ -197,7 +197,7 @@
 
                     request.fail(function( jqXHR, textStatus ) {
                         completeProcess();
-                        $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
+                        $("#divStatus").html("{{ __('frontend.str.error_server') }}");
                         console.log(jqXHR);
                         console.log(textStatus);
                     });
@@ -214,12 +214,12 @@
                             }, 10000);
                         } else {
                             completeProcess();
-                            $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
+                            $("#divStatus").html("{{ __('frontend.str.error_server') }}");
                         }
                         console.log(data);
                     });
                 } else {
-                    $("#divStatus").html('{{ trans('frontend.str.no_newsletter_selected') }}');
+                    $("#divStatus").html('{{ __('frontend.str.no_newsletter_selected') }}');
                 }
             });
 
@@ -248,7 +248,7 @@
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         completeProcess();
-                        $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
+                        $("#divStatus").html("{{ __('frontend.str.error_server') }}");
                         console.log(jqXHR);
                         console.log(textStatus);
                         console.log(errorThrown);
@@ -263,10 +263,10 @@
                     event.preventDefault();
                     Swal.fire({
                         title: "Error",
-                        text: "{{ trans('frontend.str.select_action') }}",
+                        text: "{{ __('frontend.str.select_action') }}",
                         type: "error",
                         showCancelButton: false,
-                        cancelButtonText: "{{ trans('frontend.str.cancel') }}",
+                        cancelButtonText: "{{ __('frontend.str.cancel') }}",
                         confirmButtonColor: "#DD6B55",
                         closeOnConfirm: false
                     });
@@ -275,13 +275,13 @@
                         event.preventDefault();
                         let form = $(this).parents('form');
                         Swal.fire({
-                            title: "{{ trans('frontend.str.delete_confirmation') }}",
-                            text: "{{ trans('frontend.str.confirm_remove') }}",
+                            title: "{{ __('frontend.str.delete_confirmation') }}",
+                            text: "{{ __('frontend.str.confirm_remove') }}",
                             type: "warning",
                             showCancelButton: true,
                             confirmButtonColor: "#DD6B55",
-                            confirmButtonText: "{{ trans('frontend.str.yes') }}",
-                            cancelButtonText: "{{ trans('frontend.str.cancel') }}",
+                            confirmButtonText: "{{ __('frontend.str.yes') }}",
+                            cancelButtonText: "{{ __('frontend.str.cancel') }}",
                             closeOnConfirm: false
                         }).then((result) => {
                             if (result.isConfirmed) {
@@ -314,16 +314,16 @@
 
             $("#itemList").DataTable({
                 "oLanguage": {
-                    "sLengthMenu": "{{ trans('pagination.s_length_menu') }}",
-                    "sZeroRecords": "{{ trans('pagination.s_zero_records') }}",
-                    "sInfo": "{{ trans('pagination.s_info') }}",
-                    "sInfoEmpty": "{{ trans('pagination.s_info_empty') }}",
-                    "sInfoFiltered": "{{ trans('pagination.s_infofiltered') }}",
+                    "sLengthMenu": "{{ __('pagination.s_length_menu') }}",
+                    "sZeroRecords": "{{ __('pagination.s_zero_records') }}",
+                    "sInfo": "{{ __('pagination.s_info') }}",
+                    "sInfoEmpty": "{{ __('pagination.s_info_empty') }}",
+                    "sInfoFiltered": "{{ __('pagination.s_infofiltered') }}",
                     "oPaginate": {
-                        "sFirst": "{{ trans('pagination.s_paginate.first') }}",
-                        "sLast": "{{ trans('pagination.s_paginate.last') }}",
-                        "sNext": "{{ trans('pagination.s_paginate.next') }}",
-                        "sPrevious": "{{ trans('pagination.s_paginate.previous') }}",
+                        "sFirst": "{{ __('pagination.s_paginate.first') }}",
+                        "sLast": "{{ __('pagination.s_paginate.last') }}",
+                        "sNext": "{{ __('pagination.s_paginate.next') }}",
+                        "sPrevious": "{{ __('pagination.s_paginate.previous') }}",
                     },
                     "sSearch": ' <i class="fas fa-search" aria-hidden="true"></i>'
                 },
@@ -352,12 +352,12 @@
             $('#itemList').on('click', 'a.deleteRow', function () {
                 let rowid = $(this).attr('id');
                 Swal.fire({
-                    title: "{{ trans('frontend.msg.are_you_sure') }}",
-                    text: "{{ trans('frontend.msg.will_not_be_able_to_ecover_information') }}",
+                    title: "{{ __('frontend.msg.are_you_sure') }}",
+                    text: "{{ __('frontend.msg.will_not_be_able_to_ecover_information') }}",
                     showCancelButton: true,
                     icon: 'warning',
-                    cancelButtonText: "{{ trans('frontend.str.cancel') }}",
-                    confirmButtonText: "{{ trans('frontend.msg.yes_remove') }}",
+                    cancelButtonText: "{{ __('frontend.str.cancel') }}",
+                    confirmButtonText: "{{ __('frontend.msg.yes_remove') }}",
                     reverseButtons: true,
                     confirmButtonColor: "#DD6B55",
                     customClass: {
@@ -374,10 +374,10 @@
                             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                             success: function () {
                                 $("#rowid_" + rowid).remove();
-                                Swal.fire("{{ trans('frontend.msg.done') }}", "{{ trans('frontend.msg.data_successfully_deleted') }}", 'success');
+                                Swal.fire("{{ __('frontend.msg.done') }}", "{{ __('frontend.msg.data_successfully_deleted') }}", 'success');
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
-                                Swal.fire("{{ trans('frontend.msg.error_deleting') }}", "{{ trans('frontend.msg.try_again') }}", 'error');
+                                Swal.fire("{{ __('frontend.msg.error_deleting') }}", "{{ __('frontend.msg.try_again') }}", 'error');
                                 console.log(ajaxOptions);
                                 console.log(thrownError);
                             }
@@ -440,7 +440,7 @@
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         completeProcess();
-                        $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
+                        $("#divStatus").html("{{ __('frontend.str.error_server') }}");
                         console.log(jqXHR);
                         console.log(textStatus);
                         console.log(errorThrown);
@@ -473,7 +473,7 @@
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         completeProcess();
-                        $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
+                        $("#divStatus").html("{{ __('frontend.str.error_server') }}");
                         console.log(jqXHR);
                         console.log(textStatus);
                         console.log(errorThrown);
@@ -511,7 +511,7 @@
                     timeout: 10000,
                     error: function (jqXHR, textStatus, errorThrown) {
                       //  completeProcess();
-                      //  $("#divStatus").html("{{ trans('frontend.str.error_server') }}");
+                      //  $("#divStatus").html("{{ __('frontend.str.error_server') }}");
                         console.log(jqXHR);
                         console.log(textStatus);
                         console.log(errorThrown);

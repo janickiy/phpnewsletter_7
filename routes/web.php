@@ -146,8 +146,10 @@ Route::group(['middleware' => ['install']], function () {
         });
     });
 
+    Route::get('faq', [PagesController::class, 'faq'])->name('admin.faq');
+
     Route::group(['prefix' => 'pages'], function () {
-        Route::get('faq', [PagesController::class, 'faq'])->name('admin.pages.faq');
+
         Route::get('cron-job-list', [PagesController::class, 'cronJobList'])->name('admin.pages.cron_job_list');
         Route::get('phpinfo', [PagesController::class, 'phpinfo'])->name('admin.pages.phpinfo');
         Route::get('subscription-form', [PagesController::class, 'subscriptionForm'])->name('admin.pages.subscription_form');

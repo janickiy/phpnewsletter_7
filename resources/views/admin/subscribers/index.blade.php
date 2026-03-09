@@ -22,19 +22,19 @@
 
                 <div class="col-lg-12"><p class="text-center">
                         <a class="btn btn-outline btn-default btn-lg"
-                           title="{{ trans('frontend.str.import_subscribers') }}"
+                           title="{{ __('frontend.str.import_subscribers') }}"
                            href="{{ route('admin.subscribers.import') }}">
-                            <span class="fa fa-download fa-x"></span> {{ trans('frontend.str.import') }}
+                            <span class="fa fa-download fa-x"></span> {{ __('frontend.str.import') }}
                         </a>
                         <a class="btn btn-outline btn-default btn-lg"
-                           title="{{ trans('frontend.str.export_subscribers') }}"
+                           title="{{ __('frontend.str.export_subscribers') }}"
                            href="{{ route('admin.subscribers.export') }}">
-                            <span class="fa fa-upload fa-x"></span> {{ trans('frontend.str.export') }}
+                            <span class="fa fa-upload fa-x"></span> {{ __('frontend.str.export') }}
                         </a>
                         <a class="btn btn-outline btn-danger btn-lg"
-                           title="{{ trans('frontend.str.delete_all_subscribers') }}"
+                           title="{{ __('frontend.str.delete_all_subscribers') }}"
                            onclick="confirmation()">
-                            <span class="fa fa-trash fa-x"></span> {{ trans('frontend.str.delete_all') }}
+                            <span class="fa fa-trash fa-x"></span> {{ __('frontend.str.delete_all') }}
                         </a>
                     </p>
                 </div>
@@ -49,7 +49,7 @@
                             <div class="pb-3">
                                 <a href="{{ route('admin.subscribers.create') }}"
                                    class="btn btn-info btn-sm pull-left">
-                                    <span class="fa fa-plus"> &nbsp;</span> {{ trans('frontend.str.add_subscriber') }}
+                                    <span class="fa fa-plus"> &nbsp;</span> {{ __('frontend.str.add_subscriber') }}
                                 </a>
                             </div>
 
@@ -60,27 +60,27 @@
                                 <tr>
                                     <th style="width: 10px">
                                     <span>
-                                       <input type="checkbox" title="{{ trans('frontend.str.check_uncheck_all') }}"
+                                       <input type="checkbox" title="{{ __('frontend.str.check_uncheck_all') }}"
                                               id="checkAll">
                                     </span>
                                     </th>
-                                    <th>{{ trans('frontend.str.name') }}</th>
+                                    <th>{{ __('frontend.str.name') }}</th>
                                     <th>E-mail</th>
-                                    <th>{{ trans('frontend.str.category') }}</th>
-                                    <th>{{ trans('frontend.str.status') }}</th>
-                                    <th>{{ trans('frontend.str.added') }}</th>
-                                    <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
+                                    <th>{{ __('frontend.str.category') }}</th>
+                                    <th>{{ __('frontend.str.status') }}</th>
+                                    <th>{{ __('frontend.str.added') }}</th>
+                                    <th style="width: 10%">{{ __('frontend.str.action') }}</th>
                                 </tr>
                                 </thead>
                                 <tfoot>
                                 <tr>
                                     <th></th>
-                                    <th>{{ trans('frontend.str.name') }}</th>
+                                    <th>{{ __('frontend.str.name') }}</th>
                                     <th>E-mail</th>
-                                    <th>{{ trans('frontend.str.category') }}</th>
-                                    <th>{{ trans('frontend.str.status') }}</th>
-                                    <th>{{ trans('frontend.str.added') }}</th>
-                                    <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
+                                    <th>{{ __('frontend.str.category') }}</th>
+                                    <th>{{ __('frontend.str.status') }}</th>
+                                    <th>{{ __('frontend.str.added') }}</th>
+                                    <th style="width: 10%">{{ __('frontend.str.action') }}</th>
                                 </tr>
                                 </tfoot>
                             </table>
@@ -91,13 +91,13 @@
                                         <div class="control-group">
 
                                             {!! Form::select('action',[
-                                            '1' => trans('frontend.str.activate'),
-                                            '0' => trans('frontend.str.deactivate'),
-                                            '2' => trans('frontend.str.remove')
-                                            ],null,['class' => 'span3 form-control', 'id' => 'select_action','placeholder' => '--' . trans('frontend.str.action') . '--']) !!}
+                                            '1' => __('frontend.str.activate'),
+                                            '0' => __('frontend.str.deactivate'),
+                                            '2' => __('frontend.str.remove')
+                                            ],null,['class' => 'span3 form-control', 'id' => 'select_action','placeholder' => '--' . __('frontend.str.action') . '--']) !!}
 
                                             <span class="help-inline">
-                                            {!! Form::submit(trans('frontend.str.apply'), ['class' => 'btn btn-success', 'disabled' => "", 'id' => 'apply']) !!}
+                                            {!! Form::submit(__('frontend.str.apply'), ['class' => 'btn btn-success', 'disabled' => "", 'id' => 'apply']) !!}
                                         </span>
 
                                         </div>
@@ -148,10 +148,10 @@
                     event.preventDefault();
                     Swal.fire({
                         title: "Error",
-                        text: "{{ trans('frontend.str.select_action') }}",
+                        text: "{{ __('frontend.str.select_action') }}",
                         type: "error",
                         showCancelButton: false,
-                        cancelButtonText: "{{ trans('frontend.str.cancel') }}",
+                        cancelButtonText: "{{ __('frontend.str.cancel') }}",
                         confirmButtonColor: "#DD6B55",
                         closeOnConfirm: false
                     });
@@ -160,13 +160,13 @@
                         event.preventDefault();
                         let form = $(this).parents('form');
                         swal({
-                            title: "{{ trans('frontend.str.delete_confirmation') }}",
-                            text: "{{ trans('frontend.str.confirm_remove') }}",
+                            title: "{{ __('frontend.str.delete_confirmation') }}",
+                            text: "{{ __('frontend.str.confirm_remove') }}",
                             type: "warning",
                             showCancelButton: true,
                             confirmButtonColor: "#DD6B55",
-                            confirmButtonText: "{{ trans('frontend.str.yes') }}",
-                            cancelButtonText: "{{ trans('frontend.str.cancel') }}",
+                            confirmButtonText: "{{ __('frontend.str.yes') }}",
+                            cancelButtonText: "{{ __('frontend.str.cancel') }}",
                             closeOnConfirm: false
                         }, function (isConfirm) {
                             if (isConfirm) form.submit();
@@ -190,16 +190,16 @@
 
             $("#itemList").DataTable({
                 "oLanguage": {
-                    "sLengthMenu": "{{ trans('pagination.s_length_menu') }}",
-                    "sZeroRecords": "{{ trans('pagination.s_zero_records') }}",
-                    "sInfo": "{{ trans('pagination.s_info') }}",
-                    "sInfoEmpty": "{{ trans('pagination.s_info_empty') }}",
-                    "sInfoFiltered": "{{ trans('pagination.s_infofiltered') }}",
+                    "sLengthMenu": "{{ __('pagination.s_length_menu') }}",
+                    "sZeroRecords": "{{ __('pagination.s_zero_records') }}",
+                    "sInfo": "{{ __('pagination.s_info') }}",
+                    "sInfoEmpty": "{{ __('pagination.s_info_empty') }}",
+                    "sInfoFiltered": "{{ __('pagination.s_infofiltered') }}",
                     "oPaginate": {
-                        "sFirst": "{{ trans('pagination.s_paginate.first') }}",
-                        "sLast": "{{ trans('pagination.s_paginate.last') }}",
-                        "sNext": "{{ trans('pagination.s_paginate.next') }}",
-                        "sPrevious": "{{ trans('pagination.s_paginate.previous') }}",
+                        "sFirst": "{{ __('pagination.s_paginate.first') }}",
+                        "sLast": "{{ __('pagination.s_paginate.last') }}",
+                        "sNext": "{{ __('pagination.s_paginate.next') }}",
+                        "sPrevious": "{{ __('pagination.s_paginate.previous') }}",
                     },
                     "sSearch": ' <i class="fas fa-search" aria-hidden="true"></i>'
                 },
@@ -229,12 +229,12 @@
             $('#itemList').on('click', 'a.deleteRow', function () {
                 let rowid = $(this).attr('id');
                 Swal.fire({
-                    title: "{{ trans('frontend.msg.are_you_sure') }}",
-                    text: "{{ trans('frontend.msg.will_not_be_able_to_ecover_information') }}",
+                    title: "{{ __('frontend.msg.are_you_sure') }}",
+                    text: "{{ __('frontend.msg.will_not_be_able_to_ecover_information') }}",
                     showCancelButton: true,
                     icon: 'warning',
-                    cancelButtonText: "{{ trans('frontend.str.cancel') }}",
-                    confirmButtonText: "{{ trans('frontend.msg.yes_remove') }}",
+                    cancelButtonText: "{{ __('frontend.str.cancel') }}",
+                    confirmButtonText: "{{ __('frontend.msg.yes_remove') }}",
                     reverseButtons: true,
                     confirmButtonColor: "#DD6B55",
                     customClass: {
@@ -251,10 +251,10 @@
                             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                             success: function () {
                                 $("#rowid_" + rowid).remove();
-                                Swal.fire("{{ trans('frontend.msg.done') }}", "{{ trans('frontend.msg.data_successfully_deleted') }}", 'success');
+                                Swal.fire("{{ __('frontend.msg.done') }}", "{{ __('frontend.msg.data_successfully_deleted') }}", 'success');
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
-                                Swal.fire("{{ trans('frontend.msg.error_deleting') }}", "{{ trans('frontend.msg.try_again') }}", 'error');
+                                Swal.fire("{{ __('frontend.msg.error_deleting') }}", "{{ __('frontend.msg.try_again') }}", 'error');
                                 console.log(ajaxOptions);
                                 console.log(thrownError);
                             }
@@ -273,13 +273,13 @@
 
         function confirmation() {
             Swal.fire({
-                title: "{{ trans('frontend.str.delete_all_subscribers') }}",
-                text: "{{ trans('frontend.str.want_to_delete_all_subscribers')  }}",
+                title: "{{ __('frontend.str.delete_all_subscribers') }}",
+                text: "{{ __('frontend.str.want_to_delete_all_subscribers')  }}",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: "{{ trans('frontend.str.yes') }}",
-                cancelButtonText: "{{ trans('frontend.str.cancel') }}",
+                confirmButtonText: "{{ __('frontend.str.yes') }}",
+                cancelButtonText: "{{ __('frontend.str.cancel') }}",
                 closeOnConfirm: false
             }).then((result) => {
                 if (result.isConfirmed) {

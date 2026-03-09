@@ -5,12 +5,12 @@
     @include('install.steps', ['steps' => ['welcome' => 'selected']])
 
     <div class="step-content">
-        <h3>{{ trans('install.str.license_agreement') }}</h3>
+        <h3>{{ __('install.str.license_agreement') }}</h3>
         <hr>
         <fieldset>
             <div class="form-group">
 
-                {!! Form::textarea('readonly', trans('license.agreement'), ['class' => "form-control", 'rows' => "13"]) !!}
+                {!! Form::textarea('readonly', __('license.agreement'), ['class' => "form-control", 'rows' => "13"]) !!}
 
             </div>
 
@@ -28,7 +28,7 @@
 
                     {!! Form::checkbox('accept_license', 1, false, ['id' => "accept_license"] ) !!}
 
-                    {!! Form::label('accept_license', trans('frontend.str.accept_license'), ['class' => 'form-check-label']) !!}
+                    {!! Form::label('accept_license', __('frontend.str.accept_license'), ['class' => 'form-check-label']) !!}
 
                     <span></span>
                 </div>
@@ -37,7 +37,7 @@
         </fieldset>
 
         <a href="{{ route('install.requirements') }}" id="next_button" class="btn btn-primary float-right disabled" role="button">
-            {{ trans('install.button.next') }}
+            {{ __('install.button.next') }}
             <i class="fa fa-arrow-right"></i>
         </a>
 

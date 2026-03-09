@@ -11,7 +11,7 @@
     @endif
 
     <div class="step-content">
-        <h3>{{ trans('install.str.system_requirements') }}</h3>
+        <h3>{{ __('install.str.system_requirements') }}</h3>
         <hr>
         <ul class="list-group mb-4">
             @foreach ($requirements as $extension => $loaded)
@@ -27,12 +27,12 @@
         </ul>
         @if ($allLoaded)
             <a class="btn btn-primary float-right" href="{{ route('install.permissions') }}">
-                {{ trans('install.button.next') }}
+                {{ __('install.button.next') }}
                 <i class="fa fa-arrow-right"></i>
             </a>
         @else
             <button class="btn btn-primary pull-right" disabled>
-                {{ trans('install.button.next') }}
+                {{ __('install.button.next') }}
                 <i class="fa fa-arrow-right"></i>
             </button>
         @endif

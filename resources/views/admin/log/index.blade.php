@@ -45,19 +45,19 @@
                                     <th>{{ __('frontend.str.time') }}</th>
                                     <th>{{ __('frontend.str.total') }}</th>
                                     <th>{{ __('frontend.str.sent') }}</th>
-                                    <th>{{ trans('frontend.str.unsent') }}</th>
-                                    <th>{{ trans('frontend.str.read') }}</th>
-                                    <th>{{ trans('frontend.str.excel_report') }}</th>
+                                    <th>{{ __('frontend.str.unsent') }}</th>
+                                    <th>{{ __('frontend.str.read') }}</th>
+                                    <th>{{ __('frontend.str.excel_report') }}</th>
                                 </tr>
                                 </thead>
                                 <tfoot>
                                 <tr>
-                                    <th>{{ trans('frontend.str.time') }}</th>
-                                    <th>{{ trans('frontend.str.total') }}</th>
-                                    <th>{{ trans('frontend.str.sent') }}</th>
-                                    <th>{{ trans('frontend.str.unsent') }}</th>
-                                    <th>{{ trans('frontend.str.read') }}</th>
-                                    <th>{{ trans('frontend.str.excel_report') }}</th>
+                                    <th>{{ __('frontend.str.time') }}</th>
+                                    <th>{{ __('frontend.str.total') }}</th>
+                                    <th>{{ __('frontend.str.sent') }}</th>
+                                    <th>{{ __('frontend.str.unsent') }}</th>
+                                    <th>{{ __('frontend.str.read') }}</th>
+                                    <th>{{ __('frontend.str.excel_report') }}</th>
                                 </tr>
                                 </tfoot>
                             </table>
@@ -66,24 +66,24 @@
                                 <table id="logList" class="table table-striped table-bordered table-hover">
                                     <thead>
                                     <tr>
-                                        <th>{{ trans('frontend.str.newsletter') }}</th>
+                                        <th>{{ __('frontend.str.newsletter') }}</th>
                                         <th>E-mail</th>
-                                        <th>{{ trans('frontend.str.time') }}</th>
-                                        <th>{{ trans('frontend.str.status') }}</th>
-                                        <th>{{ trans('frontend.str.read') }}</th>
-                                        <th>{{ trans('frontend.str.error') }}</th>
+                                        <th>{{ __('frontend.str.time') }}</th>
+                                        <th>{{ __('frontend.str.status') }}</th>
+                                        <th>{{ __('frontend.str.read') }}</th>
+                                        <th>{{ __('frontend.str.error') }}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     </tbody>
                                     <tfoot>
                                     <tr>
-                                        <th>{{ trans('frontend.str.newsletter') }}</th>
+                                        <th>{{ __('frontend.str.newsletter') }}</th>
                                         <th>E-mail</th>
-                                        <th>{{ trans('frontend.str.time') }}</th>
-                                        <th>{{ trans('frontend.str.status') }}</th>
-                                        <th>{{ trans('frontend.str.read') }}</th>
-                                        <th>{{ trans('frontend.str.error') }}</th>
+                                        <th>{{ __('frontend.str.time') }}</th>
+                                        <th>{{ __('frontend.str.status') }}</th>
+                                        <th>{{ __('frontend.str.read') }}</th>
+                                        <th>{{ __('frontend.str.error') }}</th>
                                     </tr>
                                     </tfoot>
                                 </table>
@@ -124,16 +124,16 @@
         $(function () {
             $('#itemList').dataTable({
                 "oLanguage": {
-                    "sLengthMenu": "{{ trans('pagination.s_length_menu') }}",
-                    "sZeroRecords": "{{ trans('pagination.s_zero_records') }}",
-                    "sInfo": "{{ trans('pagination.s_info') }}",
-                    "sInfoEmpty": "{{ trans('pagination.s_info_empty') }}",
-                    "sInfoFiltered": "{{ trans('pagination.s_infofiltered') }}",
+                    "sLengthMenu": "{{ __('pagination.s_length_menu') }}",
+                    "sZeroRecords": "{{ __('pagination.s_zero_records') }}",
+                    "sInfo": "{{ __('pagination.s_info') }}",
+                    "sInfoEmpty": "{{ __('pagination.s_info_empty') }}",
+                    "sInfoFiltered": "{{ __('pagination.s_infofiltered') }}",
                     "oPaginate": {
-                        "sFirst": "{{ trans('pagination.s_paginate.first') }}",
-                        "sLast": "{{ trans('pagination.s_paginate.last') }}",
-                        "sNext": "{{ trans('pagination.s_paginate.next') }}",
-                        "sPrevious": "{{ trans('pagination.s_paginate.previous') }}",
+                        "sFirst": "{{ __('pagination.s_paginate.first') }}",
+                        "sLast": "{{ __('pagination.s_paginate.last') }}",
+                        "sNext": "{{ __('pagination.s_paginate.next') }}",
+                        "sPrevious": "{{ __('pagination.s_paginate.previous') }}",
                     },
                 },
                 "sDom": "lrtip",
@@ -159,16 +159,16 @@
 
             $('#logList').dataTable({
                 "oLanguage": {
-                    "sLengthMenu": "{{ trans('pagination.s_length_menu') }}",
-                    "sZeroRecords": "{{ trans('pagination.s_zero_records') }}",
-                    "sInfo": "{{ trans('pagination.s_info') }}",
-                    "sInfoEmpty": "{{ trans('pagination.s_info_empty') }}",
-                    "sInfoFiltered": "{{ trans('pagination.s_infofiltered') }}",
+                    "sLengthMenu": "{{ __('pagination.s_length_menu') }}",
+                    "sZeroRecords": "{{ __('pagination.s_zero_records') }}",
+                    "sInfo": "{{ __('pagination.s_info') }}",
+                    "sInfoEmpty": "{{ __('pagination.s_info_empty') }}",
+                    "sInfoFiltered": "{{ __('pagination.s_infofiltered') }}",
                     "oPaginate": {
-                        "sFirst": "{{ trans('pagination.s_paginate.first') }}",
-                        "sLast": "{{ trans('pagination.s_paginate.last') }}",
-                        "sNext": "{{ trans('pagination.s_paginate.next') }}",
-                        "sPrevious": "{{ trans('pagination.s_paginate.previous') }}",
+                        "sFirst": "{{ __('pagination.s_paginate.first') }}",
+                        "sLast": "{{ __('pagination.s_paginate.last') }}",
+                        "sNext": "{{ __('pagination.s_paginate.next') }}",
+                        "sPrevious": "{{ __('pagination.s_paginate.previous') }}",
                     },
                     "sSearch": '<span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>'
                 },
@@ -197,12 +197,12 @@
 
         function confirmation(event) {
             Swal.fire({
-                title: "{{ trans('frontend.str.clear_confirmation') }}",
-                text: "{{ trans('frontend.str.want_to_log_clear') }}",
+                title: "{{ __('frontend.str.clear_confirmation') }}",
+                text: "{{ __('frontend.str.want_to_log_clear') }}",
                 showCancelButton: true,
                 icon: 'warning',
-                cancelButtonText: "{{ trans('frontend.str.cancel') }}",
-                confirmButtonText: "{{ trans('frontend.str.yes') }}",
+                cancelButtonText: "{{ __('frontend.str.cancel') }}",
+                confirmButtonText: "{{ __('frontend.str.yes') }}",
                 reverseButtons: true,
                 confirmButtonColor: "#DD6B55",
                 customClass: {

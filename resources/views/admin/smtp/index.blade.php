@@ -46,22 +46,22 @@
                                     <th>{{ __('frontend.str.port') }}</th>
                                     <th>{{ __('frontend.str.connection_timeout') }}</th>
                                     <th>{{ __('frontend.str.connection') }}</th>
-                                    <th>{{ trans('frontend.str.authentication_method') }}</th>
-                                    <th>{{ trans('frontend.str.status') }}</th>
-                                    <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
+                                    <th>{{ __('frontend.str.authentication_method') }}</th>
+                                    <th>{{ __('frontend.str.status') }}</th>
+                                    <th style="width: 10%">{{ __('frontend.str.action') }}</th>
                                 </tr>
                                 </thead>
                                 <tfoot>
                                     <th style="width: 10px"></th>
-                                    <th>{{ trans('frontend.str.smtp_server') }}</th>
+                                    <th>{{ __('frontend.str.smtp_server') }}</th>
                                     <th>E-mail</th>
-                                    <th>{{ trans('frontend.str.login') }}</th>
-                                    <th>{{ trans('frontend.str.port') }}</th>
-                                    <th>{{ trans('frontend.str.connection_timeout') }}</th>
-                                    <th>{{ trans('frontend.str.connection') }}</th>
-                                    <th>{{ trans('frontend.str.authentication_method') }}</th>
-                                    <th>{{ trans('frontend.str.status') }}</th>
-                                    <th style="width: 10%">{{ trans('frontend.str.action') }}</th>
+                                    <th>{{ __('frontend.str.login') }}</th>
+                                    <th>{{ __('frontend.str.port') }}</th>
+                                    <th>{{ __('frontend.str.connection_timeout') }}</th>
+                                    <th>{{ __('frontend.str.connection') }}</th>
+                                    <th>{{ __('frontend.str.authentication_method') }}</th>
+                                    <th>{{ __('frontend.str.status') }}</th>
+                                    <th style="width: 10%">{{ __('frontend.str.action') }}</th>
                                 </tfoot>
                             </table>
 
@@ -71,13 +71,13 @@
                                         <div class="control-group">
 
                                             {!! Form::select('action',[
-                                            '1' => trans('frontend.str.activate'),
-                                            '0' => trans('frontend.str.deactivate'),
-                                            '2' => trans('frontend.str.remove')
-                                            ],null,['class' => 'span3 form-control', 'id' => 'select_action','placeholder' => '--' . trans('frontend.str.action') . '--']) !!}
+                                            '1' => __('frontend.str.activate'),
+                                            '0' => __('frontend.str.deactivate'),
+                                            '2' => __('frontend.str.remove')
+                                            ],null,['class' => 'span3 form-control', 'id' => 'select_action','placeholder' => '--' . __('frontend.str.action') . '--']) !!}
 
                                             <span class="help-inline">
-                                                {!! Form::submit(trans('frontend.str.apply'), ['class' => 'btn btn-success', 'disabled' => "", 'id' => 'apply']) !!}
+                                                {!! Form::submit(__('frontend.str.apply'), ['class' => 'btn btn-success', 'disabled' => "", 'id' => 'apply']) !!}
                                             </span>
 
                                         </div>
@@ -128,10 +128,10 @@
                     event.preventDefault();
                     Swal.fire({
                         title: "Error",
-                        text: "{{ trans('frontend.str.select_action') }}",
+                        text: "{{ __('frontend.str.select_action') }}",
                         type: "error",
                         showCancelButton: false,
-                        cancelButtonText: "{{ trans('frontend.str.cancel') }}",
+                        cancelButtonText: "{{ __('frontend.str.cancel') }}",
                         confirmButtonColor: "#DD6B55",
                         closeOnConfirm: false
                     });
@@ -140,13 +140,13 @@
                         event.preventDefault();
                         let form = $(this).parents('form');
                         Swal.fire({
-                            title: "{{ trans('frontend.str.delete_confirmation') }}",
-                            text: "{{ trans('frontend.str.confirm_remove') }}",
+                            title: "{{ __('frontend.str.delete_confirmation') }}",
+                            text: "{{ __('frontend.str.confirm_remove') }}",
                             type: "warning",
                             showCancelButton: true,
                             confirmButtonColor: "#DD6B55",
-                            confirmButtonText: "{{ trans('frontend.str.yes') }}",
-                            cancelButtonText: "{{ trans('frontend.str.cancel') }}",
+                            confirmButtonText: "{{ __('frontend.str.yes') }}",
+                            cancelButtonText: "{{ __('frontend.str.cancel') }}",
                             closeOnConfirm: false
                         }).then((result) => {
                             if (result.isConfirmed) {
@@ -172,16 +172,16 @@
 
             $("#itemList").DataTable({
                 "oLanguage": {
-                    "sLengthMenu": "{{ trans('pagination.s_length_menu') }}",
-                    "sZeroRecords": "{{ trans('pagination.s_zero_records') }}",
-                    "sInfo": "{{ trans('pagination.s_info') }}",
-                    "sInfoEmpty": "{{ trans('pagination.s_info_empty') }}",
-                    "sInfoFiltered": "{{ trans('pagination.s_infofiltered') }}",
+                    "sLengthMenu": "{{ __('pagination.s_length_menu') }}",
+                    "sZeroRecords": "{{ __('pagination.s_zero_records') }}",
+                    "sInfo": "{{ __('pagination.s_info') }}",
+                    "sInfoEmpty": "{{ __('pagination.s_info_empty') }}",
+                    "sInfoFiltered": "{{ __('pagination.s_infofiltered') }}",
                     "oPaginate": {
-                        "sFirst": "{{ trans('pagination.s_paginate.first') }}",
-                        "sLast": "{{ trans('pagination.s_paginate.last') }}",
-                        "sNext": "{{ trans('pagination.s_paginate.next') }}",
-                        "sPrevious": "{{ trans('pagination.s_paginate.previous') }}",
+                        "sFirst": "{{ __('pagination.s_paginate.first') }}",
+                        "sLast": "{{ __('pagination.s_paginate.last') }}",
+                        "sNext": "{{ __('pagination.s_paginate.next') }}",
+                        "sPrevious": "{{ __('pagination.s_paginate.previous') }}",
                     },
                     "sSearch": ' <i class="fas fa-search" aria-hidden="true"></i>'
                 },
@@ -214,12 +214,12 @@
             $('#itemList').on('click', 'a.deleteRow', function () {
                 let rowid = $(this).attr('id');
                 Swal.fire({
-                    title: "{{ trans('frontend.msg.are_you_sure') }}",
-                    text: "{{ trans('frontend.msg.will_not_be_able_to_ecover_information') }}",
+                    title: "{{ __('frontend.msg.are_you_sure') }}",
+                    text: "{{ __('frontend.msg.will_not_be_able_to_ecover_information') }}",
                     showCancelButton: true,
                     icon: 'warning',
-                    cancelButtonText: "{{ trans('frontend.str.cancel') }}",
-                    confirmButtonText: "{{ trans('frontend.msg.yes_remove') }}",
+                    cancelButtonText: "{{ __('frontend.str.cancel') }}",
+                    confirmButtonText: "{{ __('frontend.msg.yes_remove') }}",
                     reverseButtons: true,
                     confirmButtonColor: "#DD6B55",
                     customClass: {
@@ -236,10 +236,10 @@
                             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                             success: function () {
                                 $("#rowid_" + rowid).remove();
-                                Swal.fire("{{ trans('frontend.msg.done') }}", "{{ trans('frontend.msg.data_successfully_deleted') }}", 'success');
+                                Swal.fire("{{ __('frontend.msg.done') }}", "{{ __('frontend.msg.data_successfully_deleted') }}", 'success');
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
-                                Swal.fire("{{ trans('frontend.msg.error_deleting') }}", "{{ trans('frontend.msg.try_again') }}", 'error');
+                                Swal.fire("{{ __('frontend.msg.error_deleting') }}", "{{ __('frontend.msg.try_again') }}", 'error');
                                 console.log(ajaxOptions);
                                 console.log(thrownError);
                             }

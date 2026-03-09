@@ -127,15 +127,15 @@
                             <a href="{{ route('admin.subscribers.index') }}" class="nav-link{{ Request::is('subscribers*') ? ' active' : '' }}"
                                title="{{ __('frontend.menu.subscribers') }}">
                                 <i class="nav-icon fas fa-user-friends"></i>
-                                <p>{{ trans('frontend.menu.subscribers') }}</p>
+                                <p>{{ __('frontend.menu.subscribers') }}</p>
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a href="{{ route('admin.macros.index') }}" class="nav-link{{ Request::is('macros*') ? ' active' : '' }}"
-                               title="{{ trans('frontend.menu.macros') }}">
+                               title="{{ __('frontend.menu.macros') }}">
                                 <i class="nav-icon fas fa-scroll"></i>
-                                <p>{{ trans('frontend.menu.macros') }}</p>
+                                <p>{{ __('frontend.menu.macros') }}</p>
                             </a>
                         </li>
 
@@ -143,9 +143,9 @@
 
                     <li class="nav-item">
                         <a href="{{ route('admin.schedule.index') }}" class="nav-link{{ Request::is('schedule*') ? ' active' : '' }}"
-                           title="{{ trans('frontend.menu.schedule') }}">
+                           title="{{ __('frontend.menu.schedule') }}">
                             <i class="nav-icon fas fa-calendar-alt"></i>
-                            <p>{{ trans('frontend.menu.schedule') }}</p>
+                            <p>{{ __('frontend.menu.schedule') }}</p>
                         </a>
                     </li>
 
@@ -153,9 +153,9 @@
 
                         <li class="nav-item">
                             <a href="{{ route('admin.category.index') }}" class="nav-link{{ Request::is('category*') ? ' active' : '' }}"
-                               title="{{ trans('frontend.menu.subscribers') }}">
+                               title="{{ __('frontend.menu.subscribers') }}">
                                 <i class="nav-icon fas fa-list"></i>
-                                <p>{{ trans('frontend.menu.subscribers_category') }}</p>
+                                <p>{{ __('frontend.menu.subscribers_category') }}</p>
                             </a>
                         </li>
 
@@ -173,10 +173,10 @@
                     @endif
 
                     <li class="nav-item{{ Request::is('log*') || Request::is('redirect*') ? ' menu-open' : '' }}">
-                        <a href="#" class="nav-link{{ Request::is('log*') || Request::is('redirect*') ? ' active' : '' }}" title="{{ trans('frontend.menu.logs') }}">
+                        <a href="#" class="nav-link{{ Request::is('log*') || Request::is('redirect*') ? ' active' : '' }}" title="{{ __('frontend.menu.logs') }}">
                             <i class="nav-icon fas fa-chart-area"></i>
                             <p>
-                                {{ trans('frontend.menu.logs') }}
+                                {{ __('frontend.menu.logs') }}
                                 <i class="right fas fa-angle-left"></i>
                             </p>
                         </a>
@@ -185,17 +185,17 @@
 
                             <li class="nav-item">
                                 <a href="{{ route('admin.log.index') }}" class="nav-link{{ Request::is('log*') ? ' active' : '' }}"
-                                   title="{{ trans('frontend.menu.mailing_log') }}">
+                                   title="{{ __('frontend.menu.mailing_log') }}">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>{{ trans('frontend.menu.mailing_log') }}</p>
+                                    <p>{{ __('frontend.menu.mailing_log') }}</p>
                                 </a>
                             </li>
 
                             <li class="nav-item">
                                 <a href="{{ route('admin.redirect.index') }}" class="nav-link{{ Request::is('redirect*') ? ' active' : '' }}"
-                                   title="{{ trans('frontend.menu.referrens_log') }}">
+                                   title="{{ __('frontend.menu.referrens_log') }}">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>{{ trans('frontend.menu.referrens_log') }}</p>
+                                    <p>{{ __('frontend.menu.referrens_log') }}</p>
                                 </a>
                             </li>
 
@@ -206,9 +206,9 @@
 
                         <li class="nav-item">
                             <a href="{{ route('admin.settings.index') }}" class="nav-link{{  Request::is('settings*') ? ' active' : '' }}"
-                               title="{{ trans('frontend.menu.settings') }}">
+                               title="{{ __('frontend.menu.settings') }}">
                                 <i class="nav-icon fa fa-cogs"></i>
-                                <p>{{ trans('frontend.menu.settings') }}</p>
+                                <p>{{ __('frontend.menu.settings') }}</p>
                             </a>
                         </li>
 
@@ -218,9 +218,9 @@
 
                         <li class="nav-item">
                             <a href="{{ route('admin.users.index') }}" class="nav-link{{ Request::is('users*') ? ' active' : '' }}"
-                               title="{{ trans('frontend.menu.users') }}">
+                               title="{{ __('frontend.menu.users') }}">
                                 <i class="nav-icon fas fa-users"></i>
-                                <p>{{ trans('frontend.menu.users') }}</p>
+                                <p>{{ __('frontend.menu.users') }}</p>
                             </a>
                         </li>
 
@@ -229,26 +229,26 @@
                     @if(PermissionsHelper::has_permission(Auth::user()->role,'admin'))
 
                         <li class="nav-item">
-                            <a href="{{ route('admin.update.index') }}" class="nav-link{{ Request::is('update*') ? ' active' : '' }}" title="{{ trans('frontend.menu.update') }}">
+                            <a href="{{ route('admin.update.index') }}" class="nav-link{{ Request::is('update*') ? ' active' : '' }}" title="{{ __('frontend.menu.update') }}">
                                 <i class="nav-icon fas fa-sync-alt"></i>
-                                <p>{{ trans('frontend.menu.update') }}</p>
+                                <p>{{ __('frontend.menu.update') }}</p>
                             </a>
                         </li>
 
                     @endif
 
                     <li class="nav-item">
-                        <a href="{{ route('admin.pages.faq') }}" class="nav-link{{ Request::is('faq*') ? ' active' : '' }}" title="FAQ">
+                        <a href="{{ route('admin.faq') }}" class="nav-link{{ Request::is('faq*') ? ' active' : '' }}" title="FAQ">
                             <i class="nav-icon fas fa-question-circle"></i>
                             <p>FAQ</p>
                         </a>
                     </li>
 
                     <li class="nav-item{{ Request::is('pages*') ? ' menu-open' : '' }}">
-                        <a href="#" class="nav-link{{ Request::is('pages*') ? ' active' : '' }}" title="{{ trans('frontend.menu.miscellaneous') }}">
+                        <a href="#" class="nav-link{{ Request::is('pages*') ? ' active' : '' }}" title="{{ __('frontend.menu.miscellaneous') }}">
                             <i class="nav-icon fas fa-bookmark"></i>
                             <p>
-                                {{ trans('frontend.menu.miscellaneous') }}
+                                {{ __('frontend.menu.miscellaneous') }}
                                 <i class="right fas fa-angle-left"></i>
                             </p>
                         </a>
@@ -257,9 +257,9 @@
 
                             <li class="nav-item">
                                 <a href="{{ route('admin.pages.subscription_form') }}" class="nav-link{{ Request::is('pages/subscription-form*') ? ' active' : '' }}"
-                                   title="{{ trans('frontend.menu.subscription_form') }}">
+                                   title="{{ __('frontend.menu.subscription_form') }}">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>{{ trans('frontend.menu.subscription_form') }}</p>
+                                    <p>{{ __('frontend.menu.subscription_form') }}</p>
                                 </a>
                             </li>
 
@@ -267,9 +267,9 @@
 
                                 <li class="nav-item">
                                     <a href="{{ route('admin.pages.cron_job_list') }}" class="nav-link{{ Request::is('pages/cron-job-list*') ? ' active' : '' }}"
-                                       title="{{ trans('frontend.menu.cron_job_list') }}">
+                                       title="{{ __('frontend.menu.cron_job_list') }}">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>{{ trans('frontend.menu.cron_job_list') }}</p>
+                                        <p>{{ __('frontend.menu.cron_job_list') }}</p>
                                     </a>
                                 </li>
 
@@ -302,7 +302,7 @@
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="{{ url('/') }}">{{ trans('frontend.str.admin_panel') }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url('/') }}">{{ __('frontend.str.admin_panel') }}</a></li>
                             <li class="breadcrumb-item active">{{ $title }}</li>
                         </ol>
                     </div>
@@ -319,7 +319,7 @@
     <!-- /.content-wrapper -->
 
     <footer class="main-footer">
-        <strong>&copy; 2006-{{ date('Y') }} <a href="https://janickiy.com">PHP Newsletter</a>, {{ trans('frontend.str.author') }}</strong>
+        <strong>&copy; 2006-{{ date('Y') }} <a href="https://janickiy.com">PHP Newsletter</a>, {{ __('frontend.str.author') }}</strong>
     </footer>
 
     <!-- Control Sidebar -->
