@@ -18,5 +18,7 @@ interface RepositoryInterface
 
     public function delete(int $id): bool;
 
+    public function deleteAll(): void;
+
     public function truncate(): void;
 }

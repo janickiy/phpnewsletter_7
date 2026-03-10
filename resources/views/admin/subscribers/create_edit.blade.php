@@ -52,7 +52,7 @@
 
                                 {!! Form::label('categoryId[]',  __('frontend.form.subscribers_category')) !!}
 
-                                {!! Form::select('categoryId[]', $options, $subscriberCategoryId ?? null, ['multiple' => 'multiple', 'placeholder' => __('frontend.form.select_category'), 'class' => 'form-control']) !!}
+                                {!! Form::select('categoryId[]', $options, isset($subscriberCategoryIds) && count($subscriberCategoryIds) > 0 ? $subscriberCategoryIds : null, ['multiple' => 'multiple', 'placeholder' => __('frontend.form.select_category'), 'class' => 'form-control']) !!}
 
                                 @if ($errors->has('categoryId'))
                                     <p class="text-danger">{{ $errors->first('categoryId') }}</p>

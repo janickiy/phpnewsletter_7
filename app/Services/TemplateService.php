@@ -29,11 +29,13 @@ class TemplateService
                 throw new Exception(sprintf("Couldn't save %s!", $file->getClientOriginalName()));
             }
 
-            Attach::create(new AttachCreateData(
-                name: $file->getClientOriginalName(),
-                file_name: $filename,
-                template_id: $templateId,
-            ));
+            Attach::create(
+                (new AttachCreateData(
+                    name: $file->getClientOriginalName(),
+                    file_name: $filename,
+                    template_id: $templateId,
+                ))->toArray()
+            );
         }
     }
 }

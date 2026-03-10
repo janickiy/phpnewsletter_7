@@ -187,14 +187,12 @@ class SubscriberRepository extends BaseRepository
      */
     public function getSubscriberCategoryIdList(int $subscriber_id): array
     {
-        $rows = Subscriptions::query()->where('subscriber_id', $subscriber_id)->get();
-
         $Ids = [];
-        foreach ($rows->subscriptions as $subscription) {
+        foreach (Subscriptions::query()->where('subscriber_id', $subscriber_id)->get() as $subscription) {
             $Ids[] = $subscription->category_id;
         }
 
-        return $Ids;
+        return  $Ids;
     }
 
     /**

@@ -96,11 +96,11 @@ class SubscribersController extends Controller
         if (!$row) abort(404);
 
         $options = $this->categoryRepository->getOption();
-        $subscriberCategoryId = $this->subscribersRepository->getSubscriberCategoryIdList($id);
+        $subscriberCategoryIds = $this->subscribersRepository->getSubscriberCategoryIdList($id);
 
         $infoAlert = __('frontend.hint.subscribers_edit') ?? null;
 
-        return view('admin.subscribers.create_edit', compact('options', 'row', 'subscriberCategoryId', 'infoAlert'))->with('title', __('frontend.title.subscribers_edit'));
+        return view('admin.subscribers.create_edit', compact('options', 'row', 'subscriberCategoryIds', 'infoAlert'))->with('title', __('frontend.title.subscribers_edit'));
     }
 
     /**
@@ -212,8 +212,8 @@ class SubscribersController extends Controller
      */
     public function removeAll(): RedirectResponse
     {
-        $this->subscribersRepository->truncate();
-        $this->subscriptionRepository->truncate();
+        $this->subscriptionRepository->deleteAll();
+        $this->subscribersRepository->deleteAll();
 
         return redirect()->route('admin.subscribers.index')->with('success', __('message.data_successfully_deleted'));
     }

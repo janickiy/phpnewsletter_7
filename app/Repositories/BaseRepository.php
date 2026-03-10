@@ -72,6 +72,11 @@ abstract class BaseRepository implements RepositoryInterface
         return false;
     }
 
+    public function deleteAll(): void
+    {
+        $this->model->query()->delete();
+    }
+
     public function truncate(): void
     {
         $this->model->truncate();

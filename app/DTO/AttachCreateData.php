@@ -11,4 +11,14 @@ final class AttachCreateData
     )
     {
     }
+
+    public function toArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'file_name' => $this->file_name,
+            'template_id' => $this->template_id,
+        ];
+    }
+
 }
