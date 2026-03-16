@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests\Admin\Schedule;
 
+use App\Models\Category;
+use App\Models\Templates;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -14,6 +17,21 @@ class StoreRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $eventStart = null;
+        $eventEnd = null;
+
+        if (!empty($this->date_interval) && str_contains($this->date_interval, ' - ')) {
+            [$eventStart, $eventEnd] = explode(' - ', $this->date_interval, 2);
+        }
+
+        $this->merge([
+            'event_start' => $eventStart,
+            'event_end' => $eventEnd,
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -21,15 +39,36 @@ class StoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        $date = explode(' - ', $this->date_interval);
-        $this->event_end = $date[0];
-        $this->event_start = $date[1];
-
         return [
-            'template_id' => 'required|integer|exists:templates,id',
-            'categoryId' => 'required|array',
-            'event_end' => 'date_format:d.m.Y H:i|before:event_start',
-            'event_start' => 'date_format:d.m.Y H:i|after:tomorrow'
+            'template_id' => [
+                'required',
+                'integer',
+                Rule::exists(Templates::getTableName(), 'id'),
+            ],
+
+            'categoryId' => [
+                'required',
+                'array',
+                'min:1',
+            ],
+
+            'categoryId.*' => [
+                'required',
+                'integer',
+                Rule::exists(Category::getTableName(), 'id'),
+            ],
+
+            'event_start' => [
+                'required',
+                'date_format:d.m.Y H:i',
+                'after:tomorrow',
+            ],
+
+            'event_end' => [
+                'required',
+                'date_format:d.m.Y H:i',
+                'after:event_start',
+            ],
         ];
     }
 }

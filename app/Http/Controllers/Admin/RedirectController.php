@@ -21,9 +21,10 @@ class RedirectController  extends Controller
      */
     public function index(): View
     {
-        $infoAlert = __('frontend.hint.redirect_index') ?? null;
-
-        return view('admin.redirect.index', compact('infoAlert'))->with('title',__('frontend.title.redirect_index'));
+        return view('admin.redirect.index', [
+            'infoAlert' => __('frontend.hint.redirect_index'),
+            'title' => __('frontend.title.redirect_index'),
+        ]);
     }
 
     /**
@@ -33,7 +34,8 @@ class RedirectController  extends Controller
     {
         Redirect::truncate();
 
-        return redirect()->route('admin.redirect.index')->with('success', __('message.statistics_cleared'));
+        return to_route('admin.redirect.index')
+            ->with('success', __('message.statistics_cleared'));
     }
 
     /**
@@ -51,8 +53,10 @@ class RedirectController  extends Controller
      */
     public function info(string $url): View
     {
-        $infoAlert = __('frontend.hint.redirectlog_info') ?? null;
-
-        return view('admin.redirect.info', compact('url','infoAlert'))->with('title', __('frontend.title.redirect_info'));
+        return view('admin.redirect.info', [
+            'url' => $url,
+            'infoAlert' => __('frontend.hint.redirectlog_info'),
+            'title' => __('frontend.title.redirect_info'),
+        ]);
     }
 }

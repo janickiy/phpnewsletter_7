@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Users;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRequest extends FormRequest
@@ -22,10 +23,23 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'login' => 'required|max:255|unique:users,login,' . $this->id,
-            'name' => 'required',
-            'password' => 'min:6|nullable',
-            'password_again' => 'min:6|same:password|nullable',
+            'id' => ['required', 'integer', 'exists:' . User::getTableName() . ',id'],
+            'login' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:' . User::getTableName() . ',login,' . $this->id
+            ],
+            'name' => ['required', 'string', 'max:255'],
+            'role' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
+            'password' => ['nullable', 'string', 'min:6'],
+            'password_again' => [
+                'nullable',
+                'string',
+                'min:6',
+                'same:password'
+            ],
         ];
     }
 }

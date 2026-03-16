@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Models\Smtp;
 
-
 class SmtpRepository extends BaseRepository
 {
     public function __construct(Smtp $model)
@@ -19,42 +18,64 @@ class SmtpRepository extends BaseRepository
      */
     public function updateWithMapping(int $id, array $data): bool
     {
-        return $this->update($id, $this->mapping($data));
+        return parent::update($id, $this->mapping($data));
+    }
+
+    /**
+     * @param array $data
+     * @return Smtp
+     */
+    public function createWithMapping(array $data): Smtp
+    {
+        return $this->create($this->mapping($data));
     }
 
     /**
      * @param int $action
-     * @param array $Ids
+     * @param array $ids
      * @return void
      */
-    public function updateStatus(int $action, array $Ids): void
+    public function updateStatus(int $action, array $ids): void
     {
-        switch ($action) {
-            case  0 :
-            case  1 :
-                $this->model->whereIN('id', $Ids)->update(['active' => $action]);
-                break;
+        $ids = array_filter($ids, static fn ($id) => is_numeric($id));
 
-            case 2 :
-                $this->model->whereIN('id', $Ids)->delete();
-                break;
+        if (empty($ids)) {
+            return;
         }
+
+        match ($action) {
+            0, 1 => $this->model
+                ->whereIn('id', $ids)
+                ->update(['active' => $action]),
+
+            2 => $this->model
+                ->whereIn('id', $ids)
+                ->delete(),
+
+            default => null,
+        };
     }
 
+    /**
+     * @param array $data
+     * @return array
+     */
     private function mapping(array $data): array
     {
-        return collect($data)
-            ->merge([
-                'password' => $data['password'] ?? null,
-            ])
+        $mapped = collect($data)
             ->only($this->model->getFillable())
             ->map(function ($value, $key) {
-                if (in_array($key, ['port', 'timeout']) && !is_null($value)) {
-                    return (int)$value;
-                }
-                return $value;
+                return match ($key) {
+                    'port', 'timeout' => !is_null($value) ? (int) $value : null,
+                    default => $value,
+                };
             })
-            ->all();
-    }
+            ->toArray();
 
+        if (array_key_exists('password', $mapped) && empty($mapped['password'])) {
+            unset($mapped['password']);
+        }
+
+        return $mapped;
+    }
 }

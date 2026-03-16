@@ -22,8 +22,21 @@ class StatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'activate' => 'required|array',
-            'action'   => 'required|integer',
+            'activate' => [
+                'required',
+                'array',
+                'min:1',
+            ],
+
+            'activate.*' => [
+                'required',
+                'integer',
+            ],
+
+            'action' => [
+                'required',
+                'integer',
+            ],
         ];
     }
 }

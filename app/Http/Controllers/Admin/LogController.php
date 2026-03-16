@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-
+use App\Models\Logs;
+use App\Models\ReadySent;
 use App\Services\DownloadService;
-use App\Models\{
-    ReadySent,
-    Logs
-};
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class LogController extends Controller
 {
-    public function __construct(private DownloadService $logService)
+    public function __construct(private readonly DownloadService $logService)
     {
         parent::__construct();
     }
@@ -24,20 +22,27 @@ class LogController extends Controller
      */
     public function index(): View
     {
-        $infoAlert = __('frontend.hint.log_index') ?? null;
-
-        return view('admin.log.index', compact('infoAlert'))->with('title', __('frontend.title.log_index'));
+        return view('admin.log.index', [
+            'infoAlert' => __('frontend.hint.log_index'),
+            'title' => __('frontend.title.log_index'),
+        ]);
     }
 
-    /**
-     * @return RedirectResponse
-     */
     public function clear(): RedirectResponse
     {
-        ReadySent::truncate();
-        Logs::truncate();
+        try {
+            DB::transaction(function () {
+                ReadySent::truncate();
+                Logs::truncate();
+            });
+        } catch (\Throwable $e) {
+            report($e);
 
-        return redirect()->route('admin.log.index')->with('success', __('message.log_cleared'));
+            return back()->with('error', $e->getMessage());
+        }
+
+        return to_route('admin.log.index')
+            ->with('success', __('message.log_cleared'));
     }
 
     /**
@@ -55,8 +60,10 @@ class LogController extends Controller
      */
     public function info(int $id): View
     {
-        $infoAlert = __('frontend.hint.log_info') ?? null;
-
-        return view('admin.log.info', compact('id', 'infoAlert'))->with('title', __('frontend.title.log_info'));
+        return view('admin.log.info', [
+            'id' => $id,
+            'infoAlert' => __('frontend.hint.log_info'),
+            'title' => __('frontend.title.log_info'),
+        ]);
     }
 }

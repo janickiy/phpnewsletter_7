@@ -11,31 +11,27 @@ use Carbon\Carbon;
 
 class ScheduleRepository extends BaseRepository
 {
-    public function __construct(Schedule $model, private readonly DatabaseManager $database)
-    {
+    public function __construct(
+        Schedule $model,
+        private readonly DatabaseManager $database
+    ) {
         parent::__construct($model);
     }
 
     /**
      * @param array $data
      * @return Schedule
+     * @throws \Throwable
      */
     public function add(array $data): Schedule
     {
-        $date = explode(' - ', $data['date_interval']);
+        return $this->database->transaction(function () use ($data) {
+            $model = $this->create($this->mapping($data));
 
-        $model = $this->create(array_merge($data, [
-            'event_start' => date("Y-m-d H:i:s", strtotime($date[0])),
-            'event_end' => date("Y-m-d H:i:s", strtotime($date[1])),
-        ]));
+            $this->syncCategories($model->id, $data['categoryId'] ?? []);
 
-        foreach ($data['categoryId'] ?? [] as $categoryId) {
-            if (is_numeric($categoryId)) {
-                ScheduleCategory::create(['schedule_id' => $model->id, 'category_id' => $categoryId]);
-            }
-        }
-
-        return $model;
+            return $model;
+        });
     }
 
     /**
@@ -45,25 +41,24 @@ class ScheduleRepository extends BaseRepository
      */
     public function update(int $id, array $data): bool
     {
-        return $this->update($id, ['name' => $data['name']]);
+        return parent::update($id, $data);
     }
 
     /**
      * @param int $id
      * @param array $data
      * @return bool
+     * @throws \Throwable
      */
     public function updateWithMapping(int $id, array $data): bool
     {
-        ScheduleCategory::where('schedule_id', $data['id'])->delete();
+        return $this->database->transaction(function () use ($id, $data) {
+            ScheduleCategory::where('schedule_id', $id)->delete();
 
-        foreach ($data['categoryId'] ?? [] as $categoryId) {
-            if (is_numeric($categoryId)) {
-                ScheduleCategory::create(['schedule_id' => $data['id'], 'category_id' => $categoryId]);
-            }
-        }
+            $this->syncCategories($id, $data['categoryId'] ?? []);
 
-        return $this->update($id, $this->mapping($data));
+            return parent::update($id, $this->mapping($data));
+        });
     }
 
     /**
@@ -76,12 +71,13 @@ class ScheduleRepository extends BaseRepository
         return $this->database->transaction(function () use ($id) {
             $model = $this->model->find($id);
 
-            if (!$model) return false;
+            if (!$model) {
+                return false;
+            }
 
-            $this->model->delete();
             ScheduleCategory::where('schedule_id', $id)->delete();
 
-            return true;
+            return $model->delete();
         });
     }
 
@@ -90,7 +86,8 @@ class ScheduleRepository extends BaseRepository
      */
     public function getScheduleEvent(): ?Collection
     {
-        return $this->model->where('event_start', '<=', Carbon::now()->toDateTimeString())
+        return $this->model
+            ->where('event_start', '<=', Carbon::now()->toDateTimeString())
             ->where('event_end', '>=', Carbon::now()->toDateTimeString())
             ->get();
     }
@@ -101,7 +98,8 @@ class ScheduleRepository extends BaseRepository
      */
     public function getScheduleByDateInterval(Request $request): array
     {
-        $rows = Schedule::whereDate('event_start', '>=', $request->start)
+        $rows = $this->model
+            ->whereDate('event_start', '>=', $request->start)
             ->whereDate('event_end', '<=', $request->end)
             ->get(['id', 'event_name', 'event_start', 'event_end']);
 
@@ -110,7 +108,7 @@ class ScheduleRepository extends BaseRepository
         foreach ($rows as $row) {
             $items[] = [
                 'id' => $row->id,
-                'start' => $row->event_start, // Format as ISO 8601 with time zone
+                'start' => $row->event_start,
                 'end' => $row->event_end,
                 'title' => $row->event_name,
             ];
@@ -119,28 +117,86 @@ class ScheduleRepository extends BaseRepository
         return $items;
     }
 
-    public function remove(int $id)
+    /**
+     * @param int $id
+     * @return bool|null
+     * @throws \Throwable
+     */
+    public function remove(int $id): ?bool
     {
-        $this->delete($id);
-        ScheduleCategory::where('schedule_id', $id)->delete();
+        return $this->database->transaction(function () use ($id) {
+            ScheduleCategory::where('schedule_id', $id)->delete();
+
+            return $this->delete($id);
+        });
     }
 
+    /**
+     * @param int $scheduleId
+     * @param array $categoryIds
+     * @return void
+     */
+    private function syncCategories(int $scheduleId, array $categoryIds): void
+    {
+        foreach ($categoryIds as $categoryId) {
+            if (is_numeric($categoryId)) {
+                ScheduleCategory::create([
+                    'schedule_id' => $scheduleId,
+                    'category_id' => (int) $categoryId,
+                ]);
+            }
+        }
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
     private function mapping(array $data): array
     {
-        $date = explode(' - ', $data['date_interval']);
+        [$eventStart, $eventEnd] = $this->resolveEventDates($data);
 
         return collect($data)
             ->merge([
-                'event_start' => date("Y-m-d H:i:s", strtotime($date[0])),
-                'event_end' => date("Y-m-d H:i:s", strtotime($date[1])),
+                'event_start' => $eventStart,
+                'event_end' => $eventEnd,
             ])
             ->only($this->model->getFillable())
             ->map(function ($value, $key) {
-                if ($key === 'template_id' && !is_null($value)) {
-                    return (int)$value;
-                }
-                return $value;
+                return match ($key) {
+                    'template_id' => !is_null($value) ? (int) $value : null,
+                    default => $value,
+                };
             })
             ->all();
+    }
+
+
+    /**
+     * @param array $data
+     * @return array|null[]
+     */
+    private function resolveEventDates(array $data): array
+    {
+        if (
+            !empty($data['event_start']) &&
+            !empty($data['event_end'])
+        ) {
+            return [
+                Carbon::createFromFormat('d.m.Y H:i', $data['event_start'])->format('Y-m-d H:i:s'),
+                Carbon::createFromFormat('d.m.Y H:i', $data['event_end'])->format('Y-m-d H:i:s'),
+            ];
+        }
+
+        if (!empty($data['date_interval']) && str_contains($data['date_interval'], ' - ')) {
+            [$eventStart, $eventEnd] = explode(' - ', $data['date_interval'], 2);
+
+            return [
+                Carbon::createFromFormat('d.m.Y H:i', $eventStart)->format('Y-m-d H:i:s'),
+                Carbon::createFromFormat('d.m.Y H:i', $eventEnd)->format('Y-m-d H:i:s'),
+            ];
+        }
+
+        return [null, null];
     }
 }

@@ -2,9 +2,12 @@
 
 namespace App\Http\Requests\Admin\Schedule;
 
+
+use App\Models\Category;
 use App\Models\Schedule;
 use App\Models\Templates;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class EditRequest extends FormRequest
 {
@@ -16,6 +19,24 @@ class EditRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $eventStart = null;
+        $eventEnd = null;
+
+        if (!empty($this->date_interval) && str_contains($this->date_interval, ' - ')) {
+            $date = explode(' - ', $this->date_interval, 2);
+
+            $eventStart = $date[0] ?? null;
+            $eventEnd = $date[1] ?? null;
+        }
+
+        $this->merge([
+            'event_start' => $eventStart,
+            'event_end' => $eventEnd,
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -23,16 +44,37 @@ class EditRequest extends FormRequest
      */
     public function rules(): array
     {
-        $date = explode(' - ', $this->date_interval);
-        $this->event_start = $date[0];
-        $this->event_end = $date[1];
-
         return [
-            'template_id' => 'required|integer|exists:' . Templates::getTableName() . ',id',
-            'categoryId' => 'required|array',
-            'event_end' => 'date_format:d.m.Y H:i|before:event_start',
-            'event_start' => 'date_format:d.m.Y H:i|after:tomorrow',
-            'id' => 'required|integer|exists:' . Schedule::getTableName() . ',id',
+            'id' => [
+                'required',
+                'integer',
+                Rule::exists(Schedule::getTableName(), 'id'),
+            ],
+            'template_id' => [
+                'required',
+                'integer',
+                Rule::exists(Templates::getTableName(), 'id'),
+            ],
+            'categoryId' => [
+                'required',
+                'array',
+                'min:1',
+            ],
+            'categoryId.*' => [
+                'required',
+                'integer',
+                Rule::exists(Category::getTableName(), 'id'),
+            ],
+            'event_start' => [
+                'required',
+                'date_format:d.m.Y H:i',
+                'after:tomorrow',
+            ],
+            'event_end' => [
+                'required',
+                'date_format:d.m.Y H:i',
+                'after:event_start',
+            ],
         ];
     }
 }

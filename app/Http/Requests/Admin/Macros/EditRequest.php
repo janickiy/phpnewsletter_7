@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin\Macros;
 
 use App\Models\Macros;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class EditRequest extends FormRequest
 {
@@ -23,9 +24,27 @@ class EditRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'  => 'required|regex:/^[a-zA-Z0-9_]+$/|unique:' . Macros::getTableName() . ',name,' . $this->id,
-            'value' => 'required',
-            'type'  => 'required|integer',
+            'id' => [
+                'required',
+                'integer',
+                Rule::exists(Macros::getTableName(), 'id'),
+            ],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[a-zA-Z0-9_]+$/',
+                Rule::unique(Macros::getTableName(), 'name')->ignore($this->id),
+            ],
+            'value' => [
+                'required',
+                'string',
+            ],
+            'type' => [
+                'required',
+                'integer',
+                'min:0',
+            ],
         ];
     }
 }

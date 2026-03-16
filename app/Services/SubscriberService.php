@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+
 use App\DTO\SubscriberCreateData;
 use App\Helpers\StringHelper;
 use App\Models\Subscribers;
@@ -92,17 +93,9 @@ class SubscriberService
 
                         if ($subscriber) {
                             $subscriber->remove();
-                            foreach ($request->categoryId ?? [] as $categoryId) {
-                                if (is_numeric($categoryId)) {
-                                    Subscriptions::create([
-                                        'subscriber_id' => $subscriber->id,
-                                        'category_id' => $categoryId,
-                                    ]);
-                                }
-                            }
+                            $this->syncSubscriptions($subscriber->id, (array) ($request->categoryId ?? []));
                         } else {
-
-                            $insertId = Subscribers::create(new SubscriberCreateData(
+                            $subscriberId = Subscribers::create(new SubscriberCreateData(
                                 email: $email,
                                 active: 1,
                                 token: StringHelper::token(),
@@ -110,14 +103,7 @@ class SubscriberService
                                 name: $name,
                             ))->id;
 
-                            foreach ($request->categoryId ?? [] as $category) {
-                                if (is_numeric($category)) {
-                                    Subscriptions::create([
-                                        'subscriber_id' => $insertId,
-                                        'category_id' => $category,
-                                    ]);
-                                }
-                            }
+                            $this->syncSubscriptions($subscriberId, (array) ($request->categoryId ?? []));
 
                             $count++;
                         }
@@ -175,14 +161,9 @@ class SubscriberService
                     if ($subscriber) {
                         Subscriptions::where('subscriber_id', $subscriber->id)->delete();
 
-                        foreach ($f->categoryId ?? [] as $categoryId) {
-                            if (is_numeric($categoryId)) {
-                                Subscriptions::create(['subscriber_id' => $subscriber->id, 'category_id' => $categoryId]);
-                            }
-                        }
-
+                        $this->syncSubscriptions($subscriber->id, (array) ($request->categoryId ?? []));
                     } else {
-                        $insertId = Subscribers::create(
+                        $subscriberId = Subscribers::create(
                             new SubscriberCreateData(
                                 email: $email,
                                 active: 1,
@@ -192,18 +173,33 @@ class SubscriberService
                             )
                         )->id;
 
-                        if ($insertId) $count++;
+                        $this->syncSubscriptions($subscriberId, (array) ($request->categoryId ?? []));
 
-                        foreach ($f->categoryId ?? [] as $categoryId) {
-                            if (is_numeric($categoryId)) {
-                                Subscriptions::create(['subscriber_id' => $insertId, 'category_id' => $categoryId]);
-                            }
-                        }
+                        $count++;
                     }
                 }
             }
         }
 
         return $count;
+    }
+
+    /**
+     * @param int $subscriberId
+     * @param array $categoryIds
+     * @return void
+     */
+    private function syncSubscriptions(int $subscriberId, array $categoryIds): void
+    {
+        foreach ($categoryIds as $categoryId) {
+            if (!is_numeric($categoryId)) {
+                continue;
+            }
+
+            Subscriptions::query()->create([
+                'subscriber_id' => $subscriberId,
+                'category_id' => (int) $categoryId,
+            ]);
+        }
     }
 }

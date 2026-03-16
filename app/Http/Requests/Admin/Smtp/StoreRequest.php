@@ -24,12 +24,35 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'host' => 'required|max:255',
-            'username' => 'required',
-            'email' => 'required|email',
-            'password' => 'required',
-            'port' => 'required|numeric',
-            'timeout' => 'required|numeric',
+            'host' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+            'username' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+            ],
+            'password' => [
+                'required',
+                'string',
+            ],
+            'port' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
+            'timeout' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
         ];
     }
 
@@ -37,14 +60,27 @@ class StoreRequest extends FormRequest
      * @param Validator $validator
      * @return void
      */
-    public function withValidator(Validator $validator)
+    public function withValidator($validator): void
     {
-        if ($validator->fails() === false) {
-            $validator->after(function ($validator) {
-                if (SendEmailHelper::checkConnection($this->host, $this->email, $this->username, $this->password, $this->port, $this->authentication, $this->secure, $this->timeout) === false) {
-                    $validator->errors()->add('connection', __('message.unable_connect_to_smtp'));
-                }
-            });
+        if ($validator->fails()) {
+            return;
         }
+
+        $validator->after(function (Validator $validator): void {
+            if (
+                SendEmailHelper::checkConnection(
+                    $this->host,
+                    $this->email,
+                    $this->username,
+                    $this->password,
+                    $this->port,
+                    $this->authentication,
+                    $this->secure,
+                    $this->timeout
+                ) === false
+            ) {
+                $validator->errors()->add('connection', __('message.unable_connect_to_smtp'));
+            }
+        });
     }
 }

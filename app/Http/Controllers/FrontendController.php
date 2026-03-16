@@ -2,43 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{
-    ReadySent,
-    Redirect,
-    Subscribers,
-    Category,
-    Subscriptions
-};
-
-use App\Helpers\{
-    StringHelper,
-    SettingsHelper,
-    SendEmailHelper,
-};
+use App\Helpers\SendEmailHelper;
+use App\Helpers\SettingsHelper;
+use App\Helpers\StringHelper;
 use App\Http\Requests\Frontend\AddSubRequest;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
+use App\Models\Category;
+use App\Models\ReadySent;
+use App\Models\Redirect;
+use App\Models\Subscribers;
+use App\Models\Subscriptions;
 use Illuminate\Http\JsonResponse;
-use URL;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
+use Illuminate\View\View;
 
 class FrontendController extends Controller
 {
     /**
      * @param int $subscriber
      * @param int $template
-     * @return void
+     * @return Response
      */
-    public function pic(int $subscriber, int $template)
+    public function pic(int $subscriber, int $template): Response
     {
-        ReadySent::where('template_id', $template)->where('subscriber_id', $subscriber)->update(['readmail' => 1]);
+        ReadySent::query()
+            ->where('template_id', $template)
+            ->where('subscriber_id', $subscriber)
+            ->update(['readmail' => 1]);
 
-        $im = imagecreatetruecolor(1, 1);
+        $image = imagecreatetruecolor(1, 1);
+        imagefilledrectangle($image, 0, 0, 1, 1, 0xFFFFFF);
 
-        imagefilledrectangle($im, 0, 0, 99, 99, 0xFFFFFF);
-        header('Content-Type: image/gif');
-        imagegif($im);
-        imagedestroy($im);
-        exit;
+        ob_start();
+        imagegif($image);
+        $content = ob_get_clean();
+
+        imagedestroy($image);
+
+        return response($content, 200)
+            ->header('Content-Type', 'image/gif')
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
     }
 
     /**
@@ -48,18 +53,16 @@ class FrontendController extends Controller
      */
     public function redirectLog(string $ref, int $subscriber): RedirectResponse
     {
-        if (!$ref) abort(404);
+        abort_if($ref === '', 404);
 
-        $url = isset($ref) ? base64_decode($ref) : '';
-        $subscribers = Subscribers::find($subscriber);
+        $url = base64_decode($ref, true) ?: '';
+        $subscriberModel = Subscribers::query()->find($subscriber);
 
-        $data = [
+        Redirect::query()->create([
             'url' => $url,
-            'time' => date("Y-m-d H:i:s"),
-            'email' => $subscribers->email ?? 'test'
-        ];
-
-        Redirect::create($data);
+            'time' => now(),
+            'email' => $subscriberModel->email ?? 'test',
+        ]);
 
         return redirect($url);
     }
@@ -71,17 +74,17 @@ class FrontendController extends Controller
      */
     public function unsubscribe(int $subscriber, string $token): View
     {
-        $subscriber = Subscribers::find($subscriber);
+        $subscriberModel = Subscribers::query()->find($subscriber);
 
-        if (!$subscriber || $subscriber->token !== $token) abort(404);
+        abort_if(!$subscriberModel || $subscriberModel->token !== $token, 404);
 
-        $email = $subscriber->email;
-        $subscriber->active = 0;
-        $subscriber->save();
+        $email = $subscriberModel->email;
+        $subscriberModel->active = 0;
+        $subscriberModel->save();
 
-        $msg = str_replace('%EMAIL%', $email, __('frontend.str.address_has_been_deleted'));
-
-        return view('frontend.unsubscribe', compact('msg'));
+        return view('frontend.unsubscribe', [
+            'msg' => str_replace('%EMAIL%', $email, __('frontend.str.address_has_been_deleted')),
+        ]);
     }
 
     /**
@@ -91,12 +94,12 @@ class FrontendController extends Controller
      */
     public function subscribe(int $subscriber, string $token): View
     {
-        $subscriber = Subscribers::find($subscriber);
+        $subscriberModel = Subscribers::query()->find($subscriber);
 
-        if (!$subscriber || $subscriber->token !== $token) abort(404);
+        abort_if(!$subscriberModel || $subscriberModel->token !== $token, 404);
 
-        $subscriber->active = 1;
-        $subscriber->save();
+        $subscriberModel->active = 1;
+        $subscriberModel->save();
 
         return view('frontend.subscribe');
     }
@@ -106,66 +109,96 @@ class FrontendController extends Controller
      */
     public function form(): View
     {
-        $category = Category::get();
-
-        return view('frontend.subform', compact('category'))->with('title', 'Subform');
+        return view('frontend.subform', [
+            'category' => Category::query()->get(),
+            'title' => 'Subform',
+        ]);
     }
 
     /**
      * @param AddSubRequest $request
      * @return JsonResponse
      * @throws \PHPMailer\PHPMailer\Exception
+     * @throws \Throwable
      */
     public function addSub(AddSubRequest $request): JsonResponse
     {
         $sendMail = new SendEmailHelper();
-
+        $settings = SettingsHelper::getInstance();
         $token = StringHelper::token();
-        $id = Subscribers::create(array_merge($request->all(), ['active' => (int)SettingsHelper::getInstance()->getValueForKey('REQUIRE_SUB_CONFIRMATION') === 1 ? 0 : 1, 'token' => $token]))->id;
 
-        if ($id) {
-            if ((int)SettingsHelper::getInstance()->getValueForKey('REQUIRE_SUB_CONFIRMATION') === 1) {
-                $sendMail->setSubject(SettingsHelper::getInstance()->getValueForKey('SUBJECT_TEXT_CONFIRM'));
+        $requireConfirmation = (int) $settings->getValueForKey('REQUIRE_SUB_CONFIRMATION') === 1;
+        $notifyNewSubscriber = (int) $settings->getValueForKey('NEW_SUBSCRIBER_NOTIFY') === 1;
 
-                $CONFIRM = URL::route('frontend.subscribe',['subscriber' => $id, 'token' => $token]);
-                $msg = str_replace(array("\r\n", "\r", "\n"), '<br>', SettingsHelper::getInstance()->getValueForKey('TEXT_CONFIRMATION'));
-                $msg = str_replace('%CONFIRM%', $CONFIRM, $msg);
-
-                $sendMail->body = $msg;
-                $sendMail->email = $request->email;
-                $sendMail->token = $token;
-                $sendMail->subscriberId = $id;
-                $sendMail->name = $request->name;
-                $sendMail->unsub = false;
-                $sendMail->tracking = false;
-                $sendMail->sendEmail();
-            }
-
-            if ((int)SettingsHelper::getInstance()->getValueForKey('NEW_SUBSCRIBER_NOTIFY') === 1) {
-                $subject = __('frontend.str.notification_newuser');
-                $subject = str_replace('%SITE%', $_SERVER['SERVER_NAME'], $subject);
-                $msg = __('frontend.str.notification_newuser') . "\nName: " . $request->name . " \nE-mail: " . $request->email . "\n";
-                $msg = str_replace('%SITE%', $_SERVER['SERVER_NAME'], $msg);
-
-                $sendMail->subject = $subject;
-                $sendMail->body = $msg;
-                $sendMail->email = SettingsHelper::getInstance()->getValueForKey('EMAIL');
-                $sendMail->name = SettingsHelper::getInstance()->getValueForKey('FROM');
-                $sendMail->tracking = false;
-                $sendMail->unsub = false;
-                $sendMail->sendEmail();
-            }
+        $subscriberId = DB::transaction(function () use ($request, $token, $requireConfirmation) {
+            $subscriber = Subscribers::query()->create([
+                $request->validated(),
+                'active' => $requireConfirmation ? 0 : 1,
+                'token' => $token,
+            ]);
 
             foreach ($request->categoryId ?? [] as $categoryId) {
                 if (is_numeric($categoryId)) {
-                    Subscriptions::create(['subscriber_id' => $id, 'category_id' => $categoryId]);
+                    Subscriptions::query()->create([
+                        'subscriber_id' => $subscriber->id,
+                        'category_id' => (int) $categoryId,
+                    ]);
                 }
             }
+
+            return $subscriber->id;
+        });
+
+        if ($requireConfirmation) {
+            $sendMail->setSubject($settings->getValueForKey('SUBJECT_TEXT_CONFIRM'));
+
+            $confirmUrl = URL::route('frontend.subscribe', [
+                'subscriber' => $subscriberId,
+                'token' => $token,
+            ]);
+
+            $message = str_replace(
+                ["\r\n", "\r", "\n"],
+                '<br>',
+                $settings->getValueForKey('TEXT_CONFIRMATION')
+            );
+
+            $message = str_replace('%CONFIRM%', $confirmUrl, $message);
+
+            $sendMail->body = $message;
+            $sendMail->email = $request->email;
+            $sendMail->token = $token;
+            $sendMail->subscriberId = $subscriberId;
+            $sendMail->name = $request->name;
+            $sendMail->unsub = false;
+            $sendMail->tracking = false;
+            $sendMail->sendEmail();
+        }
+
+        if ($notifyNewSubscriber) {
+            $subject = str_replace(
+                '%SITE%',
+                request()->getHost(),
+                __('frontend.str.notification_newuser')
+            );
+
+            $message = __('frontend.str.notification_newuser') .
+                "\nName: {$request->name} \nE-mail: {$request->email}\n";
+
+            $message = str_replace('%SITE%', request()->getHost(), $message);
+
+            $sendMail->subject = $subject;
+            $sendMail->body = $message;
+            $sendMail->email = $settings->getValueForKey('EMAIL');
+            $sendMail->name = $settings->getValueForKey('FROM');
+            $sendMail->tracking = false;
+            $sendMail->unsub = false;
+            $sendMail->sendEmail();
         }
 
         return response()->json([
             'result' => 'success',
-            'msg' => __('frontend.msg.subscription_is_formed')
+            'msg' => __('frontend.msg.subscription_is_formed'),
         ]);
     }
 
@@ -174,8 +207,10 @@ class FrontendController extends Controller
      */
     public function getCategories(): JsonResponse
     {
-        $category = Category::orderBy('name', 'desc')->get();
-
-        return response()->json(['items' => $category]);
+        return response()->json([
+            'items' => Category::query()
+                ->orderBy('name', 'desc')
+                ->get(),
+        ]);
     }
-}
+    }

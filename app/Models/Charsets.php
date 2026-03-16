@@ -19,12 +19,12 @@ class Charsets extends Model
      */
     public static function getOption(): array
     {
-        $charsets = [];
-
-        foreach (self::get() ?? [] as $row) {
-            $charsets[$row->charset] = StringHelper::charsetList($row->charset);
-        }
-
-        return $charsets;
+       return Charsets::orderBy('charset')
+           ->get()
+           ->pluck('charset')
+           ->mapWithKeys(fn (string $charset) => [
+               $charset => StringHelper::charsetList($charset),
+           ])
+           ->toArray();
     }
 }

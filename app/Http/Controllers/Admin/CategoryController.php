@@ -2,42 +2,35 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Repositories\CategoryRepository;
-use App\Http\Requests\Admin\Category\{
-    StoreRequest,
-    EditRequest,
-    DeleteRequest
-};
 
+use App\Http\Requests\Admin\Category\DeleteRequest;
+use App\Http\Requests\Admin\Category\EditRequest;
+use App\Http\Requests\Admin\Category\StoreRequest;
+use App\Repositories\CategoryRepository;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
-use Exception;
 
 class CategoryController extends Controller
 {
-    public function __construct(private CategoryRepository $categoryRepository)
+    public function __construct(private readonly CategoryRepository $categoryRepository)
     {
         parent::__construct();
     }
 
-    /**
-     * @return View
-     */
     public function index(): View
     {
-        $infoAlert = __('frontend.hint.category_index') ?? null;
-
-        return view('admin.category.index', compact('infoAlert'))->with('title', __('frontend.title.category_index'));
+        return view('admin.category.index', [
+            'infoAlert' => __('frontend.hint.category_index'),
+            'title' => __('frontend.title.category_index'),
+        ]);
     }
 
-    /**
-     * @return View
-     */
     public function create(): View
     {
-        $infoAlert = __('frontend.hint.category_create') ?? null;
-
-        return view('admin.category.create_edit', compact('infoAlert'))->with('title', __('frontend.title.category_create'));
+        return view('admin.category.create_edit', [
+            'infoAlert' => __('frontend.hint.category_create'),
+            'title' => __('frontend.title.category_create'),
+        ]);
     }
 
     /**
@@ -47,17 +40,17 @@ class CategoryController extends Controller
     public function store(StoreRequest $request): RedirectResponse
     {
         try {
-            $this->categoryRepository->create($request->all());
-        } catch (Exception $e) {
+            $this->categoryRepository->create($request->validated());
+        } catch (\Throwable $e) {
             report($e);
 
-            return redirect()
-                ->back()
+            return back()
                 ->with('error', $e->getMessage())
                 ->withInput();
         }
 
-        return redirect()->route('admin.category.index')->with('success', __('message.information_successfully_added'));
+        return to_route('admin.category.index')
+            ->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -68,11 +61,13 @@ class CategoryController extends Controller
     {
         $row = $this->categoryRepository->find($id);
 
-        if (!$row) abort(404);
+        abort_if(!$row, 404);
 
-        $infoAlert = __('frontend.hint.category_create') ?? null;
-
-        return view('admin.category.create_edit', compact('row', 'infoAlert'))->with('title', __('frontend.title.category_edit'));
+        return view('admin.category.create_edit', [
+            'row' => $row,
+            'infoAlert' => __('frontend.hint.category_create'),
+            'title' => __('frontend.title.category_edit'),
+        ]);
     }
 
     /**
@@ -82,25 +77,38 @@ class CategoryController extends Controller
     public function update(EditRequest $request): RedirectResponse
     {
         try {
-            $this->categoryRepository->updateWithMapping($request->id, $request->all());
-        } catch (Exception $e) {
+            $this->categoryRepository->updateWithMapping(
+                (int) $request->id,
+                $request->safe()->except(['id'])
+            );
+        } catch (\Throwable $e) {
             report($e);
 
-            return redirect()
-                ->back()
+            return back()
                 ->with('error', $e->getMessage())
                 ->withInput();
         }
 
-        return redirect()->route('admin.category.index')->with('success', __('message.data_updated'));
+        return to_route('admin.category.index')
+            ->with('success', __('message.data_updated'));
     }
 
     /**
      * @param DeleteRequest $request
-     * @return void
+     * @return RedirectResponse
      */
-    public function destroy(DeleteRequest $request): void
+    public function destroy(DeleteRequest $request): RedirectResponse
     {
-        $this->categoryRepository->delete($request->id);
+        try {
+            $this->categoryRepository->delete((int) $request->id);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()
+                ->with('error', $e->getMessage());
+        }
+
+        return to_route('admin.category.index')
+            ->with('success', __('message.data_deleted'));
     }
 }

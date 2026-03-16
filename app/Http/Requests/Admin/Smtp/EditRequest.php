@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\Admin\Smtp;
 
+
 use App\Helpers\SendEmailHelper;
 use App\Models\Smtp;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 class EditRequest extends FormRequest
@@ -25,12 +27,36 @@ class EditRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'host' => 'required|max:255',
-            'username' => 'required',
-            'email' => 'required|email',
-            'port' => 'required|numeric',
-            'timeout' => 'required|numeric',
-            'id' => 'required|integer|exists:' . Smtp::getTableName() . ',id',
+            'id' => [
+                'required',
+                'integer',
+                Rule::exists(Smtp::getTableName(), 'id'),
+            ],
+            'host' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+            'username' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+            ],
+            'port' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
+            'timeout' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
         ];
     }
 
@@ -38,14 +64,27 @@ class EditRequest extends FormRequest
      * @param Validator $validator
      * @return void
      */
-    public function withValidator(Validator $validator)
+    public function withValidator($validator): void
     {
-        if ($validator->fails() === false) {
-            $validator->after(function ($validator) {
-                if (SendEmailHelper::checkConnection($this->host, $this->email, $this->username, $this->password, $this->port, $this->authentication, $this->secure, $this->timeout) === false) {
-                    $validator->errors()->add('connection', __('message.unable_connect_to_smtp'));
-                }
-            });
+        if ($validator->fails()) {
+            return;
         }
+
+        $validator->after(function (Validator $validator): void {
+            if (
+                SendEmailHelper::checkConnection(
+                    $this->host,
+                    $this->email,
+                    $this->username,
+                    $this->password,
+                    $this->port,
+                    $this->authentication,
+                    $this->secure,
+                    $this->timeout
+                ) === false
+            ) {
+                $validator->errors()->add('connection', __('message.unable_connect_to_smtp'));
+            }
+        });
     }
 }

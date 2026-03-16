@@ -3,51 +3,45 @@
 namespace App\Http\Controllers\Admin;
 
 
-use App\Services\SubscriberService;
+use App\Helpers\StringHelper;
+use App\Http\Requests\Admin\Subscribers\EditRequest;
+use App\Http\Requests\Admin\Subscribers\ImportRequest;
+use App\Http\Requests\Admin\Subscribers\StoreRequest;
+use App\Models\Charsets;
 use App\Repositories\CategoryRepository;
 use App\Repositories\SubscriberRepository;
 use App\Repositories\SubscriptionRepository;
 use App\Services\DownloadService;
+use App\Services\SubscriberService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
-use App\Models\{
-    Subscribers,
-    Charsets,
-};
-use App\Helpers\StringHelper;
-use App\Http\Requests\Admin\Subscribers\{ImportRequest, StoreRequest, EditRequest};
-
-;
-
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Exception;
 
 
 class SubscribersController extends Controller
 {
     public function __construct(
-        private SubscriberRepository   $subscribersRepository,
-        private CategoryRepository     $categoryRepository,
-        private SubscriptionRepository $subscriptionRepository,
-        private DownloadService        $downloadService,
-        private SubscriberService      $subscriberService,
-    )
-    {
+        private readonly SubscriberRepository $subscribersRepository,
+        private readonly CategoryRepository $categoryRepository,
+        private readonly SubscriptionRepository $subscriptionRepository,
+        private readonly DownloadService $downloadService,
+        private readonly SubscriberService $subscriberService,
+    ) {
         parent::__construct();
     }
-
 
     /**
      * @return View
      */
     public function index(): View
     {
-        $infoAlert = __('frontend.hint.subscribers_index') ?? null;
-
-        return view('admin.subscribers.index', compact('infoAlert'))->with('title', __('frontend.title.subscribers_index'));
+        return view('admin.subscribers.index', [
+            'infoAlert' => __('frontend.hint.subscribers_index'),
+            'title' => __('frontend.title.subscribers_index'),
+        ]);
     }
 
     /**
@@ -55,10 +49,11 @@ class SubscribersController extends Controller
      */
     public function create(): View
     {
-        $options = $this->categoryRepository->getOption();
-        $infoAlert = __('frontend.hint.subscribers_create') ?? null;
-
-        return view('admin.subscribers.create_edit', compact('options', 'infoAlert'))->with('title', __('frontend.title.subscribers_create'));
+        return view('admin.subscribers.create_edit', [
+            'options' => $this->categoryRepository->getOption(),
+            'infoAlert' => __('frontend.hint.subscribers_create'),
+            'title' => __('frontend.title.subscribers_create'),
+        ]);
     }
 
     /**
@@ -68,21 +63,22 @@ class SubscribersController extends Controller
     public function store(StoreRequest $request): RedirectResponse
     {
         try {
-            $this->subscribersRepository->create(array_merge($request->all(), [
-                'timeSent' => date('Y-m-d H:i:s'),
+            $this->subscribersRepository->create([
+                $request->validated(),
+                'timeSent' => now(),
                 'active' => 1,
-                'token' => StringHelper::token()
-            ]));
-        } catch (Exception $e) {
+                'token' => StringHelper::token(),
+            ]);
+        } catch (\Throwable $e) {
             report($e);
 
-            return redirect()
-                ->back()
+            return back()
                 ->with('error', $e->getMessage())
                 ->withInput();
         }
 
-        return redirect()->route('admin.subscribers.index')->with('success', __('message.information_successfully_added'));
+        return to_route('admin.subscribers.index')
+            ->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -93,54 +89,69 @@ class SubscribersController extends Controller
     {
         $row = $this->subscribersRepository->find($id);
 
-        if (!$row) abort(404);
+        abort_if(!$row, 404);
 
-        $options = $this->categoryRepository->getOption();
-        $subscriberCategoryIds = $this->subscribersRepository->getSubscriberCategoryIdList($id);
-
-        $infoAlert = __('frontend.hint.subscribers_edit') ?? null;
-
-        return view('admin.subscribers.create_edit', compact('options', 'row', 'subscriberCategoryIds', 'infoAlert'))->with('title', __('frontend.title.subscribers_edit'));
+        return view('admin.subscribers.create_edit', [
+            'options' => $this->categoryRepository->getOption(),
+            'row' => $row,
+            'subscriberCategoryIds' => $this->subscribersRepository->getSubscriberCategoryIdList($id),
+            'infoAlert' => __('frontend.hint.subscribers_edit'),
+            'title' => __('frontend.title.subscribers_edit'),
+        ]);
     }
 
     /**
      * @param EditRequest $request
      * @return RedirectResponse
-     * @throws \Throwable
      */
     public function update(EditRequest $request): RedirectResponse
     {
         try {
             DB::transaction(function () use ($request) {
-                $this->subscribersRepository->update($request->id, $request->all());
+                $this->subscribersRepository->update(
+                    (int) $request->id,
+                    $request->safe()->except(['id', 'categoryId'])
+                );
 
-                if ($request->categoryId) {
-                    $this->subscriptionRepository->updateSubscriptions($request->categoryId, $request->id);
+                if ($request->filled('categoryId')) {
+                    $this->subscriptionRepository->updateSubscriptions(
+                        $request->categoryId,
+                        (int) $request->id
+                    );
                 }
             });
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             report($e);
 
-            return redirect()
-                ->back()
+            return back()
                 ->with('error', $e->getMessage())
                 ->withInput();
         }
 
-        return redirect()->route('admin.subscribers.index')->with('success', __('message.data_updated'));
+        return to_route('admin.subscribers.index')
+            ->with('success', __('message.data_updated'));
     }
 
     /**
      * @param int $id
-     * @return void
-     * @throws \Throwable
+     * @return RedirectResponse
      */
-    public function destroy(int $id): void
+    public function destroy(int $id): RedirectResponse
     {
-        DB::transaction(function () use ($id) {
-            $this->subscriptionRepository->removeBySubscriberId($id);
-            $this->subscribersRepository->delete($id);
-        });
+        try {
+            DB::transaction(function () use ($id) {
+                $this->subscriptionRepository->removeBySubscriberId($id);
+                $this->subscribersRepository->delete($id);
+            });
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()
+                ->with('error', $e->getMessage());
+        }
+
+        return to_route('admin.subscribers.index')
+            ->with('success', __('message.data_deleted'));
     }
 
     /**
@@ -148,12 +159,13 @@ class SubscribersController extends Controller
      */
     public function import(): View
     {
-        $charsets = Charsets::getOption();
-        $category_options = $this->categoryRepository->getOption();
-        $maxUploadFileSize = StringHelper::maxUploadFileSize();
-        $infoAlert = __('frontend.hint.subscribers_import') ?? null;
-
-        return view('admin.subscribers.import', compact('charsets', 'category_options', 'maxUploadFileSize', 'infoAlert'))->with('title', __('frontend.title.subscribers_import'));
+        return view('admin.subscribers.import', [
+            'charsets' => Charsets::getOption(),
+            'category_options' => $this->categoryRepository->getOption(),
+            'maxUploadFileSize' => StringHelper::maxUploadFileSize(),
+            'infoAlert' => __('frontend.hint.subscribers_import'),
+            'title' => __('frontend.title.subscribers_import'),
+        ]);
     }
 
     /**
@@ -166,22 +178,18 @@ class SubscribersController extends Controller
 
         $extension = strtolower($request->file('import')->getClientOriginalExtension());
 
-        switch ($extension) {
-            case 'csv':
-            case 'xls':
-            case 'xlsx':
-            case 'ods':
-                $result = $this->subscriberService->importFromExcel($request);
-                break;
+        $result = match ($extension) {
+            'csv', 'xls', 'xlsx', 'ods' => $this->subscriberService->importFromExcel($request),
+            default => $this->subscriberService->importFromText($request),
+        };
 
-            default:
-                $result = $this->subscriberService->importFromText($request);
+        if ($result === false) {
+            return to_route('admin.subscribers.index')
+                ->with('error', __('message.error_import_file'));
         }
 
-        if ($result === false)
-            return redirect()->route('admin.subscribers.index')->with('error', __('message.error_import_file'));
-        else
-            return redirect()->route('admin.subscribers.index')->with('success', __('message.import_completed') . $result);
+        return to_route('admin.subscribers.index')
+            ->with('success', __('message.import_completed') . $result);
     }
 
     /**
@@ -189,21 +197,15 @@ class SubscribersController extends Controller
      */
     public function export(): View
     {
-        $options = $this->categoryRepository->getOption();
-        $infoAlert = __('frontend.hint.subscribers_export') ?? null;
-
-        return view('admin.subscribers.export', compact('options', 'infoAlert'))->with('title', __('frontend.title.subscribers_export'));
+        return view('admin.subscribers.export', [
+            'options' => $this->categoryRepository->getOption(),
+            'infoAlert' => __('frontend.hint.subscribers_export'),
+            'title' => __('frontend.title.subscribers_export'),
+        ]);
     }
 
-
-    /**
-     * @param Request $request
-     * @return Response|StreamedResponse
-     */
     public function exportSubscribers(Request $request): Response|StreamedResponse
     {
-        set_time_limit(0);
-
         return $this->downloadService->exportSubscribers($request);
     }
 
@@ -212,10 +214,20 @@ class SubscribersController extends Controller
      */
     public function removeAll(): RedirectResponse
     {
-        $this->subscriptionRepository->deleteAll();
-        $this->subscribersRepository->deleteAll();
+        try {
+            DB::transaction(function () {
+                $this->subscriptionRepository->deleteAll();
+                $this->subscribersRepository->deleteAll();
+            });
+        } catch (\Throwable $e) {
+            report($e);
 
-        return redirect()->route('admin.subscribers.index')->with('success', __('message.data_successfully_deleted'));
+            return back()
+                ->with('error', $e->getMessage());
+        }
+
+        return to_route('admin.subscribers.index')
+            ->with('success', __('message.data_successfully_deleted'));
     }
 
     /**
@@ -224,8 +236,19 @@ class SubscribersController extends Controller
      */
     public function status(Request $request): RedirectResponse
     {
-        $this->subscribersRepository->updateStatus($request->action, $request->activate);
+        try {
+            $this->subscribersRepository->updateStatus(
+                (int) $request->action,
+                (array) $request->activate
+            );
+        } catch (\Throwable $e) {
+            report($e);
 
-        return redirect()->route('admin.subscribers.index')->with('success', __('message.actions_completed'));
+            return back()
+                ->with('error', $e->getMessage());
+        }
+
+        return to_route('admin.subscribers.index')
+            ->with('success', __('message.actions_completed'));
     }
 }

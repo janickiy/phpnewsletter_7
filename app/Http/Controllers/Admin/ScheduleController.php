@@ -3,27 +3,25 @@
 namespace App\Http\Controllers\Admin;
 
 
-use App\Repositories\CategoryRepository;
-use App\Repositories\TemplateRepository;
-use App\Models\Schedule;
-use App\Repositories\ScheduleRepository;
-use App\Http\Requests\Admin\Schedule\StoreRequest;
-use App\Http\Requests\Admin\Schedule\EditRequest;
 use App\Http\Requests\Admin\Schedule\DeleteRequest;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
-use Illuminate\Http\Request;
+use App\Http\Requests\Admin\Schedule\EditRequest;
+use App\Http\Requests\Admin\Schedule\StoreRequest;
+use App\Models\Schedule;
+use App\Repositories\CategoryRepository;
+use App\Repositories\ScheduleRepository;
+use App\Repositories\TemplateRepository;
 use Illuminate\Http\JsonResponse;
-use Exception;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ScheduleController extends Controller
 {
     public function __construct(
-        private ScheduleRepository $scheduleRepository,
-        private CategoryRepository $categoryRepository,
-        private TemplateRepository $templateRepository,
-    )
-    {
+        private readonly ScheduleRepository $scheduleRepository,
+        private readonly CategoryRepository $categoryRepository,
+        private readonly TemplateRepository $templateRepository,
+    ) {
         parent::__construct();
     }
 
@@ -32,10 +30,11 @@ class ScheduleController extends Controller
      */
     public function index(): View
     {
-        $schedule = Schedule::get();
-        $infoAlert = __('frontend.hint.schedule_index') ?? null;
-
-        return view('admin.schedule.index', compact('schedule', 'infoAlert'))->with('title', __('frontend.title.schedule_index'));
+        return view('admin.schedule.index', [
+            'schedule' => Schedule::query()->get(),
+            'infoAlert' => __('frontend.hint.schedule_index'),
+            'title' => __('frontend.title.schedule_index'),
+        ]);
     }
 
     /**
@@ -44,7 +43,9 @@ class ScheduleController extends Controller
      */
     public function list(Request $request): JsonResponse
     {
-        return response()->json($this->scheduleRepository->getScheduleByDateInterval($request));
+        return response()->json(
+            $this->scheduleRepository->getScheduleByDateInterval($request)
+        );
     }
 
     /**
@@ -53,23 +54,23 @@ class ScheduleController extends Controller
      */
     public function calendarEvents(Request $request): JsonResponse
     {
-        switch ($request->type) {
-            case 'edit':
-                $event = Schedule::find($request->id)->update([
+        $event = Schedule::query()->find($request->id);
+
+        if (!$event) {
+            return response()->json(false, 404);
+        }
+
+        return match ($request->type) {
+            'edit' => response()->json(
+                $event->update([
                     'event_name' => $request->event_name,
                     'event_start' => $request->event_start,
                     'event_end' => $request->event_end,
-                ]);
-
-                return response()->json($event);
-
-            case 'delete':
-                $event = Schedule::find($request->id)->delete();
-
-                return response()->json($event);
-            default:
-                break;
-        }
+                ])
+            ),
+            'delete' => response()->json($event->delete()),
+            default => response()->json(false, 400),
+        };
     }
 
     /**
@@ -77,11 +78,12 @@ class ScheduleController extends Controller
      */
     public function create(): View
     {
-        $options = $this->templateRepository->getOption();
-        $category_options = $this->categoryRepository->getOption();
-        $infoAlert = __('frontend.hint.schedule_create') ?? null;
-
-        return view('admin.schedule.create_edit', compact('options', 'category_options', 'infoAlert'))->with('title', __('frontend.title.schedule_index'));
+        return view('admin.schedule.create_edit', [
+            'options' => $this->templateRepository->getOption(),
+            'category_options' => $this->categoryRepository->getOption(),
+            'infoAlert' => __('frontend.hint.schedule_create'),
+            'title' => __('frontend.title.schedule_index'),
+        ]);
     }
 
     /**
@@ -91,17 +93,19 @@ class ScheduleController extends Controller
     public function store(StoreRequest $request): RedirectResponse
     {
         try {
-            $this->scheduleRepository->add($request->all());
-        } catch (Exception $e) {
+            $this->scheduleRepository->add(
+                $request->validated()
+            );
+        } catch (\Throwable $e) {
             report($e);
 
-            return redirect()
-                ->back()
+            return back()
                 ->with('error', $e->getMessage())
                 ->withInput();
         }
 
-        return redirect()->route('admin.schedule.index')->with('success', __('message.information_successfully_added'));
+        return to_route('admin.schedule.index')
+            ->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -112,20 +116,17 @@ class ScheduleController extends Controller
     {
         $row = $this->scheduleRepository->find($id);
 
-        if (!$row) abort(404);
+        abort_if(!$row, 404);
 
-        $categoryId = [];
-
-        foreach ($row->categories ?? [] as $category) {
-            $categoryId[] = $category->id;
-        }
-
-        $options = $this->templateRepository->getOption();
-        $category_options = $this->categoryRepository->getOption();
-        $date_interval = date("d.m.Y H:i", strtotime($row->event_start)) . ' - ' . date("d.m.Y H:i", strtotime($row->end_date));
-        $infoAlert = __('frontend.hint.schedule_edit') ?? null;
-
-        return view('admin.schedule.create_edit', compact('categoryId', 'options', 'category_options', 'row', 'infoAlert', 'date_interval'))->with('title', __('frontend.title.schedule_edit'));
+        return view('admin.schedule.create_edit', [
+            'categoryId' => $row->categories?->pluck('id')->toArray() ?? [],
+            'options' => $this->templateRepository->getOption(),
+            'category_options' => $this->categoryRepository->getOption(),
+            'row' => $row,
+            'infoAlert' => __('frontend.hint.schedule_edit'),
+            'date_interval' => date('d.m.Y H:i', strtotime($row->event_start)) . ' - ' . date('d.m.Y H:i', strtotime($row->event_end)),
+            'title' => __('frontend.title.schedule_edit'),
+        ]);
     }
 
     /**
@@ -135,25 +136,38 @@ class ScheduleController extends Controller
     public function update(EditRequest $request): RedirectResponse
     {
         try {
-            $this->scheduleRepository->updateWithMapping($request->id, $request->all());
-        } catch (Exception $e) {
+            $this->scheduleRepository->updateWithMapping(
+                (int) $request->id,
+                $request->safe()->except(['id'])
+            );
+        } catch (\Throwable $e) {
             report($e);
 
-            return redirect()
-                ->back()
+            return back()
                 ->with('error', $e->getMessage())
                 ->withInput();
         }
 
-        return redirect()->route('admin.schedule.index')->with('success', __('message.data_updated'));
+        return to_route('admin.schedule.index')
+            ->with('success', __('message.data_updated'));
     }
 
     /**
      * @param DeleteRequest $request
-     * @return void
+     * @return RedirectResponse
      */
-    public function destroy(DeleteRequest $request): void
+    public function destroy(DeleteRequest $request): RedirectResponse
     {
-        $this->scheduleRepository->delete($request->id);
+        try {
+            $this->scheduleRepository->delete((int) $request->id);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()
+                ->with('error', $e->getMessage());
+        }
+
+        return to_route('admin.schedule.index')
+            ->with('success', __('message.data_deleted'));
     }
 }

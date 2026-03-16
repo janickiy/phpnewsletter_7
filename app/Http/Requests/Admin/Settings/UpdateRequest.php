@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Admin\Templates;
+namespace App\Http\Requests\Admin\Settings;
 
+use App\Models\Settings;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,18 +24,19 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'id' => [
+                'required',
+                'integer',
+                Rule::exists(Settings::getTableName(), 'id'),
+            ],
             'name' => [
                 'required',
                 'string',
                 'max:255',
             ],
-            'body' => [
+            'value' => [
                 'required',
                 'string',
-            ],
-            'prior' => [
-                'required',
-                'integer',
             ],
         ];
     }

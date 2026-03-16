@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests\Admin\Macros;
 
+
+use App\Models\Macros;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -22,9 +25,22 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'  => 'required|regex:/^[a-zA-Z0-9_]+$/|unique:macros',
-            'value' => 'required',
-            'type'  => 'required|integer',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[a-zA-Z0-9_]+$/',
+                Rule::unique(Macros::getTableName(), 'name'),
+            ],
+            'value' => [
+                'required',
+                'string',
+            ],
+            'type' => [
+                'required',
+                'integer',
+                'min:0',
+            ],
         ];
     }
 }

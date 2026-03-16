@@ -2,26 +2,32 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\Admin\Category\StoreRequest;
-use App\Http\Requests\Admin\Category\EditRequest;
-use App\Models\Macros;
 
+use App\Http\Requests\Admin\Macros\DeleteRequest;
+use App\Http\Requests\Admin\Macros\EditRequest;
+use App\Http\Requests\Admin\Macros\StoreRequest;
+use App\Models\Macros;
+use App\Repositories\MacrosRepository;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class MacrosController extends Controller
 {
-
+    public function __construct(
+        private readonly MacrosRepository $macrosRepository
+    ) {
+        parent::__construct();
+    }
 
     /**
      * @return View
      */
     public function index(): View
     {
-        $infoAlert = __('frontend.hint.macros_index') ?? null;
-
-        return view('admin.macros.index', compact('infoAlert'))->with('title', __('frontend.title.macros_index'));
+        return view('admin.macros.index', [
+            'infoAlert' => __('frontend.hint.macros_index'),
+            'title' => __('frontend.title.macros_index'),
+        ]);
     }
 
     /**
@@ -29,10 +35,11 @@ class MacrosController extends Controller
      */
     public function create(): View
     {
-        $infoAlert = __('frontend.hint.macros_create') ?? null;
-        $options = Macros::getOption();
-
-        return view('admin.macros.create_edit', compact('infoAlert', 'options'))->with('title', __('frontend.title.macros_create'));
+        return view('admin.macros.create_edit', [
+            'infoAlert' => __('frontend.hint.macros_create'),
+            'options' => Macros::getOption(),
+            'title' => __('frontend.title.macros_create'),
+        ]);
     }
 
     /**
@@ -41,9 +48,18 @@ class MacrosController extends Controller
      */
     public function store(StoreRequest $request): RedirectResponse
     {
-        Macros::create($request->all());
+        try {
+            $this->macrosRepository->create($request->validated());
+        } catch (\Throwable $e) {
+            report($e);
 
-        return redirect()->route('admin.macros.index')->with('success', __('message.information_successfully_added'));
+            return back()
+                ->with('error', $e->getMessage())
+                ->withInput();
+        }
+
+        return to_route('admin.macros.index')
+            ->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -52,14 +68,16 @@ class MacrosController extends Controller
      */
     public function edit(int $id): View
     {
-        $row = Macros::find($id);
+        $row = $this->macrosRepository->find($id);
 
-        if (!$row) abort(404);
+        abort_if(!$row, 404);
 
-        $options = Macros::getOption();
-        $infoAlert = __('frontend.hint.macros_create') ?? null;
-
-        return view('admin.macros.create_edit', compact('row', 'infoAlert', 'options'))->with('title', __('frontend.title.macros_edit'));
+        return view('admin.macros.create_edit', [
+            'row' => $row,
+            'infoAlert' => __('frontend.hint.macros_create'),
+            'options' => Macros::getOption(),
+            'title' => __('frontend.title.macros_edit'),
+        ]);
     }
 
     /**
@@ -68,24 +86,39 @@ class MacrosController extends Controller
      */
     public function update(EditRequest $request): RedirectResponse
     {
-        $row = Macros::find($request->id);
+        try {
+            $this->macrosRepository->updateWithMapping(
+                (int) $request->id,
+                $request->safe()->except(['id'])
+            );
+        } catch (\Throwable $e) {
+            report($e);
 
-        if (!$row) abort(404);
+            return back()
+                ->with('error', $e->getMessage())
+                ->withInput();
+        }
 
-        $row->name = $request->input('name');
-        $row->value = $request->input('value');
-        $row->type = $request->input('type');
-        $row->save();
-
-        return redirect()->route('admin.macros.index')->with('success', __('message.data_updated'));
+        return to_route('admin.macros.index')
+            ->with('success', __('message.data_updated'));
     }
 
     /**
-     * @param Request $request
-     * @return void
+     * @param DeleteRequest $request
+     * @return RedirectResponse
      */
-    public function destroy(Request $request): void
+    public function destroy(DeleteRequest $request): RedirectResponse
     {
-        Macros::find($request->id)->delete();
+        try {
+            $this->macrosRepository->delete((int) $request->id);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()
+                ->with('error', $e->getMessage());
+        }
+
+        return to_route('admin.macros.index')
+            ->with('success', __('message.data_deleted'));
     }
 }

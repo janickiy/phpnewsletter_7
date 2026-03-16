@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\Admin\Templates;
 
+use App\Models\Templates;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreRequest extends FormRequest
+class DeleteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,18 +24,10 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-            'body' => [
-                'required',
-                'string',
-            ],
-            'prior' => [
+            'id' => [
                 'required',
                 'integer',
+                Rule::exists(Templates::getTableName(), 'id'),
             ],
         ];
     }

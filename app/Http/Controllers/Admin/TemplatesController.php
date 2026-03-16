@@ -2,26 +2,24 @@
 
 namespace App\Http\Controllers\Admin;
 
-
+use App\Http\Requests\Admin\Templates\DeleteRequest;
+use App\Http\Requests\Admin\Templates\StoreRequest;
+use App\Http\Requests\Admin\Templates\UpdateRequest;
+use App\Models\Macros;
 use App\Repositories\CategoryRepository;
 use App\Repositories\TemplateRepository;
 use App\Services\TemplateService;
-use App\Models\Macros;
-use App\Http\Requests\Admin\Templates\StoreRequest;
-use App\Http\Requests\Admin\Templates\UpdateRequest;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Exception;
+
 
 class TemplatesController extends Controller
 {
     public function __construct(
-        private TemplateRepository $templateRepository,
-        private CategoryRepository $categoryRepository,
-        private TemplateService    $templateService,
-    )
-    {
+        private readonly TemplateRepository $templateRepository,
+        private readonly CategoryRepository $categoryRepository,
+        private readonly TemplateService $templateService,
+    ) {
         parent::__construct();
     }
 
@@ -30,11 +28,11 @@ class TemplatesController extends Controller
      */
     public function index(): View
     {
-        $categoryOptions = $this->categoryRepository->getOption();
-
-        $infoAlert = __('frontend.hint.template_index') ?? null;
-
-        return view('admin.templates.index', compact('infoAlert', 'categoryOptions'))->with('title', __('frontend.title.template_index'));
+        return view('admin.templates.index', [
+            'categoryOptions' => $this->categoryRepository->getOption(),
+            'infoAlert' => __('frontend.hint.template_index'),
+            'title' => __('frontend.title.template_index'),
+        ]);
     }
 
     /**
@@ -42,11 +40,11 @@ class TemplatesController extends Controller
      */
     public function create(): View
     {
-        $infoAlert = __('frontend.hint.template_create') ?? null;
-
-        $macrosList = $this->getMacros();
-
-        return view('admin.templates.create_edit', compact('infoAlert', 'macrosList'))->with('title', __('frontend.title.template_create'));
+        return view('admin.templates.create_edit', [
+            'infoAlert' => __('frontend.hint.template_create'),
+            'macrosList' => $this->getMacros(),
+            'title' => __('frontend.title.template_create'),
+        ]);
     }
 
     /**
@@ -56,18 +54,19 @@ class TemplatesController extends Controller
     public function store(StoreRequest $request): RedirectResponse
     {
         try {
-            $template = $this->templateRepository->create($request->all());
+            $template = $this->templateRepository->create($request->validated());
+
             $this->templateService->storeAttach($request, $template->id);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             report($e);
 
-            return redirect()
-                ->back()
+            return back()
                 ->with('error', $e->getMessage())
                 ->withInput();
         }
 
-        return redirect()->route('admin.templates.index')->with('success', __('message.information_successfully_added'));
+        return to_route('admin.templates.index')
+            ->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -78,13 +77,15 @@ class TemplatesController extends Controller
     {
         $template = $this->templateRepository->find($id);
 
-        if (!$template) abort(404);
+        abort_if(!$template, 404);
 
-        $attachment = $template->attach;
-        $infoAlert = __('frontend.hint.template_edit') ? __('frontend.hint.template_edit') : null;
-        $macrosList = $this->getMacros();
-
-        return view('admin.templates.create_edit', compact('template', 'attachment', 'infoAlert', 'macrosList'))->with('title', __('frontend.title.template_edit'));
+        return view('admin.templates.create_edit', [
+            'template' => $template,
+            'attachment' => $template->attach,
+            'infoAlert' => __('frontend.hint.template_edit'),
+            'macrosList' => $this->getMacros(),
+            'title' => __('frontend.title.template_edit'),
+        ]);
     }
 
     /**
@@ -94,38 +95,63 @@ class TemplatesController extends Controller
     public function update(UpdateRequest $request): RedirectResponse
     {
         try {
-            $this->templateRepository->updateWithMapping($request->id, $request->all());
-            $this->templateService->storeAttach($request, $request->id);
-        } catch (Exception $e) {
+            $this->templateRepository->updateWithMapping(
+                (int) $request->id,
+                $request->safe()->except(['id'])
+            );
+
+            $this->templateService->storeAttach($request, (int) $request->id);
+        } catch (\Throwable $e) {
             report($e);
 
-            return redirect()
-                ->back()
+            return back()
                 ->with('error', $e->getMessage())
                 ->withInput();
         }
 
-        return redirect()->route('admin.templates.index')->with('success', __('message.data_updated'));
+        return to_route('admin.templates.index')
+            ->with('success', __('message.data_updated'));
     }
 
     /**
-     * @param Request $request
-     * @return void
-     */
-    public function destroy(Request $request): void
-    {
-        $this->templateRepository->remove($request->id);
-    }
-
-    /**
-     * @param Request $request
+     * @param DeleteRequest $request
      * @return RedirectResponse
      */
-    public function status(Request $request): RedirectResponse
+    public function destroy(DeleteRequest $request): RedirectResponse
     {
-        $this->templateRepository->updateStatus($request->templateId, $request->action);
+        try {
+            $this->templateRepository->remove((int) $request->id);
+        } catch (\Throwable $e) {
+            report($e);
 
-        return redirect()->route('admin.templates.index')->with('success', __('message.actions_completed'));
+            return back()
+                ->with('error', $e->getMessage());
+        }
+
+        return to_route('admin.templates.index')
+            ->with('success', __('message.data_deleted'));
+    }
+
+    /**
+     * @param DeleteRequest $request
+     * @return RedirectResponse
+     */
+    public function status(DeleteRequest $request): RedirectResponse
+    {
+        try {
+            $this->templateRepository->updateStatus(
+                $request->templateId,
+                (int) $request->action
+            );
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()
+                ->with('error', $e->getMessage());
+        }
+
+        return to_route('admin.templates.index')
+            ->with('success', __('message.actions_completed'));
     }
 
     /**
@@ -133,12 +159,9 @@ class TemplatesController extends Controller
      */
     private function getMacros(): string
     {
-        $list = [];
-
-        foreach (Macros::get() as $macro) {
-            $list[] = '{{' . $macro->name . '}} - ' . $macro->getType();
-        }
-
-        return implode(', ', $list);
+        return Macros::query()
+            ->get()
+            ->map(fn ($macro) => '{{' . $macro->name . '}} - ' . $macro->getType())
+            ->implode(', ');
     }
 }

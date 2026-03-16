@@ -23,8 +23,16 @@ class EditRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required',
-            'id'   => 'required|integer|exists:' . Category::getTableName() . ',id',
+            'id' => [
+                'required',
+                'integer',
+                'exists:' . Category::getTableName() . ',id',
+            ],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
         ];
     }
 }

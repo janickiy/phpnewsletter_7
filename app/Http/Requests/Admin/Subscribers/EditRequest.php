@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Admin\Subscribers;
 
-
+use App\Models\Category;
 use App\Models\Subscribers;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class EditRequest extends FormRequest
 {
@@ -24,9 +25,26 @@ class EditRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email|unique:subscribers,email,' . $this->id,
-            'categoryId' => 'array|nullable',
-            'id' => 'required|integer|exists:' . Subscribers::getTableName() . ',id',
+            'id' => [
+                'required',
+                'integer',
+                Rule::exists(Subscribers::getTableName(), 'id'),
+            ],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique(Subscribers::getTableName(), 'email')->ignore($this->id),
+            ],
+            'categoryId' => [
+                'nullable',
+                'array',
+            ],
+            'categoryId.*' => [
+                'required',
+                'integer',
+                Rule::exists(Category::getTableName(), 'id'),
+            ],
         ];
     }
 }

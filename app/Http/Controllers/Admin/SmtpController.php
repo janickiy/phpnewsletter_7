@@ -3,19 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 
-use App\Repositories\SmtpRepository;
+use App\Http\Requests\Admin\Smtp\DeleteRequest;
 use App\Http\Requests\Admin\Smtp\EditRequest;
-use App\Http\Requests\Admin\Smtp\StoreRequest;
 use App\Http\Requests\Admin\Smtp\StatusRequest;
+use App\Http\Requests\Admin\Smtp\StoreRequest;
+use App\Repositories\SmtpRepository;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Exception;
 
 class SmtpController extends Controller
 {
-    public function __construct(private SmtpRepository $smtpRepository)
-    {
+    public function __construct(
+        private readonly SmtpRepository $smtpRepository
+    ) {
         parent::__construct();
     }
 
@@ -24,9 +24,10 @@ class SmtpController extends Controller
      */
     public function index(): View
     {
-        $infoAlert = __('frontend.hint.smtp_index') ?? null;
-
-        return view('admin.smtp.index', compact('infoAlert'))->with('title', __('frontend.title.smtp_index'));
+        return view('admin.smtp.index', [
+            'infoAlert' => __('frontend.hint.smtp_index'),
+            'title' => __('frontend.title.smtp_index'),
+        ]);
     }
 
     /**
@@ -34,9 +35,10 @@ class SmtpController extends Controller
      */
     public function create(): View
     {
-        $infoAlert = __('frontend.hint.smtp_create') ?? null;
-
-        return view('admin.smtp.create_edit', compact('infoAlert'))->with('title', __('frontend.title.smtp_create'));
+        return view('admin.smtp.create_edit', [
+            'infoAlert' => __('frontend.hint.smtp_create'),
+            'title' => __('frontend.title.smtp_create'),
+        ]);
     }
 
     /**
@@ -46,17 +48,19 @@ class SmtpController extends Controller
     public function store(StoreRequest $request): RedirectResponse
     {
         try {
-            $this->smtpRepository->create($request->all());
-        } catch (Exception $e) {
+            $this->smtpRepository->createWithMapping(
+                $request->validated()
+            );
+        } catch (\Throwable $e) {
             report($e);
 
-            return redirect()
-                ->back()
+            return back()
                 ->with('error', $e->getMessage())
                 ->withInput();
         }
 
-        return redirect()->route('admin.smtp.index')->with('success', __('message.information_successfully_added'));
+        return to_route('admin.smtp.index')
+            ->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -67,11 +71,13 @@ class SmtpController extends Controller
     {
         $row = $this->smtpRepository->find($id);
 
-        if (!$row) abort(404);
+        abort_if(!$row, 404);
 
-        $infoAlert = __('frontend.hint.smtp_edit') ?? null;
-
-        return view('admin.smtp.create_edit', compact('row', 'infoAlert'))->with('title', __('frontend.title.smtp_edit'));
+        return view('admin.smtp.create_edit', [
+            'row' => $row,
+            'infoAlert' => __('frontend.hint.smtp_edit'),
+            'title' => __('frontend.title.smtp_edit'),
+        ]);
     }
 
     /**
@@ -81,26 +87,39 @@ class SmtpController extends Controller
     public function update(EditRequest $request): RedirectResponse
     {
         try {
-            $this->smtpRepository->updateWithMapping($request->id, $request->all());
-        } catch (Exception $e) {
+            $this->smtpRepository->updateWithMapping(
+                (int) $request->id,
+                $request->safe()->except(['id'])
+            );
+        } catch (\Throwable $e) {
             report($e);
 
-            return redirect()
-                ->back()
+            return back()
                 ->with('error', $e->getMessage())
                 ->withInput();
         }
 
-        return redirect()->route('admin.smtp.index')->with('success', __('message.data_updated'));
+        return to_route('admin.smtp.index')
+            ->with('success', __('message.data_updated'));
     }
 
     /**
-     * @param Request $request
-     * @return void
+     * @param DeleteRequest $request
+     * @return RedirectResponse
      */
-    public function destroy(Request $request): void
+    public function destroy(DeleteRequest $request): RedirectResponse
     {
-        $this->smtpRepository->delete($request->id);
+        try {
+            $this->smtpRepository->delete((int) $request->id);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()
+                ->with('error', $e->getMessage());
+        }
+
+        return to_route('admin.smtp.index')
+            ->with('success', __('message.data_deleted'));
     }
 
     /**
@@ -109,8 +128,19 @@ class SmtpController extends Controller
      */
     public function status(StatusRequest $request): RedirectResponse
     {
-        $this->smtpRepository->updateStatus($request->action, $request->activate);
+        try {
+            $this->smtpRepository->updateStatus(
+                (int) $request->action,
+                $request->activate
+            );
+        } catch (\Throwable $e) {
+            report($e);
 
-        return redirect()->route('admin.smtp.index')->with('success', __('message.actions_completed'));
+            return back()
+                ->with('error', $e->getMessage());
+        }
+
+        return to_route('admin.smtp.index')
+            ->with('success', __('message.actions_completed'));
     }
 }

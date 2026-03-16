@@ -46,7 +46,6 @@ class Macros extends Model
         switch ($this->type) {
             case 1:
                 return __('frontend.str.macros_type_url');
-
             case 2:
                 return __('frontend.str.macros_type_email');
             case 3:
@@ -91,7 +90,7 @@ class Macros extends Model
                     $this->value
                 );
             case 5:
-                preg_replace(
+                return preg_replace(
                     '/\#(.*?)\#/',
                     '<a href="http://example.com">$1</a>',
                     $this->value

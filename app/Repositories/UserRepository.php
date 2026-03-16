@@ -28,19 +28,16 @@ class UserRepository extends BaseRepository
 
     private function mapping(array $data): array
     {
-        return collect($data)
-            ->merge([
-                'role' => $data['role'] ?? null,
-                'name' => $data['name'] ?? null,
-                'description' => $data['description'] ?? null,
-            ])
+        $mapped = collect($data)
             ->only($this->model->getFillable())
-            ->map(function ($value, $key) {
-                if ($key === 'password' && !is_null($value)) {
-                    return  Hash::make($value);
-                }
-                return $value;
-            })
-            ->all();
+            ->toArray();
+
+        if (empty($mapped['password'])) {
+            unset($mapped['password']);
+        } else {
+            $mapped['password'] = Hash::make($mapped['password']);
+        }
+
+        return $mapped;
     }
 }

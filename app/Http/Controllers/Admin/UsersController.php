@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers\Admin;
 
+
+use App\Http\Requests\Admin\Users\StoreRequest;
+use App\Http\Requests\Admin\Users\UpdateRequest;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Http\Requests\Admin\Users\StoreRequest;
-use App\Http\Requests\Admin\Users\UpdateRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class UsersController extends Controller
 {
-    public function __construct(private UserRepository $userRepository)
-    {
+    public function __construct(
+        private readonly UserRepository $userRepository
+    ) {
         parent::__construct();
     }
 
@@ -23,9 +25,10 @@ class UsersController extends Controller
      */
     public function index(): View
     {
-        $infoAlert = __('frontend.hint.users_index') ?? null;
-
-        return view('admin.users.index', compact('infoAlert'))->with('title', __('frontend.title.users_index'));
+        return view('admin.users.index', [
+            'infoAlert' => __('frontend.hint.users_index'),
+            'title' => __('frontend.title.users_index'),
+        ]);
     }
 
     /**
@@ -33,10 +36,11 @@ class UsersController extends Controller
      */
     public function create(): View
     {
-        $options = User::getOptions();
-        $infoAlert = __('frontend.hint.users_create') ?? null;
-
-        return view('admin.users.create_edit', compact('options', 'infoAlert'))->with('title', __('frontend.title.users_create'));
+        return view('admin.users.create_edit', [
+            'options' => User::getOptions(),
+            'infoAlert' => __('frontend.hint.users_create'),
+            'title' => __('frontend.title.users_create'),
+        ]);
     }
 
     /**
@@ -45,25 +49,34 @@ class UsersController extends Controller
      */
     public function store(StoreRequest $request): RedirectResponse
     {
-        $this->userRepository->createWithMapping($request->all());
+        try {
+            $this->userRepository->createWithMapping(
+                $request->safe()->except(['password_again'])
+            );
+        } catch (\Throwable $e) {
+            report($e);
 
-        return redirect()->route('admin.users.index')->with('success', __('message.information_successfully_added'));
+            return back()
+                ->with('error', $e->getMessage())
+                ->withInput();
+        }
+
+        return to_route('admin.users.index')
+            ->with('success', __('message.information_successfully_added'));
     }
 
-    /**
-     * @param int $id
-     * @return View
-     */
     public function edit(int $id): View
     {
         $row = $this->userRepository->find($id);
 
-        if (!$row) abort(404);
+        abort_if(!$row, 404);
 
-        $options = User::getOptions();
-        $infoAlert = __('frontend.hint.users_edit') ?? null;
-
-        return view('admin.users.create_edit', compact('row', 'options', 'infoAlert'))->with('title', __('frontend.title.users_edit'));
+        return view('admin.users.create_edit', [
+            'row' => $row,
+            'options' => User::getOptions(),
+            'infoAlert' => __('frontend.hint.users_edit'),
+            'title' => __('frontend.title.users_edit'),
+        ]);
     }
 
     /**
@@ -72,17 +85,40 @@ class UsersController extends Controller
      */
     public function update(UpdateRequest $request): RedirectResponse
     {
-        $this->userRepository->updateWithMapping($request->id, $request->all());
+        try {
+            $this->userRepository->updateWithMapping(
+                (int) $request->id,
+                $request->safe()->except(['password_again', 'id'])
+            );
+        } catch (\Throwable $e) {
+            report($e);
 
-        return redirect()->route('admin.users.index')->with('success', __('message.data_updated'));
+            return back()
+                ->with('error', $e->getMessage())
+                ->withInput();
+        }
+
+        return to_route('admin.users.index')
+            ->with('success', __('message.data_updated'));
     }
 
     /**
      * @param Request $request
-     * @return void
+     * @return RedirectResponse
      */
-    public function destroy(Request $request): void
+    public function destroy(Request $request): RedirectResponse
     {
-        if ($request->id !== Auth::id()) $this->userRepository->delete($request->id);
+        try {
+            if ((int) $request->id !== (int) Auth::id()) {
+                $this->userRepository->delete((int) $request->id);
+            }
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->with('error', $e->getMessage());
+        }
+
+        return to_route('admin.users.index')
+            ->with('success', __('message.data_deleted'));
     }
 }

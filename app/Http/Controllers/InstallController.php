@@ -3,27 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\StringHelper;
-use App\Models\User;
-use App\Http\Requests\Frontend\InstallRequest;
 use App\Http\Requests\Frontend\InstallAdminRequest;
-use Illuminate\Http\Request;
+use App\Http\Requests\Frontend\InstallRequest;
+use App\Models\User;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
-use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
-use Session;
-use Hash;
-use Artisan;
-use Cookie;
-use DB;
-use Log;
-use Config;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
+use Illuminate\View\View;
 
 class InstallController extends Controller
 {
-    /**
-     * @return View
-     */
+    private const APP_VERSION = '7.1.0';
+
     public function index(): View
     {
         return view('install.start');
@@ -34,10 +33,10 @@ class InstallController extends Controller
      */
     public function requirements(): View
     {
-        $requirements = $this->getRequirements();
-        $allLoaded = $this->allRequirementsLoaded();
-
-        return view('install.requirements', compact('requirements', 'allLoaded'));
+        return view('install.requirements', [
+            'requirements' => $this->getRequirements(),
+            'allLoaded' => $this->allRequirementsLoaded(),
+        ]);
     }
 
     /**
@@ -46,13 +45,13 @@ class InstallController extends Controller
     public function permissions(): View|RedirectResponse
     {
         if (!$this->allRequirementsLoaded()) {
-            return redirect()->route('install.requirements');
+            return to_route('install.requirements');
         }
 
-        $folders = $this->getPermissions();
-        $allGranted = $this->allPermissionsGranted();
-
-        return view('install.permissions', compact('folders', 'allGranted'));
+        return view('install.permissions', [
+            'folders' => $this->getPermissions(),
+            'allGranted' => $this->allPermissionsGranted(),
+        ]);
     }
 
     /**
@@ -61,11 +60,11 @@ class InstallController extends Controller
     public function database(): View|RedirectResponse
     {
         if (!$this->allRequirementsLoaded()) {
-            return redirect()->route('install.requirements');
+            return to_route('install.requirements');
         }
 
         if (!$this->allPermissionsGranted()) {
-            return redirect()->route('install.permissions');
+            return to_route('install.permissions');
         }
 
         return view('install.database');
@@ -73,29 +72,29 @@ class InstallController extends Controller
 
     /**
      * @param InstallRequest $request
-     * @return RedirectResponse|View
+     * @return RedirectResponse
      */
-    public function installation(InstallRequest $request): RedirectResponse|View
+    public function installation(InstallRequest $request): RedirectResponse
     {
         if (!$this->allRequirementsLoaded()) {
-            return redirect()->route('install.requirements');
+            return to_route('install.requirements');
         }
 
         if (!$this->allPermissionsGranted()) {
-            return redirect()->route('install.permissions');
+            return to_route('install.permissions');
         }
 
-        $dbCredentials = $request->only('host', 'username', 'password', 'database', 'prefix');
+        $dbCredentials = $request->validated();
 
         if (!$this->dbCredentialsAreValid($dbCredentials)) {
-            return redirect()->route('install.database')
+            return to_route('install.database')
                 ->withInput()
                 ->withErrors(__('install.str.connection_to_database_cannot_be_established'));
         }
 
         Session::put('install.db_credentials', $dbCredentials);
 
-        return redirect()->route('install.admin');
+        return to_route('install.admin');
     }
 
     /**
@@ -107,7 +106,7 @@ class InstallController extends Controller
     }
 
     /**
-     * @param InstallRequest $request
+     * @param InstallAdminRequest $request
      * @return RedirectResponse
      */
     public function install(InstallAdminRequest $request): RedirectResponse
@@ -115,46 +114,39 @@ class InstallController extends Controller
         try {
             $db = Session::pull('install.db_credentials');
 
+            if (!is_array($db) || empty($db)) {
+                return to_route('install.database')
+                    ->withErrors(__('install.str.connection_to_database_cannot_be_established'));
+            }
+
             copy(base_path('.env.example'), base_path('.env'));
 
             $this->reloadEnv();
-
-            $path = base_path('.env');
-            $env = file_get_contents($path);
-            $env = str_replace('DB_HOST=' . env('DB_HOST'), 'DB_HOST=' . $db['host'], $env);
-            $env = str_replace('DB_DATABASE=' . env('DB_DATABASE'), 'DB_DATABASE=' . $db['database'], $env);
-            $env = str_replace('DB_USERNAME=' . env('DB_USERNAME'), 'DB_USERNAME=' . $db['username'], $env);
-            $env = str_replace('DB_PASSWORD=' . env('DB_PASSWORD'), 'DB_PASSWORD="' . $db['password'] . '"', $env);
-            $env = str_replace('VERSION=', 'VERSION="7.1.0"', $env);
-            $env = str_replace('APP_URL=', 'APP_URL=' . StringHelper::getUrl(), $env);
-
-            file_put_contents($path, $env);
-
+            $this->writeEnvironmentFile($db);
             $this->setDatabaseCredentials($db);
+
             config(['app.debug' => true]);
 
             Artisan::call('migrate', ['--force' => true]);
             Artisan::call('db:seed', ['--force' => true]);
             Artisan::call('key:generate', ['--force' => true]);
 
-            User::create(['name' => 'admin', 'login' => $request->input('login'), 'role' => 'admin', 'password' => Hash::make($request->input('password'))]);
+            User::query()->create([
+                'name' => 'admin',
+                'login' => $request->input('login'),
+                'role' => 'admin',
+                'password' => Hash::make($request->input('password')),
+            ]);
 
-            return redirect()->route('install.complete');
-        } catch (\Exception $e) {
+            return to_route('install.complete');
+        } catch (\Throwable $e) {
             @unlink(base_path('.env'));
+
             Log::error($e->getMessage());
             Log::error($e->getTraceAsString());
 
-            return redirect()->route('install.error');
+            return to_route('install.error');
         }
-    }
-
-    /**
-     * @return void
-     */
-    private function reloadEnv(): void
-    {
-        (new LoadEnvironmentVariables)->bootstrap(app());
     }
 
     /**
@@ -174,49 +166,65 @@ class InstallController extends Controller
     }
 
     /**
-     * @return array
+     * @param Request $request
+     * @return JsonResponse
      */
+    public function ajax(Request $request): JsonResponse
+    {
+        $action = (string) $request->input('action');
+
+        if ($action !== 'change_lng') {
+            return response()->json(['result' => false], 400);
+        }
+
+        $locale = (string) $request->input('locale');
+
+        if ($locale !== '' && in_array($locale, Config::get('app.locales', []), true)) {
+            Cookie::queue(
+                Cookie::forever('lang', $locale)
+            );
+        }
+
+        return response()->json(['result' => true]);
+    }
+
+    private function reloadEnv(): void
+    {
+        (new LoadEnvironmentVariables())->bootstrap(app());
+    }
+
     private function getRequirements(): array
     {
         $requirements = [
-            'PHP Version (>= 8.2.0)' => version_compare(phpversion(), '8.2.0', '>='),
+            'PHP Version (>= 8.2.0)' => version_compare(PHP_VERSION, '8.2.0', '>='),
             'Zip' => extension_loaded('zip'),
-            'iconv' => extension_loaded("iconv"),
+            'iconv' => extension_loaded('iconv'),
             'PDO Extension' => extension_loaded('PDO'),
             'PDO MySQL Extension' => extension_loaded('pdo_mysql'),
             'Mbstring Extension' => extension_loaded('mbstring'),
             'Tokenizer Extension' => extension_loaded('tokenizer'),
-            'mbstring' => extension_loaded('mbstring'),
             'JSON PHP Extension' => extension_loaded('json'),
-            'Fileinfo Extension' => extension_loaded('fileinfo')
+            'Fileinfo Extension' => extension_loaded('fileinfo'),
         ];
 
         if (extension_loaded('xdebug')) {
-            $requirements['Xdebug Max Nesting Level (>= 500)'] = (int)ini_get('xdebug.max_nesting_level') >= 500;
+            $requirements['Xdebug Max Nesting Level (>= 500)'] = (int) ini_get('xdebug.max_nesting_level') >= 500;
         }
 
         return $requirements;
     }
 
-    /**
-     * @return bool
-     */
     private function allRequirementsLoaded(): bool
     {
-        $allLoaded = true;
-
-        foreach ($this->getRequirements() ?? [] as $loaded) {
+        foreach ($this->getRequirements() as $loaded) {
             if ($loaded === false) {
-                $allLoaded = false;
+                return false;
             }
         }
 
-        return $allLoaded;
+        return true;
     }
 
-    /**
-     * @return array
-     */
     private function getPermissions(): array
     {
         return [
@@ -226,38 +234,32 @@ class InstallController extends Controller
             'storage/framework/views' => is_writable(storage_path('framework/views')),
             'storage/logs' => is_writable(storage_path('logs')),
             'bootstrap/cache' => is_writable(base_path('bootstrap/cache')),
-            'Base Directory' => is_writable(base_path('')),
+            'Base Directory' => is_writable(base_path()),
         ];
     }
 
-    /**
-     * @return bool
-     */
     private function allPermissionsGranted(): bool
     {
-        $allGranted = true;
-
-        foreach ($this->getPermissions() as $permission => $granted) {
+        foreach ($this->getPermissions() as $granted) {
             if ($granted === false) {
-                $allGranted = false;
+                return false;
             }
         }
 
-        return $allGranted;
+        return true;
     }
 
-    /**
-     * @param array $credentials
-     * @return bool
-     */
     private function dbCredentialsAreValid(array $credentials): bool
     {
         $this->setDatabaseCredentials($credentials);
 
         try {
-            DB::statement("SHOW TABLES");
-        } catch (\Exception $e) {
+            DB::purge(config('database.default'));
+            DB::reconnect(config('database.default'));
+            DB::statement('SHOW TABLES');
+        } catch (\Throwable $e) {
             Log::info($e->getMessage());
+
             return false;
         }
 
@@ -276,29 +278,57 @@ class InstallController extends Controller
             "database.connections.{$default}.host" => $credentials['host'],
             "database.connections.{$default}.database" => $credentials['database'],
             "database.connections.{$default}.username" => $credentials['username'],
-            "database.connections.{$default}.password" => $credentials['password']
+            "database.connections.{$default}.password" => $credentials['password'],
+            "database.connections.{$default}.prefix" => $credentials['prefix'] ?? '',
         ]);
     }
 
     /**
-     * @param Request $request
-     * @return JsonResponse
+     * @param array $db
+     * @return void
      */
-    public function ajax(Request $request): JsonResponse
+    private function writeEnvironmentFile(array $db): void
     {
-        if ($request->input('action')) {
-            switch ($request->input('action')) {
-                case 'change_lng':
+        $path = base_path('.env');
+        $content = file_get_contents($path);
 
-                    if ($request->input('locale')) {
-                        if (in_array($request->input('locale'), Config::get('app.locales'))) {
-                            Cookie::queue(
-                                Cookie::forever('lang', $request->input('locale')));
-                        }
-                    }
-
-                    return response()->json(['result' => true]);
-            }
+        if ($content === false) {
+            throw new \RuntimeException('Unable to read .env file.');
         }
+
+        $replacements = [
+            'DB_HOST' => $db['host'],
+            'DB_DATABASE' => $db['database'],
+            'DB_USERNAME' => $db['username'],
+            'DB_PASSWORD' => $db['password'],
+            'DB_PREFIX' => $db['prefix'] ?? '',
+            'VERSION' => self::APP_VERSION,
+            'APP_URL' => StringHelper::getUrl(),
+        ];
+
+        foreach ($replacements as $key => $value) {
+            $content = $this->replaceEnvValue($content, $key, (string) $value);
+        }
+
+        file_put_contents($path, $content);
+    }
+
+    /**
+     * @param string $content
+     * @param string $key
+     * @param string $value
+     * @return string
+     */
+    private function replaceEnvValue(string $content, string $key, string $value): string
+    {
+        $escapedValue = str_replace('"', '\"', $value);
+        $replacement = sprintf('%s="%s"', $key, $escapedValue);
+        $pattern = "/^{$key}=.*$/m";
+
+        if (preg_match($pattern, $content)) {
+            return preg_replace($pattern, $replacement, $content) ?? $content;
+        }
+
+        return rtrim($content) . PHP_EOL . $replacement . PHP_EOL;
     }
 }

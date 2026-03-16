@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin\Templates;
 
+use App\Models\Templates;
 use Illuminate\Foundation\Http\FormRequest;
+
 
 class UpdateRequest extends FormRequest
 {
@@ -22,9 +24,24 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|max:255',
-            'body' => 'required',
-            'prior' => 'required',
+            'id' => [
+                'required',
+                'integer',
+                'exists:' . Templates::getTableName() .',id',
+            ],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+            'body' => [
+                'required',
+                'string',
+            ],
+            'prior' => [
+                'required',
+                'integer',
+            ],
         ];
     }
 }

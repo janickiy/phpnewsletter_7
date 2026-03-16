@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests\Admin\Subscribers;
 
+use App\Models\Category;
+use App\Models\Subscribers;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -22,8 +25,21 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email|unique:subscribers',
-            'categoryId' => 'array|nullable'
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique(Subscribers::getTableName(), 'email'),
+            ],
+            'categoryId' => [
+                'nullable',
+                'array',
+            ],
+            'categoryId.*' => [
+                'required',
+                'integer',
+                Rule::exists(Category::getTableName(), 'id'),
+            ],
         ];
     }
 }

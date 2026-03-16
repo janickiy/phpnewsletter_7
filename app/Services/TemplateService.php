@@ -2,34 +2,47 @@
 
 namespace App\Services;
 
-
 use App\DTO\AttachCreateData;
 use App\Helpers\StringHelper;
 use App\Models\Attach;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Exception;
 
 class TemplateService
 {
-    /**
-     * @param Request $request
-     * @param int $templateId
-     * @return void
-     * @throws Exception
-     */
     public function storeAttach(Request $request, int $templateId): void
     {
-        $attachFile = $request->file('attachfile');
+        $attachFiles = $request->file('attachfile');
 
-        foreach ($attachFile ?? [] as $file) {
-            $filename = StringHelper::randomText(10) . '.' . $file->getClientOriginalExtension();
+        if (empty($attachFiles)) {
+            return;
+        }
 
-            if (Storage::putFileAs(Attach::DIRECTORY, $file, $filename) === false) {
-                throw new Exception(sprintf("Couldn't save %s!", $file->getClientOriginalName()));
+        foreach ($attachFiles as $file) {
+            if (!$file instanceof UploadedFile || !$file->isValid()) {
+                continue;
             }
 
-            Attach::create(
+            $filename = sprintf(
+                '%s.%s',
+                StringHelper::randomText(10),
+                $file->getClientOriginalExtension()
+            );
+
+            $stored = Storage::putFileAs(
+                Attach::DIRECTORY,
+                $file,
+                $filename
+            );
+
+            if ($stored === false) {
+                throw new \RuntimeException(
+                    sprintf("Couldn't save %s!", $file->getClientOriginalName())
+                );
+            }
+
+            Attach::query()->create(
                 (new AttachCreateData(
                     name: $file->getClientOriginalName(),
                     file_name: $filename,

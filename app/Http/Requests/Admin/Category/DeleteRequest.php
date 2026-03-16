@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin\Category;
 
 use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class DeleteRequest extends FormRequest
 {
@@ -23,7 +24,11 @@ class DeleteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|integer|exists:' . Category::getTableName() . ',id',
+            'id' => [
+                'required',
+                'integer',
+                Rule::exists(Category::getTableName(), 'id'),
+            ],
         ];
     }
 }
