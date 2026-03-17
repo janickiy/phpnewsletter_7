@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\ReadySent;
 use App\DTO\ReadySentCreateData;
+use App\DTO\ReadySentReadData;
 
 class ReadySentRepository extends BaseRepository
 {
@@ -12,6 +13,10 @@ class ReadySentRepository extends BaseRepository
         parent::__construct($model);
     }
 
+    /**
+     * @param ReadySentCreateData $data
+     * @return ReadySent
+     */
     public function add(ReadySentCreateData $data): ReadySent
     {
         return ReadySent::query()->create([
@@ -25,6 +30,20 @@ class ReadySentRepository extends BaseRepository
             'errorMsg' => $data->errorMsg,
             'readMail' => $data->readMail,
         ]);
+    }
+
+    /**
+     * @param ReadySentReadData $data
+     * @return bool
+     */
+    public function markAsRead(ReadySentReadData $data): bool
+    {
+        return $this->model->query()
+            ->where('template_id', $data->templateId)
+            ->where('subscriber_id', $data->subscriberId)
+            ->update([
+                'readMail' => $data->readMail,
+            ]);
     }
 
     /**

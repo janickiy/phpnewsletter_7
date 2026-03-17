@@ -58,8 +58,7 @@ class MacrosController extends Controller
                 ->withInput();
         }
 
-        return to_route('admin.macros.index')
-            ->with('success', __('message.information_successfully_added'));
+        return to_route('admin.macros.index')->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -99,8 +98,7 @@ class MacrosController extends Controller
                 ->withInput();
         }
 
-        return to_route('admin.macros.index')
-            ->with('success', __('message.data_updated'));
+        return to_route('admin.macros.index')->with('success', __('message.data_updated'));
     }
 
     /**
@@ -118,7 +116,6 @@ class MacrosController extends Controller
                 ->with('error', $e->getMessage());
         }
 
-        return to_route('admin.macros.index')
-            ->with('success', __('message.data_deleted'));
+        return to_route('admin.macros.index')->with('success', __('message.data_deleted'));
     }
 }

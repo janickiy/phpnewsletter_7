@@ -2,15 +2,18 @@
 
 namespace App\Repositories;
 
+use App\DTO\SubscriberCreateData;
 use App\Models\Subscribers;
 use App\Models\Subscriptions;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Collection;
-
 
 class SubscriberRepository extends BaseRepository
 {
-    public function __construct(Subscribers $model)
-    {
+    public function __construct(
+        Subscribers $model,
+        private readonly DatabaseManager $database
+    ) {
         parent::__construct($model);
     }
 
@@ -21,28 +24,43 @@ class SubscriberRepository extends BaseRepository
      */
     public function updateWithMapping(int $id, array $data): bool
     {
-        return $this->update($id, $this->mapping($data));
+        return parent::update($id, $this->mapping($data));
     }
 
     /**
      * @param array $data
      * @return Subscribers|null
+     * @throws \Throwable
      */
     public function add(array $data): ?Subscribers
     {
-        $model = $this->model->create($data);
+        return $this->database->transaction(function () use ($data) {
+            $model = $this->model->create($this->mapping($data));
 
-        if ($model) {
-            foreach ($data['categoryId'] ?? [] as $categoryId) {
-                if (is_numeric($categoryId)) {
-                    Subscriptions::create(['subscriber_id' => $model->id, 'category_id' => $categoryId]);
-                }
+            if (!$model) {
+                return null;
             }
 
-            return $model;
-        }
+            $this->syncSubscriptions($model->id, $data['categoryId'] ?? []);
 
-        return null;
+            return $model;
+        });
+    }
+
+    /**
+     * @param SubscriberCreateData $data
+     * @return Subscribers
+     * @throws \Throwable
+     */
+    public function createFrontendSubscriber(SubscriberCreateData $data): Subscribers
+    {
+        return $this->database->transaction(function () use ($data) {
+            $subscriber = $this->model->create($data->toArray());
+
+            $this->syncSubscriptions($subscriber->id, $data->categoryIds);
+
+            return $subscriber;
+        });
     }
 
     /**
@@ -54,8 +72,14 @@ class SubscriberRepository extends BaseRepository
      * @param string|null $interval
      * @return Collection|null
      */
-    public function getSubscribers(int $logId, int $templateId, array $categoryId, int $order, int $limit, ?string $interval = null): ?Collection
-    {
+    public function getSubscribers(
+        int $logId,
+        int $templateId,
+        array $categoryId,
+        int $order,
+        int $limit,
+        ?string $interval = null
+    ): ?Collection {
         $q = $this->model->select('subscribers.email', 'subscribers.token', 'subscribers.id', 'subscribers.name')
             ->distinct()
             ->join('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
@@ -68,14 +92,14 @@ class SubscriberRepository extends BaseRepository
                             ->orWhere('ready_sent.success', 0);
                     });
             })
-            ->whereIN('subscriptions.category_id', $categoryId)
+            ->whereIn('subscriptions.category_id', $categoryId)
             ->where('subscribers.active', 1);
 
         if ($interval) {
             $q->whereRaw($interval);
         }
 
-        return $q->orderByRaw($order)
+        return $q->orderByRaw((string) $order)
             ->take($limit)
             ->get();
     }
@@ -88,10 +112,11 @@ class SubscriberRepository extends BaseRepository
      */
     public function countSubscriptions(array $categoryId, int $limit, ?string $interval = null): int
     {
-        $q = Subscriptions::select('subscribers.id')
+        $q = Subscriptions::query()
+            ->select('subscribers.id')
             ->join('subscribers', 'subscriptions.subscriber_id', '=', 'subscribers.id')
             ->where('subscribers.active', 1)
-            ->whereIN('subscriptions.category_id', $categoryId);
+            ->whereIn('subscriptions.category_id', $categoryId);
 
         if ($interval) {
             $q->whereRaw($interval);
@@ -106,22 +131,27 @@ class SubscriberRepository extends BaseRepository
     /**
      * @param int $scheduleId
      * @param string $order
-     * @param int $limit
+     * @param int|null $limit
      * @param string|null $interval
      * @return Collection|null
      */
-    public function getSubscribersNotReadySent(int $scheduleId, string $order, ?int $limit = null, ?string $interval = null): ?Collection
-    {
+    public function getSubscribersNotReadySent(
+        int $scheduleId,
+        string $order,
+        ?int $limit = null,
+        ?string $interval = null
+    ): ?Collection {
         $q = $this->model->select([
             'subscribers.email',
             'subscribers.id',
             'subscribers.token',
-            'subscribers.name'])
+            'subscribers.name',
+        ])
             ->distinct()
             ->join('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
             ->join('schedule_category', function ($join) use ($scheduleId) {
                 $join->on('subscriptions.category_id', '=', 'schedule_category.category_id')
-                    ->where('schedule_category.scheduleId', $scheduleId);
+                    ->where('schedule_category.schedule_id', $scheduleId);
             })
             ->leftJoin('ready_sent', function ($join) use ($scheduleId) {
                 $join->on('subscribers.id', '=', 'ready_sent.subscriber_id')
@@ -150,14 +180,18 @@ class SubscriberRepository extends BaseRepository
      * @param string|null $interval
      * @return Collection|null
      */
-    public function getSubscribersUnSent(int $scheduleId, string $order, ?int $limit = null, ?string $interval = null): ?Collection
-    {
+    public function getSubscribersUnSent(
+        int $scheduleId,
+        string $order,
+        ?int $limit = null,
+        ?string $interval = null
+    ): ?Collection {
         $q = $this->model->select([
             'subscribers.email',
             'subscribers.id',
             'subscribers.token',
             'subscribers.name',
-             ])
+        ])
             ->distinct()
             ->join('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
             ->join('schedule_category', function ($join) use ($scheduleId) {
@@ -182,35 +216,52 @@ class SubscriberRepository extends BaseRepository
     }
 
     /**
-     * @param int $subscriber_id
+     * @param int $subscriberId
      * @return array
      */
-    public function getSubscriberCategoryIdList(int $subscriber_id): array
+    public function getSubscriberCategoryIdList(int $subscriberId): array
     {
-        $Ids = [];
-        foreach (Subscriptions::query()->where('subscriber_id', $subscriber_id)->get() as $subscription) {
-            $Ids[] = $subscription->category_id;
-        }
-
-        return  $Ids;
+        return Subscriptions::query()
+            ->where('subscriber_id', $subscriberId)
+            ->pluck('category_id')
+            ->toArray();
     }
 
     /**
      * @param int $action
-     * @param array $Ids
+     * @param array $ids
      * @return void
      */
-    public function updateStatus(int $action, array $Ids = []): void
+    public function updateStatus(int $action, array $ids = []): void
     {
         switch ($action) {
-            case  0 :
-            case  1 :
-                $this->model->whereIN('id', $Ids)->update(['active' => $action]);
+            case 0:
+            case 1:
+                $this->model->whereIn('id', $ids)->update(['active' => $action]);
                 break;
-            case 2 :
-                Subscriptions::whereIN('subscriber_id', $Ids)->delete();
-                $this->model->whereIN('id', $Ids)->delete();
+            case 2:
+                Subscriptions::query()->whereIn('subscriber_id', $ids)->delete();
+                $this->model->whereIn('id', $ids)->delete();
                 break;
+        }
+    }
+
+    /**
+     * @param int $subscriberId
+     * @param array $categoryIds
+     * @return void
+     */
+    private function syncSubscriptions(int $subscriberId, array $categoryIds): void
+    {
+        foreach ($categoryIds as $categoryId) {
+            if (!is_numeric($categoryId)) {
+                continue;
+            }
+
+            Subscriptions::query()->create([
+                'subscriber_id' => $subscriberId,
+                'category_id' => (int) $categoryId,
+            ]);
         }
     }
 

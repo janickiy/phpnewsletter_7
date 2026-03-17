@@ -34,8 +34,7 @@ class RedirectController  extends Controller
     {
         Redirect::truncate();
 
-        return to_route('admin.redirect.index')
-            ->with('success', __('message.statistics_cleared'));
+        return to_route('admin.redirect.index')->with('success', __('message.statistics_cleared'));
     }
 
     /**

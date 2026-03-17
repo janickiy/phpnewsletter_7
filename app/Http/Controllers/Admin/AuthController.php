@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\Admin\Auth\LoginRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('guest:web', ['except' => ['logout']]);
+        $this->middleware('guest:web')->except('logout');
     }
 
     /**
@@ -20,47 +21,54 @@ class AuthController extends Controller
      */
     public function showLoginForm(): View
     {
-        return view('admin.login')->with('title', __('frontend.str.auth'));
+        return view('admin.login', [
+            'title' => __('frontend.str.auth'),
+        ]);
+    }
+
+    /**
+     * @param LoginRequest $request
+     * @return RedirectResponse
+     */
+    public function login(LoginRequest $request): RedirectResponse
+    {
+        $credentials = $request->safe()->only(['login', 'password']);
+        $remember = $request->boolean('remember');
+
+        if (Auth::guard('web')->attempt($credentials, $remember)) {
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('admin.templates.index'));
+        }
+
+        return back()
+            ->withErrors([
+                'login' => __('auth.failed'),
+            ])
+            ->withInput($request->only('login', 'remember'));
     }
 
     /**
      * @param Request $request
-     * @return RedirectResponse|void
+     * @param mixed $user
+     * @return RedirectResponse
      */
-    public function login(Request $request)
+    protected function authenticated(Request $request, mixed $user): RedirectResponse
     {
-        // Validate the form data
-        $this->validate($request, [
-            'login'   => 'required',
-            'password' => 'required|min:6'
-        ]);
-
-        // Attempt to log the user in
-        if (Auth::guard('web')->attempt(['login' => $request->login, 'password' => $request->password], $request->remember)) {
-            // if successful, then redirect to their intended location
-            return redirect()->intended(route('admin.templates.index'));
-        }
-        // if unsuccessful, then redirect back to the login with the form data
-        redirect()->route('login')->with('error', __('auth.failed'));
+        return to_route('admin.templates.index');
     }
 
     /**
-     * @param $request
-     * @param $user
+     * @param Request $request
      * @return RedirectResponse
      */
-    protected function authenticated($request, $user): RedirectResponse
-    {
-        return redirect()->route('admin.templates.index');
-    }
-
-    /**
-     * @return RedirectResponse
-     */
-    public function logout(): RedirectResponse
+    public function logout(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
 
-        return redirect()->route('login');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return to_route('login');
     }
 }

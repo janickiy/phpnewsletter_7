@@ -59,8 +59,7 @@ class SmtpController extends Controller
                 ->withInput();
         }
 
-        return to_route('admin.smtp.index')
-            ->with('success', __('message.information_successfully_added'));
+        return to_route('admin.smtp.index')->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -99,8 +98,7 @@ class SmtpController extends Controller
                 ->withInput();
         }
 
-        return to_route('admin.smtp.index')
-            ->with('success', __('message.data_updated'));
+        return to_route('admin.smtp.index')->with('success', __('message.data_updated'));
     }
 
     /**
@@ -114,12 +112,10 @@ class SmtpController extends Controller
         } catch (\Throwable $e) {
             report($e);
 
-            return back()
-                ->with('error', $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
 
-        return to_route('admin.smtp.index')
-            ->with('success', __('message.data_deleted'));
+        return to_route('admin.smtp.index')->with('success', __('message.data_deleted'));
     }
 
     /**
@@ -136,11 +132,9 @@ class SmtpController extends Controller
         } catch (\Throwable $e) {
             report($e);
 
-            return back()
-                ->with('error', $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
 
-        return to_route('admin.smtp.index')
-            ->with('success', __('message.actions_completed'));
+        return to_route('admin.smtp.index')->with('success', __('message.actions_completed'));
     }
 }

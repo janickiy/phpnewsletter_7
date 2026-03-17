@@ -17,6 +17,9 @@ class CategoryController extends Controller
         parent::__construct();
     }
 
+    /**
+     * @return View
+     */
     public function index(): View
     {
         return view('admin.category.index', [
@@ -25,6 +28,9 @@ class CategoryController extends Controller
         ]);
     }
 
+    /**
+     * @return View
+     */
     public function create(): View
     {
         return view('admin.category.create_edit', [

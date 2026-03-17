@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\InstallAdminCreateData;
 use App\Helpers\StringHelper;
 use App\Http\Requests\Frontend\InstallAdminRequest;
 use App\Http\Requests\Frontend\InstallRequest;
-use App\Models\User;
+use App\Repositories\UserRepository;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -14,7 +15,6 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
@@ -23,14 +23,16 @@ class InstallController extends Controller
 {
     private const APP_VERSION = '7.1.0';
 
+    public function __construct(
+        private readonly UserRepository $userRepository,
+    ) {
+    }
+
     public function index(): View
     {
         return view('install.start');
     }
 
-    /**
-     * @return View
-     */
     public function requirements(): View
     {
         return view('install.requirements', [
@@ -39,9 +41,6 @@ class InstallController extends Controller
         ]);
     }
 
-    /**
-     * @return View|RedirectResponse
-     */
     public function permissions(): View|RedirectResponse
     {
         if (!$this->allRequirementsLoaded()) {
@@ -54,9 +53,6 @@ class InstallController extends Controller
         ]);
     }
 
-    /**
-     * @return View|RedirectResponse
-     */
     public function database(): View|RedirectResponse
     {
         if (!$this->allRequirementsLoaded()) {
@@ -97,9 +93,6 @@ class InstallController extends Controller
         return to_route('install.admin');
     }
 
-    /**
-     * @return View
-     */
     public function admin(): View
     {
         return view('install.installation');
@@ -131,12 +124,14 @@ class InstallController extends Controller
             Artisan::call('db:seed', ['--force' => true]);
             Artisan::call('key:generate', ['--force' => true]);
 
-            User::query()->create([
-                'name' => 'admin',
-                'login' => $request->input('login'),
-                'role' => 'admin',
-                'password' => Hash::make($request->input('password')),
-            ]);
+            $this->userRepository->createAdminFromInstall(
+                new InstallAdminCreateData(
+                    name: 'admin',
+                    login: $request->input('login'),
+                    role: 'admin',
+                    password: $request->input('password'),
+                )
+            );
 
             return to_route('install.complete');
         } catch (\Throwable $e) {
@@ -149,17 +144,11 @@ class InstallController extends Controller
         }
     }
 
-    /**
-     * @return View
-     */
     public function complete(): View
     {
         return view('install.complete');
     }
 
-    /**
-     * @return View
-     */
     public function error(): View
     {
         return view('install.error');
@@ -249,6 +238,10 @@ class InstallController extends Controller
         return true;
     }
 
+    /**
+     * @param array $credentials
+     * @return bool
+     */
     private function dbCredentialsAreValid(array $credentials): bool
     {
         $this->setDatabaseCredentials($credentials);

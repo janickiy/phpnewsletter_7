@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\DTO\InstallAdminCreateData;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -12,18 +13,24 @@ class UserRepository extends BaseRepository
         parent::__construct($model);
     }
 
-    /**
-     * @param array $data
-     * @return User
-     */
     public function createWithMapping(array $data): User
     {
         return $this->create($this->mapping($data));
     }
 
+    public function createAdminFromInstall(InstallAdminCreateData $data): User
+    {
+        return $this->create([
+            'name' => $data->name,
+            'login' => $data->login,
+            'role' => $data->role,
+            'password' => Hash::make($data->password),
+        ]);
+    }
+
     public function updateWithMapping(int $id, array $data): bool
     {
-        return $this->update($id, $this->mapping($data));
+        return parent::update($id, $this->mapping($data));
     }
 
     private function mapping(array $data): array

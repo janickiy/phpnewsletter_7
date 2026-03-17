@@ -104,8 +104,7 @@ class ScheduleController extends Controller
                 ->withInput();
         }
 
-        return to_route('admin.schedule.index')
-            ->with('success', __('message.information_successfully_added'));
+        return to_route('admin.schedule.index')->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -148,8 +147,7 @@ class ScheduleController extends Controller
                 ->withInput();
         }
 
-        return to_route('admin.schedule.index')
-            ->with('success', __('message.data_updated'));
+        return to_route('admin.schedule.index')->with('success', __('message.data_updated'));
     }
 
     /**
@@ -163,11 +161,9 @@ class ScheduleController extends Controller
         } catch (\Throwable $e) {
             report($e);
 
-            return back()
-                ->with('error', $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
 
-        return to_route('admin.schedule.index')
-            ->with('success', __('message.data_deleted'));
+        return to_route('admin.schedule.index')->with('success', __('message.data_deleted'));
     }
 }

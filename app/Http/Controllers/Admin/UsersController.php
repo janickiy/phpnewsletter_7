@@ -61,8 +61,7 @@ class UsersController extends Controller
                 ->withInput();
         }
 
-        return to_route('admin.users.index')
-            ->with('success', __('message.information_successfully_added'));
+        return to_route('admin.users.index')->with('success', __('message.information_successfully_added'));
     }
 
     public function edit(int $id): View
@@ -98,8 +97,7 @@ class UsersController extends Controller
                 ->withInput();
         }
 
-        return to_route('admin.users.index')
-            ->with('success', __('message.data_updated'));
+        return to_route('admin.users.index')->with('success', __('message.data_updated'));
     }
 
     /**
@@ -118,7 +116,6 @@ class UsersController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return to_route('admin.users.index')
-            ->with('success', __('message.data_deleted'));
+        return to_route('admin.users.index')->with('success', __('message.data_deleted'));
     }
 }

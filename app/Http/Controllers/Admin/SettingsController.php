@@ -48,7 +48,6 @@ class SettingsController extends Controller
                 ->withInput();
         }
 
-        return to_route('admin.settings.index')
-            ->with('success', __('message.data_updated'));
+        return to_route('admin.settings.index')->with('success', __('message.data_updated'));
     }
 }

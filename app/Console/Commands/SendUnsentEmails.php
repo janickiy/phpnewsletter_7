@@ -175,8 +175,7 @@ class SendUnsentEmails extends Command implements Isolatable
         }
 
         if ($scheduleIds !== []) {
-            ReadySent::whereIn('schedule_id', array_unique($scheduleIds))
-                ->update(['success' => 1]);
+            ReadySent::whereIn('schedule_id', array_unique($scheduleIds))->update(['success' => 1]);
         }
     }
 }

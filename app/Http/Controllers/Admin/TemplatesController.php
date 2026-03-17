@@ -65,8 +65,7 @@ class TemplatesController extends Controller
                 ->withInput();
         }
 
-        return to_route('admin.templates.index')
-            ->with('success', __('message.information_successfully_added'));
+        return to_route('admin.templates.index')->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -109,8 +108,7 @@ class TemplatesController extends Controller
                 ->withInput();
         }
 
-        return to_route('admin.templates.index')
-            ->with('success', __('message.data_updated'));
+        return to_route('admin.templates.index')->with('success', __('message.data_updated'));
     }
 
     /**
@@ -124,12 +122,10 @@ class TemplatesController extends Controller
         } catch (\Throwable $e) {
             report($e);
 
-            return back()
-                ->with('error', $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
 
-        return to_route('admin.templates.index')
-            ->with('success', __('message.data_deleted'));
+        return to_route('admin.templates.index')->with('success', __('message.data_deleted'));
     }
 
     /**
@@ -146,12 +142,10 @@ class TemplatesController extends Controller
         } catch (\Throwable $e) {
             report($e);
 
-            return back()
-                ->with('error', $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
 
-        return to_route('admin.templates.index')
-            ->with('success', __('message.actions_completed'));
+        return to_route('admin.templates.index')->with('success', __('message.actions_completed'));
     }
 
     /**

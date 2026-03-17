@@ -77,8 +77,7 @@ class SubscribersController extends Controller
                 ->withInput();
         }
 
-        return to_route('admin.subscribers.index')
-            ->with('success', __('message.information_successfully_added'));
+        return to_route('admin.subscribers.index')->with('success', __('message.information_successfully_added'));
     }
 
     /**
@@ -146,12 +145,10 @@ class SubscribersController extends Controller
         } catch (\Throwable $e) {
             report($e);
 
-            return back()
-                ->with('error', $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
 
-        return to_route('admin.subscribers.index')
-            ->with('success', __('message.data_deleted'));
+        return to_route('admin.subscribers.index')->with('success', __('message.data_deleted'));
     }
 
     /**
@@ -184,12 +181,10 @@ class SubscribersController extends Controller
         };
 
         if ($result === false) {
-            return to_route('admin.subscribers.index')
-                ->with('error', __('message.error_import_file'));
+            return to_route('admin.subscribers.index')->with('error', __('message.error_import_file'));
         }
 
-        return to_route('admin.subscribers.index')
-            ->with('success', __('message.import_completed') . $result);
+        return to_route('admin.subscribers.index')->with('success', __('message.import_completed') . $result);
     }
 
     /**
@@ -222,12 +217,10 @@ class SubscribersController extends Controller
         } catch (\Throwable $e) {
             report($e);
 
-            return back()
-                ->with('error', $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
 
-        return to_route('admin.subscribers.index')
-            ->with('success', __('message.data_successfully_deleted'));
+        return to_route('admin.subscribers.index')->with('success', __('message.data_successfully_deleted'));
     }
 
     /**
@@ -244,11 +237,9 @@ class SubscribersController extends Controller
         } catch (\Throwable $e) {
             report($e);
 
-            return back()
-                ->with('error', $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
 
-        return to_route('admin.subscribers.index')
-            ->with('success', __('message.actions_completed'));
+        return to_route('admin.subscribers.index')->with('success', __('message.actions_completed'));
     }
 }

@@ -2,11 +2,9 @@
 
 namespace App\Services;
 
-
 use App\Enums\ProcessStatus;
 use App\DTO\ReadySentCreateData;
 use App\Helpers\SettingsHelper;
-use App\Models\ReadySent;
 use App\Models\Subscribers;
 use App\Models\Templates;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +18,6 @@ use App\Helpers\StringHelper;
 use Illuminate\Http\Request;
 use Auth;
 use DateTime;
-
 
 class SendMailService
 {
@@ -287,6 +284,69 @@ class SendMailService
             'time' => $datetime->format('H:i:s'),
             'leftsend' => $total > 0 ? round(($success + $unsuccess) / $total * 100, 2) : 0,
         ];
+    }
+
+    /**
+     * @param Subscribers $subscriber
+     * @return void
+     * @throws \PHPMailer\PHPMailer\Exception
+     */
+    public function sendFrontendSubscriberEmails(Subscribers $subscriber): void
+    {
+        $settings = SettingsHelper::getInstance();
+
+        $requireConfirmation = (int) $settings->getValueForKey('REQUIRE_SUB_CONFIRMATION') === 1;
+        $notifyNewSubscriber = (int) $settings->getValueForKey('NEW_SUBSCRIBER_NOTIFY') === 1;
+
+        if ($requireConfirmation) {
+            $sendMail = new SendEmailHelper();
+
+            $confirmUrl = route('frontend.subscribe', [
+                'subscriber' => $subscriber->id,
+                'token' => $subscriber->token,
+            ]);
+
+            $message = str_replace(
+                ["\r\n", "\r", "\n"],
+                '<br>',
+                $settings->getValueForKey('TEXT_CONFIRMATION')
+            );
+
+            $message = str_replace('%CONFIRM%', $confirmUrl, $message);
+
+            $sendMail->subject = $settings->getValueForKey('SUBJECT_TEXT_CONFIRM');
+            $sendMail->body = $message;
+            $sendMail->email = $subscriber->email;
+            $sendMail->token = $subscriber->token;
+            $sendMail->subscriberId = $subscriber->id;
+            $sendMail->name = $subscriber->name;
+            $sendMail->unsub = false;
+            $sendMail->tracking = false;
+            $sendMail->sendEmail();
+        }
+
+        if ($notifyNewSubscriber) {
+            $sendMail = new SendEmailHelper();
+
+            $subject = str_replace(
+                '%SITE%',
+                request()->getHost(),
+                __('frontend.str.notification_newuser')
+            );
+
+            $message = __('frontend.str.notification_newuser') .
+                "\nName: {$subscriber->name} \nE-mail: {$subscriber->email}\n";
+
+            $message = str_replace('%SITE%', request()->getHost(), $message);
+
+            $sendMail->subject = $subject;
+            $sendMail->body = $message;
+            $sendMail->email = $settings->getValueForKey('EMAIL');
+            $sendMail->name = $settings->getValueForKey('FROM');
+            $sendMail->tracking = false;
+            $sendMail->unsub = false;
+            $sendMail->sendEmail();
+        }
     }
 
     /**

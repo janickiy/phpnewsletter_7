@@ -103,7 +103,7 @@ class SendEmails extends Command implements Isolatable
             $this->resultSend($subscriberUpdates);
 
             if (
-                (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1
+                (int) SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1
                 && $mailCount >= (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER')
             ) {
                 break;
@@ -116,6 +116,12 @@ class SendEmails extends Command implements Isolatable
         return self::SUCCESS;
     }
 
+    /**
+     * @param object $schedule
+     * @param object $subscriber
+     * @return array
+     * @throws \PHPMailer\PHPMailer\Exception
+     */
     private function sendToSubscriber(object $schedule, object $subscriber): array
     {
         $sendEmail = new SendEmailHelper();
@@ -131,6 +137,11 @@ class SendEmails extends Command implements Isolatable
         return $sendEmail->sendEmail();
     }
 
+    /**
+     * @param string $intervalType
+     * @param int $intervalNumber
+     * @return string|null
+     */
     private function resolveInterval(string $intervalType, int $intervalNumber): ?string
     {
         if ($intervalNumber <= 0) {
@@ -145,6 +156,10 @@ class SendEmails extends Command implements Isolatable
         };
     }
 
+    /**
+     * @param array $subscriberUpdates
+     * @return void
+     */
     private function resultSend(array $subscriberUpdates): void
     {
         if ($subscriberUpdates === []) {
