@@ -16,7 +16,8 @@
         "phpoffice/phpspreadsheet": "^2.0",
         "yajra/laravel-datatables-buttons": "^10.0",
         "yajra/laravel-datatables-html": "^10.12",
-        "ext-gd": "*"
+        "ext-gd": "*",
+        "ext-zip": "*"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.13",
