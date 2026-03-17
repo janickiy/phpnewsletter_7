@@ -50,9 +50,7 @@ class UsersController extends Controller
     public function store(StoreRequest $request): RedirectResponse
     {
         try {
-            $this->userRepository->createWithMapping(
-                $request->safe()->except(['password_again'])
-            );
+            $this->userRepository->createWithMapping($request->safe()->except(['password_again']));
         } catch (\Throwable $e) {
             report($e);
 

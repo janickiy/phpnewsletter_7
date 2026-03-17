@@ -48,9 +48,7 @@ class SmtpController extends Controller
     public function store(StoreRequest $request): RedirectResponse
     {
         try {
-            $this->smtpRepository->createWithMapping(
-                $request->validated()
-            );
+            $this->smtpRepository->createWithMapping($request->validated());
         } catch (\Throwable $e) {
             report($e);
 

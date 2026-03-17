@@ -63,8 +63,8 @@ class SubscribersController extends Controller
     public function store(StoreRequest $request): RedirectResponse
     {
         try {
-            $this->subscribersRepository->create([
-                $request->validated(),
+            $this->subscribersRepository->add([
+                ...$request->validated(),
                 'timeSent' => now(),
                 'active' => 1,
                 'token' => StringHelper::token(),
@@ -87,6 +87,9 @@ class SubscribersController extends Controller
     public function edit(int $id): View
     {
         $row = $this->subscribersRepository->find($id);
+
+
+        //dd($this->subscribersRepository->getSubscriberCategoryIdList($id));
 
         abort_if(!$row, 404);
 

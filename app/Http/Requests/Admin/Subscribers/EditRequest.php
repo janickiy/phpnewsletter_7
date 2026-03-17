@@ -30,6 +30,11 @@ class EditRequest extends FormRequest
                 'integer',
                 Rule::exists(Subscribers::getTableName(), 'id'),
             ],
+            'name' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
             'email' => [
                 'required',
                 'email',
