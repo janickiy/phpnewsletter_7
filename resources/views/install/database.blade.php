@@ -34,7 +34,7 @@
             {!! Form::text('username', old('username'), ['class' => "form-control", 'placeholder' => "",'id' => "username"]) !!}
 
             <small>{{ __('install.hint.database_username') }}</small>
-            @if ($errors->has('host'))
+            @if ($errors->has('username'))
                 <p class="text-danger">{{ $errors->first('username') }}</p>
             @endif
         </div>
@@ -57,6 +57,15 @@
             <small>{{ __('install.hint.database_name') }}</small>
             @if ($errors->has('database'))
                 <p class="text-danger">{{ $errors->first('database') }}</p>
+            @endif
+        </div>
+        <div class="form-group">
+            {!! Form::label('prefix', __('DB Prefix')) !!}
+
+            {!! Form::text('prefix', old('prefix'), ['class' => "form-control", 'placeholder' => "", 'id' => "prefix"]) !!}
+
+            @if ($errors->has('prefix'))
+                <p class="text-danger">{{ $errors->first('prefix') }}</p>
             @endif
         </div>
         <button class="btn btn-primary float-right mt-3">

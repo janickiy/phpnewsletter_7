@@ -88,13 +88,17 @@ class InstallController extends Controller
                 ->withErrors(__('install.str.connection_to_database_cannot_be_established'));
         }
 
-        Session::put('install.db_credentials', $dbCredentials);
+        Session::put(self::INSTALL_DB_SESSION_KEY, $dbCredentials);
 
         return to_route('install.admin');
     }
 
-    public function admin(): View
+    public function admin(): View|RedirectResponse
     {
+        if (!Session::has(self::INSTALL_DB_SESSION_KEY)) {
+            return to_route('install.database');
+        }
+
         return view('install.installation');
     }
 
@@ -105,14 +109,14 @@ class InstallController extends Controller
     public function install(InstallAdminRequest $request): RedirectResponse
     {
         try {
-            $db = Session::pull('install.db_credentials');
+            $db = Session::pull(self::INSTALL_DB_SESSION_KEY);
 
             if (!is_array($db) || empty($db)) {
                 return to_route('install.database')
                     ->withErrors(__('install.str.connection_to_database_cannot_be_established'));
             }
 
-            copy(base_path('.env.example'), base_path('.env'));
+            $this->prepareEnvironmentFile();
 
             $this->reloadEnv();
             $this->writeEnvironmentFile($db);
@@ -135,7 +139,6 @@ class InstallController extends Controller
 
             return to_route('install.complete');
         } catch (\Throwable $e) {
-            @unlink(base_path('.env'));
 
             Log::error($e->getMessage());
             Log::error($e->getTraceAsString());
@@ -175,6 +178,15 @@ class InstallController extends Controller
         }
 
         return response()->json(['result' => true]);
+    }
+
+    private function prepareEnvironmentFile(): void
+    {
+        $envPath = base_path('.env');
+
+        if (!file_exists($envPath)) {
+            copy(base_path('.env.example'), $envPath);
+        }
     }
 
     private function reloadEnv(): void
@@ -268,10 +280,10 @@ class InstallController extends Controller
         $default = config('database.default');
 
         config([
-            "database.connections.{$default}.host" => $credentials['host'],
-            "database.connections.{$default}.database" => $credentials['database'],
-            "database.connections.{$default}.username" => $credentials['username'],
-            "database.connections.{$default}.password" => $credentials['password'],
+            "database.connections.{$default}.host" => $credentials['host'] ?? '127.0.0.1',
+            "database.connections.{$default}.database" => $credentials['database'] ?? '',
+            "database.connections.{$default}.username" => $credentials['username'] ?? '',
+            "database.connections.{$default}.password" => $credentials['password'] ?? '',
             "database.connections.{$default}.prefix" => $credentials['prefix'] ?? '',
         ]);
     }

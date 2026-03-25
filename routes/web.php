@@ -39,8 +39,7 @@ Route::group(['middleware' => ['install']], function () {
     Route::get('subscribe/{subscriber}/{token}', [FrontendController::class, 'subscribe'])->name('frontend.subscribe')->where('subscriber', '[0-9]+')->where('token', '[a-z0-9]+');
     Route::any('form', [FrontendController::class, 'form'])->name('frontend.form');
     Route::any('categories', [FrontendController::class, 'getCategories'])->name('frontend.categories');
-    Route::post('add-sub', 'FrontendController@addSub')->name('frontend.addsub');
-    Route::any('categories', [FrontendController::class, 'getCategories'])->name('frontend.categories');
+    Route::post('add-sub', [FrontendController::class, 'addSub'])->name('frontend.addsub');
     Route::any('ajax', [AjaxController::class, 'action'])->name('admin.ajax.action');
     Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('login', [AuthController::class, 'login'])->name('login.submit');

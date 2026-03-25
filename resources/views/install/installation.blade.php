@@ -18,7 +18,7 @@
         <strong>{{ __('install.str.ready_to_install') }}</strong>
         <p>{{ __('install.str.administration') }}:</p>
         <div class="form-group">
-            <label for="app_name">{{ __('install.str.login') }}</label>
+            <label for="login">{{ __('install.str.login') }}</label>
 
             {!! Form::text('login', old('login'), ['class' => "form-control", 'id' => "login"]) !!}
 
@@ -29,7 +29,7 @@
         </div>
         <div class="form-group">
 
-            {!! Form::label('app_name', __('install.str.password')) !!}
+            {!! Form::label('password', __('install.str.password')) !!}
 
             {!! Form::password('password', ['class' => "form-control", 'id' => "password"]) !!}
 
@@ -39,7 +39,7 @@
         </div>
         <div class="form-group">
 
-            {!! Form::label('app_name', __('install.str.confirm_password')) !!}
+            {!! Form::label('confirm_password', __('install.str.confirm_password')) !!}
 
             {!! Form::password('confirm_password', ['class' => "form-control", 'id' => "confirm_password"]) !!}
 
