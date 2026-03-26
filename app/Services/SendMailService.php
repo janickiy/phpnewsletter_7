@@ -64,39 +64,18 @@ class SendMailService
             $sendEmail->tracking = false;
             $result = $sendEmail->sendEmail();
 
-            $this->readySentRepository->add(new ReadySentCreateData(
-                subscriberId: 0,
-                templateId: 0,
-                success: $result['result'] ?? 0,
-                scheduleId: 0,
-                logId: 0,
-                email: $email,
-                template: 0,
-                errorMsg: $result['error'] ?? null,
-                readMail: null
-            ));
-
-            return ['result' => $result['result'], 'msg' => $result['error'] ? __('frontend.msg.email_wasnt_sent') : __('frontend.msg.email_sent')];
-        } else {
-            $msg = implode(",", $errors);
-
-            $this->readySentRepository->add(new ReadySentCreateData(
-                subscriberId: 0,
-                templateId: 0,
-                success: 0,
-                scheduleId: 0,
-                logId: 0,
-                email: $email,
-                template: 0,
-                errorMsg: null,
-                readMail: null
-            ));
-
+            // Test emails are not tied to real subscribers/templates/schedules/logs,
+            // so we must not write fake foreign keys like 0 into ready_sent.
             return [
-                'result' => false,
-                'msg' => $msg
+                'result' => (bool) ($result['result'] ?? false),
+                'msg' => !empty($result['error']) ? __('frontend.msg.email_wasnt_sent') : __('frontend.msg.email_sent'),
             ];
         }
+
+        return [
+            'result' => false,
+            'msg' => implode(',', $errors),
+        ];
     }
 
 

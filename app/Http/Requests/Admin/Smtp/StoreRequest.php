@@ -53,6 +53,14 @@ class StoreRequest extends FormRequest
                 'integer',
                 'min:1',
             ],
+            'secure' => [
+                'required',
+                'in:no,ssl,tls',
+            ],
+            'authentication' => [
+                'required',
+                'in:no,plain,cram-md5',
+            ],
         ];
     }
 

@@ -35,30 +35,29 @@ class SettingsRepository extends BaseRepository
             $this->model->setValue($key, $value);
         }
 
-        if ($data['header_name']) {
-            Customheaders::truncate();
+        $headerNames = $data['header_name'] ?? [];
+        $headerValues = $data['header_value'] ?? [];
 
-            for ($i = 0; $i < count($data['header_name']); $i++) {
-                $name = $data['header_name'];
-                $value = $data['header_value'];
-                $name[$i] = trim($name[$i]);
-                $value[$i] = trim($value[$i]);
+        Customheaders::truncate();
 
-                if (preg_match("/^[\-a-zA-Z]+$/", $name[$i])) {
-                    $value[$i] = str_replace(';', '', $value[$i]);
-                    $value[$i] = str_replace(':', '', $value[$i]);
-                    if ($name[$i] && $value[$i]) {
-                        $fields = [
-                            'name' => $name[$i],
-                            'value' => $value[$i]
-                        ];
+        if (!empty($headerNames)) {
+            for ($i = 0; $i < count($headerNames); $i++) {
+                $name = trim((string) ($headerNames[$i] ?? ''));
+                $value = trim((string) ($headerValues[$i] ?? ''));
 
-                        Customheaders::create($fields);
-                    }
+                if ($name === '' || $value === '') {
+                    continue;
+                }
+
+                if (preg_match('/^[\\-a-zA-Z]+$/', $name)) {
+                    $value = str_replace([';', ':'], '', $value);
+
+                    Customheaders::create([
+                        'name' => $name,
+                        'value' => $value,
+                    ]);
                 }
             }
-        } else {
-            Customheaders::truncate();
         }
     }
 }

@@ -225,7 +225,7 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('TEXT_CONFIRMATION', __('frontend.form.text_confirmation'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('INTERVAL_NUMBER', __('frontend.form.interval_number'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-md-7">
 
@@ -247,8 +247,8 @@
                                                             ], SettingsHelper::getInstance()->getValueForKey('INTERVAL_TYPE') ? SettingsHelper::getInstance()->getValueForKey('INTERVAL_TYPE') : 'no', ['class' => 'form-control']
                                                             ) !!}
 
-                                            @if ($errors->has('INTERVAL_NUMBER'))
-                                                <span class="text-danger">{{ $errors->first('INTERVAL_NUMBER') }}</span>
+                                            @if ($errors->has('INTERVAL_TYPE'))
+                                                <span class="text-danger">{{ $errors->first('INTERVAL_TYPE') }}</span>
                                             @endif
 
                                         </div>
@@ -287,7 +287,7 @@
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('SLEEP', SettingsHelper::getInstance()->getValueForKey('ORGANIZATION'), ['placeholder' => __("frontend.form.sleep"), 'class' => 'form-control']) !!}
+                                            {!! Form::text('SLEEP', !empty(SettingsHelper::getInstance()->getValueForKey('ORGANIZATION')) ?SettingsHelper::getInstance()->getValueForKey('ORGANIZATION'): 0, ['placeholder' => __("frontend.form.sleep"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('SLEEP'))
                                                 <span class="text-danger">{{ $errors->first('SLEEP') }}</span>
@@ -299,7 +299,7 @@
 
                                     <div class="form-group row">
 
-                                        {!! Form::label('DAYS_FOR_REMOVE_SUBSCRIBER', __('frontend.form.limit_number'), ['class' => 'col-sm-2 col-form-label']) !!}
+                                        {!! Form::label('DAYS_FOR_REMOVE_SUBSCRIBER', __('frontend.form.days_for_remove_subscriber'), ['class' => 'col-sm-2 col-form-label']) !!}
 
                                         <div class="col-sm-10">
 

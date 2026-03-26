@@ -47,6 +47,10 @@ class EditRequest extends FormRequest
                 'email',
                 'max:255',
             ],
+            'password' => [
+                'required',
+                'string',
+            ],
             'port' => [
                 'required',
                 'integer',
@@ -56,6 +60,14 @@ class EditRequest extends FormRequest
                 'required',
                 'integer',
                 'min:1',
+            ],
+            'secure' => [
+                'required',
+                'in:no,ssl,tls',
+            ],
+            'authentication' => [
+                'required',
+                'in:no,plain,cram-md5',
             ],
         ];
     }
