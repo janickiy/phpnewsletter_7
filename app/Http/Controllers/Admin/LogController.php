@@ -2,68 +2,43 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Logs;
-use App\Models\ReadySent;
-use App\Services\DownloadService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class LogController extends Controller
 {
-    public function __construct(private readonly DownloadService $logService)
-    {
-        parent::__construct();
-    }
-
     /**
-     * @return View
+     * Display a listing of the logs.
      */
     public function index(): View
     {
+        $rows = Logs::query()
+            ->orderByDesc('id')
+            ->paginate(20);
+
         return view('admin.log.index', [
-            'infoAlert' => __('frontend.hint.log_index'),
-            'title' => __('frontend.title.log_index'),
+            'rows' => $rows,
+            'title' => __('message.logs'),
         ]);
     }
 
+    /**
+     * Clear all logs
+     */
     public function clear(): RedirectResponse
     {
         try {
-            DB::transaction(function () {
-                ReadySent::truncate();
-                Logs::truncate();
-            });
+            // ВАЖНО: используем delete(), а не truncate()
+            // чтобы не ломались foreign key (ready_sent → logs)
+            Logs::query()->delete();
         } catch (\Throwable $e) {
             report($e);
 
             return back()->with('error', $e->getMessage());
         }
 
-        return to_route('admin.log.index')
-            ->with('success', __('message.log_cleared'));
-    }
-
-    /**
-     * @param int $id
-     * @return Response
-     */
-    public function download(int $id): Response
-    {
-        return $this->logService->log($id);
-    }
-
-    /**
-     * @param int $id
-     * @return View
-     */
-    public function info(int $id): View
-    {
-        return view('admin.log.info', [
-            'id' => $id,
-            'infoAlert' => __('frontend.hint.log_info'),
-            'title' => __('frontend.title.log_info'),
-        ]);
+        return back()->with('success', __('message.data_deleted'));
     }
 }
