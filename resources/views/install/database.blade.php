@@ -59,15 +59,7 @@
                 <p class="text-danger">{{ $errors->first('database') }}</p>
             @endif
         </div>
-        <div class="form-group">
-            {!! Form::label('prefix', __('DB Prefix')) !!}
 
-            {!! Form::text('prefix', old('prefix'), ['class' => "form-control", 'placeholder' => "", 'id' => "prefix"]) !!}
-
-            @if ($errors->has('prefix'))
-                <p class="text-danger">{{ $errors->first('prefix') }}</p>
-            @endif
-        </div>
         <button class="btn btn-primary float-right mt-3">
             {{ __('install.button.next') }}
             <i class="fa fa-arrow-right"></i>

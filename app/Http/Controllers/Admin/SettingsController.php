@@ -39,7 +39,7 @@ class SettingsController extends Controller
     {
         try {
             $this->settingsRepository->setSettings(
-                $request->validated()
+                $request->all()
             );
         } catch (\Throwable $e) {
             report($e);

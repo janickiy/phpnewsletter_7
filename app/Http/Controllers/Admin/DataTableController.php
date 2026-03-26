@@ -194,7 +194,7 @@ class DataTableController extends Controller
             ->make(true);
     }
 
-    public function getInfoLog(int $id = null): JsonResponse
+    public function getInfoLog(?int $id = null): JsonResponse
     {
         $rows = $id
             ? ReadySent::query()->where('schedule_id', $id)
