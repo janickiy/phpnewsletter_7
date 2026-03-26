@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Admin\Subscribers;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class ImportRequest extends FormRequest
 {
@@ -26,8 +25,8 @@ class ImportRequest extends FormRequest
             'import' => [
                 'required',
                 'file',
-                Rule::mimes(['csv', 'xlsx', 'xls', 'ods', 'txt']),
-                'max:10240', // 10 MB
+                'mimes:csv,xlsx,xls,ods,txt',
+                'max:10240',
             ],
         ];
     }
