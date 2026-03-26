@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\Admin\Settings\UpdateRequest;
+
 use App\Models\Charsets;
 use App\Models\Customheaders;
 use App\Repositories\SettingsRepository;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 
 class SettingsController extends Controller
 {
@@ -31,10 +32,10 @@ class SettingsController extends Controller
     }
 
     /**
-     * @param UpdateRequest $request
+     * @param Request $request
      * @return RedirectResponse
      */
-    public function update(UpdateRequest $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
         try {
             $this->settingsRepository->setSettings(
