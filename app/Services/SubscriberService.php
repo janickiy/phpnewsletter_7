@@ -92,16 +92,17 @@ class SubscriberService
                         $subscriber = Subscribers::where('email', 'like', $email)->first();
 
                         if ($subscriber) {
-                            $subscriber->remove();
+                            Subscriptions::where('subscriber_id', $subscriber->id)->delete();
+
                             $this->syncSubscriptions($subscriber->id, (array) ($request->categoryId ?? []));
                         } else {
-                            $subscriberId = Subscribers::create(new SubscriberCreateData(
+                            $subscriberId = Subscribers::create((new SubscriberCreateData(
                                 email: $email,
                                 active: 1,
                                 token: StringHelper::token(),
                                 timeSent: date('Y-m-d H:i:s'),
                                 name: $name,
-                            ))->id;
+                            ))->toArray())->id;
 
                             $this->syncSubscriptions($subscriberId, (array) ($request->categoryId ?? []));
 
@@ -161,19 +162,19 @@ class SubscriberService
                     if ($subscriber) {
                         Subscriptions::where('subscriber_id', $subscriber->id)->delete();
 
-                        $this->syncSubscriptions($subscriber->id, (array) ($request->categoryId ?? []));
+                        $this->syncSubscriptions($subscriber->id, (array) ($f->categoryId ?? []));
                     } else {
                         $subscriberId = Subscribers::create(
-                            new SubscriberCreateData(
+                            (new SubscriberCreateData(
                                 email: $email,
                                 active: 1,
                                 token: StringHelper::token(),
                                 timeSent: date('Y-m-d H:i:s'),
                                 name: $name,
-                            )
+                            ))->toArray()
                         )->id;
 
-                        $this->syncSubscriptions($subscriberId, (array) ($request->categoryId ?? []));
+                        $this->syncSubscriptions($subscriberId, (array) ($f->categoryId ?? []));
 
                         $count++;
                     }
