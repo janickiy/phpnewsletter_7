@@ -119,7 +119,7 @@
         let calendar = new FullCalendar.Calendar(calendarEl, {
             eventMouseEnter: function(info) {
                 info.el.innerHTML = '<div class="p-2"> '+ info.event.title +'<div class="event-actions">'+
-                    '<a href="/schedule/edit/'+info.event.id+'" class="m-1 btn btn-info btn-sm"><i class="fa fa-edit"></i></a>'+
+                    '<a href="{{ url('schedule/edit') }}/'+info.event.id+'" class="m-1 btn btn-info btn-sm"><i class="fa fa-edit"></i></a>'+
                     '<button class="m-1 btn btn-danger btn-sm delete-event" data-id='+info.event.id+'><i class="fa fa-trash"></i></button></div></div>';
             },
             eventMouseLeave: function(info) {

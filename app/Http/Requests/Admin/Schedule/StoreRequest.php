@@ -40,6 +40,12 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'event_name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
             'template_id' => [
                 'required',
                 'integer',

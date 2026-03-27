@@ -50,26 +50,36 @@ class EditRequest extends FormRequest
                 'integer',
                 Rule::exists(Schedule::getTableName(), 'id'),
             ],
+            'event_name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
             'template_id' => [
                 'required',
                 'integer',
                 Rule::exists(Templates::getTableName(), 'id'),
             ],
+
             'categoryId' => [
                 'required',
                 'array',
                 'min:1',
             ],
+
             'categoryId.*' => [
                 'required',
                 'integer',
                 Rule::exists(Category::getTableName(), 'id'),
             ],
+
             'event_start' => [
                 'required',
                 'date_format:d.m.Y H:i',
                 'after:tomorrow',
             ],
+
             'event_end' => [
                 'required',
                 'date_format:d.m.Y H:i',
