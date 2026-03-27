@@ -75,7 +75,19 @@
 
                                 {!! Form::label('categoryId[]',  __('frontend.form.subscribers_category')) !!}
 
-                                {!! Form::select('categoryId[]', $category_options, old('categoryId', $categoryId ?? null), ['multiple' => 'multiple', 'placeholder' => __('frontend.form.select_category'), 'class' => 'form-control']) !!}
+                                @php
+                                    $selected = array_map('strval', old('categoryId', $categoryId ?? []));
+                                @endphp
+
+                                {!! Form::select(
+                                    'categoryId[]', // ❗ БЕЗ []
+                                    $category_options,
+                                    $selected,
+                                    [
+                                        'multiple' => true,
+                                        'class' => 'form-control',
+                                    ]
+                                ) !!}
 
                                 @if ($errors->has('categoryId'))
                                     <p class="text-danger">{{ $errors->first('categoryId') }}</p>
