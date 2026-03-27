@@ -120,6 +120,27 @@
             });
         });
 
+        function confirmation(event) {
+            Swal.fire({
+                title: "{{ __('frontend.str.clear_confirmation') }}",
+                text: "{{ __('frontend.str.want_to_log_clear') }}",
+                showCancelButton: true,
+                icon: 'warning',
+                cancelButtonText: "{{ __('frontend.str.cancel') }}",
+                confirmButtonText: "{{ __('frontend.str.yes') }}",
+                reverseButtons: true,
+                confirmButtonColor: "#DD6B55",
+                customClass: {
+                    actions: 'my-actions',
+                    cancelButton: 'order-1',
+                },
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('admin.redirect.clear') }}";
+                }
+            })
+        }
+
     </script>
 
 @endsection
