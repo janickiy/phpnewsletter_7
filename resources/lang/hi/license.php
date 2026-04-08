@@ -1,112 +1,51 @@
 <?php
 
 return [
-    'agreement' => "Software Product License Agreement
+    'agreement' => "सॉफ़्टवेयर उत्पाद लाइसेंस समझौता
 
-CONDITIONS FOR MAKING COPIES, DISTRIBUTION AND MODIFICATIONS
+प्रतिलिपि बनाने, वितरण और संशोधन की शर्तें
 
-This License Agreement applies to all software or other developed by JANICKIY.COM, in which it is
-indicated that the program may be distributed only under this license agreement.
-The term \"software product\" , as used below, is applied to a program (development) and the term
-\"development based on the Software product\" refers to either the software product, or any
-development made on its basis, protected by copyright law.
-This license agreement is addressed to you and enters into agreement with you.
-This license agreement applies only to manufacturing copies, distribution and modification of the
-software product. Other actions on Software product are beyond the scope of this license agreement.
+यह लाइसेंस समझौता JANICKIY.COM द्वारा विकसित सभी सॉफ़्टवेयर या अन्य उत्पादों पर लागू होता है, जिनमें यह निर्दिष्ट है कि कार्यक्रम केवल इस लाइसेंस समझौते के तहत ही वितरित किया जा सकता है।
+\"सॉफ़्टवेयर उत्पाद\" शब्द का उपयोग नीचे एक कार्यक्रम (विकास) के लिए किया गया है और \"सॉफ़्टवेयर उत्पाद पर आधारित विकास\" से आशय सॉफ़्टवेयर उत्पाद या उस पर आधारित किसी भी विकास से है, जो कॉपीराइट कानून द्वारा संरक्षित है।
+यह लाइसेंस समझौता आपको संबोधित है और आपके साथ एक समझौता स्थापित करता है।
+यह लाइसेंस समझौता केवल सॉफ़्टवेयर उत्पाद की प्रतिलिपि बनाने, वितरण और संशोधन पर लागू होता है। अन्य कार्य इस लाइसेंस समझौते के दायरे से बाहर हैं।
 
-1. It is permitted to copy and distribute replicas of the source code of Software product in the form in
-which you received them, in any medium provided that each copy you supply with references to
-copyright law and disclaimer of warranty; keep intact everything relating to this license agreement and
-the absence of any warranty, and give the Software product to any third-party beneficiaries together
-with a copy of the Software Product License agreement along with the Program.
+1. आपको सॉफ़्टवेयर उत्पाद के स्रोत कोड की प्रतियाँ उसी रूप में कॉपी और वितरित करने की अनुमति है, जिसमें आपने उन्हें प्राप्त किया है, किसी भी माध्यम में, बशर्ते कि प्रत्येक प्रति में कॉपीराइट नोटिस और वारंटी अस्वीकरण शामिल हो; इस लाइसेंस समझौते से संबंधित सभी जानकारी को यथावत रखें; और सॉफ़्टवेयर उत्पाद को किसी भी तीसरे पक्ष को इस लाइसेंस की प्रति के साथ प्रदान करें।
 
-2. You can make changes to your copy of the Software Product in any part of it, thus creating a
-development on the basis of Software product, and copy and distribute such modifications or
-developments under the conditions listed above in section 1, in case they also meet the following
-conditions:
+2. आप सॉफ़्टवेयर उत्पाद की अपनी प्रति में किसी भी भाग में परिवर्तन कर सकते हैं, जिससे सॉफ़्टवेयर उत्पाद पर आधारित एक नया विकास तैयार होगा, और ऐसे संशोधनों या विकासों की प्रतिलिपि और वितरण कर सकते हैं, बशर्ते कि वे निम्नलिखित शर्तों को भी पूरा करें:
 
-2.1 you must specify exactly which files have been changed, what was changed, and date of changes.
+2.1 आपको स्पष्ट रूप से यह बताना होगा कि कौन-सी फ़ाइलें बदली गई हैं, क्या बदला गया है, और परिवर्तन की तिथि क्या है।
 
-2.2 Any distributed or published developments that include the Software product entirely or any part of
-it, made on the basis of the software product, or any part of it, must be mandatory licensed by you
-according to the conditions of the present license agreement.
+2.2 कोई भी वितरित या प्रकाशित विकास, जिसमें सॉफ़्टवेयर उत्पाद पूर्ण रूप से या आंशिक रूप से शामिल हो, उसी लाइसेंस शर्तों के तहत लाइसेंस किया जाना चाहिए।
 
-3. If a modified program is designed for interactive use, then at the beginning of the work with such
-interactive use, the information has to be shown in a normal procedure about the presence and the
-ability to view copyright notices and the absence (or presence provided by you) of guarantees that users
-can according to this agreement transfer software product to other users, as well as instructions for the
-user for how to view a copy of this license agreement.
-These requirements apply to the modified development in general.
-If logically isolated components of your design are not based on this Software product and can rightfully
-be regarded as independent development, then this License and its conditions do not apply to the
-components mentioned in those cases when you distribute them as separate development.
-If these components are distributed as part of an integrated development based on the Software
-product, then this license agreement is effective, permitting the licensing of this integral development,
-and therefore, applicable to all and any of its parts, regardless of who is its author.
+3. यदि संशोधित प्रोग्राम इंटरैक्टिव उपयोग के लिए डिज़ाइन किया गया है, तो उपयोग की शुरुआत में कॉपीराइट सूचना, वारंटी की अनुपस्थिति (या आपकी ओर से प्रदान की गई), और उपयोगकर्ताओं को सॉफ़्टवेयर को स्थानांतरित करने के अधिकार की जानकारी प्रदर्शित की जानी चाहिए।
+ये आवश्यकताएँ संपूर्ण संशोधित विकास पर लागू होती हैं।
+यदि आपके विकास के कुछ घटक सॉफ़्टवेयर उत्पाद पर आधारित नहीं हैं और स्वतंत्र माने जा सकते हैं, तो यह लाइसेंस उन पर लागू नहीं होगा जब वे अलग से वितरित किए जाएँ।
+यदि वे एकीकृत विकास का हिस्सा हैं, तो यह लाइसेंस संपूर्ण विकास पर लागू होगा।
 
-4. It is possible to make copies, modify, sublicense or distribute the Software product only subject to
-the conditions expressly stated in this license agreement. Any attempt otherwise to copy, modify,
-sublicense or distribute the Software product are considered a violation of the license agreement and
-will automatically terminate your rights provided by this agreement.
-However, a license of third parties who received from you any copies or rights under this license
-agreement will remain valid as long as such parties remain fully comply with the conditions of the
-agreement.
+4. आप सॉफ़्टवेयर उत्पाद की प्रतिलिपि, संशोधन, सबलाइसेंस या वितरण केवल इस लाइसेंस में वर्णित शर्तों के अनुसार ही कर सकते हैं। अन्यथा किया गया कोई भी प्रयास लाइसेंस का उल्लंघन माना जाएगा और आपके अधिकार समाप्त कर दिए जाएँगे।
+हालाँकि, जिन तीसरे पक्षों को आपने अधिकार दिए हैं, वे तब तक वैध रहेंगे जब तक वे इस लाइसेंस का पालन करते हैं।
 
-5. You are not required to accept this License Agreement, since you have not signed it. However,
-nothing else grants you a permission to modify or distribute the Software product or create any
-developments on its basis. In this case, such actions are prohibited by law if you do not accept this
-License agreement.
-Therefore, by modifying or distributing a copy of the Software product (or any work created based on
-it), you thus show the acceptance of this License with all its terms and conditions for copying,
-distributing or modifying the Software product or developments created on its basis.
+5. आपको इस लाइसेंस को स्वीकार करने की बाध्यता नहीं है, क्योंकि आपने इस पर हस्ताक्षर नहीं किए हैं। लेकिन इसके बिना आपको सॉफ़्टवेयर को संशोधित या वितरित करने की अनुमति नहीं मिलती।
+यदि आप ऐसा करते हैं, तो आप इस लाइसेंस की सभी शर्तों को स्वीकार करते हैं।
 
-6. Whenever you redistribute the Software Product (or development created based on the Product), the
-new recipient automatically receives from the original licensor a right to copy, distribute or modify the
-Software Product in accordance with the terms and conditions of this license agreement. You can not
-impose any further restrictions on the rights of the new owner given to him by this license agreement.
-You are not responsible for enforcing compliance by third parties to this agreement.
+6. जब भी आप सॉफ़्टवेयर उत्पाद (या उसके आधार पर विकास) का पुनर्वितरण करते हैं, नया प्राप्तकर्ता इस लाइसेंस के तहत समान अधिकार प्राप्त करता है। आप उन अधिकारों पर अतिरिक्त प्रतिबंध नहीं लगा सकते।
 
-7. In case of a court judgment or a copy infringement or for any other reason (not necessarily of patent
-character), you (whether by court order, agreement or otherwise) are put in conditions that contradict
-the conditions of this license agreements, this does not excuse you from the conditions of this license
-agreement.
-If you can not simultaneously perform your obligations under this License and any other pertinent
-obligations, then as consequence you can not distribute the Software Product.
-For example, if a patent license would not allow gratuitous further distribution of software products by
-those who received a copy of it from you, directly or indirectly, then the only way not to violate any of
-its conditions or conditions of this license agreement is to fully refrain entirely from distribution of the
-Software Product.
-If any part of this section is held to have no legal force or inapplicable in the circumstances, the rest part
-of the section is intended to apply and the section as a whole is applicable to other circumstances.
+7. यदि किसी न्यायालय के निर्णय या अन्य कारणों से ऐसी स्थिति उत्पन्न होती है जो इस लाइसेंस के विपरीत हो, तो भी आपको इस लाइसेंस का पालन करना होगा।
+यदि आप अन्य दायित्वों और इस लाइसेंस दोनों का पालन नहीं कर सकते, तो आप सॉफ़्टवेयर का वितरण नहीं कर सकते।
 
-8. If the distribution and/or use the Software Product in a specific country is limited by patent
-agreements or relationships in the field of copyright, the original copyright holder who places his
-software product under this License Agreement, can add a clearly defined geographical limitations for a
-distribution, excluding these countries from those that allowed distribution. In such case, this License
-agreement incorporates the limitation as if written in the actual text agreement.
+8. यदि किसी देश में वितरण या उपयोग पेटेंट या कॉपीराइट प्रतिबंधों के कारण सीमित है, तो मूल कॉपीराइट धारक उस देश को वितरण से बाहर रख सकता है।
 
-9. If you wish to incorporate parts of the Software product into other freely distributed software
-products, but under other conditions, you have to ask a permission in writing from the authors.
-DISCLAIMER OF WARRANTY
+9. यदि आप सॉफ़्टवेयर के भागों को अन्य सॉफ़्टवेयर में शामिल करना चाहते हैं, तो आपको लेखकों से लिखित अनुमति लेनी होगी।
 
-10 . BECAUSE THE SOFTWARE IS LICENSED FREE OF CHARGE, NO WARRANTIES ARE GIVEN TO THE
-EXTENT ALLOWED BY LAW. EXCEPT WHEN THERE IS WRITTEN STATEMENT OF HOLDERS OR
-DISTRIBUTORS OF SOFTWARE, THE PRODUCT IS PROVIDED TO YOU \"AS IT IS\", THAT DOES NOT PROVIDE
-ANY WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF FITNESS FOR SALES, AND USE FOR A
-PARTICULAR PURPOSE. YOU ASSUME THE ENTIRE RISK AS TO THE ELIGIBILITY REQUIREMENTS FOR
-QUALITY AND PERFORMANCE OF THE SOFTWARE. IF THE SOFTWARE WORKS INCORRECTLY, YOU
-SOLELY BARE ALL NECESSARY COSTS FOR SERVICE, TROUBLESHOOTING AND CORRECTION.
+वारंटी का अस्वीकरण
 
-11. UNDER NO CIRCUMSTANCES, EXCEPT WHEN REQUIRED BY APPLICABLE LAW OR AGREED TO IN
-WRITING, NO COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO AMEND AND/OR REDISTRIBUTE THE
-SOFTWARE PRODUCT AS PERMITTED ABOVE, IS LIABLE TO YOU FOR DAMAGES, INCLUDING GENERAL,
-SPECIAL , INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF USE OR INABILITY TO USE THE
-SOFTWARE (INCLUDING LOSS OF DATA, INCONVINIENT FOR YOU METHOD OF DATA RECEPTION OR ANY
-ADDITIONAL EXPENSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE TO OPERATE WITH ANY
-OTHER SOFTWARE, EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
-SUCH DAMAGES.
-Distributing this program, we hope that it will be useful, but DO NOT GIVE ANY WARRANTY, without
-even the implied warranty of MERCHANTIBILITY OR USAGE FOR A PARTICULAR PURPOSE. Together with
-this program you need to get our license for the software
+10. चूँकि यह सॉफ़्टवेयर निःशुल्क प्रदान किया जाता है, कानून द्वारा अनुमत सीमा तक कोई वारंटी नहीं दी जाती।
+यह \"जैसा है\" आधार पर प्रदान किया जाता है, और किसी भी प्रकार की अप्रत्यक्ष वारंटी शामिल नहीं है।
+सॉफ़्टवेयर के उपयोग का पूरा जोखिम उपयोगकर्ता पर है।
+
+11. किसी भी परिस्थिति में, जब तक कि कानून द्वारा आवश्यक न हो, कोई भी कॉपीराइट धारक या वितरक किसी भी प्रकार की क्षति के लिए उत्तरदायी नहीं होगा, जिसमें डेटा हानि या अन्य अप्रत्यक्ष नुकसान शामिल हैं।
+
+इस कार्यक्रम को वितरित करते समय हमें आशा है कि यह उपयोगी होगा, लेकिन हम किसी भी प्रकार की वारंटी प्रदान नहीं करते हैं। इसके साथ आपको सॉफ़्टवेयर का लाइसेंस भी प्राप्त करना होगा।
 "
 ];

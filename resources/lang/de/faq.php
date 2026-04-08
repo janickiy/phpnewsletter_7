@@ -13,7 +13,7 @@ F: Ist es möglich, E-Mails zu personalisieren?</strong>
 Sie oder der sendende Server sollten einen Bericht über die Nichtzustellung mit den entsprechenden Gründen erhalten.</p>
 
 <strong>F: Ich kann den Newsletter nicht über den SMTP-Server versenden. Im Versandprotokoll erscheint folgender Fehler:
-"The following From address failed: vasya-pupkin@my-domain.com : Called Mail() without being connected"
+"The following From address failed: example@my-domain.com : Called Mail() without being connected"
 Was ist die Ursache?</strong>
 <p>A: Dafür kann es mehrere Gründe geben. Möglicherweise haben Sie die Adresse oder den Port des SMTP-Servers in den Einstellungen falsch angegeben.
 Ein weiterer Grund könnte sein, dass der Zugriff auf den SMTP-Server durch eine Firewall blockiert wird oder der Server vorübergehend nicht verfügbar ist.</p>

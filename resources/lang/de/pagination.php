@@ -7,23 +7,21 @@ return [
     | Pagination Language Lines
     |--------------------------------------------------------------------------
     |
-    | The following language lines are used by the paginator library to build
-    | the simple pagination links. You are free to change them to anything
-    | you want to customize your views to better match your application.
+    | Die folgenden Sprachzeilen werden für die Seitennavigation verwendet.
     |
     */
 
-    'previous' => '&laquo; Previous',
-    'next'     => 'Next &raquo;',
-    's_length_menu' => 'Displayed _MENU_ entries per page',
-    's_zero_records' => 'Sorry, nothing found',
-    's_info' => 'Showing _START_ to _END_ of _TOTAL_ records',
-    's_info_empty' => 'Showing 0 to 0 of 0 entries',
-    's_infofiltered' => '(filtered _MAX_ total records)',
+    'previous' => '&laquo; Zurück',
+    'next'     => 'Weiter &raquo;',
+    's_length_menu' => '_MENU_ Einträge pro Seite anzeigen',
+    's_zero_records' => 'Keine Einträge gefunden',
+    's_info' => 'Anzeige von _START_ bis _END_ von insgesamt _TOTAL_ Einträgen',
+    's_info_empty' => 'Anzeige von 0 bis 0 von 0 Einträgen',
+    's_infofiltered' => '(gefiltert aus insgesamt _MAX_ Einträgen)',
     's_paginate' => [
-        "first" => "First",
-        "last" => "Last",
-        "next" => "Next",
-        "previous" => "Previous",
+        "first" => "Erste",
+        "last" => "Letzte",
+        "next" => "Weiter",
+        "previous" => "Zurück",
     ],
 ];

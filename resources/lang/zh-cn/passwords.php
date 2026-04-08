@@ -2,21 +2,10 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Password Reset Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are the default lines which match reasons
-    | that are given by the password broker for a password update attempt
-    | has failed, such as for an invalid token or invalid new password.
-    |
-    */
-
-    'password' => 'Passwords must be at least eight characters and match the confirmation.',
-    'reset' => 'Your password has been reset!',
-    'sent'  => 'We have e-mailed your password reset link!',
-    'token' => 'This password reset token is invalid.',
-    'user'  => "We can't find a user with that e-mail address.",
+    'password' => '密码长度至少为 8 个字符，并且必须与确认密码一致。',
+    'reset' => '您的密码已成功重置！',
+    'sent'  => '密码重置链接已发送至您的邮箱！',
+    'token' => '该密码重置令牌无效。',
+    'user'  => '未找到与该电子邮箱地址对应的用户。',
 
 ];

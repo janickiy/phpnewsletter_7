@@ -13,17 +13,17 @@ return [
     |
     */
 
-    'previous' => '&laquo; Previous',
-    'next'     => 'Next &raquo;',
-    's_length_menu' => 'Displayed _MENU_ entries per page',
-    's_zero_records' => 'Sorry, nothing found',
-    's_info' => 'Showing _START_ to _END_ of _TOTAL_ records',
-    's_info_empty' => 'Showing 0 to 0 of 0 entries',
-    's_infofiltered' => '(filtered _MAX_ total records)',
+    'previous' => '&laquo; Anterior',
+    'next'     => 'Siguiente &raquo;',
+    's_length_menu' => 'Mostrar _MENU_ registros por página',
+    's_zero_records' => 'No se encontraron resultados',
+    's_info' => 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+    's_info_empty' => 'Mostrando 0 a 0 de 0 registros',
+    's_infofiltered' => '(filtrado de _MAX_ registros totales)',
     's_paginate' => [
-        "first" => "First",
-        "last" => "Last",
-        "next" => "Next",
-        "previous" => "Previous",
+        "first" => "Primero",
+        "last" => "Último",
+        "next" => "Siguiente",
+        "previous" => "Anterior",
     ],
 ];

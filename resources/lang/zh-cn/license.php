@@ -1,112 +1,53 @@
 <?php
 
 return [
-    'agreement' => "Software Product License Agreement
+    'agreement' => "软件产品许可协议
 
-CONDITIONS FOR MAKING COPIES, DISTRIBUTION AND MODIFICATIONS
+复制、分发与修改的条件
 
-This License Agreement applies to all software or other developed by JANICKIY.COM, in which it is
-indicated that the program may be distributed only under this license agreement.
-The term \"software product\" , as used below, is applied to a program (development) and the term
-\"development based on the Software product\" refers to either the software product, or any
-development made on its basis, protected by copyright law.
-This license agreement is addressed to you and enters into agreement with you.
-This license agreement applies only to manufacturing copies, distribution and modification of the
-software product. Other actions on Software product are beyond the scope of this license agreement.
+本许可协议适用于由 JANICKIY.COM 开发的所有软件或其他产品，且该类产品明确说明仅可依据本许可协议进行分发。
+下文所称“软件产品”是指程序（开发成果），“基于软件产品的开发成果”是指软件产品本身或基于其开发的任何受版权法保护的成果。
+本许可协议面向您，并与您构成协议关系。
+本许可协议仅适用于软件产品的复制、分发与修改行为。其他行为不在本许可协议范围内。
 
-1. It is permitted to copy and distribute replicas of the source code of Software product in the form in
-which you received them, in any medium provided that each copy you supply with references to
-copyright law and disclaimer of warranty; keep intact everything relating to this license agreement and
-the absence of any warranty, and give the Software product to any third-party beneficiaries together
-with a copy of the Software Product License agreement along with the Program.
+1. 允许您以任何媒介复制和分发软件产品的源代码副本，前提是：每一份副本均附带版权声明和免责声明；保留与本许可协议及无担保声明相关的所有内容；并在分发时向第三方一并提供本许可协议副本。
 
-2. You can make changes to your copy of the Software Product in any part of it, thus creating a
-development on the basis of Software product, and copy and distribute such modifications or
-developments under the conditions listed above in section 1, in case they also meet the following
-conditions:
+2. 您可以对软件产品的副本进行修改，从而形成基于软件产品的开发成果，并可在遵循第 1 条规定的前提下复制和分发该等修改或开发成果，但需满足以下条件：
 
-2.1 you must specify exactly which files have been changed, what was changed, and date of changes.
+2.1 您必须明确标明修改过的文件、具体修改内容以及修改日期。
 
-2.2 Any distributed or published developments that include the Software product entirely or any part of
-it, made on the basis of the software product, or any part of it, must be mandatory licensed by you
-according to the conditions of the present license agreement.
+2.2 凡包含软件产品全部或部分内容的发布或分发成果，必须依据本许可协议的条款进行许可。
 
-3. If a modified program is designed for interactive use, then at the beginning of the work with such
-interactive use, the information has to be shown in a normal procedure about the presence and the
-ability to view copyright notices and the absence (or presence provided by you) of guarantees that users
-can according to this agreement transfer software product to other users, as well as instructions for the
-user for how to view a copy of this license agreement.
-These requirements apply to the modified development in general.
-If logically isolated components of your design are not based on this Software product and can rightfully
-be regarded as independent development, then this License and its conditions do not apply to the
-components mentioned in those cases when you distribute them as separate development.
-If these components are distributed as part of an integrated development based on the Software
-product, then this license agreement is effective, permitting the licensing of this integral development,
-and therefore, applicable to all and any of its parts, regardless of who is its author.
+3. 若修改后的程序用于交互式使用，则在程序启动时应以正常方式向用户显示相关信息，包括版权声明、是否提供担保，以及用户根据本协议转发软件产品的权利说明，并提供查看本许可协议的方法。
+上述要求适用于整体开发成果。
+若您的开发中存在逻辑上独立且未基于本软件产品的组件，则当这些组件作为独立成果分发时，不受本许可协议约束。
+但若这些组件作为基于软件产品的整体开发成果的一部分进行分发，则本许可协议适用于整体成果及其所有部分，无论其作者是谁。
 
-4. It is possible to make copies, modify, sublicense or distribute the Software product only subject to
-the conditions expressly stated in this license agreement. Any attempt otherwise to copy, modify,
-sublicense or distribute the Software product are considered a violation of the license agreement and
-will automatically terminate your rights provided by this agreement.
-However, a license of third parties who received from you any copies or rights under this license
-agreement will remain valid as long as such parties remain fully comply with the conditions of the
-agreement.
+4. 仅在遵守本许可协议明确规定的前提下，方可复制、修改、再许可或分发软件产品。任何违反本许可协议的行为将自动终止您依据本协议所享有的权利。
+但第三方根据本许可协议从您处获得的软件副本或权利，在其遵守本协议条款的情况下仍然有效。
 
-5. You are not required to accept this License Agreement, since you have not signed it. However,
-nothing else grants you a permission to modify or distribute the Software product or create any
-developments on its basis. In this case, such actions are prohibited by law if you do not accept this
-License agreement.
-Therefore, by modifying or distributing a copy of the Software product (or any work created based on
-it), you thus show the acceptance of this License with all its terms and conditions for copying,
-distributing or modifying the Software product or developments created on its basis.
+5. 您无需签署本许可协议即可接受其条款。但若未接受本协议，您不得修改或分发软件产品或基于其进行开发，否则该等行为将被法律禁止。
+因此，您通过修改或分发软件产品（或其衍生作品）的行为，视为已接受本许可协议的全部条款。
 
-6. Whenever you redistribute the Software Product (or development created based on the Product), the
-new recipient automatically receives from the original licensor a right to copy, distribute or modify the
-Software Product in accordance with the terms and conditions of this license agreement. You can not
-impose any further restrictions on the rights of the new owner given to him by this license agreement.
-You are not responsible for enforcing compliance by third parties to this agreement.
+6. 当您重新分发软件产品（或基于其开发的成果）时，接收方将自动获得来自原始许可方的权利，可依据本许可协议复制、分发或修改软件产品。
+您不得对接收方施加任何额外限制。
+您亦无需对第三方是否遵守本协议承担责任。
 
-7. In case of a court judgment or a copy infringement or for any other reason (not necessarily of patent
-character), you (whether by court order, agreement or otherwise) are put in conditions that contradict
-the conditions of this license agreements, this does not excuse you from the conditions of this license
-agreement.
-If you can not simultaneously perform your obligations under this License and any other pertinent
-obligations, then as consequence you can not distribute the Software Product.
-For example, if a patent license would not allow gratuitous further distribution of software products by
-those who received a copy of it from you, directly or indirectly, then the only way not to violate any of
-its conditions or conditions of this license agreement is to fully refrain entirely from distribution of the
-Software Product.
-If any part of this section is held to have no legal force or inapplicable in the circumstances, the rest part
-of the section is intended to apply and the section as a whole is applicable to other circumstances.
+7. 若因法院判决、专利争议或其他原因（不限于专利因素），使您处于与本许可协议条款相冲突的情形，该情况并不免除您遵守本许可协议的义务。
+若您无法同时履行本许可协议及其他相关义务，则不得分发软件产品。
+例如：若某项专利许可不允许对软件进行免费再分发，则唯一的解决方式是完全停止分发软件产品。
+若本条某部分被认定为无效或不适用，其余部分仍然有效。
 
-8. If the distribution and/or use the Software Product in a specific country is limited by patent
-agreements or relationships in the field of copyright, the original copyright holder who places his
-software product under this License Agreement, can add a clearly defined geographical limitations for a
-distribution, excluding these countries from those that allowed distribution. In such case, this License
-agreement incorporates the limitation as if written in the actual text agreement.
+8. 若在某些国家中，软件产品的分发或使用因专利或版权限制而受限，原始版权持有人可在本许可协议中增加明确的地域限制条款，将这些国家排除在允许分发的范围之外。在此情况下，该限制视为本协议的一部分。
 
-9. If you wish to incorporate parts of the Software product into other freely distributed software
-products, but under other conditions, you have to ask a permission in writing from the authors.
-DISCLAIMER OF WARRANTY
+9. 若您希望将软件产品的部分内容整合至其他自由分发的软件中，并适用不同条款，则必须事先获得作者的书面许可。
 
-10 . BECAUSE THE SOFTWARE IS LICENSED FREE OF CHARGE, NO WARRANTIES ARE GIVEN TO THE
-EXTENT ALLOWED BY LAW. EXCEPT WHEN THERE IS WRITTEN STATEMENT OF HOLDERS OR
-DISTRIBUTORS OF SOFTWARE, THE PRODUCT IS PROVIDED TO YOU \"AS IT IS\", THAT DOES NOT PROVIDE
-ANY WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF FITNESS FOR SALES, AND USE FOR A
-PARTICULAR PURPOSE. YOU ASSUME THE ENTIRE RISK AS TO THE ELIGIBILITY REQUIREMENTS FOR
-QUALITY AND PERFORMANCE OF THE SOFTWARE. IF THE SOFTWARE WORKS INCORRECTLY, YOU
-SOLELY BARE ALL NECESSARY COSTS FOR SERVICE, TROUBLESHOOTING AND CORRECTION.
+免责声明
 
-11. UNDER NO CIRCUMSTANCES, EXCEPT WHEN REQUIRED BY APPLICABLE LAW OR AGREED TO IN
-WRITING, NO COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO AMEND AND/OR REDISTRIBUTE THE
-SOFTWARE PRODUCT AS PERMITTED ABOVE, IS LIABLE TO YOU FOR DAMAGES, INCLUDING GENERAL,
-SPECIAL , INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF USE OR INABILITY TO USE THE
-SOFTWARE (INCLUDING LOSS OF DATA, INCONVINIENT FOR YOU METHOD OF DATA RECEPTION OR ANY
-ADDITIONAL EXPENSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE TO OPERATE WITH ANY
-OTHER SOFTWARE, EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
-SUCH DAMAGES.
-Distributing this program, we hope that it will be useful, but DO NOT GIVE ANY WARRANTY, without
-even the implied warranty of MERCHANTIBILITY OR USAGE FOR A PARTICULAR PURPOSE. Together with
-this program you need to get our license for the software
+10. 由于本软件是免费提供的，在法律允许范围内不提供任何形式的担保。除非版权持有人或分发方以书面形式另行说明，本软件按“现状”提供，不附带任何明示或暗示的担保，包括但不限于适销性或特定用途适用性的保证。软件质量及性能的全部风险由您自行承担。如软件出现问题，所有必要的维护、修复或更正费用均由您承担。
+
+11. 在适用法律要求或书面协议另有规定的情况下，任何版权持有人或经许可修改及/或再分发软件产品的其他方，均不对您承担任何损害责任，包括但不限于一般性、特殊性、偶发性或后果性损害（例如数据丢失、数据获取方式不便、您或第三方额外支出或与其他软件不兼容等），即使其已被告知可能发生此类损害。
+
+本程序的发布旨在提供帮助，但不提供任何担保，包括但不限于适销性或特定用途适用性的隐含担保。您在使用本程序时，应同时获得本软件的许可协议。
 "
 ];

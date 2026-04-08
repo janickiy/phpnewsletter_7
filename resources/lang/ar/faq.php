@@ -13,7 +13,7 @@ return [
 يجب أن تتلقى أنت أو خادم الإرسال تقريرًا بعدم التسليم يحتوي على أسباب ذلك.</p>
 
 <strong>س: لا يمكنني إرسال النشرة عبر خادم SMTP. يظهر الخطأ التالي في سجل الإرسال:
-"The following From address failed: vasya-pupkin@my-domain.com : Called Mail() without being connected"
+"The following From address failed: example@my-domain.com : Called Mail() without being connected"
 ما السبب؟</strong>
 <p>ج: قد تكون هناك عدة أسباب. ربما أدخلت عنوان خادم SMTP أو المنفذ بشكل غير صحيح في الإعدادات.
 سبب آخر قد يكون أن الوصول إلى خادم SMTP محجوب بواسطة جدار حماية، أو أن الخادم غير متاح مؤقتًا.</p>

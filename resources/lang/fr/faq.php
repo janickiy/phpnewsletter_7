@@ -2,24 +2,22 @@
 
 return [
     'str' => '
-<strong>Q:How can I personalize my emails?</strong>
-<p>A: Yes, you can. To do this, put %NAME% in the letter template. The next mailing letters, each time it will be replaced by the name of the subscriber.</p>
-<strong>Q: Why don\'t I get emails to Gmail\'s Box?</strong>
-<p>A: Probably IP of your SMTP server is in the blacklist of Gmail or emails are filtered by antispam filter. Contact support of Gmail.</p>
-<strong>Q: Mailing log reported that 300 emails were sent out, but had received half of them. Why?</strong>
-<p>A: Try to identify the reason why no letters were sent. You can seen it delivery report in the statement of mail delivery,
-    which usually is delivering at the e-mail address that specified in the settings for value "E-mail".
-    You or the sending server should receive a delivery report with the reasons for non-delivery.</p>
-<strong>Q: I can not send any newsletter via SMTP server. The log mailing writes the following error:
-    "The following From address failed: vasya-pupkin@my-domain.com : Called Mail() without being connected". What\'s wrong?</strong>
-<p>A: There are a several reason. Perhaps you may have set the wrong address or port in SMTP server settings.
-    Another reason may be that access to the SMTP server is closed by a firewall or SMTP server is temporarily unavailable.</p>
-<strong>Q: No picture is shown in the HTML e-mail format.</strong>
-<p>A: For security purposes most e-mail clients and free public email services block images downloaded from external sources.</p>
-<strong>Q: What is SMTP server?</strong>
-<p>A: SMTP (Simple Mail Transfer Protocol) - is the server in a network, global or
-    local which accepts e-mail on further transfer, and also accepts e-mail from other servers for his local users.</p>
-<strong>Q: The mailing log is not considered sending the number of read emails. Why?</strong>
-<p>A: Check the mail format in the settings. This feature only works if you selected HTML format.</p>
-'
+Q : Est-il possible de personnaliser les e-mails ?</strong>
+<p>R : Oui, c\'est possible. Pour cela, saisissez %NAME% dans le modèle d\'e-mail. Lors de l\'envoi des messages, cette valeur sera remplacée par le nom de l\'abonné.</p>
+<strong>Q : Les e-mails envoyés vers les boîtes gmail.com ne sont pas reçus, bien qu\'ils arrivent sur d\'autres services. Quelle peut en être la raison ?</strong>
+<p>R : Très probablement, l\'adresse de votre serveur de messagerie a été ajoutée par gmail.com à une liste noire, ou les e-mails sont filtrés par un filtre anti-spam. Veuillez contacter votre hébergeur.</p>
+Q : Le journal indique que 300 e-mails ont été envoyés, mais seulement la moitié a été reçue. Pourquoi ?</strong>
+<p>R : Essayez de déterminer la raison pour laquelle les e-mails n\'ont pas été délivrés. Cela peut être consulté dans le rapport de non-distribution, généralement envoyé à l\'adresse e-mail indiquée dans les paramètres (champ « E-mail »).
+    Vous ou le serveur d\'envoi devriez recevoir un rapport de non-distribution avec les motifs correspondants.</p>
+Q : Je ne peux pas envoyer la newsletter via le serveur SMTP. L\'erreur suivante apparaît dans le journal :
+    "The following From address failed: example@my-domain.com : Called Mail() without being connected"
+Quelle en est la raison ?</strong>
+<p>R : Plusieurs causes sont possibles. Il se peut que l\'adresse du serveur SMTP ou le port ait été mal configuré dans les paramètres.
+Une autre cause peut être que l\'accès au serveur SMTP est bloqué par un pare-feu, ou que le serveur SMTP est temporairement indisponible.</p>
+<strong>Q : Les images ne s\'affichent pas dans les e-mails au format HTML.</strong>
+<p>R : La plupart des clients de messagerie, ainsi que les services de messagerie gratuits, bloquent par défaut le chargement des images provenant de sources externes pour des raisons de sécurité.</p>
+Q : Qu\'est-ce qu\'un serveur SMTP ?</strong>
+<p>R : SMTP (Simple Mail Transfer Protocol) est un serveur sur un réseau, global ou local, qui accepte les e-mails pour leur transmission ultérieure, ainsi que les e-mails provenant d\'autres serveurs pour ses utilisateurs locaux.</p>
+<strong>Q : La newsletter ne comptabilise pas le nombre d\'e-mails lus. Pourquoi ?</strong>
+<p>R : Vérifiez le format des e-mails sortants dans les paramètres. Cette option ne fonctionne que si le format HTML est sélectionné.</p>'
 ];

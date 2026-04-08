@@ -6,24 +6,19 @@ return [
     |--------------------------------------------------------------------------
     | Pagination Language Lines
     |--------------------------------------------------------------------------
-    |
-    | The following language lines are used by the paginator library to build
-    | the simple pagination links. You are free to change them to anything
-    | you want to customize your views to better match your application.
-    |
     */
 
-    'previous' => '&laquo; Previous',
-    'next'     => 'Next &raquo;',
-    's_length_menu' => 'Displayed _MENU_ entries per page',
-    's_zero_records' => 'Sorry, nothing found',
-    's_info' => 'Showing _START_ to _END_ of _TOTAL_ records',
-    's_info_empty' => 'Showing 0 to 0 of 0 entries',
-    's_infofiltered' => '(filtered _MAX_ total records)',
+    'previous' => '&laquo; Précédent',
+    'next'     => 'Suivant &raquo;',
+    's_length_menu' => 'Afficher _MENU_ entrées par page',
+    's_zero_records' => 'Aucun résultat trouvé',
+    's_info' => 'Affichage de _START_ à _END_ sur _TOTAL_ entrées',
+    's_info_empty' => 'Affichage de 0 à 0 sur 0 entrées',
+    's_infofiltered' => '(filtré à partir de _MAX_ entrées au total)',
     's_paginate' => [
-        "first" => "First",
-        "last" => "Last",
-        "next" => "Next",
-        "previous" => "Previous",
+        "first" => "Premier",
+        "last" => "Dernier",
+        "next" => "Suivant",
+        "previous" => "Précédent",
     ],
 ];

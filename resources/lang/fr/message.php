@@ -1,13 +1,13 @@
 <?php
 
 return [
-    'data_updated' => 'Data has been updated',
-    'information_successfully_added' => 'Information added successfully',
-    'log_cleared' => 'Log has been cleared',
-    'statistics_cleared' => 'Statistic has been cleared',
-    'actions_completed'  => 'Actions have been taken',
-    'data_successfully_deleted' => 'Data deleted successfully',
-    'error_import_file' => 'Import error! Unable to read file',
-    'import_completed'  => 'The import is complete. Total imported: ',
-    'unable_connect_to_smtp' => 'Unable connect to SMTP! Check connection SMTP details',
+    'data_updated' => 'Les données ont été mises à jour',
+    'information_successfully_added' => 'Les informations ont été ajoutées avec succès',
+    'log_cleared' => 'Le journal a été effacé',
+    'statistics_cleared' => 'Les statistiques ont été réinitialisées',
+    'actions_completed'  => 'Les actions ont été exécutées',
+    'data_successfully_deleted' => 'Les données ont été supprimées avec succès',
+    'error_import_file' => 'Erreur d’importation ! Impossible de lire le fichier',
+    'import_completed'  => 'Importation terminée. Total importé : ',
+    'unable_connect_to_smtp' => 'Impossible de se connecter au serveur SMTP ! Veuillez vérifier les paramètres de connexion SMTP',
 ];

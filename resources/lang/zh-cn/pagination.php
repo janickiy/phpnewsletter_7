@@ -2,28 +2,17 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Pagination Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are used by the paginator library to build
-    | the simple pagination links. You are free to change them to anything
-    | you want to customize your views to better match your application.
-    |
-    */
-
-    'previous' => '&laquo; Previous',
-    'next'     => 'Next &raquo;',
-    's_length_menu' => 'Displayed _MENU_ entries per page',
-    's_zero_records' => 'Sorry, nothing found',
-    's_info' => 'Showing _START_ to _END_ of _TOTAL_ records',
-    's_info_empty' => 'Showing 0 to 0 of 0 entries',
-    's_infofiltered' => '(filtered _MAX_ total records)',
+    'previous' => '&laquo; 上一页',
+    'next'     => '下一页 &raquo;',
+    's_length_menu' => '每页显示 _MENU_ 条记录',
+    's_zero_records' => '未找到相关数据',
+    's_info' => '显示第 _START_ 至 _END_ 条，共 _TOTAL_ 条记录',
+    's_info_empty' => '显示第 0 至 0 条，共 0 条记录',
+    's_infofiltered' => '（从 _MAX_ 条记录中筛选）',
     's_paginate' => [
-        "first" => "First",
-        "last" => "Last",
-        "next" => "Next",
-        "previous" => "Previous",
+        "first" => "首页",
+        "last" => "末页",
+        "next" => "下一页",
+        "previous" => "上一页",
     ],
 ];
