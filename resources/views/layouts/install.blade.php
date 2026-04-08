@@ -39,8 +39,9 @@
         <div class="col-md-6 offset-3">
             <div class="pull-right form-group">
                 <select id="lang" class="selectpicker">
-                    <option value="ru" {{ Config::get('app.locale') == 'ru' ? 'selected="selected"':'' }}>Русский (Russian)</option>
-                    <option value="en" {{ Config::get('app.locale') == 'en' ? 'selected="selected"':'' }}>English</option>
+                    @foreach(config('app.languages', []) as $code => $languageName)
+                        <option value="{{ $code }}" {{ app()->getLocale() == $code ? 'selected="selected"':'' }}>{{ $languageName }}</option>
+                    @endforeach
                 </select>
             </div>
         </div>

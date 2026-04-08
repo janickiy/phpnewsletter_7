@@ -55,23 +55,23 @@
         <ul class="navbar-nav ml-auto">
             <li class="nav-item dropdown">
 
-                @if( Config::get('app.locale') == 'ru')
-                    <a class="nav-link" data-toggle="dropdown" href="javascript:void(0);">
-                        <i class="flag-icon flag-icon-ru"></i>
-                    </a>
-                @else
-                    <a class="nav-link" data-toggle="dropdown" href="javascript:void(0);">
-                        <i class="flag-icon flag-icon-us"></i>
-                    </a>
-                @endif
+                @php
+                    $currentLocale = app()->getLocale();
+                    $flags = config('app.flags', []);
+                    $languages = config('app.languages', []);
+                    $currentFlag = $flags[$currentLocale] ?? 'us';
+                @endphp
+
+                <a class="nav-link" data-toggle="dropdown" href="javascript:void(0);">
+                    <i class="flag-icon flag-icon-{{ $currentFlag }}"></i>
+                </a>
 
                 <div class="dropdown-menu dropdown-menu-right p-0">
-                    <a data-id="en" href="javascript:void(0);" class="dropdown-item select-lang ">
-                        <i class="flag-icon flag-icon-us mr-2"></i> English
-                    </a>
-                    <a data-id="ru" href="javascript:void(0);" class="dropdown-item select-lang " alt="Русский (Russian)">
-                        <i class="flag-icon flag-icon-ru mr-2"></i> Русский (Russian)
-                    </a>
+                    @foreach($languages as $code => $languageName)
+                        <a data-id="{{ $code }}" href="javascript:void(0);" class="dropdown-item select-lang">
+                            <i class="flag-icon flag-icon-{{ $flags[$code] ?? 'us' }} mr-2"></i> {{ $languageName }}
+                        </a>
+                    @endforeach
                 </div>
             </li>
 

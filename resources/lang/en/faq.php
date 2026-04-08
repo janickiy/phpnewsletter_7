@@ -2,24 +2,28 @@
 
 return [
     'str' => '
-<strong>Q:How can I personalize my emails?</strong>
-<p>A: Yes, you can. To do this, put %NAME% in the letter template. The next mailing letters, each time it will be replaced by the name of the subscriber.</p>
-<strong>Q: Why don\'t I get emails to Gmail\'s Box?</strong>
-<p>A: Probably IP of your SMTP server is in the blacklist of Gmail or emails are filtered by antispam filter. Contact support of Gmail.</p>
-<strong>Q: Mailing log reported that 300 emails were sent out, but had received half of them. Why?</strong>
-<p>A: Try to identify the reason why no letters were sent. You can seen it delivery report in the statement of mail delivery,
-    which usually is delivering at the e-mail address that specified in the settings for value "E-mail".
-    You or the sending server should receive a delivery report with the reasons for non-delivery.</p>
-<strong>Q: I can not send any newsletter via SMTP server. The log mailing writes the following error:
-    "The following From address failed: vasya-pupkin@my-domain.com : Called Mail() without being connected". What\'s wrong?</strong>
-<p>A: There are a several reason. Perhaps you may have set the wrong address or port in SMTP server settings.
-    Another reason may be that access to the SMTP server is closed by a firewall or SMTP server is temporarily unavailable.</p>
-<strong>Q: No picture is shown in the HTML e-mail format.</strong>
-<p>A: For security purposes most e-mail clients and free public email services block images downloaded from external sources.</p>
-<strong>Q: What is SMTP server?</strong>
-<p>A: SMTP (Simple Mail Transfer Protocol) - is the server in a network, global or
-    local which accepts e-mail on further transfer, and also accepts e-mail from other servers for his local users.</p>
-<strong>Q: The mailing log is not considered sending the number of read emails. Why?</strong>
-<p>A: Check the mail format in the settings. This feature only works if you selected HTML format.</p>
-'
+Q: Is it possible to personalize emails?</strong>
+<p>A: Yes, you can. To do this, enter %NAME% in the email template. The next time the emails are sent, it will be replaced with the subscriber\'s name each time.</p>
+<strong>Q: Emails to the service\'s mailboxes gmail.com they do not arrive, although they are delivered to the mailboxes of other services. What could be the reason?</strong>
+<p>A: Most likely, the address of your mail server is entered by the system gmail.com in
+    The blacklist or emails are filtered by an anti-spam filter. Contact your hosting provider.</p>
+Q: The mailing list magazine says that 300 emails were sent, but half of them were received. Why?</strong>
+<p>A: Try to determine the reason why the emails were not sent. This can be viewed in the non-delivery report, which usually arrives at the email address specified in the settings in the "E-mail" field.
+    You or the sending server should receive a non-delivery report with the reasons for non-delivery.</p>
+Q: I can\'t send the newsletter through the SMPT server. The following error appears in the mailing list log:
+    "The following From address failed: vasya-pupkin@my-domain.com : Called Mail() without being connected"
+What is the reason?</strong>
+<p>A: There may be several reasons. You may have incorrectly specified the smtp server address or port in the settings.
+Another reason may be that access to the SMTP server is blocked by a firewall, or the SMTP server is temporarily unavailable.
+    works.</p>
+<strong>Q: The image is not displayed in HTML format emails.</strong>
+<p>A: Most of the email clients, as well as free email services for the purposes of
+By default, security blocks images uploaded from external sources.</p>
+Q: What is an SMTP server?</strong>
+<p>A: SMTP (Simple Mail Transfer Protocol) is a server on a network, global or
+local, that accepts e-mail for further forwarding, as well
+as accepts e-mail from other servers for its local users.</p>
+<strong>Q: The newsletter magazine does not take into account the number of emails read. Why?</strong>
+<p>A: Check the format of outgoing emails in the settings. This option only works if the outgoing HTML format is selected.
+    letters.</p>'
 ];

@@ -84,7 +84,29 @@ return [
     */
 
     'locale' => 'en',
-    'locales' => ['en', 'ru'],
+    'locales' => ['en', 'ru', 'es', 'fr', 'de', 'zh-cn', 'pt', 'ar', 'hi'],
+    'languages' => [
+        'en' => 'English',
+        'ru' => 'Русский (Russian)',
+        'es' => 'Español',
+        'fr' => 'Français',
+        'de' => 'Deutsch',
+        'zh-cn' => '中文 (简体)',
+        'pt' => 'Português',
+        'ar' => 'العربية',
+        'hi' => 'हिन्दी',
+    ],
+    'flags' => [
+        'en' => 'us',
+        'ru' => 'ru',
+        'es' => 'es',
+        'fr' => 'fr',
+        'de' => 'de',
+        'zh-cn' => 'cn',
+        'pt' => 'pt',
+        'ar' => 'sa',
+        'hi' => 'in',
+    ],
 
     /*
     |--------------------------------------------------------------------------
