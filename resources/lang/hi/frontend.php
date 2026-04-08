@@ -261,7 +261,7 @@ return [
         'select_role' => 'भूमिका चुनें',
         'macros_name' => 'नाम',
         'macros_type' => 'प्रकार',
-        'sample_macros_type_url' => 'http://www.google.ru text.',
+        'sample_macros_type_url' => 'https://www.google.com text.',
         'sample_macros_type_email' => 'admin@gamail.com admin@hotmail',
         'sample_macros_type_hash_tags' => '#HTML #CSS #JQuery',
         'sample_macros_type_tags' => 'सबसे अच्छे *मूल कार्ट्रिज* का तेज़ मोचन सर्वोत्तम *कीमतों* पर',

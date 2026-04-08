@@ -261,7 +261,7 @@ return [
         'select_role' => 'Sélectionner un rôle',
         'macros_name' => 'Nom',
         'macros_type' => 'Type',
-        'sample_macros_type_url' => 'http://www.google.ru texte.',
+        'sample_macros_type_url' => 'https://www.google.com texte.',
         'sample_macros_type_email' => 'admin@gamail.com admin@hotmail',
         'sample_macros_type_hash_tags' => '#HTML #CSS #JQuery',
         'sample_macros_type_tags' => 'Rachat rapide de *cartouches d’origine* aux meilleurs *prix*',

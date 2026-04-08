@@ -261,7 +261,7 @@ return [
         'select_role' => 'Select role',
         'macros_name' => 'Name',
         'macros_type' => 'Type',
-        'sample_macros_type_url' => 'http://www.google.ru text.',
+        'sample_macros_type_url' => 'https://www.google.com text.',
         'sample_macros_type_email' => 'admin@gamail.com admin@hotmail',
         'sample_macros_type_hash_tags' => '#HTML #CSS #JQuery',
         'sample_macros_type_tags' => 'Quick redemption of *original cartridges* at the best *prices*',

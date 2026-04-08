@@ -231,7 +231,7 @@ return [
         'select_role' => 'Selecionar função',
         'macros_name' => 'Nome',
         'macros_type' => 'Tipo',
-        'sample_macros_type_url' => 'http://www.google.ru texto.',
+        'sample_macros_type_url' => 'https://www.google.com texto.',
         'sample_macros_type_email' => 'admin@gmail.com admin@hotmail.com',
         'sample_macros_type_hash_tags' => '#HTML #CSS #JQuery',
         'sample_macros_type_tags' => 'Compra rápida de *cartuchos originais* pelos melhores *preços*',

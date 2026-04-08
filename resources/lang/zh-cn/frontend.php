@@ -261,7 +261,7 @@ return [
         'select_role' => '选择角色',
         'macros_name' => '名称',
         'macros_type' => '类型',
-        'sample_macros_type_url' => 'http://www.google.ru 文本。',
+        'sample_macros_type_url' => 'https://www.google.com 文本。',
         'sample_macros_type_email' => 'admin@gamail.com admin@hotmail',
         'sample_macros_type_hash_tags' => '#HTML #CSS #JQuery',
         'sample_macros_type_tags' => '以最优惠的*价格*快速回收*原装墨盒*',
