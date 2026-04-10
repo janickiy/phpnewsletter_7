@@ -159,8 +159,8 @@ return [
         'macros_type_tags'         => 'Оборачивание слов тегами',
         'macros_type_wrap_phrase'  => 'Обернуть фразу в ссылку',
         'close' => 'Закрыть',
-        'task_scheduling' => 'Планирование задач',
-        'emails_send' => 'Отправляйте email письма подписчикам.',
+        'task_scheduling' => 'Планировщик задач',
+        'emails_send' => 'Отправка email письма подписчикам.',
         'emails_unsent' => 'Отправка неотправленных писем подписчикам',
     ],
     'msg' => [
