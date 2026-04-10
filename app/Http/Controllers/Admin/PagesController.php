@@ -30,6 +30,16 @@ class PagesController extends Controller
                     'description' => 'Task Scheduling',
                     'cron' => '/usr/bin/php -q ' . $path . ' schedule:run >/dev/null 2>&1',
                 ],
+
+                [
+                    'description' => 'Send emails to subscribers',
+                    'cron' => '/usr/bin/php -q ' . $path . ' emails:send',
+                ],
+
+                [
+                    'description' => 'Send unsent emails to subscribers',
+                    'cron' => '/usr/bin/php -q ' . $path . ' emails:unsent',
+                ],
             ],
             'infoAlert' => __('frontend.hint.cron_job_list'),
             'title' => 'Crontab',

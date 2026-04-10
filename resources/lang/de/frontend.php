@@ -159,6 +159,9 @@ return [
         'macros_type_tags' => 'Wörter mit Tags umschließen',
         'macros_type_wrap_phrase' => 'Phrase in einen Link einfügen',
         'close' => 'Schließen',
+        'task_scheduling' => 'Aufgabenplanung',
+        'emails_send' => 'E-Mail-Nachrichten an Abonnenten senden.',
+        'emails_unsent' => 'Nicht gesendete E-Mails an Abonnenten senden',
     ],
     'msg' => [
         'are_you_sure' => 'Sind Sie sicher?',

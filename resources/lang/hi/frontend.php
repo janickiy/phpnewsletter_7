@@ -159,6 +159,9 @@ return [
         'macros_type_tags' => 'शब्दों को टैग में लपेटना',
         'macros_type_wrap_phrase' => 'वाक्यांश को लिंक में बदलना',
         'close' => 'बंद करें',
+        'task_scheduling' => 'कार्य अनुसूची',
+        'emails_send' => 'सदस्यों को ईमेल संदेश भेजें।',
+        'emails_unsent' => 'सदस्यों को न भेजे गए ईमेल भेजना',
     ],
     'msg' => [
         'are_you_sure' => 'क्या आप सुनिश्चित हैं?',

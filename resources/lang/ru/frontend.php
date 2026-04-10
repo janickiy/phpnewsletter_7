@@ -159,6 +159,9 @@ return [
         'macros_type_tags'         => 'Оборачивание слов тегами',
         'macros_type_wrap_phrase'  => 'Обернуть фразу в ссылку',
         'close' => 'Закрыть',
+        'task_scheduling' => 'Планирование задач',
+        'emails_send' => 'Отправляйте email письма подписчикам.',
+        'emails_unsent' => 'Отправка неотправленных писем подписчикам',
     ],
     'msg' => [
         'are_you_sure' => 'Вы уверены?',
@@ -252,7 +255,7 @@ return [
         'back' => 'Назад',
         'description' => 'Описание',
         'role'        => 'Роль',
-        'password_again' => 'Павтор пароля',
+        'password_again' => 'Повтор пароля',
         'date_and_time'  => 'Дата и время',
         'minute' => 'минут',
         'hour'   => 'часов',

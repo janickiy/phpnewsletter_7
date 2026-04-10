@@ -159,6 +159,9 @@ return [
         'macros_type_tags'       => 'Encerrar palabras con etiquetas',
         'macros_type_wrap_phrase' => 'Convertir una frase en un enlace',
         'close' => 'Cerrar',
+        'task_scheduling' => 'Programación de tareas',
+        'emails_send' => 'Enviar correos electrónicos a los suscriptores.',
+        'emails_unsent' => 'Envío de correos electrónicos no enviados a los suscriptores',
     ],
     'msg' => [
         'are_you_sure' => '¿Está seguro?',

@@ -96,7 +96,6 @@ return [
         'button_update' => 'Atualizar para %SCRIPT_NAME% %NEW_VERSION%',
         'start_update' => 'Atualizando... baixando arquivo',
         'update_completed' => 'Atualização concluída',
-
         'select_action' => 'Selecione uma ação!',
         'confirm_remove' => 'Tem certeza de que deseja excluir?',
         'delete_confirmation' => 'Confirmação de exclusão',
@@ -128,6 +127,9 @@ return [
         'macros_type_tags' => 'Envolver palavras com tags',
         'macros_type_wrap_phrase' => 'Envolver frase em link',
         'close' => 'Fechar',
+        'task_scheduling' => 'Agendamento de tarefas',
+        'emails_send' => 'Enviar emails aos assinantes.',
+        'emails_unsent' => 'Envio de emails não enviados aos assinantes',
     ],
 
     'msg' => [

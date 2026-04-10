@@ -159,6 +159,9 @@ return [
         'macros_type_tags' => '用标签包裹单词',
         'macros_type_wrap_phrase' => '将短语包装为链接',
         'close' => '关闭',
+        'task_scheduling' => '任务调度',
+        'emails_send' => '向订阅者发送电子邮件。',
+        'emails_unsent' => '向订阅者发送未发送的电子邮件',
     ],
     'msg' => [
         'are_you_sure' => '您确定吗？',
