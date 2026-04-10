@@ -27,17 +27,17 @@ class PagesController extends Controller
         return view('admin.pages.cron_job_list', [
             'cronJob' => [
                 [
-                    'description' => 'Task Scheduling',
+                    'description' => __('frontend.str.task_scheduling'),
                     'cron' => '/usr/bin/php -q ' . $path . ' schedule:run >/dev/null 2>&1',
                 ],
 
                 [
-                    'description' => 'Send emails to subscribers',
+                    'description' => __('frontend.str.emails_send'),
                     'cron' => '/usr/bin/php -q ' . $path . ' emails:send',
                 ],
 
                 [
-                    'description' => 'Send unsent emails to subscribers',
+                    'description' => __('frontend.str.emails_unsent'),
                     'cron' => '/usr/bin/php -q ' . $path . ' emails:unsent',
                 ],
             ],
