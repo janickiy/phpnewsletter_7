@@ -62,7 +62,7 @@ class SendUnsentEmails extends Command implements Isolatable
                 $interval
             );
 
-            $scheduleIds = [];
+            $sentSubscriberIds = [];
             $subscriberUpdates = [];
 
             foreach ($subscribers ?? [] as $subscriber) {
@@ -74,7 +74,7 @@ class SendUnsentEmails extends Command implements Isolatable
 
                 if ($result['result'] === true) {
                     $subscriberUpdates[$subscriber->id] = now()->format('Y-m-d H:i:s');
-                    $scheduleIds[] = $row->id;
+                    $sentSubscriberIds[] = $subscriber->id;
                     $mailCount++;
                 } else {
                     $mailCountNo++;
@@ -84,12 +84,12 @@ class SendUnsentEmails extends Command implements Isolatable
                     (int) SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1
                     && $mailCount >= (int) SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER')
                 ) {
-                    $this->resultSend($scheduleIds, $subscriberUpdates);
+                    $this->resultSend($row->id, $sentSubscriberIds, $subscriberUpdates);
                     break;
                 }
             }
 
-            $this->resultSend($scheduleIds, $subscriberUpdates);
+            $this->resultSend($row->id, $sentSubscriberIds, $subscriberUpdates);
 
             if (
                 (int) SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1
@@ -146,11 +146,12 @@ class SendUnsentEmails extends Command implements Isolatable
     }
 
     /**
-     * @param array $scheduleIds
+     * @param int $scheduleId
+     * @param array $sentSubscriberIds
      * @param array $subscriberUpdates
      * @return void
      */
-    private function resultSend(array $scheduleIds, array $subscriberUpdates): void
+    private function resultSend(int $scheduleId, array $sentSubscriberIds, array $subscriberUpdates): void
     {
         if ($subscriberUpdates !== []) {
             $ids = array_keys($subscriberUpdates);
@@ -174,8 +175,16 @@ class SendUnsentEmails extends Command implements Isolatable
             );
         }
 
-        if ($scheduleIds !== []) {
-            ReadySent::whereIn('schedule_id', array_unique($scheduleIds))->update(['success' => 1]);
+        if ($sentSubscriberIds !== []) {
+            ReadySent::query()
+                ->where('schedule_id', $scheduleId)
+                ->whereIn('subscriber_id', array_unique($sentSubscriberIds))
+                ->where('success', 0)
+                ->update([
+                    'success' => 1,
+                    'errorMsg' => null,
+                    'updated_at' => now(),
+                ]);
         }
     }
 }

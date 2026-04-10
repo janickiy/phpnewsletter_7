@@ -198,12 +198,11 @@ class SubscriberRepository extends BaseRepository
                 $join->on('subscriptions.category_id', '=', 'schedule_category.category_id')
                     ->where('schedule_category.schedule_id', $scheduleId);
             })
-            ->leftJoin('ready_sent', function ($join) use ($scheduleId) {
+            ->join('ready_sent', function ($join) use ($scheduleId) {
                 $join->on('subscribers.id', '=', 'ready_sent.subscriber_id')
                     ->where('ready_sent.schedule_id', $scheduleId)
                     ->where('ready_sent.success', 0);
             })
-            ->whereNull('ready_sent.subscriber_id')
             ->where('subscribers.active', 1);
 
         if ($interval) {
