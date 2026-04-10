@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 use App\DTO\ReadySentCreateData;
 use App\Helpers\SendEmailHelper;
 use App\Helpers\SettingsHelper;
+use App\Models\Logs;
 use App\Models\Subscribers;
 use App\Repositories\ReadySentRepository;
 use App\Repositories\ScheduleRepository;
@@ -35,6 +36,10 @@ class SendEmails extends Command implements Isolatable
 
         $mailCountNo = 0;
         $mailCount = 0;
+
+        $log = Logs::query()->create([
+            'time' => now(),
+        ]);
 
         $schedule = $this->scheduleRepository->getScheduleEvent();
 
@@ -77,7 +82,7 @@ class SendEmails extends Command implements Isolatable
                     templateId: $row->template_id,
                     success: $result['result'] === true ? 1 : 0,
                     scheduleId: $row->id,
-                    logId: 0,
+                    logId: $log->id,
                     email: $subscriber->email,
                     template: $row->template->name,
                     errorMsg: $result['error'] ?? null,
