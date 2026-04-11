@@ -8,6 +8,7 @@ use App\Models\Redirect;
 use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class RedirectController  extends Controller
 {
@@ -41,7 +42,12 @@ class RedirectController  extends Controller
      * @param string $url
      * @return Response
      */
-    public function download(string $url): Response
+
+    /**
+     * @param string $url
+     * @return StreamedResponse
+     */
+    public function download(string $url): StreamedResponse
     {
         return $this->downloadService->redirect($url);
     }

@@ -20,13 +20,14 @@ use Illuminate\Support\Facades\Cookie;
 class AjaxController extends Controller
 {
     public function __construct(
-        private readonly UpdateService $updateService,
-        private readonly ScheduleRepository $scheduleRepository,
-        private readonly AttachRepository $attachRepository,
-        private readonly SendMailService $sendMailService,
+        private readonly UpdateService       $updateService,
+        private readonly ScheduleRepository  $scheduleRepository,
+        private readonly AttachRepository    $attachRepository,
+        private readonly SendMailService     $sendMailService,
         private readonly ReadySentRepository $readySentRepository,
-        private readonly ProcessRepository $processRepository,
-    ) {
+        private readonly ProcessRepository   $processRepository,
+    )
+    {
     }
 
     /**
@@ -57,7 +58,7 @@ class AjaxController extends Controller
      */
     private function getResult(Request $request): array
     {
-        $action = (string) $request->input('action');
+        $action = (string)$request->input('action');
 
         if ($action === '') {
             return [];
@@ -71,8 +72,8 @@ class AjaxController extends Controller
             'alert_update' => $this->updateService->alertUpdate($update),
 
             'remove_schedule' => [
-                'result' => $this->scheduleRepository->removeSchedule((int) $request->input('id')),
-                'id' => (int) $request->input('id'),
+                'result' => $this->scheduleRepository->removeSchedule((int)$request->input('id')),
+                'id' => (int)$request->input('id'),
             ],
 
             'change_lng' => $this->changeLanguage($request),
@@ -105,7 +106,7 @@ class AjaxController extends Controller
      */
     private function changeLanguage(Request $request): array
     {
-        $locale = (string) $request->input('locale');
+        $locale = (string)$request->input('locale');
 
         if ($locale !== '' && in_array($locale, Config::get('app.locales', []), true)) {
             Cookie::queue(
@@ -122,7 +123,7 @@ class AjaxController extends Controller
      */
     private function removeAttach(Request $request): array
     {
-        $this->attachRepository->remove((int) $request->input('id'));
+        $this->attachRepository->remove((int)$request->input('id'));
 
         return ['result' => true];
     }

@@ -127,9 +127,8 @@ return [
         'macros_type_tags' => 'Envolver palavras com tags',
         'macros_type_wrap_phrase' => 'Envolver frase em link',
         'close' => 'Fechar',
-        'task_scheduling' => 'Agendamento de tarefas',
-        'emails_send' => 'Enviar emails aos assinantes.',
-        'emails_unsent' => 'Envio de emails não enviados aos assinantes',
+        'emails_send' => 'Enviar e-mails para os assinantes',
+        'emails_unsent' => 'Enviar e-mails não enviados para os assinantes',
     ],
 
     'msg' => [

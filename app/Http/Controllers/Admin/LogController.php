@@ -30,8 +30,6 @@ class LogController extends Controller
     public function clear(): RedirectResponse
     {
         try {
-            // ВАЖНО: используем delete(), а не truncate()
-            // чтобы не ломались foreign key (ready_sent → logs)
             Logs::query()->delete();
         } catch (\Throwable $e) {
             report($e);

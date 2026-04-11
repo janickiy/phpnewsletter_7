@@ -159,8 +159,7 @@ return [
         'macros_type_tags' => 'Wrapping words with tags',
         'macros_type_wrap_phrase' => 'Wrap a phrase into a link',
         'close' => 'Close',
-        'task_scheduling' => 'Task scheduling',
-        'emails_send' => 'Send email messages to subscribers.',
+        'emails_send' => 'Send email to subscribers.',
         'emails_unsent' => 'Sending unsent emails to subscribers',
     ],
     'msg' => [

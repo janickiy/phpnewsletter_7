@@ -32,6 +32,11 @@ class FrontendController extends Controller
     ) {
     }
 
+    /**
+     * @param int $subscriber
+     * @param int $template
+     * @return Response
+     */
     public function pic(int $subscriber, int $template): Response
     {
         $this->readySentRepository->markAsRead(
@@ -54,6 +59,11 @@ class FrontendController extends Controller
             ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
     }
 
+    /**
+     * @param string $ref
+     * @param int $subscriber
+     * @return RedirectResponse
+     */
     public function redirectLog(string $ref, int $subscriber): RedirectResponse
     {
         abort_if($ref === '', 404);
@@ -74,6 +84,11 @@ class FrontendController extends Controller
         return redirect()->away($url);
     }
 
+    /**
+     * @param int $subscriber
+     * @param string $token
+     * @return View
+     */
     public function unsubscribe(int $subscriber, string $token): View
     {
         $subscriberModel = $this->subscriberRepository->find($subscriber);
@@ -89,6 +104,11 @@ class FrontendController extends Controller
         ]);
     }
 
+    /**
+     * @param int $subscriber
+     * @param string $token
+     * @return View
+     */
     public function subscribe(int $subscriber, string $token): View
     {
         $subscriberModel = $this->subscriberRepository->find($subscriber);
@@ -109,6 +129,11 @@ class FrontendController extends Controller
         ]);
     }
 
+    /**
+     * @param AddSubRequest $request
+     * @return JsonResponse
+     * @throws \Throwable
+     */
     public function addSub(AddSubRequest $request): JsonResponse
     {
         $settings = SettingsHelper::getInstance();

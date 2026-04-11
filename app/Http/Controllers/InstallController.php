@@ -107,7 +107,7 @@ class InstallController extends Controller
     }
 
     /**
-     * @param InstallRequest $request
+     * @param InstallAdminRequest $request
      * @return RedirectResponse
      */
     public function install(InstallAdminRequest $request): RedirectResponse

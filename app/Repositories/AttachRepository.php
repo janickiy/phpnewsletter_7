@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use App\Models\Attach;
-use App\DTO\AttachCreateData;
 
 class AttachRepository extends BaseRepository
 {

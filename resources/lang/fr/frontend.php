@@ -159,9 +159,8 @@ return [
         'macros_type_tags' => 'Encadrer les mots avec des balises',
         'macros_type_wrap_phrase' => 'Transformer une phrase en lien',
         'close' => 'Fermer',
-        'task_scheduling' => 'Planification des tâches',
-        'emails_send' => 'Envoyer des e-mails aux abonnés.',
-        'emails_unsent' => 'Envoi des e-mails non envoyés aux abonnés',
+        'emails_send' => 'Envoyer des e-mails aux abonnés',
+        'emails_unsent' => 'Envoyer les e-mails non envoyés aux abonnés',
     ],
     'msg' => [
         'are_you_sure' => 'Êtes-vous sûr ?',
