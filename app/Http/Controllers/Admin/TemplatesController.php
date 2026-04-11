@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+
 use App\Http\Requests\Admin\Templates\DeleteRequest;
 use App\Http\Requests\Admin\Templates\StoreRequest;
 use App\Http\Requests\Admin\Templates\UpdateRequest;
@@ -15,6 +16,11 @@ use Illuminate\View\View;
 
 class TemplatesController extends Controller
 {
+    /**
+     * @param TemplateRepository $templateRepository
+     * @param CategoryRepository $categoryRepository
+     * @param TemplateService $templateService
+     */
     public function __construct(
         private readonly TemplateRepository $templateRepository,
         private readonly CategoryRepository $categoryRepository,

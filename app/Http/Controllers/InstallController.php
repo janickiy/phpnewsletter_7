@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Helpers\StringHelper;
 use App\Models\User;
 use App\Http\Requests\Frontend\InstallRequest;

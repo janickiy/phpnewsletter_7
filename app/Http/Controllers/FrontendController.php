@@ -24,6 +24,12 @@ class FrontendController extends Controller
 {
     private const TRACKING_PIXEL_SIZE = 1;
 
+    /**
+     * @param SubscriberRepository $subscriberRepository
+     * @param ReadySentRepository $readySentRepository
+     * @param RedirectRepository $redirectRepository
+     * @param SendMailService $sendMailService
+     */
     public function __construct(
         private readonly SubscriberRepository $subscriberRepository,
         private readonly ReadySentRepository $readySentRepository,

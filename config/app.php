@@ -87,7 +87,7 @@ return [
     'locales' => ['en', 'ru', 'es', 'fr', 'de', 'zh-cn', 'pt', 'ar', 'hi'],
     'languages' => [
         'en' => 'English',
-        'ru' => 'Русский (Russian)',
+        'ru' => 'Русский',
         'es' => 'Español',
         'fr' => 'Français',
         'de' => 'Deutsch',

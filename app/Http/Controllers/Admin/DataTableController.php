@@ -20,6 +20,10 @@ use Yajra\DataTables\Facades\DataTables;
 
 class DataTableController extends Controller
 {
+    /**
+     * @return JsonResponse
+     * @throws \Exception
+     */
     public function getTemplates(): JsonResponse
     {
         $rows = Templates::query()
@@ -51,6 +55,10 @@ class DataTableController extends Controller
             ->make(true);
     }
 
+    /**
+     * @return JsonResponse
+     * @throws \Exception
+     */
     public function getCategory(): JsonResponse
     {
         $rows = Category::query()
@@ -78,6 +86,10 @@ class DataTableController extends Controller
             ->make(true);
     }
 
+    /**
+     * @return JsonResponse
+     * @throws \Exception
+     */
     public function getSmtp(): JsonResponse
     {
         $rows = Smtp::query();
@@ -109,6 +121,10 @@ class DataTableController extends Controller
             ->make(true);
     }
 
+    /**
+     * @return JsonResponse
+     * @throws \Exception
+     */
     public function getSubscribers(): JsonResponse
     {
         $rows = Subscribers::query()
@@ -141,6 +157,10 @@ class DataTableController extends Controller
             ->make(true);
     }
 
+    /**
+     * @return JsonResponse
+     * @throws \Exception
+     */
     public function getUsers(): JsonResponse
     {
         $rows = User::query();
@@ -168,6 +188,10 @@ class DataTableController extends Controller
             ->make(true);
     }
 
+    /**
+     * @return JsonResponse
+     * @throws \Exception
+     */
     public function getLogs(): JsonResponse
     {
         $rows = Schedule::query()
@@ -194,6 +218,11 @@ class DataTableController extends Controller
             ->make(true);
     }
 
+    /**
+     * @param int|null $id
+     * @return JsonResponse
+     * @throws \Exception
+     */
     public function getInfoLog(?int $id = null): JsonResponse
     {
         $rows = $id
@@ -212,6 +241,10 @@ class DataTableController extends Controller
             ->make(true);
     }
 
+    /**
+     * @return JsonResponse
+     * @throws \Exception
+     */
     public function getRedirectLogs(): JsonResponse
     {
         $rows = Redirect::query()
@@ -236,6 +269,11 @@ class DataTableController extends Controller
             ->make(true);
     }
 
+    /**
+     * @param string $url
+     * @return JsonResponse
+     * @throws \Exception
+     */
     public function getInfoRedirectLog(string $url): JsonResponse
     {
         $decodedUrl = base64_decode($url, true) ?: '';
@@ -245,6 +283,10 @@ class DataTableController extends Controller
         return DataTables::of($rows)->make(true);
     }
 
+    /**
+     * @return JsonResponse
+     * @throws \Exception
+     */
     public function getMacros(): JsonResponse
     {
         $rows = Macros::query();
