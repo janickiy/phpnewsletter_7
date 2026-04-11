@@ -51,6 +51,7 @@ class DataTableController extends Controller
             ->addColumn('attach', fn ($row) => $row->attach->count() > 0
                 ? __('frontend.str.yes')
                 : __('frontend.str.no'))
+            ->editColumn('created_at', fn ($row) => $this->formatDateTime($row->created_at))
             ->rawColumns(['action', 'name', 'checkbox'])
             ->make(true);
     }
@@ -117,6 +118,7 @@ class DataTableController extends Controller
 
                 return '<div class="nobr">' . $editBtn . $deleteBtn . '</div>';
             })
+            ->editColumn('created_at', fn ($row) => $this->formatDateTime($row->created_at))
             ->rawColumns(['action', 'checkbox'])
             ->make(true);
     }
@@ -153,6 +155,7 @@ class DataTableController extends Controller
                 __('frontend.str.edit'),
                 route('admin.subscribers.edit', ['id' => $row->id])
             ))
+            ->editColumn('created_at', fn ($row) => $this->formatDateTime($row->created_at))
             ->rawColumns(['action', 'checkbox'])
             ->make(true);
     }
@@ -184,6 +187,7 @@ class DataTableController extends Controller
                 return '<div class="nobr">' . $editBtn . $deleteBtn . '</div>';
             })
             ->editColumn('role', fn ($row) => $row->role_label)
+            ->editColumn('created_at', fn ($row) => $this->formatDateTime($row->created_at))
             ->rawColumns(['action'])
             ->make(true);
     }
@@ -214,6 +218,8 @@ class DataTableController extends Controller
                     __('frontend.str.download')
                 )
                 : '')
+            ->editColumn('event_start', fn ($row) => $this->formatDateTime($row->event_start))
+            ->editColumn('event_end', fn ($row) => $this->formatDateTime($row->event_end))
             ->rawColumns(['count', 'report'])
             ->make(true);
     }
@@ -238,6 +244,7 @@ class DataTableController extends Controller
                 : __('frontend.str.no'))
             ->addColumn('status', fn ($row) => $row->success)
             ->addColumn('read', fn ($row) => $row->readMail)
+            ->editColumn('created_at', fn ($row) => $this->formatDateTime($row->created_at))
             ->make(true);
     }
 
@@ -280,7 +287,9 @@ class DataTableController extends Controller
 
         $rows = Redirect::query()->where('url', $decodedUrl);
 
-        return DataTables::of($rows)->make(true);
+        return DataTables::of($rows)
+            ->editColumn('created_at', fn ($row) => $this->formatDateTime($row->created_at))
+            ->make(true);
     }
 
     /**
@@ -310,4 +319,22 @@ class DataTableController extends Controller
             ->rawColumns(['actions'])
             ->make(true);
     }
+
+    private function formatDateTime(mixed $value): string
+    {
+        if (empty($value)) {
+            return '';
+        }
+
+        if ($value instanceof \DateTimeInterface) {
+            return $value->format('Y-m-d H:i:s');
+        }
+
+        $timestamp = strtotime((string) $value);
+
+        return $timestamp !== false
+            ? date('Y-m-d H:i:s', $timestamp)
+            : (string) $value;
+    }
+
 }
