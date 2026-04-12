@@ -121,8 +121,11 @@
     {!! Html::script('/plugins/datatables-buttons/js/buttons.colVis.min.js') !!}
 
     <script>
+        let itemListTable;
+        let logListTable;
+
         $(function () {
-            $('#itemList').dataTable({
+            itemListTable = $('#itemList').DataTable({
                 "oLanguage": {
                     "sLengthMenu": "{{ __('pagination.s_length_menu') }}",
                     "sZeroRecords": "{{ __('pagination.s_zero_records') }}",
@@ -157,7 +160,7 @@
                 ],
             });
 
-            $('#logList').dataTable({
+            logListTable = $('#logList').DataTable({
                 "oLanguage": {
                     "sLengthMenu": "{{ __('pagination.s_length_menu') }}",
                     "sZeroRecords": "{{ __('pagination.s_zero_records') }}",
@@ -210,9 +213,39 @@
                     cancelButton: 'order-1',
                 },
             }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "{{ route('admin.log.clear') }}";
+                if (!result.isConfirmed) {
+                    return;
                 }
+
+                $.ajax({
+                    url: "{{ route('admin.log.clear') }}",
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message || "{{ __('frontend.msg.data_successfully_deleted') }}",
+                            confirmButtonText: 'OK'
+                        });
+
+                        if (itemListTable) {
+                            itemListTable.ajax.reload(null, false);
+                        }
+
+                        if (logListTable) {
+                            logListTable.ajax.reload(null, false);
+                        }
+                    },
+                    error: function (xhr) {
+                        const response = xhr.responseJSON || {};
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message || "{{ __('frontend.str.delete_error') }}",
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
             })
         }
 

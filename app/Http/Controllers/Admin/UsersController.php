@@ -100,20 +100,12 @@ class UsersController extends Controller
 
     /**
      * @param Request $request
-     * @return RedirectResponse
+     * @return void
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request): void
     {
-        try {
-            if ((int) $request->id !== (int) Auth::id()) {
-                $this->userRepository->delete((int) $request->id);
-            }
-        } catch (\Throwable $e) {
-            report($e);
-
-            return back()->with('error', $e->getMessage());
+        if ((int) $request->id !== (int) Auth::id()) {
+            $this->userRepository->delete((int) $request->id);
         }
-
-        return to_route('admin.users.index')->with('success', __('message.data_deleted'));
     }
 }

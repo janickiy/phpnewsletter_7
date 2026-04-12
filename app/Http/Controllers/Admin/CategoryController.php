@@ -115,6 +115,6 @@ class CategoryController extends Controller
         }
 
         return to_route('admin.category.index')
-            ->with('success', __('message.data_deleted'));
+            ->with('success', __('frontend.msg.data_successfully_deleted'));
     }
 }

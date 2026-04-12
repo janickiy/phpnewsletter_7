@@ -136,22 +136,14 @@ class SubscribersController extends Controller
 
     /**
      * @param int $id
-     * @return RedirectResponse
+     * @return void
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(int $id): void
     {
-        try {
-            DB::transaction(function () use ($id) {
-                $this->subscriptionRepository->removeBySubscriberId($id);
-                $this->subscribersRepository->delete($id);
-            });
-        } catch (\Throwable $e) {
-            report($e);
-
-            return back()->with('error', $e->getMessage());
-        }
-
-        return to_route('admin.subscribers.index')->with('success', __('message.data_deleted'));
+        DB::transaction(function () use ($id) {
+            $this->subscriptionRepository->removeBySubscriberId($id);
+            $this->subscribersRepository->delete($id);
+        });
     }
 
     /**

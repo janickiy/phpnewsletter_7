@@ -133,7 +133,7 @@ return [
 
     'msg' => [
         'are_you_sure' => 'Tem certeza?',
-        'will_not_be_able_to_ecover_information' => 'Não será possível recuperar estas informações!',
+        'will_not_be_able_to_recover_information' => 'Não será possível recuperar estas informações!',
         'yes_remove' => 'Sim, excluir!',
         'done' => 'Concluído!',
         'data_successfully_deleted' => 'Dados excluídos com sucesso!',

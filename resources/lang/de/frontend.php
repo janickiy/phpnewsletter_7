@@ -164,7 +164,7 @@ return [
     ],
     'msg' => [
         'are_you_sure' => 'Sind Sie sicher?',
-        'will_not_be_able_to_ecover_information' => 'Diese Informationen können nicht wiederhergestellt werden!',
+        'will_not_be_able_to_recover_information' => 'Diese Informationen können nicht wiederhergestellt werden!',
         'yes_remove' => 'Ja, löschen!',
         'done' => 'Fertig!',
         'data_successfully_deleted' => 'Daten wurden erfolgreich gelöscht!',

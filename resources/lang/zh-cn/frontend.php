@@ -164,7 +164,7 @@ return [
     ],
     'msg' => [
         'are_you_sure' => '您确定吗？',
-        'will_not_be_able_to_ecover_information' => '您将无法恢复此信息！',
+        'will_not_be_able_to_recover_information' => '您将无法恢复此信息！',
         'yes_remove' => '是的，删除！',
         'done' => '完成！',
         'data_successfully_deleted' => '数据已成功删除！',

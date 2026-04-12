@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Services\DownloadService;
 use App\Models\Redirect;
-use Illuminate\Http\Response;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+
 
 class RedirectController  extends Controller
 {
@@ -29,19 +29,26 @@ class RedirectController  extends Controller
     }
 
     /**
-     * @return RedirectResponse
+     * @return JsonResponse
      */
-    public function clear(): RedirectResponse
+    public function clear(): JsonResponse
     {
-        Redirect::truncate();
+        try {
+            Redirect::truncate();
 
-        return to_route('admin.redirect.index')->with('success', __('message.statistics_cleared'));
+            return response()->json([
+                'success' => true,
+                'message' => __('message.statistics_cleared'),
+            ]);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return response()->json([
+                'success' => false,
+                'message' => __('frontend.str.delete_error'),
+            ], 500);
+        }
     }
-
-    /**
-     * @param string $url
-     * @return Response
-     */
 
     /**
      * @param string $url

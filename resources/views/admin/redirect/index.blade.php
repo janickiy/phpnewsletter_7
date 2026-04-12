@@ -89,7 +89,7 @@
     <script>
 
         $(function () {
-            $('#itemList').dataTable({
+            const redirectTable = $('#itemList').DataTable({
                 "oLanguage": {
                     "sLengthMenu": "{{ __('pagination.s_length_menu') }}",
                     "sZeroRecords": "{{ __('pagination.s_zero_records') }}",
@@ -135,9 +135,39 @@
                     cancelButton: 'order-1',
                 },
             }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "{{ route('admin.redirect.clear') }}";
+                if (!result.isConfirmed) {
+                    return;
                 }
+
+                $.ajax({
+                    url: "{{ route('admin.redirect.clear') }}",
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message || "{{ __('frontend.msg.data_successfully_deleted') }}",
+                            confirmButtonText: 'OK'
+                        });
+
+                        if (itemListTable) {
+                            itemListTable.ajax.reload(null, false);
+                        }
+
+                        if (logListTable) {
+                            logListTable.ajax.reload(null, false);
+                        }
+                    },
+                    error: function (xhr) {
+                        const response = xhr.responseJSON || {};
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message || "{{ __('frontend.str.delete_error') }}",
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
             })
         }
 

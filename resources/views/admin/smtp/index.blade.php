@@ -215,7 +215,7 @@
                 let rowid = $(this).attr('id');
                 Swal.fire({
                     title: "{{ __('frontend.msg.are_you_sure') }}",
-                    text: "{{ __('frontend.msg.will_not_be_able_to_ecover_information') }}",
+                    text: "{{ __('frontend.msg.will_not_be_able_to_recover_information') }}",
                     showCancelButton: true,
                     icon: 'warning',
                     cancelButtonText: "{{ __('frontend.str.cancel') }}",

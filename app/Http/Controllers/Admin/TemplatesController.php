@@ -131,7 +131,7 @@ class TemplatesController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return to_route('admin.templates.index')->with('success', __('message.data_deleted'));
+        return to_route('admin.templates.index')->with('success', __('frontend.msg.data_successfully_deleted'));
     }
 
     /**

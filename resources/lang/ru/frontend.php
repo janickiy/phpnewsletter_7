@@ -164,7 +164,7 @@ return [
     ],
     'msg' => [
         'are_you_sure' => 'Вы уверены?',
-        'will_not_be_able_to_ecover_information' => 'Вы не сможете восстановить эту информацию!',
+        'will_not_be_able_to_recover_information' => 'Вы не сможете восстановить эту информацию!',
         'yes_remove' => 'Да, удалить!',
         'done'       => 'Сделано!',
         'data_successfully_deleted' => 'Данные успешно удалены!',

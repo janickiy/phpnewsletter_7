@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-
+use App\Models\ReadySent;
 use App\Models\Logs;
 use App\Services\DownloadService;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class LogController extends Controller
 {
@@ -50,17 +51,28 @@ class LogController extends Controller
 
     /**
      * Clear all logs
+     *
+     * @return JsonResponse
      */
-    public function clear(): RedirectResponse
+    public function clear(): JsonResponse
     {
         try {
-            Logs::query()->delete();
+            DB::transaction(function (): void {
+                ReadySent::query()->delete();
+                Logs::query()->delete();
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => __('frontend.msg.data_successfully_deleted'),
+            ]);
         } catch (\Throwable $e) {
             report($e);
 
-            return back()->with('error', $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => __('frontend.str.delete_error'),
+            ], 500);
         }
-
-        return back()->with('success', __('message.data_deleted'));
     }
 }

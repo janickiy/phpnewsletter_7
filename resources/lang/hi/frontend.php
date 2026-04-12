@@ -164,7 +164,7 @@ return [
     ],
     'msg' => [
         'are_you_sure' => 'क्या आप सुनिश्चित हैं?',
-        'will_not_be_able_to_ecover_information' => 'आप इस जानकारी को पुनर्प्राप्त नहीं कर पाएँगे!',
+        'will_not_be_able_to_recover_information' => 'आप इस जानकारी को पुनर्प्राप्त नहीं कर पाएँगे!',
         'yes_remove' => 'हाँ, हटाएँ!',
         'done' => 'पूर्ण!',
         'data_successfully_deleted' => 'डेटा सफलतापूर्वक हटा दिया गया है!',

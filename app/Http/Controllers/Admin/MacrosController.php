@@ -103,19 +103,10 @@ class MacrosController extends Controller
 
     /**
      * @param DeleteRequest $request
-     * @return RedirectResponse
+     * @return void
      */
-    public function destroy(DeleteRequest $request): RedirectResponse
+    public function destroy(DeleteRequest $request): void
     {
-        try {
-            $this->macrosRepository->delete((int) $request->id);
-        } catch (\Throwable $e) {
-            report($e);
-
-            return back()
-                ->with('error', $e->getMessage());
-        }
-
-        return to_route('admin.macros.index')->with('success', __('message.data_deleted'));
+        $this->macrosRepository->delete((int) $request->id);
     }
 }
