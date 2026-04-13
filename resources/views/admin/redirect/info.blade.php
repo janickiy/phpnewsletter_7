@@ -4,6 +4,10 @@
 
 @section('css')
 
+    <!-- DataTables -->
+    {!! Html::style('/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') !!}
+    {!! Html::style('/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') !!}
+    {!! Html::style('/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') !!}
 
 @endsection
 
@@ -30,13 +34,8 @@
                                     <th>{{ __('frontend.str.time') }}</th>
                                 </tr>
                                 </thead>
-                                <tfoot>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Email</th>
-                                    <th>{{ __('frontend.str.time') }}</th>
-                                </tr>
-                                </tfoot>
+                                <tbody>
+                                </tbody>
                             </table>
 
                         </div>
@@ -72,8 +71,7 @@
 
     <script>
 
-        $(function () {
-
+        $(document).ready(function () {
             $('#itemList').dataTable({
                 "sDom": "flrtip",
                 "autoWidth": true,
@@ -93,6 +91,7 @@
                 },
                 'createdRow': function (row, data, dataIndex) {
                     $(row).attr('id', 'rowid_' + data['id']);
+                    if (data['status'] === 0) $(row).attr('class', 'table-danger');
                 },
                 aaSorting: [[1, 'asc']],
                 processing: true,
@@ -109,7 +108,4 @@
         })
 
     </script>
-
 @endsection
-
-
