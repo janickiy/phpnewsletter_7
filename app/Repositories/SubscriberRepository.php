@@ -11,9 +11,10 @@ use Illuminate\Support\Collection;
 class SubscriberRepository extends BaseRepository
 {
     public function __construct(
-        Subscribers $model,
+        Subscribers                      $model,
         private readonly DatabaseManager $database
-    ) {
+    )
+    {
         parent::__construct($model);
     }
 
@@ -67,19 +68,20 @@ class SubscriberRepository extends BaseRepository
      * @param int $logId
      * @param int $templateId
      * @param array $categoryId
-     * @param int $order
-     * @param int $limit
+     * @param string $order
+     * @param int|null $limit
      * @param string|null $interval
      * @return Collection|null
      */
     public function getSubscribers(
-        int $logId,
-        int $templateId,
-        array $categoryId,
-        int $order,
-        int $limit,
+        int     $logId,
+        int     $templateId,
+        array   $categoryId,
+        string  $order,
+        ?int    $limit = null,
         ?string $interval = null
-    ): ?Collection {
+    ): ?Collection
+    {
         $q = $this->model->select('subscribers.email', 'subscribers.token', 'subscribers.id', 'subscribers.name')
             ->distinct()
             ->join('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
@@ -92,6 +94,7 @@ class SubscriberRepository extends BaseRepository
                             ->orWhere('ready_sent.success', 0);
                     });
             })
+            ->whereNull('ready_sent.subscriber_id')
             ->whereIn('subscriptions.category_id', $categoryId)
             ->where('subscribers.active', 1);
 
@@ -99,18 +102,18 @@ class SubscriberRepository extends BaseRepository
             $q->whereRaw($interval);
         }
 
-        return $q->orderByRaw((string) $order)
+        return $q->orderByRaw($order)
             ->take($limit)
             ->get();
     }
 
     /**
      * @param array $categoryId
-     * @param int $limit
+     * @param int|null $limit
      * @param string|null $interval
      * @return int
      */
-    public function countSubscriptions(array $categoryId, int $limit, ?string $interval = null): int
+    public function countSubscriptions(array $categoryId, ?int $limit = null, ?string $interval = null): int
     {
         $q = Subscriptions::query()
             ->select('subscribers.id')
@@ -136,11 +139,12 @@ class SubscriberRepository extends BaseRepository
      * @return Collection|null
      */
     public function getSubscribersNotReadySent(
-        int $scheduleId,
-        string $order,
-        ?int $limit = null,
+        int     $scheduleId,
+        string  $order,
+        ?int    $limit = null,
         ?string $interval = null
-    ): ?Collection {
+    ): ?Collection
+    {
         $q = $this->model->select([
             'subscribers.email',
             'subscribers.id',
@@ -181,11 +185,12 @@ class SubscriberRepository extends BaseRepository
      * @return Collection|null
      */
     public function getSubscribersUnSent(
-        int $scheduleId,
-        string $order,
-        ?int $limit = null,
+        int     $scheduleId,
+        string  $order,
+        ?int    $limit = null,
         ?string $interval = null
-    ): ?Collection {
+    ): ?Collection
+    {
         $q = $this->model->select([
             'subscribers.email',
             'subscribers.id',
@@ -259,7 +264,7 @@ class SubscriberRepository extends BaseRepository
 
             Subscriptions::query()->create([
                 'subscriber_id' => $subscriberId,
-                'category_id' => (int) $categoryId,
+                'category_id' => (int)$categoryId,
             ]);
         }
     }
