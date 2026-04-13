@@ -9,6 +9,22 @@
     {!! Html::style('/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') !!}
     {!! Html::style('/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') !!}
 
+    <style>
+        #divStatus {
+            display: inline-block;
+            min-height: 20px;
+        }
+
+        #divStatus.error {
+            color: #dc3545;
+        }
+
+        #divStatus.success {
+            color: #28a745;
+            font-weight: 600;
+        }
+    </style>
+
 @endsection
 
 @section('content')
@@ -131,7 +147,7 @@
                         <span style="color: green" id="successful">0</span>
                         <span style="color: red">{{ __('frontend.str.bad') }}: </span>
                         <span style="color: red" id="unsuccessful">0</span><br><br>
-                        <span id="divStatus" class="error"></span><br>
+                        <span id="divStatus"></span><br>
                         <button id="sendout" class="btn btn-default btn-circle btn-modal btn-lg"
                                 style="margin-right: 15px;" title="{{ __('frontend.str.send_out_newsletter') }}"><i
                                 class="fa fa-play"></i></button>
@@ -389,6 +405,7 @@
             mailingState.completed = false;
             clearTimers();
             resetCounters();
+            resetStatusMessage();
             setRunningUiState();
 
             $.ajax({
@@ -560,7 +577,7 @@
                     completeProcess();
 
                     if (!silent) {
-                        showStatusMessage('Stopped');
+                        showSuccessMessage('Stopped');
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -641,11 +658,23 @@
         }
 
         function showStatusMessage(message) {
-            $('#divStatus').html(escapeHtml(message));
+            $('#divStatus')
+                .removeClass('success')
+                .addClass('error')
+                .html(escapeHtml(message));
+        }
+
+        function showSuccessMessage(message) {
+            $('#divStatus')
+                .removeClass('error')
+                .addClass('success')
+                .html(escapeHtml(message));
         }
 
         function resetStatusMessage() {
-            $('#divStatus').empty();
+            $('#divStatus')
+                .removeClass('error success')
+                .empty();
         }
 
         function extractErrorMessage(jqXHR, textStatus, errorThrown) {
