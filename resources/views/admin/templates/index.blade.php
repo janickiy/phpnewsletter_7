@@ -168,151 +168,107 @@
     {!! Html::script('/plugins/datatables-buttons/js/buttons.colVis.min.js') !!}
 
     <script>
+        const ajaxUrl = '{{ route('admin.ajax.action') }}';
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+        const serverErrorText = "{{ __('frontend.str.error_server') }}";
+        const noNewsletterSelectedText = "{{ __('frontend.str.no_newsletter_selected') }}";
+        const noCategorySelectedText = "{{ __('frontend.form.select_category') }}";
+
+        let mailingState = {
+            paused: false,
+            completed: true,
+            countTimer: null,
+            logTimer: null,
+            sendRequest: null,
+        };
 
         $(function () {
-            let open_modal = $('#apply');
+            const openModalButton = $('#apply');
+            const modalElement = document.getElementById('modal-lg');
+            const modalInstance = new bootstrap.Modal(modalElement, {});
 
-            $("#sendout").on('click', function () {
-                pausesend = false;
-                completed = null;
-                successful = 0;
-                unsuccessful = 0;
-                totalmail = 0;
+            $('#sendout').on('click', function () {
+                resetStatusMessage();
 
-                if ($('.check').is(':checked')) {
-                    $('#timer2').text('00:00:00');
-                    $("#stopsendout").removeClass('disabled').removeAttr('disabled');
-                    $("#sendout").addClass('disabled').attr('disabled', 'disabled');
-                    $("#process").removeClass().addClass('showprocess');
+                const templateIds = getSelectedTemplateIds();
+                const categoryIds = getSelectedCategoryIds();
 
-                    let request = $.ajax({
-                        url: '{{ route('admin.ajax.action') }}',
-                        method: "POST",
-                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        data: {
-                            action: "start_mailing",
-                        },
-                        dataType: "json"
-                    });
-
-                    request.fail(function( jqXHR, textStatus ) {
-                        completeProcess();
-                        $("#divStatus").html("{{ __('frontend.str.error_server') }}");
-                        console.log(jqXHR);
-                        console.log(textStatus);
-                    });
-
-                    request.done(function (data) {
-                        if (data.result != null && data.result === true) {
-                            $('#logId').val(data.logId);
-
-                            getCountProcess();
-                            onlineLogProcess();
-
-                            setTimeout(() => {
-                                process();
-                            }, 10000);
-                        } else {
-                            completeProcess();
-                            $("#divStatus").html("{{ __('frontend.str.error_server') }}");
-                        }
-                        console.log(data);
-                    });
-                } else {
-                    $("#divStatus").html('{{ __('frontend.str.no_newsletter_selected') }}');
+                if (templateIds.length === 0) {
+                    showStatusMessage(noNewsletterSelectedText);
+                    return;
                 }
+
+                if (categoryIds.length === 0) {
+                    showStatusMessage(noCategorySelectedText);
+                    return;
+                }
+
+                startMailing(templateIds, categoryIds);
             });
 
-            $("#stopsendout").on('click', function () {
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route('admin.ajax.action') }}',
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    data: {
-                        action: "process",
-                        command: "stop",
-                    },
-                    dataType: "json",
-                    success: function (data) {
-                        pausesend = true;
-                        $("#process").removeClass();
-                        $("#pausesendout").addClass('disabled').attr('disabled', 'disabled');
-                        $("#stopsendout").addClass('disabled').attr('disabled', 'disabled');
-                        $("#sendout").removeClass('disabled').removeAttr('disabled');
-                        $("#refreshemail").addClass('disabled').attr('disabled', 'disabled');
-
-                        $('#timer2').text('00:00:00');
-                        $('.progress-bar').css('width', '0%');
-                        $('#leftsend').text(0);
-                        $("#process").removeClass();
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        completeProcess();
-                        $("#divStatus").html("{{ __('frontend.str.error_server') }}");
-                        console.log(jqXHR);
-                        console.log(textStatus);
-                        console.log(errorThrown);
-                    },
-                });
+            $('#stopsendout').on('click', function () {
+                stopMailing();
             });
 
-            open_modal.click(function (event) {
-                let idSelect = $('#select_action').val();
+            openModalButton.on('click', function (event) {
+                const actionId = $('#select_action').val();
 
-                if (idSelect == '') {
+                if (actionId === '') {
                     event.preventDefault();
+
                     Swal.fire({
-                        title: "Error",
+                        title: 'Error',
                         text: "{{ __('frontend.str.select_action') }}",
-                        type: "error",
+                        type: 'error',
                         showCancelButton: false,
                         cancelButtonText: "{{ __('frontend.str.cancel') }}",
-                        confirmButtonColor: "#DD6B55",
+                        confirmButtonColor: '#DD6B55',
                         closeOnConfirm: false
                     });
-                } else {
-                    if (idSelect == 1) {
-                        event.preventDefault();
-                        let form = $(this).parents('form');
-                        Swal.fire({
-                            title: "{{ __('frontend.str.delete_confirmation') }}",
-                            text: "{{ __('frontend.str.confirm_remove') }}",
-                            type: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#DD6B55",
-                            confirmButtonText: "{{ __('frontend.str.yes') }}",
-                            cancelButtonText: "{{ __('frontend.str.cancel') }}",
-                            closeOnConfirm: false
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                form.submit();
-                            }
-                        });
-                    }
 
-                    if (idSelect == 0) {
-                        event.preventDefault();
+                    return;
+                }
 
-                        let myModal = new bootstrap.Modal(document.getElementById('modal-lg'), {});
-                        myModal.show();
-                    }
+                if (actionId == 1) {
+                    event.preventDefault();
+                    const form = $(this).parents('form');
+
+                    Swal.fire({
+                        title: "{{ __('frontend.str.delete_confirmation') }}",
+                        text: "{{ __('frontend.str.confirm_remove') }}",
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#DD6B55',
+                        confirmButtonText: "{{ __('frontend.str.yes') }}",
+                        cancelButtonText: "{{ __('frontend.str.cancel') }}",
+                        closeOnConfirm: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+
+                    return;
+                }
+
+                if (actionId == 0) {
+                    event.preventDefault();
+                    resetModalState();
+                    modalInstance.show();
                 }
             });
 
-            $("#checkAll").click(function () {
-                $('input:checkbox').not(this).prop('checked', this.checked);
+            $('#checkAll').on('click change', function () {
+                $('#itemList').find('input.check').prop('checked', this.checked);
                 countChecked();
             });
 
-            $("#checkAll").on('change', function () {
+            $('#itemList').on('change', 'input.check', function () {
+                syncCheckAllState();
                 countChecked();
             });
 
-            $("#itemList").on('change', 'input.check', function () {
-                countChecked();
-            });
-
-            $("#itemList").DataTable({
+            $('#itemList').DataTable({
                 "oLanguage": {
                     "sLengthMenu": "{{ __('pagination.s_length_menu') }}",
                     "sZeroRecords": "{{ __('pagination.s_zero_records') }}",
@@ -327,18 +283,18 @@
                     },
                     "sSearch": ' <i class="fas fa-search" aria-hidden="true"></i>'
                 },
-                'createdRow': function (row, data, dataIndex) {
-                    $(row).attr('id', 'rowid_' + data['id']);
+                createdRow: function (row, data) {
+                    $(row).attr('id', 'rowid_' + data.id);
                 },
                 aaSorting: [[1, 'asc']],
-                "processing": true,
-                "responsive": true,
-                "autoWidth": true,
-                'serverSide': true,
-                'ajax': {
+                processing: true,
+                responsive: true,
+                autoWidth: true,
+                serverSide: true,
+                ajax: {
                     url: '{{ route('admin.datatable.templates') }}'
                 },
-                'columns': [
+                columns: [
                     {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},
                     {data: 'id', name: 'id'},
                     {data: 'name', name: 'name'},
@@ -346,11 +302,15 @@
                     {data: 'attach', name: 'attach.id', searchable: false},
                     {data: 'created_at', name: 'created_at'},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
-                ]
+                ],
+                drawCallback: function () {
+                    syncCheckAllState();
+                    countChecked();
+                }
             });
 
             $('#itemList').on('click', 'a.deleteRow', function () {
-                let rowid = $(this).attr('id');
+                const rowid = $(this).attr('id');
                 Swal.fire({
                     title: "{{ __('frontend.msg.are_you_sure') }}",
                     text: "{{ __('frontend.msg.will_not_be_able_to_recover_information') }}",
@@ -359,7 +319,7 @@
                     cancelButtonText: "{{ __('frontend.str.cancel') }}",
                     confirmButtonText: "{{ __('frontend.msg.yes_remove') }}",
                     reverseButtons: true,
-                    confirmButtonColor: "#DD6B55",
+                    confirmButtonColor: '#DD6B55',
                     customClass: {
                         actions: 'my-actions',
                         cancelButton: 'order-1',
@@ -368,16 +328,17 @@
                     if (result.isConfirmed) {
                         $.ajax({
                             url: '{{ route('admin.templates.destroy') }}',
-                            type: "POST",
-                            dataType: "html",
+                            type: 'POST',
+                            dataType: 'html',
                             data: {id: rowid},
-                            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                            headers: {'X-CSRF-TOKEN': csrfToken},
                             success: function () {
-                                $("#rowid_" + rowid).remove();
+                                $('#rowid_' + rowid).remove();
                                 Swal.fire("{{ __('frontend.msg.done') }}", "{{ __('frontend.msg.data_successfully_deleted') }}", 'success');
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
                                 Swal.fire("{{ __('frontend.msg.error_deleting') }}", "{{ __('frontend.msg.try_again') }}", 'error');
+                                console.log(xhr);
                                 console.log(ajaxOptions);
                                 console.log(thrownError);
                             }
@@ -385,153 +346,316 @@
                     }
                 });
             });
+
+            $(modalElement).on('hidden.bs.modal', function () {
+                if (!mailingState.completed && !mailingState.paused) {
+                    stopMailing(true);
+                    return;
+                }
+
+                resetModalState();
+            });
         });
 
+        function getSelectedTemplateIds() {
+            return $('#itemList').find('input.check:checked').map(function () {
+                const value = parseInt($(this).val(), 10);
+                return Number.isInteger(value) ? value : null;
+            }).get();
+        }
+
+        function getSelectedCategoryIds() {
+            const values = $('#categoryId').val() || [];
+
+            return values.map(function (value) {
+                return parseInt(value, 10);
+            }).filter(function (value) {
+                return Number.isInteger(value);
+            });
+        }
+
         function countChecked() {
-            if ($('.check').is(':checked'))
-                $('#apply').attr('disabled', false);
-            else
-                $('#apply').attr('disabled', true);
+            $('#apply').prop('disabled', getSelectedTemplateIds().length === 0);
+        }
+
+        function syncCheckAllState() {
+            const total = $('#itemList').find('input.check').length;
+            const checked = $('#itemList').find('input.check:checked').length;
+            $('#checkAll').prop('checked', total > 0 && total === checked);
+        }
+
+        function startMailing(templateIds, categoryIds) {
+            mailingState.paused = false;
+            mailingState.completed = false;
+            clearTimers();
+            resetCounters();
+            setRunningUiState();
+
+            $.ajax({
+                url: ajaxUrl,
+                method: 'POST',
+                headers: {'X-CSRF-TOKEN': csrfToken},
+                data: {
+                    action: 'start_mailing',
+                },
+                dataType: 'json'
+            }).done(function (data) {
+                if (data.result === true && data.logId) {
+                    $('#logId').val(data.logId);
+                    startPolling();
+                    sendOut(templateIds, categoryIds);
+                    return;
+                }
+
+                failProcess(data.errors || serverErrorText);
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                failProcess(extractErrorMessage(jqXHR, textStatus, errorThrown));
+            });
+        }
+
+        function startPolling() {
+            getCountProcess();
+            onlineLogProcess();
+
+            mailingState.countTimer = setInterval(function () {
+                if (!mailingState.completed) {
+                    getCountProcess();
+                }
+            }, 2000);
+
+            mailingState.logTimer = setInterval(function () {
+                if (!mailingState.completed) {
+                    onlineLogProcess();
+                }
+            }, 2000);
+        }
+
+        function sendOut(templateIds, categoryIds) {
+            mailingState.sendRequest = $.ajax({
+                type: 'POST',
+                url: ajaxUrl,
+                headers: {'X-CSRF-TOKEN': csrfToken},
+                data: {
+                    action: 'send_out',
+                    categoryId: categoryIds,
+                    templateId: templateIds,
+                    logId: $('#logId').val(),
+                },
+                cache: false,
+                dataType: 'json',
+                timeout: 10000,
+            }).done(function (json) {
+                if (json.result !== true) {
+                    failProcess(json.errors || serverErrorText);
+                    return;
+                }
+
+                if (json.completed === true) {
+                    completeProcess();
+                }
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                if (textStatus === 'abort') {
+                    return;
+                }
+
+                failProcess(extractErrorMessage(jqXHR, textStatus, errorThrown));
+            }).always(function () {
+                mailingState.sendRequest = null;
+            });
         }
 
         function getCountProcess() {
-            let logId = $('#logId').val();
+            const logId = parseInt($('#logId').val(), 10);
 
-            if (logId != 0 && completed === null) {
-                $.ajax({
-                    url: '{{ route('admin.ajax.action') }}',
-                    cache: false,
-                    method: "POST",
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    data: {
-                        action: "count_send",
-                        logId: $('#logId').val(),
-                        categoryId: $('#categoryId').val(),
-                    },
-                    dataType: "json",
-                    success: function (json) {
-                        if (json.result === true) {
-                            let totalmail = json.total;
-                            let successful = json.success;
-                            let unsuccessful = json.unsuccessful;
-                            let timeleft = json.time;
-                            let leftsend = json.leftsend;
-
-                            $('#totalsendlog').text(totalmail);
-                            $('#unsuccessful').text(unsuccessful);
-                            $('#successful').text(successful);
-                            $('#timer2').text(timeleft);
-
-                            onlineLogProcess();
-
-                            $('.progress-bar').css('width', leftsend + '%');
-                            $('#leftsend').text(leftsend);
-
-                            setTimeout(() => {
-                                getCountProcess();
-                            }, 2000);
-
-                            // setTimeout('', 2000);
-                        } else {
-                            setTimeout(() => {
-                                getCountProcess();
-                            }, 1000);
-                        }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        completeProcess();
-                        $("#divStatus").html("{{ __('frontend.str.error_server') }}");
-                        console.log(jqXHR);
-                        console.log(textStatus);
-                        console.log(errorThrown);
-                    },
-                });
+            if (!logId || mailingState.completed) {
+                return;
             }
+
+            $.ajax({
+                url: ajaxUrl,
+                cache: false,
+                method: 'POST',
+                headers: {'X-CSRF-TOKEN': csrfToken},
+                data: {
+                    action: 'count_send',
+                    logId: logId,
+                    categoryId: getSelectedCategoryIds(),
+                },
+                dataType: 'json',
+                success: function (json) {
+                    if (json.result !== true) {
+                        if (json.errors) {
+                            failProcess(json.errors);
+                        }
+                        return;
+                    }
+
+                    $('#totalsendlog').text(json.total ?? 0);
+                    $('#unsuccessful').text(json.unsuccessful ?? 0);
+                    $('#successful').text(json.success ?? 0);
+                    $('#timer2').text(json.time ?? '00:00:00');
+
+                    const leftsend = Number(json.leftsend ?? 0);
+                    $('.progress-bar').css('width', leftsend + '%');
+                    $('#leftsend').text(leftsend);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    failProcess(extractErrorMessage(jqXHR, textStatus, errorThrown));
+                },
+            });
         }
 
         function onlineLogProcess() {
-            if (completed === null) {
-                $.ajax({
-                    type: 'POST',
-                    cache: false,
-                    url: '{{ route('admin.ajax.action') }}',
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    data: {
-                        action: "log_online",
-                    },
-                    dataType: "json",
-                    success: function (data) {
-                        let msg = '';
-
-                        for (let i = 0; i < data.item.length; i++) {
-                            if (data.item[i].email != 'undefined') {
-                                msg += data.item[i].email + ' - ' + data.item[i].status;
-                                msg += '<br>';
-                            }
-                            $('#onlinelog').html(msg);
-                        }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        completeProcess();
-                        $("#divStatus").html("{{ __('frontend.str.error_server') }}");
-                        console.log(jqXHR);
-                        console.log(textStatus);
-                        console.log(errorThrown);
-                    },
-                });
+            if (mailingState.completed) {
+                return;
             }
+
+            $.ajax({
+                type: 'POST',
+                cache: false,
+                url: ajaxUrl,
+                headers: {'X-CSRF-TOKEN': csrfToken},
+                data: {
+                    action: 'log_online',
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (!Array.isArray(data.item)) {
+                        return;
+                    }
+
+                    const html = data.item
+                        .filter(function (item) {
+                            return item && typeof item.email !== 'undefined' && item.email !== null && item.email !== '';
+                        })
+                        .map(function (item) {
+                            return escapeHtml(item.email) + ' - ' + escapeHtml(item.status ?? '');
+                        })
+                        .join('<br>');
+
+                    $('#onlinelog').html(html);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    failProcess(extractErrorMessage(jqXHR, textStatus, errorThrown));
+                },
+            });
         }
 
-        function process() {
-            if (pausesend === false) {
-                let templateId = [];
+        function stopMailing(silent = false) {
+            $.ajax({
+                type: 'POST',
+                url: ajaxUrl,
+                headers: {'X-CSRF-TOKEN': csrfToken},
+                data: {
+                    action: 'process',
+                    command: 'stop',
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.result !== true) {
+                        failProcess(data.errors || serverErrorText);
+                        return;
+                    }
 
-                $('input:checkbox:checked').each(function () {
-                    templateId.push($(this).val());
-                });
+                    completeProcess();
 
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route('admin.ajax.action') }}',
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    data: {
-                        action: "send_out",
-                        categoryId: $('#categoryId').val(),
-                        templateId: templateId,
-                        logId: $('#logId').val(),
-                    },
-                    cache: false,
-                    dataType: "json",
-                    success: function (json) {
-                        if (json.completed === true) {
-                            $("#process").removeClass();
-                            completeProcess();
-                        }
-                    },
-                    timeout: 10000,
-                    error: function (jqXHR, textStatus, errorThrown) {
-                      //  completeProcess();
-                      //  $("#divStatus").html("{{ __('frontend.str.error_server') }}");
-                        console.log(jqXHR);
-                        console.log(textStatus);
-                        console.log(errorThrown);
-                    },
-                });
-            }
+                    if (!silent) {
+                        showStatusMessage('Stopped');
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    failProcess(extractErrorMessage(jqXHR, textStatus, errorThrown));
+                },
+            });
         }
 
         function completeProcess() {
-            completed = true;
-            $("#pausesendout").addClass('disabled').attr('disabled', 'disabled');
-            $("#stopsendout").addClass('disabled').attr('disabled', 'disabled');
-            $("#sendout").removeClass('disabled').removeAttr('disabled');
-            $("#process").removeClass();
-            $("#timer2").text('00:00:00');
+            mailingState.completed = true;
+            mailingState.paused = false;
+            clearTimers();
+
+            if (mailingState.sendRequest) {
+                mailingState.sendRequest.abort();
+                mailingState.sendRequest = null;
+            }
+
+            setIdleUiState();
+            $('#timer2').text('00:00:00');
             $('#leftsend').text(100);
-            $('.progress-bar').css('width', '0%');
-            $("#process").removeClass();
+            $('.progress-bar').css('width', '100%');
         }
 
+        function failProcess(message) {
+            completeProcess();
+            showStatusMessage(message || serverErrorText);
+        }
+
+        function clearTimers() {
+            if (mailingState.countTimer) {
+                clearInterval(mailingState.countTimer);
+                mailingState.countTimer = null;
+            }
+
+            if (mailingState.logTimer) {
+                clearInterval(mailingState.logTimer);
+                mailingState.logTimer = null;
+            }
+        }
+
+        function resetModalState() {
+            clearTimers();
+            mailingState.paused = false;
+            mailingState.completed = true;
+
+            if (mailingState.sendRequest) {
+                mailingState.sendRequest.abort();
+                mailingState.sendRequest = null;
+            }
+
+            $('#logId').val(0);
+            $('#onlinelog').empty();
+            resetCounters();
+            resetStatusMessage();
+            setIdleUiState();
+            $('#timer2').text('00:00:00');
+            $('#leftsend').text(0);
+            $('.progress-bar').css('width', '0%');
+        }
+
+        function resetCounters() {
+            $('#totalsendlog').text(0);
+            $('#successful').text(0);
+            $('#unsuccessful').text(0);
+        }
+
+        function setRunningUiState() {
+            $('#stopsendout').removeClass('disabled').prop('disabled', false);
+            $('#sendout').addClass('disabled').prop('disabled', true);
+            $('#process').removeClass().addClass('showprocess');
+        }
+
+        function setIdleUiState() {
+            $('#stopsendout').addClass('disabled').prop('disabled', true);
+            $('#sendout').removeClass('disabled').prop('disabled', false);
+            $('#process').removeClass();
+        }
+
+        function showStatusMessage(message) {
+            $('#divStatus').html(escapeHtml(message));
+        }
+
+        function resetStatusMessage() {
+            $('#divStatus').empty();
+        }
+
+        function extractErrorMessage(jqXHR, textStatus, errorThrown) {
+            const responseJson = jqXHR.responseJSON || {};
+            return responseJson.errors || errorThrown || textStatus || serverErrorText;
+        }
+
+        function escapeHtml(value) {
+            return $('<div>').text(value ?? '').html();
+        }
     </script>
 
 @endsection

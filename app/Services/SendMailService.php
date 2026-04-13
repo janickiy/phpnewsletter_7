@@ -86,14 +86,27 @@ class SendMailService
      */
     public function sendOut(Request $request): array
     {
-        if (!$request->templateId || !$request->categoryId) {
-            return ['result' => false];
-        }
+        $templateIds = collect((array) $request->input('templateId', []))
+            ->filter(static fn ($id) => is_numeric($id))
+            ->map(static fn ($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
 
-        $logId = $request->input('logId');
+        $categoryIds = collect((array) $request->input('categoryId', []))
+            ->filter(static fn ($id) => is_numeric($id))
+            ->map(static fn ($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
 
-        if ($logId === 0) {
-            return ['result' => false];
+        $logId = (int) $request->input('logId');
+
+        if (empty($templateIds) || empty($categoryIds) || $logId <= 0) {
+            return [
+                'result' => false,
+                'errors' => __('frontend.str.error_server'),
+            ];
         }
 
         $this->processRepository->updateByUserId(Auth::user('web')->id, ProcessStatus::Start->value);
@@ -117,11 +130,11 @@ class SendMailService
                 $interval = null;
         }
 
-        $templates = Templates::whereIN('id', $request->templateId)->get();
+        $templates = Templates::whereIn('id', $templateIds)->get();
 
         foreach ($templates ?? [] as $template) {
 
-            $subscribers = $this->subscribersRepository->getSubscribers($logId, $template->id, $request->categoryId, $order, $limit, $interval);
+            $subscribers = $this->subscribersRepository->getSubscribers($logId, $template->id, $categoryIds, $order, $limit, $interval);
 
             $subscriberUpdates = [];
 
