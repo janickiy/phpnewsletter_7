@@ -122,25 +122,61 @@
 
 @section('js')
 
-    <!-- date-range-picker -->
+    <!-- moment -->
     {!! Html::script('/plugins/moment/moment.min.js') !!}
+
+    {{-- Динамическое подключение locale --}}
+    @php
+        $localeMap = [
+            'ru' => 'ru',
+            'en' => 'en-gb', // важно: у moment нет просто "en"
+            'uk' => 'uk',
+            'de' => 'de',
+            'fr' => 'fr',
+            'es' => 'es',
+            'it' => 'it',
+            'hi' => 'hi',
+            'pt' => 'pt',
+            'pt-BR' => 'pt-br',
+            'zh-CN' => 'zh-cn',
+            'zh-TW' => 'zh-tw',
+        ];
+
+        $momentLocale = $localeMap[app()->getLocale()] ?? 'en-gb';
+    @endphp
+
+    {!! Html::script('/plugins/moment/locale/' . $momentLocale . '.js') !!}
+
+    <!-- daterangepicker -->
     {!! Html::script('/plugins/daterangepicker/daterangepicker.js') !!}
 
     <script>
-
         $(function () {
+
+            let locale = @json($momentLocale);
+
+            moment.locale(locale);
+
+            let localeData = moment.localeData();
+
             $('#date_interval').daterangepicker({
+                timePicker: true,
                 timePickerIncrement: 30,
                 timePicker24Hour: true,
-                timePicker: true,
                 locale: {
                     format: 'DD.MM.YYYY HH:mm',
+                    separator: ' - ',
+                    applyLabel: @json(__('frontend.str.apply')),
+                    cancelLabel: @json(__('frontend.str.cancel')),
+                    daysOfWeek: localeData.weekdaysMin(),
+                    monthNames: localeData.months(),
+                    firstDay: localeData.firstDayOfWeek()
                 },
                 minDate: moment().add(1, 'days'),
                 maxDate: moment().add(359, 'days'),
-            })
-        })
+            });
 
+        });
     </script>
 
 @endsection
