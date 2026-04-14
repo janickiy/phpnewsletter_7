@@ -8,7 +8,7 @@
 
 @if (isset($infoAlert) && $infoAlert)
     <div class="callout callout-info">
-        <p>{{ $infoAlert }}</p>
+        <p>{!! $infoAlert !!}</p>
     </div>
 @endif
 

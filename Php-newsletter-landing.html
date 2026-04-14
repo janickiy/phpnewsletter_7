@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PHP Newsletter — система email-рассылок</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --bg-soft: #111827;
+            --card: rgba(255,255,255,0.06);
+            --line: rgba(255,255,255,0.12);
+            --text: #e5e7eb;
+            --muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-2: #22c55e;
+            --white: #ffffff;
+            --shadow: 0 20px 60px rgba(0,0,0,0.35);
+            --radius: 22px;
+            --max: 1180px;
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(56,189,248,0.18), transparent 26%),
+                radial-gradient(circle at top right, rgba(34,197,94,0.14), transparent 22%),
+                linear-gradient(180deg, #020617 0%, #0f172a 100%);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a { color: inherit; text-decoration: none; }
+        img { max-width: 100%; display: block; }
+
+        .container {
+            width: min(100% - 32px, var(--max));
+            margin: 0 auto;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            backdrop-filter: blur(14px);
+            background: rgba(2,6,23,0.72);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .header__inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 16px 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            color: var(--white);
+        }
+
+        .brand__logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--accent), #2563eb);
+            box-shadow: 0 12px 28px rgba(56,189,248,0.35);
+            font-size: 18px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .nav a {
+            color: var(--muted);
+            font-size: 14px;
+            transition: 0.2s ease;
+        }
+
+        .nav a:hover { color: var(--white); }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            padding: 14px 22px;
+            font-weight: 700;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn:hover { transform: translateY(-1px); }
+
+        .btn--primary {
+            background: linear-gradient(135deg, var(--accent), #2563eb);
+            color: var(--white);
+            box-shadow: 0 14px 34px rgba(37,99,235,0.35);
+        }
+
+        .btn--secondary {
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(255,255,255,0.14);
+            color: var(--white);
+        }
+
+        .hero {
+            padding: 72px 0 36px;
+        }
+
+        .hero__grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(56,189,248,0.12);
+            border: 1px solid rgba(56,189,248,0.25);
+            color: #bae6fd;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            margin: 0 0 18px;
+            font-size: clamp(36px, 5vw, 64px);
+            line-height: 1.05;
+            color: var(--white);
+            letter-spacing: -0.03em;
+        }
+
+        .hero p {
+            margin: 0;
+            font-size: 18px;
+            color: #cbd5e1;
+            max-width: 720px;
+        }
+
+        .hero__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 28px;
+        }
+
+        .hero__stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 28px;
+        }
+
+        .stat {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 26px;
+            color: var(--white);
+        }
+
+        .stat span {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .panel {
+            background: linear-gradient(180deg, rgba(15,23,42,0.9), rgba(2,6,23,0.88));
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .panel__top {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.35);
+        }
+
+        .panel__body {
+            padding: 22px;
+        }
+
+        .dashboard {
+            display: grid;
+            gap: 16px;
+        }
+
+        .dashboard__row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .mini-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 18px;
+        }
+
+        .mini-card h3,
+        .mini-card h4 {
+            margin: 0 0 8px;
+            color: var(--white);
+        }
+
+        .mini-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .progress {
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress > span {
+            display: block;
+            height: 100%;
+            width: 72%;
+            background: linear-gradient(90deg, var(--accent-2), var(--accent));
+        }
+
+        section {
+            padding: 40px 0;
+        }
+
+        .section-head {
+            margin-bottom: 22px;
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .section-head h2 {
+            margin: 0 0 8px;
+            font-size: clamp(28px, 3vw, 42px);
+            color: var(--white);
+            letter-spacing: -0.03em;
+        }
+
+        .section-head p {
+            margin: 0;
+            max-width: 760px;
+            color: var(--muted);
+        }
+
+        .grid {
+            display: grid;
+            gap: 18px;
+        }
+
+        .grid--3 { grid-template-columns: repeat(3, 1fr); }
+        .grid--4 { grid-template-columns: repeat(4, 1fr); }
+        .grid--2 { grid-template-columns: repeat(2, 1fr); }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+            color: var(--white);
+            font-size: 20px;
+        }
+
+        .card p,
+        .card li {
+            color: var(--muted);
+        }
+
+        .list {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(34,197,94,0.12);
+            border: 1px solid rgba(34,197,94,0.22);
+            color: #bbf7d0;
+            font-size: 12px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .steps {
+            counter-reset: item;
+            display: grid;
+            gap: 18px;
+        }
+
+        .step {
+            position: relative;
+            padding: 22px 22px 22px 78px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .step::before {
+            counter-increment: item;
+            content: counter(item);
+            position: absolute;
+            left: 22px;
+            top: 22px;
+            width: 40px;
+            height: 40px;
+            display: grid;
+            place-items: center;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--accent), #2563eb);
+            color: var(--white);
+            font-weight: 800;
+        }
+
+        .cta {
+            padding: 22px;
+            border-radius: 30px;
+            background: linear-gradient(135deg, rgba(56,189,248,0.16), rgba(37,99,235,0.12));
+            border: 1px solid rgba(56,189,248,0.2);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cta h2 {
+            margin: 0 0 8px;
+            color: var(--white);
+            font-size: clamp(28px, 3vw, 40px);
+        }
+
+        .cta p {
+            margin: 0;
+            color: #dbeafe;
+            max-width: 760px;
+        }
+
+        .footer {
+            padding: 28px 0 52px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            color: #dbeafe;
+            background: rgba(255,255,255,0.06);
+            padding: 3px 8px;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 1024px) {
+            .hero__grid,
+            .grid--4,
+            .grid--3,
+            .grid--2,
+            .dashboard__row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .nav {
+                display: none;
+            }
+
+            .hero {
+                padding-top: 40px;
+            }
+
+            .hero__grid,
+            .grid--4,
+            .grid--3,
+            .grid--2,
+            .dashboard__row,
+            .hero__stats {
+                grid-template-columns: 1fr;
+            }
+
+            .header__inner {
+                padding: 14px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="container header__inner">
+        <a href="#top" class="brand">
+            <span class="brand__logo">✉</span>
+            <span>PHP Newsletter</span>
+        </a>
+        <nav class="nav">
+            <a href="#features">Возможности</a>
+            <a href="#requirements">Требования</a>
+            <a href="#setup">Установка</a>
+            <a href="#smtp">SMTP</a>
+            <a href="#contact">Старт</a>
+        </nav>
+        <a class="btn btn--secondary" href="#contact">Запросить демо</a>
+    </div>
+</header>
+
+<main id="top">
+    <section class="hero">
+        <div class="container hero__grid">
+            <div>
+                <div class="eyebrow">Версия 7.0.1 · Email marketing platform</div>
+                <h1>Система email-рассылок для сайтов, сервисов и маркетинговых команд</h1>
+                <p>PHP Newsletter помогает управлять подписчиками, создавать шаблоны, запускать массовые и запланированные рассылки, подключать SMTP и контролировать статистику доставки в одном интерфейсе
+
+
+                    Основное преимущество таких приложений — self-hosting. Вы не платите ежемесячно сторонним сервисам (как Mailchimp) за количество подписчиков, так как база хранится на вашем сервере, а отправка идет через ваши ресурсы.</p>
+                <div class="hero__actions">
+                    <a class="btn btn--primary" href="#contact">Начать использовать</a>
+                    <a class="btn btn--secondary" href="#features">Смотреть возможности</a>
+                </div>
+                <div class="hero__stats">
+                    <div class="stat">
+                        <strong>SMTP</strong>
+                        <span>Поддержка SMTP, mail() и sendmail</span>
+                    </div>
+                    <div class="stat">
+                        <strong>WYSIWYG</strong>
+                        <span>Визуальный редактор шаблонов писем</span>
+                    </div>
+                    <div class="stat">
+                        <strong>Cron</strong>
+                        <span>Автоматизация и расписание отправки</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel__top">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <div class="panel__body">
+                    <div class="dashboard">
+                        <div class="mini-card">
+                            <h3>Онлайн-журнал рассылки</h3>
+                            <p>Контроль отправки, прогресс выполнения и журнал событий в реальном времени</p>
+                            <div class="progress"><span></span></div>
+                        </div>
+                        <div class="dashboard__row">
+                            <div class="mini-card">
+                                <h4>Подписчики</h4>
+                                <p>Категории, импорт, экспорт и массовые действия</p>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Шаблоны</h4>
+                                <p>HTML-письма, вложения, макросы и персонализация</p>
+                            </div>
+                        </div>
+                        <div class="dashboard__row">
+                            <div class="mini-card">
+                                <h4>SMTP</h4>
+                                <p>Gmail, Yandex, Mail.ru, Yahoo, Outlook и другие провайдеры</p>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Статистика</h4>
+                                <p>Отправлено, ошибки, открытия писем и переходы по ссылкам</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <h2>Ключевые возможности</h2>
+                    <p>Готовый стек для построения собственной системы email-маркетинга с минимальными требованиями к серверу и удобным веб-интерфейсом</p>
+                </div>
+            </div>
+            <div class="grid grid--3">
+                <article class="card">
+                    <span class="badge">Отправка</span>
+                    <h3>Гибкие способы доставки</h3>
+                    <p>Поддержка SMTP, <code>mail()</code> и <code>sendmail</code>, вложений, HTML и plain text писем, а также служебных заголовков для массовых рассылок</p>
+                </article>
+                <article class="card">
+                    <span class="badge">Контент</span>
+                    <h3>Шаблоны и персонализация</h3>
+                    <p>Визуальный редактор, персональные поля, макросы, кодировки и динамические данные для адаптации контента под каждого подписчика</p>
+                </article>
+                <article class="card">
+                    <span class="badge">Аудитория</span>
+                    <h3>Управление подписчиками</h3>
+                    <p>База подписчиков с категориями, импортом, экспортом, формой подписки, отпиской и массовыми действиями по сегментам</p>
+                </article>
+                <article class="card">
+                    <span class="badge">Автоматизация</span>
+                    <h3>Расписание и очереди</h3>
+                    <p>Cron-задачи, планирование кампаний, фоновые процессы и автоматический запуск рассылок в заданное время</p>
+                </article>
+                <article class="card">
+                    <span class="badge">Аналитика</span>
+                    <h3>Статистика и контроль</h3>
+                    <p>Отчеты по отправленным и неотправленным письмам, просмотрам HTML-писем, переходам по ссылкам и экспорт аналитики в Excel</p>
+                </article>
+                <article class="card">
+                    <span class="badge">Безопасность</span>
+                    <h3>Повышение доставляемости</h3>
+                    <p>DKIM-подпись, настройка SMTP-параметров, управление заголовками писем и инструменты для более надежной доставки</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <h2>Что входит в систему</h2>
+                    <p>Набор модулей для полного цикла подготовки, отправки и анализа email-кампаний</p>
+                </div>
+            </div>
+            <div class="grid grid--4">
+                <div class="card"><h3>Шаблоны</h3><p>WYSIWYG редактор, вложения, форматирование, макросы и персонализация</p></div>
+                <div class="card"><h3>Подписчики</h3><p>Списки, категории, формы подписки, импорт и экспорт базы</p></div>
+                <div class="card"><h3>SMTP</h3><p>Управление несколькими SMTP-серверами и параметрами подключения</p></div>
+                <div class="card"><h3>Расписание</h3><p>Автоматический запуск кампаний по cron и управление задачами</p></div>
+                <div class="card"><h3>Журналы</h3><p>Онлайн-лог рассылки, статусы выполнения и диагностика ошибок</p></div>
+                <div class="card"><h3>Статистика</h3><p>Переходы по ссылкам, открытия писем, отчеты по результатам отправки</p></div>
+                <div class="card"><h3>Макросы</h3><p>Динамические переменные и подстановка персональных данных в письма</p></div>
+                <div class="card"><h3>Настройки</h3><p>Общие параметры системы, mailer, ограничения и конфигурация отправки</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="requirements">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <h2>Системные требования</h2>
+                    <p>Минимальный набор компонентов для стабильной работы приложения</p>
+                </div>
+            </div>
+            <div class="grid grid--2">
+                <article class="card">
+                    <h3>Серверное окружение</h3>
+                    <ul class="list">
+                        <li>PHP 8.2 и выше</li>
+                        <li>MySQL 5.6 и выше</li>
+                        <li>Apache 2+ с mod_rewrite или Nginx</li>
+                        <li>Поддержка <code>mail()</code></li>
+                    </ul>
+                </article>
+                <article class="card">
+                    <h3>PHP-расширения</h3>
+                    <ul class="list">
+                        <li>mbstring</li>
+                        <li>zip</li>
+                        <li>curl</li>
+                        <li>iconv</li>
+                        <li>gd</li>
+                    </ul>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section id="setup">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <h2>Быстрый старт</h2>
+                    <p>Установка занимает несколько шагов и подходит для большинства PHP-хостингов</p>
+                </div>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <h3>Распакуйте дистрибутив</h3>
+                    <p>Разместите файлы приложения в каталоге сайта, например <code>/phpnewsletter</code></p>
+                </div>
+                <div class="step">
+                    <h3>Назначьте права доступа</h3>
+                    <p>Установите права записи для <code>.env</code>, <code>bootstrap/cache</code>, <code>public</code> и <code>storage</code></p>
+                </div>
+                <div class="step">
+                    <h3>Запустите мастер установки</h3>
+                    <p>Откройте в браузере адрес вида <code>http://your-site/phpnewsletter/install/</code> и следуйте инструкциям</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="smtp">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <h2>Поддержка популярных SMTP-провайдеров</h2>
+                    <p>Система позволяет использовать как собственные SMTP-серверы, так и популярные почтовые сервисы</p>
+                </div>
+            </div>
+            <div class="grid grid--3">
+                <article class="card">
+                    <h3>Gmail</h3>
+                    <p><strong>SMTP:</strong> smtp.gmail.com<br><strong>Порт:</strong> 465<br><strong>Шифрование:</strong> SSL<br><strong>Авторизация:</strong> LOGIN</p>
+                </article>
+                <article class="card">
+                    <h3>Mail.ru / Yandex</h3>
+                    <p><strong>SMTP:</strong> smtp.mail.ru / smtp.yandex.ru<br><strong>Порт:</strong> 465<br><strong>Шифрование:</strong> SSL<br><strong>Авторизация:</strong> LOGIN</p>
+                </article>
+                <article class="card">
+                    <h3>Yahoo / Outlook</h3>
+                    <p><strong>SMTP:</strong> smtp.mail.yahoo.com / smtp.live.com<br><strong>Порт:</strong> 465<br><strong>Шифрование:</strong> SSL<br><strong>Авторизация:</strong> LOGIN</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="cta" id="contact">
+                <div>
+                    <h2>Запустите собственную email-платформу</h2>
+                    <p>PHP Newsletter подойдет для корпоративных сайтов, интернет-магазинов, SaaS-сервисов и внутренних маркетинговых платформ</p>
+                </div>
+                <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                    <a class="btn btn--primary" href="mailto:info@example.com">Запросить консультацию</a>
+                    <a class="btn btn--secondary" href="#top">Наверх</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+Основное преимущество таких приложений — self-hosting. Вы не платите ежемесячно сторонним сервисам (как Mailchimp) за количество подписчиков, так как база хранится на вашем сервере, а отправка идет через ваши ресурсы.
+</body>
+</html>

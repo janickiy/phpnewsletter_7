@@ -24,6 +24,7 @@ class LogController extends Controller
     {
         return view('admin.log.index', [
             'title' => __('frontend.title.log_index'),
+            'infoAlert' => __('frontend.hint.log_info'),
         ]);
     }
 
@@ -35,7 +36,7 @@ class LogController extends Controller
     {
         return view('admin.log.info', [
             'id' => $id,
-            'infoAlert' => __('frontend.hint.log_info') ?? null,
+            'infoAlert' => __('frontend.hint.log_info'),
             'title' => __('frontend.title.log_info'),
         ]);
     }

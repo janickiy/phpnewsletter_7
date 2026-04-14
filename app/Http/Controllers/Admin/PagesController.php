@@ -14,6 +14,7 @@ class PagesController extends Controller
     {
         return view('admin.pages.faq', [
             'title' => 'FAQ',
+            'infoAlert' => __('frontend.hint.faq_index'),
         ]);
     }
 
@@ -66,7 +67,7 @@ class PagesController extends Controller
         $subform = preg_replace('/<input name="_token" type="hidden"([^>]+)>/si', '', $subform);
 
         return view('admin.pages.subscription_form', [
-            'infoAlert' => __('frontend.hint.phpinfo'),
+            'infoAlert' => __('frontend.hint.subscription_form'),
             'subform' => $subform,
             'subformJs' => $subformJs,
             'title' => __('frontend.title.subscription_form'),
