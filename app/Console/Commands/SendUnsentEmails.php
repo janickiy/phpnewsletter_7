@@ -138,9 +138,9 @@ class SendUnsentEmails extends Command implements Isolatable
         }
 
         return match ($intervalType) {
-            'minute' => "(subscribers.timeSent < NOW() - INTERVAL '{$intervalNumber}' MINUTE)",
-            'hour' => "(subscribers.timeSent < NOW() - INTERVAL '{$intervalNumber}' HOUR)",
-            'day' => "(subscribers.timeSent < NOW() - INTERVAL '{$intervalNumber}' DAY)",
+            'minute' => "(subscribers.timeSent IS NULL OR subscribers.timeSent < NOW() - INTERVAL '{$intervalNumber}' MINUTE)",
+            'hour' => "(subscribers.timeSent IS NULL OR subscribers.timeSent < NOW() - INTERVAL '{$intervalNumber}' HOUR)",
+            'day' => "(subscribers.timeSent IS NULL OR subscribers.timeSent < NOW() - INTERVAL '{$intervalNumber}' DAY)",
             default => null,
         };
     }
