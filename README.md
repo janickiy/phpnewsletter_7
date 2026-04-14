@@ -1,6 +1,6 @@
 # PHP Newsletter
 
-**Version:** 7.0.1
+**Version:** 7.1.*
 
 PHP Newsletter is a web-based email marketing system for managing and sending bulk email campaigns directly from your website.
 
@@ -28,8 +28,8 @@ PHP Newsletter is a web-based email marketing system for managing and sending bu
 - Unsubscribe functionality
 
 ### Import / Export
-- Import: TXT, CSV, XLS, XLSX, ODS
-- Export: TXT, Excel
+- Import: TXT, CSV, Excel (XLS, XLSX)
+- Export: TXT, Excel (XLS, XLSX)
 
 ### Statistics
 - Sent / failed emails tracking
@@ -60,9 +60,3 @@ PHP Newsletter is a web-based email marketing system for managing and sending bu
 - curl
 - iconv
 - gd
-
----
-
-## 📦 Installation
-
-1. Extract the archive to your web directory:

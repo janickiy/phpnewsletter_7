@@ -14,6 +14,7 @@ use App\Repositories\SubscriberRepository;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Isolatable;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 class SendEmails extends Command implements Isolatable
 {
@@ -36,6 +37,8 @@ class SendEmails extends Command implements Isolatable
 
         $mailCountNo = 0;
         $mailCount = 0;
+
+        $this->line('start of mailing ...');
 
         $log = Logs::query()->create([
             'time' => now(),
@@ -69,6 +72,7 @@ class SendEmails extends Command implements Isolatable
             );
 
             $subscriberUpdates = [];
+            $progressBar = $this->createMailingProgressBar(count($subscribers ?? []));
 
             foreach ($subscribers ?? [] as $subscriber) {
                 if ((int)SettingsHelper::getInstance()->getValueForKey('sleep') > 0) {
@@ -92,9 +96,13 @@ class SendEmails extends Command implements Isolatable
                 if ($result['result'] === true) {
                     $subscriberUpdates[$subscriber->id] = now()->format('Y-m-d H:i:s');
                     $mailCount++;
+                    $status = 'success';
                 } else {
                     $mailCountNo++;
+                    $status = 'failed';
                 }
+
+                $this->advanceMailingProgressBar($progressBar, $subscriber->email, $status);
 
                 if (
                     (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1
@@ -105,6 +113,7 @@ class SendEmails extends Command implements Isolatable
                 }
             }
 
+            $this->finishMailingProgressBar($progressBar);
             $this->resultSend($subscriberUpdates);
 
             if (
@@ -159,6 +168,60 @@ class SendEmails extends Command implements Isolatable
             'day' => "(subscribers.timeSent IS NULL OR subscribers.timeSent < NOW() - INTERVAL '{$intervalNumber}' DAY)",
             default => null,
         };
+    }
+
+    /**
+     * @param int $max
+     * @return ProgressBar|null
+     */
+    private function createMailingProgressBar(int $max): ?ProgressBar
+    {
+        if ($max <= 0) {
+            return null;
+        }
+
+        ProgressBar::setFormatDefinition(
+            'mailing',
+            ' %current%/%max% [%bar%] %percent:3s%% | %message%'
+        );
+
+        $progressBar = $this->output->createProgressBar($max);
+        $progressBar->setFormat('mailing');
+        $progressBar->setMessage('waiting...');
+        $progressBar->start();
+
+        return $progressBar;
+    }
+
+    /**
+     * @param ProgressBar|null $progressBar
+     * @param string $email
+     * @param string $status
+     * @return void
+     */
+    private function advanceMailingProgressBar(?ProgressBar $progressBar, string $email, string $status): void
+    {
+        if (!$progressBar) {
+            $this->line($email . ' - ' . $status);
+            return;
+        }
+
+        $progressBar->setMessage($email . ' - ' . $status);
+        $progressBar->advance();
+    }
+
+    /**
+     * @param ProgressBar|null $progressBar
+     * @return void
+     */
+    private function finishMailingProgressBar(?ProgressBar $progressBar): void
+    {
+        if (!$progressBar) {
+            return;
+        }
+
+        $progressBar->finish();
+        $this->newLine(2);
     }
 
     /**
