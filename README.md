@@ -28,8 +28,8 @@ PHP Newsletter is a web-based email marketing system for managing and sending bu
 - Unsubscribe functionality
 
 ### Import / Export
-- Import: TXT, CSV, Excel (XLS, XLSX)
-- Export: TXT, Excel (XLS, XLSX)
+- Import: TXT, CSV, Excel (XLS, XLSX), ODS
+- Export: TXT, Excel (XLSX)
 
 ### Statistics
 - Sent / failed emails tracking
