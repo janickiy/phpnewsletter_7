@@ -5,210 +5,435 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PHP Newsletter — User Manual</title>
   <style>
-    body{font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#1f2937;max-width:980px;margin:0 auto;padding:40px 20px;background:#f8fafc;overflow-x:hidden;box-sizing:border-box}
-    .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:28px 32px;box-shadow:0 4px 18px rgba(0,0,0,.04);max-width:100%;box-sizing:border-box;overflow-wrap:anywhere;overflow:hidden}
-    h1,h2,h3{color:#111827;line-height:1.25} h1{font-size:34px;margin:0 0 8px} h2{font-size:24px;margin-top:34px} h3{font-size:18px;margin-top:22px}
+    body{font-family:Arial,Helvetica,sans-serif;line-height:1.65;color:#1f2937;max-width:1080px;margin:0 auto;padding:40px 20px;background:#f8fafc;overflow-x:hidden;box-sizing:border-box}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:30px 34px;box-shadow:0 4px 18px rgba(0,0,0,.04);max-width:100%;box-sizing:border-box;overflow-wrap:anywhere;overflow:hidden}
+    h1,h2,h3{color:#111827;line-height:1.25} h1{font-size:34px;margin:0 0 8px} h2{font-size:25px;margin-top:36px} h3{font-size:18px;margin-top:22px}
     p{margin:10px 0} ul,ol{padding-left:22px} li{margin:6px 0} code, pre{background:#f3f4f6;border-radius:8px}
     code{padding:2px 6px;white-space:normal;word-break:break-word}
     pre{padding:14px;overflow:auto;border:1px solid #e5e7eb;white-space:pre-wrap;word-break:break-word;max-width:100%;box-sizing:border-box}
-    .lead{font-size:18px;color:#374151} .muted{color:#6b7280}.note{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:14px 16px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-    .box{border:1px solid #e5e7eb;border-radius:12px;padding:14px;background:#fcfcfd} .small{font-size:14px}
+    .lead{font-size:18px;color:#374151}
+    .muted{color:#6b7280}
+    .note{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:14px 16px;margin:14px 0}
+    .warn{background:#fff7ed;border:1px solid #fdba74;border-radius:12px;padding:14px 16px;margin:14px 0}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .box{border:1px solid #e5e7eb;border-radius:12px;padding:14px;background:#fcfcfd}
+    .toc a{color:#1d4ed8;text-decoration:none}
+    .toc a:hover{text-decoration:underline}
+    table{width:100%;border-collapse:collapse;margin:14px 0;font-size:15px}
+    th,td{border:1px solid #e5e7eb;padding:10px 12px;vertical-align:top;text-align:left}
+    th{background:#f8fafc}
+    .small{font-size:14px}
   </style>
 </head>
 <body>
   <div class="card">
     <h1>PHP Newsletter — User Manual</h1>
-    <p class="lead">PHP Newsletter is an email marketing tool for organizing email campaigns directly from your website, for sending any kind of information.</p>
-    <p class="muted">The following manual is based on the actual application structure: Laravel architecture, subscription routes, scheduler, user roles, logging, macros, and admin modules.</p>
+    <p class="lead">PHP Newsletter is a self-hosted email marketing and subscriber management system. It lets you manage mailing lists, build templates, schedule campaigns, track opens and clicks, and keep all data on your own server.</p>
+    <p class="muted">This manual is based on the actual project structure: Laravel 10, admin modules, setup wizard, subscription endpoints, HTML email tracking, cron-based scheduling, user roles, import/export, and reporting.</p>
 
-    <h2>1. System Purpose</h2>
-    <p>PHP Newsletter is suitable for newsletters, marketing campaigns, and service notifications. Система позволяет развернуть собственную платформу email-маркетинга без зависимости от внешних SaaS-сервисов и без обязательной абонентской платы.</p>
+    <div class="note">
+      <strong>Who this product is for:</strong> website owners, marketing teams, editors, and administrators who need a private email campaign platform without relying on external SaaS providers.
+    </div>
+
+    <h2>Contents</h2>
+    <ol class="toc">
+      <li><a href="#purpose">System Purpose</a></li>
+      <li><a href="#quick-start">Quick Start</a></li>
+      <li><a href="#requirements">System Requirements</a></li>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#first-login">First Login and Initial Setup</a></li>
+      <li><a href="#modules">Admin Panel Modules</a></li>
+      <li><a href="#mailing-flow">How Mailing Works</a></li>
+      <li><a href="#subscribers">Subscribers and Categories</a></li>
+      <li><a href="#templates">Templates, Macros, and Attachments</a></li>
+      <li><a href="#sending">Email Delivery Methods</a></li>
+      <li><a href="#tracking">Open and Click Tracking</a></li>
+      <li><a href="#schedule">Scheduler and Cron</a></li>
+      <li><a href="#roles">Roles and Security</a></li>
+      <li><a href="#reports">Logs and Reports</a></li>
+      <li><a href="#deliverability">Deliverability Recommendations</a></li>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
+      <li><a href="#structure">Project Structure</a></li>
+    </ol>
+
+    <h2 id="purpose">1. System Purpose</h2>
+    <p>PHP Newsletter is suitable for:</p>
     <ul>
-      <li>отправка массовых email-кампаний;</li>
-      <li>управление базой подписчиков и категориями;</li>
-      <li>работа с HTML- и plain text-письмами;</li>
-      <li>отслеживание открытий и переходов по ссылкам;</li>
-      <li>планирование рассылок по расписанию;</li>
-      <li>размещение всей системы и базы данных на собственном сервере.</li>
+      <li>newsletters and editorial digests;</li>
+      <li>marketing campaigns and promotional mailings;</li>
+      <li>service notifications and website announcements;</li>
+      <li>internal or member-only mailing lists.</li>
+    </ul>
+    <p>It allows you to:</p>
+    <ul>
+      <li>manage subscriber lists and categories;</li>
+      <li>create HTML and plain text campaigns;</li>
+      <li>personalize messages with macros;</li>
+      <li>attach files to templates;</li>
+      <li>schedule campaigns for future delivery;</li>
+      <li>collect open and click statistics;</li>
+      <li>run the entire system on your own infrastructure.</li>
     </ul>
 
-    <h2>2. Application Architecture</h2>
-    <p>По содержимому архива приложение построено на <strong>Laravel 10</strong> и использует стандартную для Laravel структуру проекта. В зависимостях присутствуют PHPMailer, PhpSpreadsheet, League CSV, Laravel Sanctum и DataTables.</p>
+    <h2 id="quick-start">2. Quick Start</h2>
+    <ol>
+      <li>Install the application and complete the setup wizard.</li>
+      <li>Log in to the admin panel as the administrator.</li>
+      <li>Configure the delivery method: SMTP, <code>mail()</code>, or <code>sendmail</code>.</li>
+      <li>Create subscriber categories.</li>
+      <li>Add or import subscribers.</li>
+      <li>Create a template and define macros if needed.</li>
+      <li>Send a test email.</li>
+      <li>Create a schedule entry and configure cron.</li>
+      <li>Review logs and reports after the first live mailing.</li>
+    </ol>
+
+    <h2 id="requirements">3. System Requirements</h2>
     <div class="grid">
-      <div class="box"><strong>Backend:</strong><br>PHP 8.2+, Laravel 10</div>
-      <div class="box"><strong>База данных:</strong><br>MySQL 5.6+</div>
-      <div class="box"><strong>Импорт/экспорт:</strong><br>CSV, TXT, XLS, XLSX, ODS</div>
-      <div class="box"><strong>Отправка:</strong><br>SMTP, mail(), sendmail</div>
+      <div class="box"><strong>PHP</strong><br>8.2 or newer</div>
+      <div class="box"><strong>Framework</strong><br>Laravel 10</div>
+      <div class="box"><strong>Database</strong><br>MySQL 5.6 or newer</div>
+      <div class="box"><strong>Mail Transport</strong><br>SMTP, mail(), or sendmail</div>
     </div>
 
-    <h3>Key Directories</h3>
+    <h3>Required PHP Extensions</h3>
     <ul>
-      <li><code>app/</code> — контроллеры, модели, DTO, middleware, helper-классы и консольные команды;</li>
-      <li><code>routes/</code> — маршруты web, api и console;</li>
-      <li><code>resources/views/</code> — шаблоны интерфейса и экраны установки;</li>
-      <li><code>database/migrations/</code> — миграции таблиц системы;</li>
-      <li><code>storage/</code> — логи, временные файлы, кэш;</li>
-      <li><code>public/</code> — публичные ресурсы приложения.</li>
+      <li><code>mbstring</code></li>
+      <li><code>zip</code></li>
+      <li><code>curl</code></li>
+      <li><code>iconv</code></li>
+      <li><code>gd</code></li>
+      <li><code>pdo_mysql</code></li>
+      <li><code>fileinfo</code></li>
     </ul>
 
-    <h2>3. Core Features</h2>
-
-    <h3>3.1. Email Sending</h3>
+    <h3>Web Server</h3>
     <ul>
-      <li>поддержка SMTP, <code>mail()</code> и <code>sendmail</code>;</li>
-      <li>массовая отправка писем;</li>
-      <li>поддержка вложений;</li>
-      <li>выбор формата письма: HTML или plain text;</li>
-      <li>добавление служебных заголовков, включая <code>Precedence</code> и <code>List-Unsubscribe</code>;</li>
-      <li>поддержка DKIM-подписи для повышения доставляемости.</li>
+      <li>Apache 2+ with <code>mod_rewrite</code>;</li>
+      <li>or Nginx configured to forward requests to <code>public/index.php</code>.</li>
     </ul>
 
-    <h3>3.2. Templates and Personalization</h3>
-    <ul>
-      <li>визуальный редактор шаблонов;</li>
-      <li>персонализация писем с помощью макросов;</li>
-      <li>поддержка различных кодировок;</li>
-      <li>предподготовка email-шаблонов для повторного использования.</li>
-    </ul>
-
-    <h3>3.3. Subscribers and Categories</h3>
-    <ul>
-      <li>ведение базы подписчиков;</li>
-      <li>распределение по категориям;</li>
-      <li>массовые операции: активация, удаление, перемещение;</li>
-      <li>встроенная форма подписки;</li>
-      <li>подтверждение подписки и отписка по персональным ссылкам.</li>
-    </ul>
-
-    <h3>3.4. Import and Export</h3>
-    <ul>
-      <li>импорт из TXT, CSV, XLS, XLSX, ODS;</li>
-      <li>экспорт данных в TXT и Excel;</li>
-      <li>экспорт статистики и отчётов.</li>
-    </ul>
-
-    <h3>3.5. Analytics</h3>
-    <ul>
-      <li>учёт отправленных и неотправленных писем;</li>
-      <li>отслеживание открытий писем для HTML-рассылок;</li>
-      <li>статистика переходов по ссылкам;</li>
-      <li>просмотр логов и выгрузка отчётов.</li>
-    </ul>
-
-    <h3>3.6. Automation</h3>
-    <ul>
-      <li>расписание рассылок;</li>
-      <li>очереди и фоновая обработка;</li>
-      <li>запуск консольных задач через cron.</li>
-    </ul>
-
-    <h2>4. Admin Panel Sections</h2>
-    <p>По найденным контроллерам система включает следующие административные разделы:</p>
-    <ul>
-      <li><strong>Templates</strong> — шаблоны писем;</li>
-      <li><strong>Category</strong> — категории подписчиков и рассылок;</li>
-      <li><strong>Subscribers</strong> — база подписчиков, импорт и экспорт;</li>
-      <li><strong>Macros</strong> — макросы для персонализации;</li>
-      <li><strong>Schedule</strong> — календарь и планирование рассылок;</li>
-      <li><strong>Log</strong> — логи отправки и отчёты;</li>
-      <li><strong>Redirect</strong> — статистика переходов по ссылкам;</li>
-      <li><strong>SMTP</strong> — настройка SMTP-подключений;</li>
-      <li><strong>Settings</strong> — общие настройки системы;</li>
-      <li><strong>Users</strong> — пользователи административной панели;</li>
-      <li><strong>Update</strong> — модуль обновления;</li>
-      <li><strong>Pages</strong> — служебные страницы, phpinfo, форма подписки и список cron-задач.</li>
-    </ul>
-
-    <h2>5. Roles and Permissions</h2>
-    <p>В маршрутах приложения обнаружено разграничение прав минимум на две роли:</p>
-    <ul>
-      <li><strong>admin</strong> — полный доступ к SMTP, настройкам, пользователям и остальным разделам;</li>
-      <li><strong>moderator</strong> — доступ к категориям, подписчикам и макросам.</li>
-    </ul>
-    <p>Контроль доступа реализован через middleware <code>permission</code>.</p>
-
-
-    <h2>6. Scheduler</h2>
-    <p>В <code>app/Console/Kernel.php</code> зарегистрированы две команды планировщика:</p>
-    <ul>
-      <li><code>emails:send</code> — выполняется каждую минуту;</li>
-      <li><code>emails:unsent</code> — выполняется каждые 10 минут.</li>
-    </ul>
-<p>После этого Laravel будет сам запускать отправку писем и обработку неотправленных сообщений по внутреннему расписанию.</p>
-
-    <h2>7. System Requirements</h2>
-    <ul>
-      <li>PHP 8.2 и выше;</li>
-      <li>MySQL 5.6 и выше;</li>
-      <li>Apache 2+ с <code>mod_rewrite</code> или Nginx;</li>
-      <li>PHP-расширения: <code>mbstring</code>, <code>zip</code>, <code>curl</code>, <code>iconv</code>, <code>gd</code>;</li>
-      <li>поддержка функции <code>mail()</code> — если планируется этот способ отправки.</li>
-    </ul>
-
-    <h2>8. Installation</h2>
+    <h2 id="installation">4. Installation</h2>
     <ol>
-      <li>Распакуйте архив в каталог сайта, например <code>/phpnewsletter</code>.</li>
-      <li>Создайте или настройте файл <code>.env</code>.</li>
-      <li>Установите права доступа <code>775</code> для <code>.env</code>, <code>bootstrap/cache</code>, <code>public</code> и <code>storage</code>.</li>
-      <li>Откройте в браузере адрес установщика:<br><code>http://your-site/phpnewsletter/install/</code></li>
-      <li>Пройдите шаги мастера установки: проверка требований, прав доступа, параметры базы данных, создание администратора и завершение установки.</li>
-    </ol>
-    <p>В проекте присутствуют отдельные экраны установщика: <code>requirements</code>, <code>permissions</code>, <code>database</code>, <code>admin</code>, <code>complete</code> и <code>error</code>.</p>
-
-    <h2>9. First Launch</h2>
-    <ol>
-      <li>Войдите в административную панель через страницу <code>/login</code>.</li>
-      <li>Проверьте общие настройки системы.</li>
-      <li>Добавьте SMTP-подключение или настройте способ отправки.</li>
-      <li>Создайте категории подписчиков.</li>
-      <li>Импортируйте базу подписчиков или подключите форму подписки.</li>
-      <li>Создайте макросы при необходимости.</li>
-      <li>Подготовьте шаблон письма.</li>
-      <li>Создайте запись в расписании рассылок.</li>
-      <li>Настройте cron на сервере.</li>
-      <li>Проверьте логи после тестовой отправки.</li>
+      <li>Upload or extract the project into the website directory.</li>
+      <li>Configure your virtual host or domain to point to the application.</li>
+      <li>Make sure <code>storage</code> and <code>bootstrap/cache</code> are writable.</li>
+      <li>Open the installer in a browser:<br><code>http://your-domain/install/</code></li>
+      <li>Complete the setup wizard steps:
+        <ul>
+          <li>system requirement check;</li>
+          <li>permission check;</li>
+          <li>database configuration;</li>
+          <li>administrator creation;</li>
+          <li>installation completion.</li>
+        </ul>
+      </li>
     </ol>
 
-    <h2>10. Import Subscribers</h2>
-    <p>В административной панели предусмотрены отдельные действия для импорта и экспорта подписчиков. Для импорта поддерживаются текстовые и табличные форматы. Перед массовой загрузкой рекомендуется:</p>
-    <ul>
-      <li>проверить корректность email-адресов;</li>
-      <li>удалить дубликаты из исходного файла;</li>
-      <li>заранее определить категории, в которые будут загружаться подписчики;</li>
-      <li>проверить кодировку файла.</li>
-    </ul>
-
-    <h2>11. Macros and Personalization</h2>
-    <p>Раздел <strong>Macros</strong> предназначен для подстановки переменных в шаблоны писем. Макросы можно использовать для обращения по имени, подстановки email, ссылок подтверждения подписки и других пользовательских данных. Это позволяет создавать более персонализированные письма без ручной правки каждого сообщения.</p>
-
-    <h2>12. Logs and Statistics</h2>
-    <p>В системе присутствуют отдельные сущности для логов, редиректов, процессов и подготовленных отправок. Это означает, что приложение хранит как минимум:</p>
-    <ul>
-      <li>состояние отправки писем;</li>
-      <li>отдельные записи по переходам по ссылкам;</li>
-      <li>служебные процессы, связанные с отправкой;</li>
-      <li>отчёты, доступные для скачивания из панели управления.</li>
-    </ul>
-
-    <h2>13. Users and Security</h2>
-    <ul>
-      <li>доступ к панели защищён авторизацией;</li>
-      <li>в системе используется middleware Laravel, включая CSRF-защиту;</li>
-      <li>для подписки и отписки применяются токены;</li>
-      <li>поддерживается разделение прав доступа между пользователями;</li>
-      <li>рекомендуется ограничить доступ к админ-панели по IP или дополнительной HTTP-аутентификацией.</li>
-    </ul>
-
-    <h2>14. Best Practices</h2>
-    <ul>
-      <li>используйте SMTP вместо <code>mail()</code> для лучшей доставляемости;</li>
-      <li>настройте DKIM, SPF и при необходимости DMARC на домене отправителя;</li>
-      <li>запускайте тестовую рассылку перед массовой отправкой;</li>
-      <li>регулярно очищайте неактуальные логи и временные файлы;</li>
-      <li>проверяйте корректность ссылок подписки, отписки и отслеживания;</li>
-      <li>храните резервные копии базы данных перед обновлениями.</li>
-    </ul>
-
+    <div class="note">
+      <strong>What the installer does:</strong> it creates <code>.env</code>, writes database credentials, runs migrations and seeders, generates the application key, and creates the first administrator account.
     </div>
+
+    <h3>Writable Directories</h3>
+    <p>The application typically needs write access to:</p>
+    <ul>
+      <li><code>storage/app</code></li>
+      <li><code>storage/framework/cache</code></li>
+      <li><code>storage/framework/sessions</code></li>
+      <li><code>storage/framework/views</code></li>
+      <li><code>storage/logs</code></li>
+      <li><code>bootstrap/cache</code></li>
+    </ul>
+
+    <h2 id="first-login">5. First Login and Initial Setup</h2>
+    <ol>
+      <li>Open <code>/login</code> and sign in.</li>
+      <li>Go to <strong>Settings</strong> and fill in the main sender settings:
+        <ul>
+          <li>sender email address;</li>
+          <li>sender name;</li>
+          <li>content type;</li>
+          <li>character set;</li>
+          <li>subscription confirmation behavior.</li>
+        </ul>
+      </li>
+      <li>Go to <strong>SMTP</strong> and create at least one valid SMTP profile if SMTP will be used.</li>
+      <li>Verify the site URL and unsubscribe links.</li>
+      <li>Create a test template and perform a test send.</li>
+    </ol>
+
+    <h2 id="modules">6. Admin Panel Modules</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Module</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Templates</td>
+          <td>Create and edit email templates, add attachments, and start manual sends.</td>
+        </tr>
+        <tr>
+          <td>Category</td>
+          <td>Create subscriber categories and audience segments.</td>
+        </tr>
+        <tr>
+          <td>Subscribers</td>
+          <td>Manage subscribers, import/export data, activate, deactivate, or remove entries.</td>
+        </tr>
+        <tr>
+          <td>Macros</td>
+          <td>Define reusable placeholders for personalization.</td>
+        </tr>
+        <tr>
+          <td>Schedule</td>
+          <td>Plan campaign delivery by date, time, and category.</td>
+        </tr>
+        <tr>
+          <td>Log</td>
+          <td>Review send history and download reports.</td>
+        </tr>
+        <tr>
+          <td>Redirect</td>
+          <td>Track link clicks recorded through internal redirects.</td>
+        </tr>
+        <tr>
+          <td>SMTP</td>
+          <td>Manage SMTP servers and related settings.</td>
+        </tr>
+        <tr>
+          <td>Settings</td>
+          <td>Global behavior, delivery, content, intervals, and confirmation settings.</td>
+        </tr>
+        <tr>
+          <td>Users</td>
+          <td>Admin panel users and access control.</td>
+        </tr>
+        <tr>
+          <td>Pages</td>
+          <td>Utility pages such as PHP info, subscription form, and cron help.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="mailing-flow">7. How Mailing Works</h2>
+    <ol>
+      <li>You create a message template.</li>
+      <li>You select one or more subscriber categories.</li>
+      <li>You either launch a campaign manually or schedule it.</li>
+      <li>The system selects active subscribers who are eligible for the current send.</li>
+      <li>For each message, the subject, body, macros, unsubscribe links, and mail headers are prepared.</li>
+      <li>Send results are written into logs.</li>
+      <li>For HTML messages, opens and clicks can be tracked.</li>
+    </ol>
+
+    <div class="note">
+      <strong>Important:</strong> HTML opens are tracked through a 1x1 tracking pixel. If the email client blocks external images, the open may not appear in reports.
+    </div>
+
+    <h2 id="subscribers">8. Subscribers and Categories</h2>
+    <h3>Manual Entry</h3>
+    <p>An administrator can create a subscriber manually by providing a name, email address, and one or more categories. Each subscriber receives a token used for subscribe/unsubscribe links.</p>
+
+    <h3>Import</h3>
+    <p>Supported formats:</p>
+    <ul>
+      <li>TXT</li>
+      <li>CSV</li>
+      <li>XLS</li>
+      <li>XLSX</li>
+      <li>ODS</li>
+    </ul>
+    <p>Before import, it is recommended to:</p>
+    <ul>
+      <li>remove duplicates;</li>
+      <li>validate email addresses;</li>
+      <li>prepare destination categories in advance;</li>
+      <li>check file encoding.</li>
+    </ul>
+
+    <h3>Export</h3>
+    <p>Subscriber export is available in text and spreadsheet formats. This is useful for backups, migrations, and external analysis.</p>
+
+    <h3>Subscription Form</h3>
+    <p>The application includes built-in public subscription endpoints:</p>
+    <ul>
+      <li><code>/form</code> — subscription form;</li>
+      <li><code>/categories</code> — category list for the public form;</li>
+      <li><code>/add-sub</code> — add a new subscriber;</li>
+      <li><code>/unsubscribe/{subscriber}/{token}</code> — unsubscribe link;</li>
+      <li><code>/subscribe/{subscriber}/{token}</code> — subscription confirmation link.</li>
+    </ul>
+
+    <h2 id="templates">9. Templates, Macros, and Attachments</h2>
+    <h3>Templates</h3>
+    <p>A template usually contains:</p>
+    <ul>
+      <li>message name or subject;</li>
+      <li>email body;</li>
+      <li>delivery priority;</li>
+      <li>optional attachments.</li>
+    </ul>
+
+    <h3>Macros</h3>
+    <p>Macros are placeholders inserted into templates to personalize outgoing mail. Common use cases include:</p>
+    <ul>
+      <li>subscriber name;</li>
+      <li>email address;</li>
+      <li>service links;</li>
+      <li>custom user-related values.</li>
+    </ul>
+
+    <h3>Attachments</h3>
+    <p>Files can be attached to a template and are added automatically during delivery.</p>
+
+    <h2 id="sending">10. Email Delivery Methods</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Mode</th>
+          <th>Recommended Use</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>SMTP</td>
+          <td>The recommended production option for reliable email delivery.</td>
+        </tr>
+        <tr>
+          <td>mail()</td>
+          <td>Best suited only for simple or temporary setups when the server is properly configured.</td>
+        </tr>
+        <tr>
+          <td>sendmail</td>
+          <td>Use if a working sendmail binary is available on your infrastructure.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Key Settings to Review</h3>
+    <ul>
+      <li>sender email address and sender name;</li>
+      <li>content type: HTML or plain text;</li>
+      <li>character set;</li>
+      <li>sendmail path if this mode is used;</li>
+      <li>send limits per run;</li>
+      <li>sleep interval between messages;</li>
+      <li>resend interval for the same subscriber.</li>
+    </ul>
+
+    <h2 id="tracking">11. Open and Click Tracking</h2>
+    <h3>Email Opens</h3>
+    <p>For HTML email, the system injects a 1x1 tracking image into the message body. When the image is loaded, the message is marked as opened.</p>
+    <ul>
+      <li>available only for HTML emails;</li>
+      <li>depends on external image loading in the recipient's mail client;</li>
+      <li>useful for general analytics, but never perfectly accurate.</li>
+    </ul>
+
+    <h3>Link Clicks</h3>
+    <p>Links can be routed through an internal redirect endpoint. This allows the system to record click statistics before forwarding the user to the final destination.</p>
+
+    <h2 id="schedule">12. Scheduler and Cron</h2>
+    <p>The project uses these commands:</p>
+    <ul>
+      <li><code>emails:send</code> — processes scheduled delivery;</li>
+      <li><code>emails:unsent</code> — retries unsent messages.</li>
+    </ul>
+
+    <div class="warn">
+      <strong>If cron is not configured:</strong> scheduled campaigns will not start automatically, even if they exist in the <strong>Schedule</strong> module.
+    </div>
+
+    <h2 id="roles">13. Roles and Security</h2>
+    <p>The application includes at least two main roles:</p>
+    <ul>
+      <li><strong>admin</strong> — full access to all modules, including SMTP, settings, and users;</li>
+      <li><strong>moderator</strong> — access to categories, subscribers, and macros.</li>
+    </ul>
+
+    <h3>Security Recommendations</h3>
+    <ul>
+      <li>use a strong administrator password;</li>
+      <li>restrict admin panel access by IP if possible;</li>
+      <li>create database backups before upgrades;</li>
+      <li>do not use production SMTP credentials in development or test environments;</li>
+      <li>review send logs and error logs regularly.</li>
+    </ul>
+
+    <h2 id="reports">14. Logs and Reports</h2>
+    <p>The system stores:</p>
+    <ul>
+      <li>send history;</li>
+      <li>success and failure statuses;</li>
+      <li>HTML email open data;</li>
+      <li>click-through records;</li>
+      <li>downloadable spreadsheet reports.</li>
+    </ul>
+
+    <p>This helps answer practical questions such as:</p>
+    <ul>
+      <li>how many messages were sent successfully;</li>
+      <li>how many failed and why;</li>
+      <li>how many were opened;</li>
+      <li>which links generated the most clicks.</li>
+    </ul>
+
+    <h2 id="deliverability">15. Deliverability Recommendations</h2>
+    <ul>
+      <li>prefer SMTP over <code>mail()</code> for production campaigns;</li>
+      <li>configure SPF, DKIM, and ideally DMARC for your sender domain;</li>
+      <li>avoid sudden high-volume mailing without warming up your domain and IP;</li>
+      <li>make sure unsubscribe links are valid and reachable;</li>
+      <li>keep attachments and HTML complexity under control;</li>
+      <li>send test campaigns to several mailbox providers before a large mailing.</li>
+    </ul>
+
+    <h2 id="troubleshooting">16. Troubleshooting</h2>
+    <h3>Emails Are Not Sent</h3>
+    <ul>
+      <li>verify SMTP host, port, username, and password;</li>
+      <li>make sure your firewall allows outbound SMTP connections;</li>
+      <li>check send logs and application logs;</li>
+      <li>confirm that cron is active.</li>
+    </ul>
+
+    <h3>Subscriptions Do Not Arrive</h3>
+    <ul>
+      <li>check that the public subscription form is available and <code>/add-sub</code> works;</li>
+      <li>make sure the email address is not already in the database;</li>
+      <li>verify whether confirmation is enabled and confirmation emails are being delivered.</li>
+    </ul>
+
+    <h3>Open Tracking Does Not Work</h3>
+    <ul>
+      <li>make sure the campaign is sent as HTML;</li>
+      <li>remember that many mail clients block external images;</li>
+      <li>confirm that the application URL is correct and the tracking pixel is publicly reachable.</li>
+    </ul>
+
+    <h3>Scheduled Campaigns Do Not Start</h3>
+    <ul>
+      <li>check your cron configuration and <code>php artisan schedule:run</code>;</li>
+      <li>make sure the schedule entry falls into the correct time window;</li>
+      <li>verify the server time zone.</li>
+    </ul>
+
+    <h2 id="structure">17. Project Structure</h2>
+    <ul>
+      <li><code>app/</code> — controllers, models, services, DTOs, middleware, helper classes, and console commands;</li>
+      <li><code>routes/</code> — web, api, and console routes;</li>
+      <li><code>resources/views/</code> — admin templates, public subscription pages, and installer screens;</li>
+      <li><code>database/migrations/</code> — database schema definitions;</li>
+      <li><code>storage/</code> — logs, cache, temporary files, and stored attachments;</li>
+      <li><code>public/</code> — publicly accessible assets and entry point.</li>
+    </ul>
+
+    <div class="note small">
+      <strong>Summary:</strong> PHP Newsletter is a complete self-hosted mailing solution with subscriber management, segmentation, templates, analytics, and scheduling. For stable production use, pay special attention to SMTP configuration, cron, writable directories, and domain DNS records.
+    </div>
+  </div>
 </body>
 </html>
