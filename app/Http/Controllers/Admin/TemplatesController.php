@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 
-use App\Http\Requests\Admin\Templates\DeleteRequest;
 use App\Http\Requests\Admin\Templates\StoreRequest;
 use App\Http\Requests\Admin\Templates\UpdateRequest;
 use App\Models\Macros;
@@ -118,13 +117,13 @@ class TemplatesController extends Controller
     }
 
     /**
-     * @param DeleteRequest $request
+     * @param int $id
      * @return RedirectResponse
      */
-    public function destroy(DeleteRequest $request): RedirectResponse
+    public function destroy(int $id): RedirectResponse
     {
         try {
-            $this->templateRepository->remove((int) $request->id);
+            $this->templateRepository->remove($id);
         } catch (\Throwable $e) {
             report($e);
 

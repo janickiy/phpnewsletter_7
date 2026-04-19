@@ -68,8 +68,8 @@ class SendUnsentEmails extends Command implements Isolatable
             $progressBar = $this->createMailingProgressBar(count($subscribers ?? []));
 
             foreach ($subscribers ?? [] as $subscriber) {
-                if ((int) SettingsHelper::getInstance()->getValueForKey('sleep') > 0) {
-                    sleep((int) SettingsHelper::getInstance()->getValueForKey('sleep'));
+                if ((int) SettingsHelper::getInstance()->getValueForKey('SLEEP') > 0) {
+                    sleep((int) SettingsHelper::getInstance()->getValueForKey('SLEEP'));
                 }
 
                 $result = $this->sendToSubscriber($row, $subscriber);

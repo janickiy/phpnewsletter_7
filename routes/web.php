@@ -51,7 +51,7 @@ Route::group(['middleware' => ['install']], function () {
         Route::post('store', [TemplatesController::class, 'store'])->name('admin.templates.store');
         Route::get('edit/{id}', [TemplatesController::class, 'edit'])->name('admin.templates.edit')->where('id', '[0-9]+');
         Route::put('update', [TemplatesController::class, 'update'])->name('admin.templates.update');
-        Route::post('destroy', [TemplatesController::class, 'destroy'])->name('admin.templates.destroy');
+        Route::delete('destroy/{id}', [TemplatesController::class, 'destroy'])->name('admin.templates.destroy')->where('id', '[0-9]+');
         Route::post('status', [TemplatesController::class, 'status'])->name('admin.templates.status');
     });
 
@@ -62,7 +62,7 @@ Route::group(['middleware' => ['install']], function () {
             Route::post('store', [CategoryController::class, 'store'])->name('admin.category.store');
             Route::get('edit/{id}', [CategoryController::class, 'edit'])->name('admin.category.edit')->where('id', '[0-9]+');
             Route::put('update', [CategoryController::class, 'update'])->name('admin.category.update');
-            Route::post('destroy', [CategoryController::class, 'destroy'])->name('admin.category.destroy');
+            Route::delete('destroy/{id}', [CategoryController::class, 'destroy'])->name('admin.category.destroy')->where('id', '[0-9]+');
         });
 
         Route::group(['prefix' => 'subscribers'], function () {
@@ -71,7 +71,7 @@ Route::group(['middleware' => ['install']], function () {
             Route::post('store', [SubscribersController::class, 'store'])->name('admin.subscribers.store');
             Route::get('edit/{id}', [SubscribersController::class, 'edit'])->name('admin.subscribers.edit')->where('id', '[0-9]+');
             Route::put('update', [SubscribersController::class, 'update'])->name('admin.subscribers.update');
-            Route::delete('destroy', [SubscribersController::class, 'destroy'])->name('admin.subscribers.destroy');
+            Route::delete('destroy/{id}', [SubscribersController::class, 'destroy'])->name('admin.subscribers.destroy')->where('id', '[0-9]+');
             Route::get('import', [SubscribersController::class, 'import'])->name('admin.subscribers.import');
             Route::post('import-subscribers', [SubscribersController::class, 'importSubscribers'])->name('admin.subscribers.import_subscribers');
             Route::get('export', [SubscribersController::class, 'export'])->name('admin.subscribers.export');
@@ -86,7 +86,7 @@ Route::group(['middleware' => ['install']], function () {
             Route::post('store', [MacrosController::class, 'store'])->name('admin.macros.store');
             Route::get('edit/{id}', [MacrosController::class, 'edit'])->name('admin.macros.edit')->where('id', '[0-9]+');
             Route::put('update', [MacrosController::class, 'update'])->name('admin.macros.update');
-            Route::post('destroy', [MacrosController::class, 'destroy'])->name('admin.macros.destroy');
+            Route::delete('destroy/{id}', [MacrosController::class, 'destroy'])->name('admin.macros.destroy')->where('id', '[0-9]+');
         });
     });
 
@@ -98,7 +98,7 @@ Route::group(['middleware' => ['install']], function () {
         Route::post('store', [ScheduleController::class, 'store'])->name('admin.schedule.store');
         Route::get('edit/{id}', [ScheduleController::class, 'edit'])->name('admin.schedule.edit')->where('id', '[0-9]+');
         Route::put('update', [ScheduleController::class, 'update'])->name('admin.schedule.update');
-        Route::post('destroy', [ScheduleController::class, 'destroy'])->name('admin.schedule.destroy');
+        Route::delete('destroy/{id}', [ScheduleController::class, 'destroy'])->name('admin.schedule.destroy')->where('id', '[0-9]+');
     });
 
     Route::group(['prefix' => 'log'], function () {
@@ -122,7 +122,7 @@ Route::group(['middleware' => ['install']], function () {
             Route::post('store', [SmtpController::class, 'store'])->name('admin.smtp.store');
             Route::get('edit/{id}', [SmtpController::class, 'edit'])->name('admin.smtp.edit')->where('id', '[0-9]+');
             Route::put('update', [SmtpController::class, 'update'])->name('admin.smtp.update');
-            Route::post('destroy', [SmtpController::class, 'destroy'])->name('admin.smtp.destroy');
+            Route::delete('destroy/{id}', [SmtpController::class, 'destroy'])->name('admin.smtp.destroy')->where('id', '[0-9]+');
             Route::post('status', [SmtpController::class, 'status'])->name('admin.smtp.status');
         });
 
@@ -141,7 +141,7 @@ Route::group(['middleware' => ['install']], function () {
             Route::post('store', [UsersController::class, 'store'])->name('admin.users.store');
             Route::get('edit/{id}', [UsersController::class, 'edit'])->name('admin.users.edit');
             Route::put('update', [UsersController::class, 'update'])->name('admin.users.update');
-            Route::post('destroy', [UsersController::class, 'destroy'])->name('admin.users.destroy')->where('id', '[0-9]+');
+            Route::delete('destroy/{id}', [UsersController::class, 'destroy'])->name('admin.users.destroy')->where('id', '[0-9]+');
         });
     });
 

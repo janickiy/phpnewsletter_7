@@ -146,8 +146,9 @@ class SendMailService
                     ];
                 }
 
-                if (SettingsHelper::getInstance()->getValueForKey('sleep') > 0)
-                    sleep(SettingsHelper::getInstance()->getValueForKey('sleep'));
+                if ((int) SettingsHelper::getInstance()->getValueForKey('SLEEP') > 0) {
+                    sleep((int) SettingsHelper::getInstance()->getValueForKey('SLEEP'));
+                }
 
                 $sendEmail = new SendEmailHelper();
                 $sendEmail->body = $template->body;
@@ -261,7 +262,8 @@ class SendMailService
         $success = $this->readySentRepository->countStatus($logId, 1);
         $unsuccess = $this->readySentRepository->countStatus($logId, 0);
 
-        $sleep = (int)SettingsHelper::getInstance()->getValueForKey('sleep') === 0 ? 0.5 : (int)SettingsHelper::getInstance()->getValueForKey('sleep');
+        $sleepSetting = (int) SettingsHelper::getInstance()->getValueForKey('SLEEP');
+        $sleep = $sleepSetting === 0 ? 0.5 : $sleepSetting;
         $timeSec = intval(($total - ($success + $unsuccess)) * $sleep);
 
         $datetime = new DateTime();
@@ -312,6 +314,7 @@ class SendMailService
             $sendMail->token = $subscriber->token;
             $sendMail->subscriberId = $subscriber->id;
             $sendMail->name = $subscriber->name;
+            $sendMail->prior = 0;
             $sendMail->unsub = false;
             $sendMail->tracking = false;
             $sendMail->sendEmail();
@@ -335,6 +338,7 @@ class SendMailService
             $sendMail->body = $message;
             $sendMail->email = $settings->getValueForKey('EMAIL');
             $sendMail->name = $settings->getValueForKey('FROM');
+            $sendMail->prior = 0;
             $sendMail->tracking = false;
             $sendMail->unsub = false;
             $sendMail->sendEmail();

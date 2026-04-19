@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 
-use App\Http\Requests\Admin\Smtp\DeleteRequest;
 use App\Http\Requests\Admin\Smtp\EditRequest;
 use App\Http\Requests\Admin\Smtp\StatusRequest;
 use App\Http\Requests\Admin\Smtp\StoreRequest;
@@ -100,12 +99,12 @@ class SmtpController extends Controller
     }
 
     /**
-     * @param DeleteRequest $request
+     * @param int $id
      * @return void
      */
-    public function destroy(DeleteRequest $request): void
+    public function destroy(int $id): void
     {
-        $this->smtpRepository->delete((int) $request->id);
+        $this->smtpRepository->delete($id);
     }
 
     /**

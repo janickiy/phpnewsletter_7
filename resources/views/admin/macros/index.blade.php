@@ -129,10 +129,10 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: '{{ route('admin.macros.destroy') }}',
+                            url: '{{ url('macros/destroy') }}/' + rowid,
                             type: "POST",
                             dataType: "html",
-                            data: {id: rowid},
+                            data: {_method: 'DELETE'},
                             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                             success: function () {
                                 $("#rowid_" + rowid).remove();

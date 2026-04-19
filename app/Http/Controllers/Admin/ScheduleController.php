@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 
-use App\Http\Requests\Admin\Schedule\DeleteRequest;
 use App\Http\Requests\Admin\Schedule\EditRequest;
 use App\Http\Requests\Admin\Schedule\StoreRequest;
 use App\Models\Schedule;
@@ -151,11 +150,11 @@ class ScheduleController extends Controller
     }
 
     /**
-     * @param DeleteRequest $request
+     * @param int $id
      * @return void
      */
-    public function destroy(DeleteRequest $request): void
+    public function destroy(int $id): void
     {
-        $this->scheduleRepository->delete((int) $request->id);
+        $this->scheduleRepository->delete($id);
     }
 }

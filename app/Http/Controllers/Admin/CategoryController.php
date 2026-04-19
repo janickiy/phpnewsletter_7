@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 
-use App\Http\Requests\Admin\Category\DeleteRequest;
 use App\Http\Requests\Admin\Category\EditRequest;
 use App\Http\Requests\Admin\Category\StoreRequest;
 use App\Repositories\CategoryRepository;
@@ -100,13 +99,13 @@ class CategoryController extends Controller
     }
 
     /**
-     * @param DeleteRequest $request
+     * @param int $id
      * @return RedirectResponse
      */
-    public function destroy(DeleteRequest $request): RedirectResponse
+    public function destroy(int $id): RedirectResponse
     {
         try {
-            $this->categoryRepository->delete((int) $request->id);
+            $this->categoryRepository->delete($id);
         } catch (\Throwable $e) {
             report($e);
 

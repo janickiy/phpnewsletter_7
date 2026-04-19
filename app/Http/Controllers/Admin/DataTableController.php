@@ -150,11 +150,21 @@ class DataTableController extends Controller
                 ? __('frontend.str.yes')
                 : __('frontend.str.no'))
             ->editColumn('activeStatus', fn ($row) => $row->active)
-            ->addColumn('action', fn ($row) => sprintf(
-                '<a title="%s" class="btn btn-xs btn-primary" href="%s"><span class="fa fa-edit"></span></a>&nbsp;',
-                __('frontend.str.edit'),
-                route('admin.subscribers.edit', ['id' => $row->id])
-            ))
+            ->addColumn('action', function ($row) {
+                $editBtn = sprintf(
+                    '<a title="%s" class="btn btn-xs btn-primary" href="%s"><span class="fa fa-edit"></span></a>&nbsp;',
+                    __('frontend.str.edit'),
+                    route('admin.subscribers.edit', ['id' => $row->id])
+                );
+
+                $deleteBtn = sprintf(
+                    '<a title="%s" class="btn btn-xs btn-danger deleteRow" id="%d"><span class="fa fa-trash"></span></a>',
+                    __('frontend.str.remove'),
+                    $row->id
+                );
+
+                return '<div class="nobr">' . $editBtn . $deleteBtn . '</div>';
+            })
             ->editColumn('created_at', fn ($row) => $this->formatDateTime($row->created_at))
             ->rawColumns(['action', 'checkbox'])
             ->make(true);

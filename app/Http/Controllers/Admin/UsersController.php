@@ -8,7 +8,6 @@ use App\Http\Requests\Admin\Users\UpdateRequest;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -99,13 +98,13 @@ class UsersController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param int $id
      * @return void
      */
-    public function destroy(Request $request): void
+    public function destroy(int $id): void
     {
-        if ((int) $request->id !== (int) Auth::id()) {
-            $this->userRepository->delete((int) $request->id);
+        if ($id !== (int) Auth::id()) {
+            $this->userRepository->delete($id);
         }
     }
 }

@@ -343,10 +343,10 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: '{{ route('admin.templates.destroy') }}',
+                            url: '{{ url('template/destroy') }}/' + rowid,
                             type: 'POST',
                             dataType: 'html',
-                            data: {id: rowid},
+                            data: {_method: 'DELETE'},
                             headers: {'X-CSRF-TOKEN': csrfToken},
                             success: function () {
                                 $('#rowid_' + rowid).remove();

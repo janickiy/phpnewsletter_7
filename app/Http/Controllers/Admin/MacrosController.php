@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 
-use App\Http\Requests\Admin\Macros\DeleteRequest;
 use App\Http\Requests\Admin\Macros\EditRequest;
 use App\Http\Requests\Admin\Macros\StoreRequest;
 use App\Models\Macros;
@@ -102,11 +101,11 @@ class MacrosController extends Controller
     }
 
     /**
-     * @param DeleteRequest $request
+     * @param int $id
      * @return void
      */
-    public function destroy(DeleteRequest $request): void
+    public function destroy(int $id): void
     {
-        $this->macrosRepository->delete((int) $request->id);
+        $this->macrosRepository->delete($id);
     }
 }

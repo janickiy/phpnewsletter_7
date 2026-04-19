@@ -15,7 +15,7 @@ class SendEmailHelper
 
     public string $email;
 
-    public int $prior;
+    public int $prior = 0;
 
     public string $name = 'USERNAME';
 
@@ -54,34 +54,30 @@ class SendEmailHelper
             $m->SMTPKeepAlive = true;
 
             $smtp_q = Smtp::query();
+            $smtp = $smtp_q->count() > 1
+                ? $smtp_q->inRandomOrder()->first()
+                : $smtp_q->first();
 
-            if ($smtp_q->count() > 1) {
-                $smtp_r = $smtp_q->inRandomOrder()->limit(1)->get();
-            } else {
-                $smtp_r = $smtp_q->limit(1)->get();
-            }
+            if ($smtp) {
+                $m->Host = $smtp->host;
+                $m->Port = $smtp->port;
+                $m->From = $smtp->email;
+                $m->Username = $smtp->username;
+                $m->Password = $smtp->password;
 
-            if ($smtp_r) {
-                $smtp = $smtp_r->toArray();
-                $m->Host = $smtp[0]['host'];
-                $m->Port = $smtp[0]['port'];
-                $m->From = $smtp[0]['email'];
-                $m->Username = $smtp[0]['username'];
-                $m->Password = $smtp[0]['password'];
-
-                if ($smtp[0]['secure'] === 'ssl') {
+                if ($smtp->secure === 'ssl') {
                     $m->SMTPSecure = 'ssl';
-                } elseif ($smtp[0]['secure'] === 'tls') {
+                } elseif ($smtp->secure === 'tls') {
                     $m->SMTPSecure = 'tls';
                 }
 
-                if ($smtp[0]['authentication'] === 'plain') {
+                if ($smtp->authentication === 'plain') {
                     $m->AuthType = 'PLAIN';
-                } elseif ($smtp[0]['authentication'] === 'cram-md5') {
+                } elseif ($smtp->authentication === 'cram-md5') {
                     $m->AuthType = 'CRAM-MD5';
                 }
 
-                $m->Timeout = $smtp[0]['timeout'];
+                $m->Timeout = $smtp->timeout;
             }
         } elseif (
             SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') === 'sendmail'

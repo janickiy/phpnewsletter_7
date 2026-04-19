@@ -95,9 +95,9 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '{{ route('admin.schedule.destroy') }}',
+                        url: '{{ url('schedule/destroy') }}/' + rowid,
                         type: "POST",
-                        data: {id: rowid},
+                        data: {_method: 'DELETE'},
                         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                         success: function () {
                             $("#rowid_" + rowid).remove();

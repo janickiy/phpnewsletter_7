@@ -42,8 +42,8 @@ class ReadySentRepository extends BaseRepository
             ->where('template_id', $data->templateId)
             ->where('subscriber_id', $data->subscriberId)
             ->update([
-                'readMail' => $data->readMail,
-            ]);
+            'readMail' => $data->readMail,
+        ]);
     }
 
     /**
