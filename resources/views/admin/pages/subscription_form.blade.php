@@ -4,22 +4,56 @@
 
 @section('css')
 
-    {!! Html::style('/plugins/highlightjs/styles/github.css') !!}
+    {!! Html::style('/plugins/highlightjs/styles/github-dark.css') !!}
 
     <style>
 
         pre {
             position: relative;
-            border: none !important;
+            border: 1px solid #30363d !important;
+            border-radius: 8px;
+            background: #0d1117 !important;
             padding: 0 !important;
             margin-bottom: 15px !important;
             font-size: 14px !important;
+            overflow: auto;
         }
 
         pre code {
-            background: #FBFBFB !important;
+            background: #0d1117 !important;
             font-size: 13.5px !important;
             white-space: pre;
+        }
+
+        .hljs {
+            background: #0d1117 !important;
+        }
+
+        .hljs-ln {
+            width: 100%;
+        }
+
+        .hljs-ln td {
+            padding: 0;
+        }
+
+        .hljs-ln-numbers {
+            background: #010409;
+            border-right: 1px solid #30363d;
+            color: #6e7681;
+            min-width: 42px;
+            padding-right: 12px !important;
+            text-align: right;
+            user-select: none;
+            vertical-align: top;
+        }
+
+        .hljs-ln-code {
+            padding-left: 14px !important;
+        }
+
+        .copy-code-button {
+            margin-bottom: 10px;
         }
 
     </style>
@@ -44,21 +78,14 @@
 
                             <div class="form-group">
 
-                            <pre>
-                                <code class="lang-html" id="codebox">
-{{ $subform }}
-&lt;script src=&quot;//ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js&quot;&gt;&lt;/script&gt;
-{{ $subformJs }}
-                                </code>
-                            </pre>
+                                <button type="button" class="btn btn-primary copy-code-button"
+                                        onclick="copyToClipboard('#codebox')">
+                                    <span id="myTooltip">{{ __('frontend.str.copy_to_clipboard') }}</span>
+                                </button>
 
+                                <pre><code class="language-html" id="codebox">{{ $embedCode }}</code></pre>
 
                             </div>
-
-                            <button type="submit" class="btn btn-primary margin-bottom-10"
-                                    onclick="copyToClipboard('#codebox')">
-                                <span id="myTooltip">{{ __('frontend.str.copy_to_clipboard') }}</span>
-                            </button>
 
                             <!-- /.card-body -->
                         </div>
@@ -88,21 +115,17 @@
 
     <script>
         async function copyToClipboard(element) {
-            let $temp = $("<input>");
-            $("body").append($temp);
-            $temp.val($(element).text()).select();
-
-            const type = "text/plain";
-            const content = $temp.prop('value')
-            const blob = new Blob([content], { type });
-            const copyContent = [new ClipboardItem({ [ type ]: blob })];
+            const content = $(element).text().trim();
 
             if (navigator.clipboard) {
-                navigator.clipboard.write(copyContent);
-            } else {
-                document.execCommand("copy");
+                await navigator.clipboard.writeText(content);
+                return;
             }
 
+            let $temp = $("<textarea>");
+            $("body").append($temp);
+            $temp.val(content).select();
+            document.execCommand("copy");
             $temp.remove();
         }
     </script>

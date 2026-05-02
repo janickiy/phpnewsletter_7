@@ -22,7 +22,7 @@ class AddSubRequest extends FormRequest
             'email' => ['required', 'email:rfc', 'max:255', 'unique:subscribers,email'],
             'name' => ['nullable', 'string', 'max:255'],
             'categoryId' => ['nullable', 'array'],
-            'categoryId.*' => ['integer', 'exists:category,id'],
+            'categoryId.*' => ['integer', 'exists:categories,id'],
         ];
     }
 

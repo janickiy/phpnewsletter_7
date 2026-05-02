@@ -64,12 +64,14 @@ class PagesController extends Controller
         $subform = view('include.subform')->render();
         $subformJs = view('include.subform_js')->render();
 
-        $subform = preg_replace('/<input name="_token" type="hidden"([^>]+)>/si', '', $subform);
+        $subform = preg_replace('/<input name="_token" type="hidden"[^>]*>\s*/si', "\n\n    ", $subform);
+        $embedCode = trim($subform) . "\n"
+            . '<script src="//ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>' . "\n"
+            . trim($subformJs);
 
         return view('admin.pages.subscription_form', [
             'infoAlert' => __('frontend.hint.subscription_form'),
-            'subform' => $subform,
-            'subformJs' => $subformJs,
+            'embedCode' => $embedCode,
             'title' => __('frontend.title.subscription_form'),
         ]);
     }
