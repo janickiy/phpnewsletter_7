@@ -6,6 +6,7 @@ use App\Models\ReadySent;
 use App\Models\Logs;
 use App\Services\DownloadService;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -50,9 +51,9 @@ class LogController extends Controller
      * Download the delivery report for a scheduled mailing.
      *
      * @param int $id
-     * @return Response
+     * @return Response|StreamedResponse
      */
-    public function download(int $id): Response
+    public function download(int $id): Response|StreamedResponse
     {
         return $this->downloadService->log($id);
     }

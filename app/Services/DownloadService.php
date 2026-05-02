@@ -26,30 +26,20 @@ class DownloadService
 
     /**
      * @param int $id
-     * @return Response
+     * @return Response|StreamedResponse
      */
-    public function log(int $id): Response
+    public function log(int $id): Response|StreamedResponse
     {
-        $rows = ReadySent::query()
+        $rowsExist = ReadySent::query()
             ->where('schedule_id', $id)
-            ->get();
+            ->exists();
 
-        abort_if($rows->isEmpty(), 404);
+        abort_if(!$rowsExist, 404);
 
-        $stats = $this->buildLogStats($id, $rows);
+        $stats = $this->buildLogStats($id);
         $filename = 'log' . date('d_m_Y') . '.xlsx';
 
-        return $this->excelResponse(
-            $filename,
-            function (Spreadsheet $spreadsheet) use ($rows, $stats): void {
-                $sheet = $spreadsheet->getActiveSheet();
-
-                $this->configureLogProperties($spreadsheet);
-                $this->fillLogHeader($sheet, $stats);
-                $this->fillLogRows($sheet, $rows);
-                $this->formatLogSheet($sheet);
-            }
-        );
+        return $this->streamLogExcel($filename, $id, $stats);
     }
 
     /**
@@ -109,11 +99,14 @@ class DownloadService
 
     /**
      * @param int $scheduleId
-     * @param Collection $rows
      * @return array
      */
-    private function buildLogStats(int $scheduleId, Collection $rows): array
+    private function buildLogStats(int $scheduleId): array
     {
+        $total = ReadySent::query()
+            ->where('schedule_id', $scheduleId)
+            ->count();
+
         $failedCount = ReadySent::query()
             ->where('schedule_id', $scheduleId)
             ->where('success', 0)
@@ -129,7 +122,6 @@ class DownloadService
             ->where('schedule_id', $scheduleId)
             ->first();
 
-        $total = $rows->count();
         $successCount = max($total - $failedCount, 0);
         $successPercent = $total > 0 ? (100 * $successCount / $total) : 0;
 
@@ -139,6 +131,312 @@ class DownloadService
             'spent_time' => $timeInfo->totaltime ?? '',
             'success_percent' => $successPercent,
         ];
+    }
+
+    /**
+     * Stream a memory-safe XLSX delivery report for large mailing logs.
+     *
+     * @param string $filename
+     * @param int $scheduleId
+     * @param array $stats
+     * @return StreamedResponse
+     */
+    private function streamLogExcel(string $filename, int $scheduleId, array $stats): StreamedResponse
+    {
+        return response()->streamDownload(function () use ($scheduleId, $stats): void {
+            $xlsxFile = $this->buildLogXlsxFile($scheduleId, $stats);
+
+            try {
+                readfile($xlsxFile);
+            } finally {
+                @unlink($xlsxFile);
+            }
+        }, $filename, [
+            'Cache-Control' => 'max-age=0',
+            'Content-Type' => StringHelper::getMimeType(self::XLSX_EXT),
+        ]);
+    }
+
+    /**
+     * Build an XLSX file by writing worksheet XML incrementally instead of keeping cells in memory.
+     *
+     * @param int $scheduleId
+     * @param array $stats
+     * @return string
+     */
+    private function buildLogXlsxFile(int $scheduleId, array $stats): string
+    {
+        $sheetFile = $this->createTempFile('sheet');
+        $xlsxFile = $this->createTempFile('xlsx');
+
+        $sheet = fopen($sheetFile, 'wb');
+
+        if ($sheet === false) {
+            @unlink($sheetFile);
+            @unlink($xlsxFile);
+            throw new \RuntimeException('Failed to create temporary worksheet file.');
+        }
+
+        try {
+            $this->writeLogWorksheet($sheet, $scheduleId, $stats);
+        } finally {
+            fclose($sheet);
+        }
+
+        $zip = new ZipArchive();
+
+        if ($zip->open($xlsxFile, ZipArchive::OVERWRITE) !== true) {
+            @unlink($sheetFile);
+            @unlink($xlsxFile);
+            throw new \RuntimeException('Failed to create XLSX archive.');
+        }
+
+        $zip->addFromString('[Content_Types].xml', $this->xlsxContentTypesXml());
+        $zip->addFromString('_rels/.rels', $this->xlsxRootRelsXml());
+        $zip->addFromString('docProps/core.xml', $this->xlsxCorePropertiesXml());
+        $zip->addFromString('docProps/app.xml', $this->xlsxAppPropertiesXml());
+        $zip->addFromString('xl/workbook.xml', $this->xlsxWorkbookXml());
+        $zip->addFromString('xl/_rels/workbook.xml.rels', $this->xlsxWorkbookRelsXml());
+        $zip->addFromString('xl/styles.xml', $this->xlsxStylesXml());
+        $zip->addFile($sheetFile, 'xl/worksheets/sheet1.xml');
+        $zip->close();
+
+        @unlink($sheetFile);
+
+        return $xlsxFile;
+    }
+
+    /**
+     * Write the delivery report worksheet XML one row at a time.
+     *
+     * @param resource $sheet
+     * @param int $scheduleId
+     * @param array $stats
+     * @return void
+     */
+    private function writeLogWorksheet($sheet, int $scheduleId, array $stats): void
+    {
+        fwrite($sheet, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>');
+        fwrite($sheet, '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">');
+        fwrite($sheet, '<dimension ref="A1:F' . ($stats['total'] + 2) . '"/>');
+        fwrite($sheet, '<cols><col min="1" max="1" width="30" customWidth="1"/><col min="2" max="2" width="25" customWidth="1"/><col min="3" max="3" width="15" customWidth="1"/><col min="4" max="4" width="15" customWidth="1"/><col min="5" max="5" width="10" customWidth="1"/><col min="6" max="6" width="35" customWidth="1"/></cols>');
+        fwrite($sheet, '<sheetData>');
+
+        $summary = __('frontend.str.total') . ': ' . $stats['total'] . "\n"
+            . __('frontend.str.sent') . ': ' . $stats['success_percent'] . "%\n"
+            . __('frontend.str.spent_time') . ': ' . $stats['spent_time'] . "\n"
+            . __('frontend.str.read') . ': ' . $stats['read'];
+
+        fwrite($sheet, '<row r="1" ht="70" customHeight="1">');
+        $this->writeInlineCell($sheet, 'A', 1, $summary, 1);
+        fwrite($sheet, '</row>');
+
+        fwrite($sheet, '<row r="2">');
+        $this->writeInlineCell($sheet, 'A', 2, __('frontend.str.newsletter'), 2);
+        $this->writeInlineCell($sheet, 'B', 2, __('frontend.str.email'), 2);
+        $this->writeInlineCell($sheet, 'C', 2, __('frontend.str.time'), 2);
+        $this->writeInlineCell($sheet, 'D', 2, __('frontend.str.status'), 2);
+        $this->writeInlineCell($sheet, 'E', 2, __('frontend.str.read'), 2);
+        $this->writeInlineCell($sheet, 'F', 2, __('frontend.str.error'), 2);
+        fwrite($sheet, '</row>');
+
+        $rowIndex = 2;
+
+        ReadySent::query()
+            ->select(['id', 'template', 'email', 'created_at', 'success', 'readMail', 'errorMsg'])
+            ->where('schedule_id', $scheduleId)
+            ->orderBy('id')
+            ->chunkById(2000, function ($rows) use ($sheet, &$rowIndex): void {
+                foreach ($rows as $row) {
+                    $rowIndex++;
+
+                    fwrite($sheet, '<row r="' . $rowIndex . '">');
+                    $this->writeInlineCell($sheet, 'A', $rowIndex, (string) $row->template);
+                    $this->writeInlineCell($sheet, 'B', $rowIndex, (string) $row->email);
+                    $this->writeInlineCell($sheet, 'C', $rowIndex, (string) $row->created_at);
+                    $this->writeInlineCell(
+                        $sheet,
+                        'D',
+                        $rowIndex,
+                        $row->success == 1 ? __('frontend.str.send_status_yes') : __('frontend.str.send_status_no'),
+                        3
+                    );
+                    $this->writeInlineCell(
+                        $sheet,
+                        'E',
+                        $rowIndex,
+                        $row->readMail == 1 ? __('frontend.str.yes') : __('frontend.str.no'),
+                        3
+                    );
+                    $this->writeInlineCell($sheet, 'F', $rowIndex, (string) $row->errorMsg);
+                    fwrite($sheet, '</row>');
+                }
+            });
+
+        fwrite($sheet, '</sheetData>');
+        fwrite($sheet, '<mergeCells count="1"><mergeCell ref="A1:F1"/></mergeCells>');
+        fwrite($sheet, '</worksheet>');
+    }
+
+    /**
+     * Write one inline string cell to the worksheet XML.
+     *
+     * @param resource $sheet
+     * @param string $column
+     * @param int $row
+     * @param string $value
+     * @param int|null $style
+     * @return void
+     */
+    private function writeInlineCell($sheet, string $column, int $row, string $value, ?int $style = null): void
+    {
+        $styleAttribute = $style !== null ? ' s="' . $style . '"' : '';
+        $spaceAttribute = preg_match('/^\s|\s$/u', $value) ? ' xml:space="preserve"' : '';
+
+        fwrite(
+            $sheet,
+            '<c r="' . $column . $row . '"' . $styleAttribute . ' t="inlineStr"><is><t' . $spaceAttribute . '>'
+            . $this->xmlEscape($value)
+            . '</t></is></c>'
+        );
+    }
+
+    /**
+     * Create a temporary file path and reserve it for writing.
+     *
+     * @param string $prefix
+     * @return string
+     */
+    private function createTempFile(string $prefix): string
+    {
+        $file = tempnam(sys_get_temp_dir(), $prefix);
+
+        if ($file === false) {
+            throw new \RuntimeException('Failed to create temporary file.');
+        }
+
+        return $file;
+    }
+
+    /**
+     * Escape text for safe XML output.
+     *
+     * @param string $value
+     * @return string
+     */
+    private function xmlEscape(string $value): string
+    {
+        return htmlspecialchars($value, ENT_XML1 | ENT_COMPAT, 'UTF-8');
+    }
+
+    /**
+     * Return the XLSX content type manifest.
+     *
+     * @return string
+     */
+    private function xlsxContentTypesXml(): string
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            . '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+            . '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+            . '<Default Extension="xml" ContentType="application/xml"/>'
+            . '<Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>'
+            . '<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>'
+            . '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'
+            . '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+            . '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
+            . '</Types>';
+    }
+
+    /**
+     * Return root package relationships for the XLSX archive.
+     *
+     * @return string
+     */
+    private function xlsxRootRelsXml(): string
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            . '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+            . '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'
+            . '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>'
+            . '<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>'
+            . '</Relationships>';
+    }
+
+    /**
+     * Return workbook XML for a single-sheet XLSX archive.
+     *
+     * @return string
+     */
+    private function xlsxWorkbookXml(): string
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            . '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+            . '<sheets><sheet name="Log" sheetId="1" r:id="rId1"/></sheets>'
+            . '</workbook>';
+    }
+
+    /**
+     * Return workbook relationships for the worksheet and styles.
+     *
+     * @return string
+     */
+    private function xlsxWorkbookRelsXml(): string
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            . '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+            . '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>'
+            . '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
+            . '</Relationships>';
+    }
+
+    /**
+     * Return minimal XLSX style definitions used by the log report.
+     *
+     * @return string
+     */
+    private function xlsxStylesXml(): string
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            . '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+            . '<fonts count="1"><font><sz val="11"/><color theme="1"/><name val="Calibri"/><family val="2"/></font></fonts>'
+            . '<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEEEEEE"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEE7171"/><bgColor indexed="64"/></patternFill></fill></fills>'
+            . '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'
+            . '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
+            . '<cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="0" fillId="2" borderId="0" xfId="0" applyFill="1" applyAlignment="1"><alignment wrapText="1"/></xf><xf numFmtId="0" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1" applyAlignment="1"><alignment horizontal="center"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment horizontal="center"/></xf></cellXfs>'
+            . '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
+            . '</styleSheet>';
+    }
+
+    /**
+     * Return core document properties for the XLSX archive.
+     *
+     * @return string
+     */
+    private function xlsxCorePropertiesXml(): string
+    {
+        $created = now()->toIso8601String();
+
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            . '<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
+            . '<dc:creator>Alexander Yanitsky</dc:creator>'
+            . '<cp:lastModifiedBy>PHP Newsletter</cp:lastModifiedBy>'
+            . '<dcterms:created xsi:type="dcterms:W3CDTF">' . $created . '</dcterms:created>'
+            . '<dcterms:modified xsi:type="dcterms:W3CDTF">' . $created . '</dcterms:modified>'
+            . '</cp:coreProperties>';
+    }
+
+    /**
+     * Return extended document properties for the XLSX archive.
+     *
+     * @return string
+     */
+    private function xlsxAppPropertiesXml(): string
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            . '<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">'
+            . '<Application>PHP Newsletter</Application>'
+            . '</Properties>';
     }
 
     /**
