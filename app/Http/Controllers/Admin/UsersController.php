@@ -13,6 +13,9 @@ use Illuminate\View\View;
 
 class UsersController extends Controller
 {
+    /**
+     * Inject the user repository used by all admin user management actions.
+     */
     public function __construct(
         private readonly UserRepository $userRepository
     ) {
@@ -20,6 +23,8 @@ class UsersController extends Controller
     }
 
     /**
+     * Show the admin user management page.
+     *
      * @return View
      */
     public function index(): View
@@ -31,6 +36,8 @@ class UsersController extends Controller
     }
 
     /**
+     * Show the form used to create a new admin user.
+     *
      * @return View
      */
     public function create(): View
@@ -43,6 +50,8 @@ class UsersController extends Controller
     }
 
     /**
+     * Validate and persist a new admin user account.
+     *
      * @param StoreRequest $request
      * @return RedirectResponse
      */
@@ -61,6 +70,12 @@ class UsersController extends Controller
         return to_route('admin.users.index')->with('success', __('message.information_successfully_added'));
     }
 
+    /**
+     * Show the edit form for an existing admin user.
+     *
+     * @param int $id
+     * @return View
+     */
     public function edit(int $id): View
     {
         $row = $this->userRepository->find($id);
@@ -76,6 +91,8 @@ class UsersController extends Controller
     }
 
     /**
+     * Validate and save changes to an existing admin user account.
+     *
      * @param UpdateRequest $request
      * @return RedirectResponse
      */
@@ -98,6 +115,8 @@ class UsersController extends Controller
     }
 
     /**
+     * Delete an admin user unless it is the currently authenticated account.
+     *
      * @param int $id
      * @return void
      */

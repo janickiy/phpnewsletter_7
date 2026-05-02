@@ -11,12 +11,17 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    /**
+     * Restrict authentication routes to guests except for logout.
+     */
     public function __construct()
     {
         $this->middleware('guest:web')->except('logout');
     }
 
     /**
+     * Show the administrator login form.
+     *
      * @return View
      */
     public function showLoginForm(): View
@@ -27,6 +32,8 @@ class AuthController extends Controller
     }
 
     /**
+     * Authenticate an administrator and start a fresh session on success.
+     *
      * @param LoginRequest $request
      * @return RedirectResponse
      */
@@ -49,6 +56,8 @@ class AuthController extends Controller
     }
 
     /**
+     * Redirect authenticated administrators to the dashboard landing page.
+     *
      * @param Request $request
      * @param mixed $user
      * @return RedirectResponse
@@ -59,6 +68,8 @@ class AuthController extends Controller
     }
 
     /**
+     * Log out the current administrator and invalidate the session.
+     *
      * @param Request $request
      * @return RedirectResponse
      */

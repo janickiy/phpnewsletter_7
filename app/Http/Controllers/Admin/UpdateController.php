@@ -7,6 +7,11 @@ use Illuminate\View\View;
 
 class UpdateController extends Controller
 {
+    /**
+     * Show update availability information and prepare the update action message.
+     *
+     * @return View
+     */
     public function index(): View
     {
         $update = new UpdateHelper(app()->getLocale(), env('VERSION'));

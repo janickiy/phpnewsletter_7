@@ -23,6 +23,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SubscribersController extends Controller
 {
+    /**
+     * Inject repositories and services required to manage subscribers and their categories.
+     */
     public function __construct(
         private readonly SubscriberRepository $subscribersRepository,
         private readonly CategoryRepository $categoryRepository,
@@ -34,6 +37,8 @@ class SubscribersController extends Controller
     }
 
     /**
+     * Show the subscriber management page.
+     *
      * @return View
      */
     public function index(): View
@@ -45,6 +50,8 @@ class SubscribersController extends Controller
     }
 
     /**
+     * Show the form used to create a new subscriber and assign categories.
+     *
      * @return View
      */
     public function create(): View
@@ -57,6 +64,8 @@ class SubscribersController extends Controller
     }
 
     /**
+     * Validate and persist a new active subscriber with a generated token.
+     *
      * @param StoreRequest $request
      * @return RedirectResponse
      */
@@ -81,6 +90,8 @@ class SubscribersController extends Controller
     }
 
     /**
+     * Show the edit form for an existing subscriber and its category assignments.
+     *
      * @param int $id
      * @return View
      */
@@ -103,6 +114,8 @@ class SubscribersController extends Controller
     }
 
     /**
+     * Validate and save subscriber data together with category assignments.
+     *
      * @param EditRequest $request
      * @return RedirectResponse
      */
@@ -135,6 +148,8 @@ class SubscribersController extends Controller
     }
 
     /**
+     * Delete a subscriber and remove its category subscriptions in one transaction.
+     *
      * @param int $id
      * @return void
      */
@@ -147,6 +162,8 @@ class SubscribersController extends Controller
     }
 
     /**
+     * Show the subscriber import form with charset and category options.
+     *
      * @return View
      */
     public function import(): View
@@ -161,6 +178,8 @@ class SubscribersController extends Controller
     }
 
     /**
+     * Import subscribers from an uploaded spreadsheet or text file.
+     *
      * @param ImportRequest $request
      * @return RedirectResponse
      */
@@ -183,6 +202,8 @@ class SubscribersController extends Controller
     }
 
     /**
+     * Show the subscriber export form with category filters.
+     *
      * @return View
      */
     public function export(): View
@@ -194,12 +215,20 @@ class SubscribersController extends Controller
         ]);
     }
 
+    /**
+     * Stream a subscriber export file based on the selected filters.
+     *
+     * @param Request $request
+     * @return Response|StreamedResponse
+     */
     public function exportSubscribers(Request $request): Response|StreamedResponse
     {
         return $this->downloadService->exportSubscribers($request);
     }
 
     /**
+     * Remove all subscribers and subscriptions from the system.
+     *
      * @return RedirectResponse
      */
     public function removeAll(): RedirectResponse
@@ -219,6 +248,8 @@ class SubscribersController extends Controller
     }
 
     /**
+     * Apply bulk activation or deactivation to selected subscribers.
+     *
      * @param Request $request
      * @return RedirectResponse
      */

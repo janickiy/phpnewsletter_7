@@ -16,6 +16,9 @@ use Illuminate\View\View;
 
 class ScheduleController extends Controller
 {
+    /**
+     * Inject repositories required to manage scheduled mailings and their form options.
+     */
     public function __construct(
         private readonly ScheduleRepository $scheduleRepository,
         private readonly CategoryRepository $categoryRepository,
@@ -25,6 +28,8 @@ class ScheduleController extends Controller
     }
 
     /**
+     * Show the scheduled mailing calendar page.
+     *
      * @return View
      */
     public function index(): View
@@ -37,6 +42,8 @@ class ScheduleController extends Controller
     }
 
     /**
+     * Return scheduled mailing events filtered by the requested calendar date range.
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -48,6 +55,8 @@ class ScheduleController extends Controller
     }
 
     /**
+     * Handle inline calendar edits or deletions sent by FullCalendar.
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -73,6 +82,8 @@ class ScheduleController extends Controller
     }
 
     /**
+     * Show the form used to create a scheduled mailing.
+     *
      * @return View
      */
     public function create(): View
@@ -86,6 +97,8 @@ class ScheduleController extends Controller
     }
 
     /**
+     * Validate and persist a new scheduled mailing.
+     *
      * @param StoreRequest $request
      * @return RedirectResponse
      */
@@ -107,6 +120,8 @@ class ScheduleController extends Controller
     }
 
     /**
+     * Show the edit form for an existing scheduled mailing.
+     *
      * @param int $id
      * @return View
      */
@@ -128,6 +143,8 @@ class ScheduleController extends Controller
     }
 
     /**
+     * Validate and save changes to an existing scheduled mailing.
+     *
      * @param EditRequest $request
      * @return RedirectResponse
      */
@@ -150,6 +167,8 @@ class ScheduleController extends Controller
     }
 
     /**
+     * Delete a scheduled mailing for AJAX-driven calendar actions.
+     *
      * @param int $id
      * @return void
      */

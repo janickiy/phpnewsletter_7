@@ -23,6 +23,8 @@ use Config;
 class InstallController extends Controller
 {
     /**
+     * Show the first installer screen.
+     *
      * @return View
      */
     public function index(): View
@@ -31,6 +33,8 @@ class InstallController extends Controller
     }
 
     /**
+     * Show PHP extension and version requirements for the installer.
+     *
      * @return View
      */
     public function requirements(): View
@@ -42,6 +46,8 @@ class InstallController extends Controller
     }
 
     /**
+     * Show filesystem permission checks after requirements pass.
+     *
      * @return View|RedirectResponse
      */
     public function permissions(): View|RedirectResponse
@@ -57,6 +63,8 @@ class InstallController extends Controller
     }
 
     /**
+     * Show the database credentials form after environment checks pass.
+     *
      * @return View|RedirectResponse
      */
     public function database(): View|RedirectResponse
@@ -73,6 +81,8 @@ class InstallController extends Controller
     }
 
     /**
+     * Validate database credentials and store them in the session for the next install step.
+     *
      * @param InstallRequest $request
      * @return RedirectResponse|View
      */
@@ -100,6 +110,8 @@ class InstallController extends Controller
     }
 
     /**
+     * Show the admin account creation step of the installer.
+     *
      * @return View
      */
     public function admin(): View
@@ -108,6 +120,8 @@ class InstallController extends Controller
     }
 
     /**
+     * Write configuration, run migrations and seeders, then create the first admin user.
+     *
      * @param InstallAdminRequest $request
      * @return RedirectResponse
      */
@@ -151,6 +165,8 @@ class InstallController extends Controller
     }
 
     /**
+     * Reload environment variables after creating or replacing the .env file.
+     *
      * @return void
      */
     private function reloadEnv(): void
@@ -159,6 +175,8 @@ class InstallController extends Controller
     }
 
     /**
+     * Show the successful installation completion page.
+     *
      * @return View
      */
     public function complete(): View
@@ -167,6 +185,8 @@ class InstallController extends Controller
     }
 
     /**
+     * Show the installation error page when setup fails.
+     *
      * @return View
      */
     public function error(): View
@@ -175,6 +195,8 @@ class InstallController extends Controller
     }
 
     /**
+     * Build the list of required PHP extensions and runtime checks.
+     *
      * @return array
      */
     private function getRequirements(): array
@@ -200,6 +222,8 @@ class InstallController extends Controller
     }
 
     /**
+     * Determine whether every required PHP extension and runtime check passed.
+     *
      * @return bool
      */
     private function allRequirementsLoaded(): bool
@@ -216,6 +240,8 @@ class InstallController extends Controller
     }
 
     /**
+     * Build the list of filesystem paths that must be writable by the application.
+     *
      * @return array
      */
     private function getPermissions(): array
@@ -232,6 +258,8 @@ class InstallController extends Controller
     }
 
     /**
+     * Determine whether every required filesystem path is writable.
+     *
      * @return bool
      */
     private function allPermissionsGranted(): bool
@@ -248,6 +276,8 @@ class InstallController extends Controller
     }
 
     /**
+     * Test whether the supplied database credentials can connect to the database.
+     *
      * @param array $credentials
      * @return bool
      */
@@ -266,6 +296,8 @@ class InstallController extends Controller
     }
 
     /**
+     * Apply database credentials to the runtime configuration for validation and migration.
+     *
      * @param array $credentials
      * @return void
      */
@@ -282,6 +314,8 @@ class InstallController extends Controller
     }
 
     /**
+     * Handle installer AJAX actions such as changing the interface language.
+     *
      * @param Request $request
      * @return JsonResponse
      */

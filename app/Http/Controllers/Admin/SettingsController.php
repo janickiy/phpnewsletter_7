@@ -12,6 +12,9 @@ use Illuminate\Http\Request;
 
 class SettingsController extends Controller
 {
+    /**
+     * Inject the settings repository used to persist application configuration.
+     */
     public function __construct(
         private readonly SettingsRepository $settingsRepository
     ) {
@@ -19,6 +22,8 @@ class SettingsController extends Controller
     }
 
     /**
+     * Show the application settings page with charset and custom header options.
+     *
      * @return View
      */
     public function index(): View
@@ -32,6 +37,8 @@ class SettingsController extends Controller
     }
 
     /**
+     * Persist application settings submitted from the settings form.
+     *
      * @param Request $request
      * @return RedirectResponse
      */

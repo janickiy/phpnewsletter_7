@@ -21,6 +21,8 @@ use Yajra\DataTables\Facades\DataTables;
 class DataTableController extends Controller
 {
     /**
+     * Return email template rows formatted for the templates DataTable.
+     *
      * @return JsonResponse
      * @throws \Exception
      */
@@ -57,6 +59,8 @@ class DataTableController extends Controller
     }
 
     /**
+     * Return category rows with subscriber counts and action buttons for DataTables.
+     *
      * @return JsonResponse
      * @throws \Exception
      */
@@ -88,6 +92,8 @@ class DataTableController extends Controller
     }
 
     /**
+     * Return SMTP account rows with status, checkbox, and action columns for DataTables.
+     *
      * @return JsonResponse
      * @throws \Exception
      */
@@ -124,6 +130,8 @@ class DataTableController extends Controller
     }
 
     /**
+     * Return subscriber rows with category names, status, and action columns for DataTables.
+     *
      * @return JsonResponse
      * @throws \Exception
      */
@@ -171,6 +179,8 @@ class DataTableController extends Controller
     }
 
     /**
+     * Return admin user rows with role labels and action buttons for DataTables.
+     *
      * @return JsonResponse
      * @throws \Exception
      */
@@ -203,6 +213,8 @@ class DataTableController extends Controller
     }
 
     /**
+     * Return mailing summary rows for the log overview DataTable.
+     *
      * @return JsonResponse
      * @throws \Exception
      */
@@ -235,6 +247,8 @@ class DataTableController extends Controller
     }
 
     /**
+     * Return per-recipient delivery log rows, optionally filtered by schedule ID.
+     *
      * @param int|null $id
      * @return JsonResponse
      * @throws \Exception
@@ -259,6 +273,8 @@ class DataTableController extends Controller
     }
 
     /**
+     * Return grouped redirect tracking rows with report links for DataTables.
+     *
      * @return JsonResponse
      * @throws \Exception
      */
@@ -287,6 +303,8 @@ class DataTableController extends Controller
     }
 
     /**
+     * Return redirect tracking details for a single encoded URL.
+     *
      * @param string $url
      * @return JsonResponse
      * @throws \Exception
@@ -303,6 +321,8 @@ class DataTableController extends Controller
     }
 
     /**
+     * Return macro rows with action buttons for the macros DataTable.
+     *
      * @return JsonResponse
      * @throws \Exception
      */
@@ -330,6 +350,12 @@ class DataTableController extends Controller
             ->make(true);
     }
 
+    /**
+     * Normalize database or date-like values for display in DataTables.
+     *
+     * @param mixed $value
+     * @return string
+     */
     private function formatDateTime(mixed $value): string
     {
         if (empty($value)) {

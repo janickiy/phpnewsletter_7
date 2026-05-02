@@ -8,6 +8,8 @@ use Illuminate\View\View;
 class PagesController extends Controller
 {
     /**
+     * Show the frequently asked questions page.
+     *
      * @return View
      */
     public function faq(): View
@@ -19,6 +21,8 @@ class PagesController extends Controller
     }
 
     /**
+     * Show example cron commands for manual server scheduling.
+     *
      * @return View
      */
     public function cronJobList(): View
@@ -44,6 +48,8 @@ class PagesController extends Controller
     }
 
     /**
+     * Show formatted PHP runtime information for diagnostics.
+     *
      * @return View
      */
     public function phpinfo(): View
@@ -56,6 +62,8 @@ class PagesController extends Controller
     }
 
     /**
+     * Show the embeddable subscription form preview and copyable source code.
+     *
      * @return View
      * @throws \Throwable
      */

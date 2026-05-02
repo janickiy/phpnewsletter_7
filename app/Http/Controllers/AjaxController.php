@@ -19,6 +19,9 @@ use Illuminate\Support\Facades\Cookie;
 
 class AjaxController extends Controller
 {
+    /**
+     * Inject services and repositories used by shared admin AJAX actions.
+     */
     public function __construct(
         private readonly UpdateService       $updateService,
         private readonly ScheduleRepository  $scheduleRepository,
@@ -31,6 +34,8 @@ class AjaxController extends Controller
     }
 
     /**
+     * Dispatch an AJAX action and return a normalized JSON response.
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -51,6 +56,8 @@ class AjaxController extends Controller
     }
 
     /**
+     * Resolve the requested AJAX action to the matching service or repository operation.
+     *
      * @param Request $request
      * @return array|false[]|true[]
      * @throws \PHPMailer\PHPMailer\Exception
@@ -101,6 +108,8 @@ class AjaxController extends Controller
     }
 
     /**
+     * Store the selected interface locale in a long-lived cookie.
+     *
      * @param Request $request
      * @return true[]
      */
@@ -118,6 +127,8 @@ class AjaxController extends Controller
     }
 
     /**
+     * Remove an uploaded template attachment by ID.
+     *
      * @param Request $request
      * @return true[]
      */
@@ -129,6 +140,8 @@ class AjaxController extends Controller
     }
 
     /**
+     * Create a log record that marks the start of a manual mailing run.
+     *
      * @return array
      */
     private function startMailing(): array
@@ -144,6 +157,8 @@ class AjaxController extends Controller
     }
 
     /**
+     * Persist the current user's long-running process command.
+     *
      * @param Request $request
      * @return array|false[]
      */

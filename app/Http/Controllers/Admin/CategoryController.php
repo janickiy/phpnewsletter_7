@@ -11,12 +11,17 @@ use Illuminate\View\View;
 
 class CategoryController extends Controller
 {
+    /**
+     * Inject the category repository used by all category management actions.
+     */
     public function __construct(private readonly CategoryRepository $categoryRepository)
     {
         parent::__construct();
     }
 
     /**
+     * Show the category management page where categories are listed through DataTables.
+     *
      * @return View
      */
     public function index(): View
@@ -28,6 +33,8 @@ class CategoryController extends Controller
     }
 
     /**
+     * Show the form used to create a new subscriber category.
+     *
      * @return View
      */
     public function create(): View
@@ -39,6 +46,8 @@ class CategoryController extends Controller
     }
 
     /**
+     * Validate and persist a new subscriber category, then return to the category list.
+     *
      * @param StoreRequest $request
      * @return RedirectResponse
      */
@@ -59,6 +68,8 @@ class CategoryController extends Controller
     }
 
     /**
+     * Show the edit form for an existing subscriber category.
+     *
      * @param int $id
      * @return View
      */
@@ -76,6 +87,8 @@ class CategoryController extends Controller
     }
 
     /**
+     * Validate and save changes to an existing subscriber category.
+     *
      * @param EditRequest $request
      * @return RedirectResponse
      */
@@ -99,6 +112,8 @@ class CategoryController extends Controller
     }
 
     /**
+     * Delete a subscriber category and return the user to the category list.
+     *
      * @param int $id
      * @return RedirectResponse
      */

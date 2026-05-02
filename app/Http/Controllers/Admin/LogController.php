@@ -12,13 +12,16 @@ use Illuminate\Support\Facades\DB;
 
 class LogController extends Controller
 {
+    /**
+     * Inject the download service used to generate log reports.
+     */
     public function __construct(private readonly DownloadService $downloadService)
     {
         parent::__construct();
     }
 
     /**
-     * Display a listing of the logs.
+     * Show the mailing log overview page.
      */
     public function index(): View
     {
@@ -29,6 +32,8 @@ class LogController extends Controller
     }
 
     /**
+     * Show detailed delivery results for a scheduled mailing.
+     *
      * @param int $id
      * @return View
      */
@@ -42,6 +47,8 @@ class LogController extends Controller
     }
 
     /**
+     * Download the delivery report for a scheduled mailing.
+     *
      * @param int $id
      * @return Response
      */
@@ -51,7 +58,7 @@ class LogController extends Controller
     }
 
     /**
-     * Clear all logs
+     * Clear all delivery and mailing log records.
      *
      * @return JsonResponse
      */

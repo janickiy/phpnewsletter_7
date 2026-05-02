@@ -12,6 +12,9 @@ use Illuminate\View\View;
 
 class SmtpController extends Controller
 {
+    /**
+     * Inject the SMTP repository used by all SMTP account management actions.
+     */
     public function __construct(
         private readonly SmtpRepository $smtpRepository
     ) {
@@ -19,6 +22,8 @@ class SmtpController extends Controller
     }
 
     /**
+     * Show the SMTP account management page.
+     *
      * @return View
      */
     public function index(): View
@@ -30,6 +35,8 @@ class SmtpController extends Controller
     }
 
     /**
+     * Show the form used to create a new SMTP account.
+     *
      * @return View
      */
     public function create(): View
@@ -41,6 +48,8 @@ class SmtpController extends Controller
     }
 
     /**
+     * Validate and persist a new SMTP account configuration.
+     *
      * @param StoreRequest $request
      * @return RedirectResponse
      */
@@ -60,6 +69,8 @@ class SmtpController extends Controller
     }
 
     /**
+     * Show the edit form for an existing SMTP account.
+     *
      * @param int $id
      * @return View
      */
@@ -77,6 +88,8 @@ class SmtpController extends Controller
     }
 
     /**
+     * Validate and save changes to an existing SMTP account.
+     *
      * @param EditRequest $request
      * @return RedirectResponse
      */
@@ -99,6 +112,8 @@ class SmtpController extends Controller
     }
 
     /**
+     * Delete an SMTP account for AJAX-driven grid actions.
+     *
      * @param int $id
      * @return void
      */
@@ -108,6 +123,8 @@ class SmtpController extends Controller
     }
 
     /**
+     * Activate or deactivate selected SMTP accounts from the bulk action form.
+     *
      * @param StatusRequest $request
      * @return RedirectResponse
      */

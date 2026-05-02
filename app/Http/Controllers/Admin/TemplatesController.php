@@ -16,6 +16,8 @@ use Illuminate\View\View;
 class TemplatesController extends Controller
 {
     /**
+     * Inject repositories and services required to manage email templates and attachments.
+     *
      * @param TemplateRepository $templateRepository
      * @param CategoryRepository $categoryRepository
      * @param TemplateService $templateService
@@ -29,6 +31,8 @@ class TemplatesController extends Controller
     }
 
     /**
+     * Show the template management page with category filters.
+     *
      * @return View
      */
     public function index(): View
@@ -41,6 +45,8 @@ class TemplatesController extends Controller
     }
 
     /**
+     * Show the form used to create a new email template.
+     *
      * @return View
      */
     public function create(): View
@@ -53,6 +59,8 @@ class TemplatesController extends Controller
     }
 
     /**
+     * Validate and persist a new email template together with uploaded attachments.
+     *
      * @param StoreRequest $request
      * @return RedirectResponse
      */
@@ -74,6 +82,8 @@ class TemplatesController extends Controller
     }
 
     /**
+     * Show the edit form for an existing email template and its attachments.
+     *
      * @param int $id
      * @return View
      */
@@ -93,6 +103,8 @@ class TemplatesController extends Controller
     }
 
     /**
+     * Validate and save changes to an email template and its attachments.
+     *
      * @param UpdateRequest $request
      * @return RedirectResponse
      */
@@ -117,6 +129,8 @@ class TemplatesController extends Controller
     }
 
     /**
+     * Delete an email template and related resources.
+     *
      * @param int $id
      * @return RedirectResponse
      */
@@ -134,6 +148,8 @@ class TemplatesController extends Controller
     }
 
     /**
+     * Apply bulk status changes to selected email templates.
+     *
      * @param DeleteRequest $request
      * @return RedirectResponse
      */
@@ -154,6 +170,8 @@ class TemplatesController extends Controller
     }
 
     /**
+     * Build the human-readable macro reference string displayed in the template editor.
+     *
      * @return string
      */
     private function getMacros(): string

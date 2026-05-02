@@ -12,12 +12,17 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class RedirectController  extends Controller
 {
+    /**
+     * Inject the download service used to generate redirect reports.
+     */
     public function __construct(private DownloadService $downloadService)
     {
         parent::__construct();
     }
 
     /**
+     * Show the redirect tracking overview page.
+     *
      * @return View
      */
     public function index(): View
@@ -29,6 +34,8 @@ class RedirectController  extends Controller
     }
 
     /**
+     * Clear all redirect tracking statistics.
+     *
      * @return JsonResponse
      */
     public function clear(): JsonResponse
@@ -51,6 +58,8 @@ class RedirectController  extends Controller
     }
 
     /**
+     * Download redirect tracking details for a tracked URL.
+     *
      * @param string $url
      * @return StreamedResponse
      */
@@ -60,6 +69,8 @@ class RedirectController  extends Controller
     }
 
     /**
+     * Show redirect tracking details for a tracked URL.
+     *
      * @param string $url
      * @return View
      */

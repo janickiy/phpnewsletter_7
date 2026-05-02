@@ -25,6 +25,8 @@ class FrontendController extends Controller
     private const TRACKING_PIXEL_SIZE = 1;
 
     /**
+     * Inject repositories and services used by public tracking and subscription endpoints.
+     *
      * @param SubscriberRepository $subscriberRepository
      * @param ReadySentRepository $readySentRepository
      * @param RedirectRepository $redirectRepository
@@ -39,6 +41,8 @@ class FrontendController extends Controller
     }
 
     /**
+     * Record an email open event and return a one-pixel tracking GIF.
+     *
      * @param int $subscriber
      * @param int $template
      * @return Response
@@ -66,6 +70,8 @@ class FrontendController extends Controller
     }
 
     /**
+     * Record a redirect click and send the subscriber to the decoded external URL.
+     *
      * @param string $ref
      * @param int $subscriber
      * @return RedirectResponse
@@ -91,6 +97,8 @@ class FrontendController extends Controller
     }
 
     /**
+     * Deactivate a subscriber after validating the unsubscribe token.
+     *
      * @param int $subscriber
      * @param string $token
      * @return View
@@ -111,6 +119,8 @@ class FrontendController extends Controller
     }
 
     /**
+     * Activate a subscriber after validating the confirmation token.
+     *
      * @param int $subscriber
      * @param string $token
      * @return View
@@ -127,6 +137,11 @@ class FrontendController extends Controller
         return view('frontend.subscribe');
     }
 
+    /**
+     * Show the standalone public subscription form.
+     *
+     * @return View
+     */
     public function form(): View
     {
         return view('frontend.subform', [
@@ -136,6 +151,8 @@ class FrontendController extends Controller
     }
 
     /**
+     * Create a subscriber from the public subscription form and send confirmation emails.
+     *
      * @param AddSubRequest $request
      * @return JsonResponse
      * @throws \Throwable
@@ -171,6 +188,11 @@ class FrontendController extends Controller
         ]);
     }
 
+    /**
+     * Return the public list of subscriber categories used by embedded forms.
+     *
+     * @return JsonResponse
+     */
     public function getCategories(): JsonResponse
     {
         return response()->json([
@@ -180,11 +202,23 @@ class FrontendController extends Controller
         ]);
     }
 
+    /**
+     * Determine whether new frontend subscribers must confirm their email address.
+     *
+     * @param SettingsHelper $settings
+     * @return bool
+     */
     private function requiresConfirmation(SettingsHelper $settings): bool
     {
         return (int) $settings->getValueForKey('REQUIRE_SUB_CONFIRMATION') === 1;
     }
 
+    /**
+     * Validate that a redirect tracking URL uses an allowed external HTTP scheme.
+     *
+     * @param string $url
+     * @return bool
+     */
     private function isRedirectUrlAllowed(string $url): bool
     {
         if ($url === '') {

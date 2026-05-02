@@ -12,6 +12,9 @@ use Illuminate\View\View;
 
 class MacrosController extends Controller
 {
+    /**
+     * Inject the macro repository used by all macro management actions.
+     */
     public function __construct(
         private readonly MacrosRepository $macrosRepository
     ) {
@@ -19,6 +22,8 @@ class MacrosController extends Controller
     }
 
     /**
+     * Show the macro management page where available macros are listed.
+     *
      * @return View
      */
     public function index(): View
@@ -30,6 +35,8 @@ class MacrosController extends Controller
     }
 
     /**
+     * Show the form used to create a new template macro.
+     *
      * @return View
      */
     public function create(): View
@@ -42,6 +49,8 @@ class MacrosController extends Controller
     }
 
     /**
+     * Validate and persist a new template macro.
+     *
      * @param StoreRequest $request
      * @return RedirectResponse
      */
@@ -61,6 +70,8 @@ class MacrosController extends Controller
     }
 
     /**
+     * Show the edit form for an existing template macro.
+     *
      * @param int $id
      * @return View
      */
@@ -79,6 +90,8 @@ class MacrosController extends Controller
     }
 
     /**
+     * Validate and save changes to an existing template macro.
+     *
      * @param EditRequest $request
      * @return RedirectResponse
      */
@@ -101,6 +114,8 @@ class MacrosController extends Controller
     }
 
     /**
+     * Delete a template macro for AJAX-driven grid actions.
+     *
      * @param int $id
      * @return void
      */
