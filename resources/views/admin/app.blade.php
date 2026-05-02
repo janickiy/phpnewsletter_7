@@ -18,7 +18,7 @@
     {!! Html::style('/plugins/sweetalert2/sweetalert2.min.css') !!}
 
     <!-- Theme style -->
-    {!! Html::style('/dist/css/adminlte.min.css') !!}
+    {!! Html::style('/dist/css/adminlte.min.css?v=2') !!}
 
     {!! Html::style('/plugins/toastr/toastr.min.css') !!}
 

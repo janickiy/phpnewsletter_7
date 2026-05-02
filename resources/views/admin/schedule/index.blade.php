@@ -16,14 +16,53 @@
         display: none;
     }
     .fc-day-today {
-        color: #fff !important;
         background-color: #0f0 !important;
     }
+
+    #calendar a,
+    #calendar a:hover,
+    #calendar a:focus,
+    #calendar a:active {
+        color: #00008B !important;
+    }
+
+    #calendar .fc-event-main,
+    #calendar .fc-event-main:hover,
+    #calendar .fc-event-main:focus,
+    #calendar .fc-event-main:active,
+    #calendar .fc-event-time,
+    #calendar .fc-event-time:hover,
+    #calendar .fc-event-time:focus,
+    #calendar .fc-event-time:active,
+    #calendar .fc-event-title,
+    #calendar .fc-event-title:hover,
+    #calendar .fc-event-title:focus,
+    #calendar .fc-event-title:active,
+    #calendar .fc-daygrid-event,
+    #calendar .fc-daygrid-event:hover,
+    #calendar .fc-daygrid-event:focus,
+    #calendar .fc-daygrid-event:active,
+    #calendar .fc-timegrid-event,
+    #calendar .fc-timegrid-event:hover,
+    #calendar .fc-timegrid-event:focus,
+    #calendar .fc-timegrid-event:active {
+        color: #00008B !important;
+    }
+
+    #calendar .p-2,
+    #calendar .event-actions,
+    #calendar .event-actions b {
+        color: #00008B !important;
+    }
+
     .fc-day-today a,
+    .fc-day-today a:hover,
+    .fc-day-today a:focus,
+    .fc-day-today a:active,
     .fc-day-today .p-2,
     .fc-day-today .p-2 .event-actions,
     .fc-day-today .p-2 .event-actions b {
-        color: #fff !important;
+        color: #00008B !important;
     }
 
     .event-class:hover .event-actions {

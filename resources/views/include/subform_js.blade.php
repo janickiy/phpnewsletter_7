@@ -1,14 +1,19 @@
 <script>
-
     $(document).ready(function () {
-
         $.ajax({
             url: "{{ route('frontend.categories') }}",
             method: "get",
             dataType: "json",
             success: function (data) {
                 $.each(data.items, function (key, item) {
-                    let checkBox = '<div class="form-check"><label class="form-check-label"><input checked="checked" name="categoryId[]" type="checkbox" value="' + item.id + '"> ' + item.name + '</label></div>';
+                    let checkBox = ''
+                        + '<div class="form-check">'
+                        + '<label class="form-check-label">'
+                        + '<input checked="checked" name="categoryId[]" type="checkbox" value="' + item.id + '"> '
+                        + item.name
+                        + '</label>'
+                        + '</div>';
+
                     $(checkBox).prependTo('#addsub');
                 });
             }
@@ -58,6 +63,7 @@
                                 }
 
                                 alert_msg += '</ul>';
+                                alert_msg += '</div>';
                             });
                         }
 

@@ -19,7 +19,7 @@
     {!! Html::style('plugins/icheck-bootstrap/icheck-bootstrap.min.css') !!}
 
     <!-- Theme style -->
-    {!! Html::style('dist/css/adminlte.min.css') !!}
+    {!! Html::style('dist/css/adminlte.min.css?v=2') !!}
 
 
 </head>

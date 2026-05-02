@@ -16,6 +16,11 @@
    RewriteCond %{REQUEST_FILENAME} !-d
    RewriteCond %{REQUEST_FILENAME} !-f
    RewriteCond %{REQUEST_URI} !^/public/
+   RewriteRule ^favicon\.ico$ public/favicon.ico [L,NC]
+
+   RewriteCond %{REQUEST_FILENAME} !-d
+   RewriteCond %{REQUEST_FILENAME} !-f
+   RewriteCond %{REQUEST_URI} !^/public/
    RewriteRule ^(dist|plugins|css|js|images|fonts|admin|webfonts)/(.*)$ public/$1/$2 [L,NC]
 
 </IfModule>
