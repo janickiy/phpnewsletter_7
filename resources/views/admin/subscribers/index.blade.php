@@ -207,10 +207,12 @@
                     $(row).attr('id', 'rowid_' + data['id']);
                     if (data['activeStatus'] === 0) $(row).attr('class', 'table-danger');
                 },
-                aaSorting: [[1, 'asc']],
+                aaSorting: [[5, 'desc']],
                 "processing": true,
                 "responsive": true,
                 "autoWidth": true,
+                "deferRender": true,
+                "searchDelay": 500,
                 'serverSide': true,
                 'ajax': {
                     url: '{{ route('admin.datatable.subscribers') }}'
@@ -219,7 +221,7 @@
                     {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},
                     {data: 'name', name: 'name'},
                     {data: 'email', name: 'email'},
-                    {data: 'subscriptions', name: 'subscriptions.subscriber_id', searchable: false},
+                    {data: 'subscriptions', name: 'subscriptions', orderable: false, searchable: false},
                     {data: 'active', name: 'active', searchable: false},
                     {data: 'created_at', name: 'created_at'},
                     {data: 'action', name: 'action', orderable: false, searchable: false}

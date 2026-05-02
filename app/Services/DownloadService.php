@@ -9,6 +9,7 @@ use App\Models\Redirect;
 use App\Models\Subscribers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -48,32 +49,16 @@ class DownloadService
      */
     public function redirect(string $url): StreamedResponse
     {
-        $decodedUrl = base64_decode($url);
-        $rows = Redirect::query()
+        $decodedUrl = $this->decodeRouteBase64($url);
+        $rowsExist = Redirect::query()
             ->where('url', $decodedUrl)
-            ->get();
+            ->exists();
 
-        abort_if($rows->isEmpty(), 404);
+        abort_if(!$rowsExist, 404);
 
         $filename = 'redirect_' . date('d_m_Y') . '.xlsx';
 
-        return $this->streamExcel($filename, function (Spreadsheet $spreadsheet) use ($rows): void {
-            $sheet = $spreadsheet->getActiveSheet();
-
-            $sheet
-                ->setCellValue('A1', 'Email')
-                ->setCellValue('B1', 'Time');
-
-            $rowIndex = 1;
-
-            foreach ($rows as $row) {
-                $rowIndex++;
-
-                $sheet
-                    ->setCellValue('A' . $rowIndex, $row->email)
-                    ->setCellValue('B' . $rowIndex, $row->created_at);
-            }
-        });
+        return $this->streamXlsxFile($filename, fn (): string => $this->buildRedirectXlsxFile($decodedUrl));
     }
 
     /**
@@ -82,6 +67,22 @@ class DownloadService
      */
     public function exportSubscribers(Request $request): Response|StreamedResponse
     {
+        if ($request->export_type === 'excel') {
+            $filename = 'exportEmail_' . date('d_m_Y') . '.' . self::XLSX_EXT;
+
+            if ($request->compress === 'zip') {
+                return $this->zipFileResponse(
+                    $filename,
+                    fn (): string => $this->buildSubscribersXlsxFile($request->categoryId)
+                );
+            }
+
+            return $this->streamXlsxFile(
+                $filename,
+                fn (): string => $this->buildSubscribersXlsxFile($request->categoryId)
+            );
+        }
+
         $subscribers = $this->getSubscribersList($request->categoryId);
         [$contents, $ext] = $this->buildSubscribersFile($subscribers, $request->export_type);
 
@@ -143,8 +144,20 @@ class DownloadService
      */
     private function streamLogExcel(string $filename, int $scheduleId, array $stats): StreamedResponse
     {
-        return response()->streamDownload(function () use ($scheduleId, $stats): void {
-            $xlsxFile = $this->buildLogXlsxFile($scheduleId, $stats);
+        return $this->streamXlsxFile($filename, fn (): string => $this->buildLogXlsxFile($scheduleId, $stats));
+    }
+
+    /**
+     * Stream a generated XLSX file and remove the temporary file afterwards.
+     *
+     * @param string $filename
+     * @param callable $buildFile
+     * @return StreamedResponse
+     */
+    private function streamXlsxFile(string $filename, callable $buildFile): StreamedResponse
+    {
+        return response()->streamDownload(function () use ($buildFile): void {
+            $xlsxFile = $buildFile();
 
             try {
                 readfile($xlsxFile);
@@ -166,6 +179,55 @@ class DownloadService
      */
     private function buildLogXlsxFile(int $scheduleId, array $stats): string
     {
+        return $this->buildXlsxFile(
+            function ($sheet) use ($scheduleId, $stats): void {
+                $this->writeLogWorksheet($sheet, $scheduleId, $stats);
+            },
+            'Log'
+        );
+    }
+
+    /**
+     * Build a memory-safe XLSX redirect report.
+     *
+     * @param string $url
+     * @return string
+     */
+    private function buildRedirectXlsxFile(string $url): string
+    {
+        return $this->buildXlsxFile(
+            function ($sheet) use ($url): void {
+                $this->writeRedirectWorksheet($sheet, $url);
+            },
+            'Redirect'
+        );
+    }
+
+    /**
+     * Build a memory-safe XLSX subscriber export.
+     *
+     * @param array|null $categoryIds
+     * @return string
+     */
+    private function buildSubscribersXlsxFile(?array $categoryIds): string
+    {
+        return $this->buildXlsxFile(
+            function ($sheet) use ($categoryIds): void {
+                $this->writeSubscribersWorksheet($sheet, $categoryIds);
+            },
+            'Subscribers'
+        );
+    }
+
+    /**
+     * Build an XLSX file by writing worksheet XML incrementally instead of keeping cells in memory.
+     *
+     * @param callable $writeWorksheet
+     * @param string $sheetName
+     * @return string
+     */
+    private function buildXlsxFile(callable $writeWorksheet, string $sheetName): string
+    {
         $sheetFile = $this->createTempFile('sheet');
         $xlsxFile = $this->createTempFile('xlsx');
 
@@ -178,7 +240,7 @@ class DownloadService
         }
 
         try {
-            $this->writeLogWorksheet($sheet, $scheduleId, $stats);
+            $writeWorksheet($sheet);
         } finally {
             fclose($sheet);
         }
@@ -195,7 +257,7 @@ class DownloadService
         $zip->addFromString('_rels/.rels', $this->xlsxRootRelsXml());
         $zip->addFromString('docProps/core.xml', $this->xlsxCorePropertiesXml());
         $zip->addFromString('docProps/app.xml', $this->xlsxAppPropertiesXml());
-        $zip->addFromString('xl/workbook.xml', $this->xlsxWorkbookXml());
+        $zip->addFromString('xl/workbook.xml', $this->xlsxWorkbookXml($sheetName));
         $zip->addFromString('xl/_rels/workbook.xml.rels', $this->xlsxWorkbookRelsXml());
         $zip->addFromString('xl/styles.xml', $this->xlsxStylesXml());
         $zip->addFile($sheetFile, 'xl/worksheets/sheet1.xml');
@@ -279,6 +341,93 @@ class DownloadService
     }
 
     /**
+     * Write redirect tracking rows to worksheet XML in chunks.
+     *
+     * @param resource $sheet
+     * @param string $url
+     * @return void
+     */
+    private function writeRedirectWorksheet($sheet, string $url): void
+    {
+        $total = Redirect::query()
+            ->where('url', $url)
+            ->count();
+
+        fwrite($sheet, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>');
+        fwrite($sheet, '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">');
+        fwrite($sheet, '<dimension ref="A1:B' . ($total + 1) . '"/>');
+        fwrite($sheet, '<cols><col min="1" max="1" width="35" customWidth="1"/><col min="2" max="2" width="22" customWidth="1"/></cols>');
+        fwrite($sheet, '<sheetData>');
+
+        fwrite($sheet, '<row r="1">');
+        $this->writeInlineCell($sheet, 'A', 1, 'Email', 2);
+        $this->writeInlineCell($sheet, 'B', 1, 'Time', 2);
+        fwrite($sheet, '</row>');
+
+        $rowIndex = 1;
+
+        Redirect::query()
+            ->select(['id', 'email', 'created_at'])
+            ->where('url', $url)
+            ->orderBy('id')
+            ->chunkById(2000, function ($rows) use ($sheet, &$rowIndex): void {
+                foreach ($rows as $row) {
+                    $rowIndex++;
+
+                    fwrite($sheet, '<row r="' . $rowIndex . '">');
+                    $this->writeInlineCell($sheet, 'A', $rowIndex, (string) $row->email);
+                    $this->writeInlineCell($sheet, 'B', $rowIndex, (string) $row->created_at);
+                    fwrite($sheet, '</row>');
+                }
+            });
+
+        fwrite($sheet, '</sheetData>');
+        fwrite($sheet, '</worksheet>');
+    }
+
+    /**
+     * Write subscriber export rows to worksheet XML in chunks.
+     *
+     * @param resource $sheet
+     * @param array|null $categoryIds
+     * @return void
+     */
+    private function writeSubscribersWorksheet($sheet, ?array $categoryIds): void
+    {
+        $query = $this->getSubscribersQuery($categoryIds);
+        $total = (clone $query)->count();
+
+        fwrite($sheet, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>');
+        fwrite($sheet, '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">');
+        fwrite($sheet, '<dimension ref="A1:B' . ($total + 1) . '"/>');
+        fwrite($sheet, '<cols><col min="1" max="1" width="35" customWidth="1"/><col min="2" max="2" width="30" customWidth="1"/></cols>');
+        fwrite($sheet, '<sheetData>');
+
+        fwrite($sheet, '<row r="1">');
+        $this->writeInlineCell($sheet, 'A', 1, 'Email', 2);
+        $this->writeInlineCell($sheet, 'B', 1, 'Name', 2);
+        fwrite($sheet, '</row>');
+
+        $rowIndex = 1;
+
+        (clone $query)
+            ->orderBy('subscribers.id')
+            ->chunk(2000, function ($subscribers) use ($sheet, &$rowIndex): void {
+                foreach ($subscribers as $subscriber) {
+                    $rowIndex++;
+
+                    fwrite($sheet, '<row r="' . $rowIndex . '">');
+                    $this->writeInlineCell($sheet, 'A', $rowIndex, (string) $subscriber->email);
+                    $this->writeInlineCell($sheet, 'B', $rowIndex, (string) $subscriber->name);
+                    fwrite($sheet, '</row>');
+                }
+            });
+
+        fwrite($sheet, '</sheetData>');
+        fwrite($sheet, '</worksheet>');
+    }
+
+    /**
      * Write one inline string cell to the worksheet XML.
      *
      * @param resource $sheet
@@ -330,6 +479,24 @@ class DownloadService
     }
 
     /**
+     * Decode a URL-safe or regular base64 route parameter.
+     *
+     * @param string $value
+     * @return string
+     */
+    private function decodeRouteBase64(string $value): string
+    {
+        $normalized = strtr($value, '-_', '+/');
+        $padding = strlen($normalized) % 4;
+
+        if ($padding > 0) {
+            $normalized .= str_repeat('=', 4 - $padding);
+        }
+
+        return base64_decode($normalized, true) ?: '';
+    }
+
+    /**
      * Return the XLSX content type manifest.
      *
      * @return string
@@ -368,11 +535,11 @@ class DownloadService
      *
      * @return string
      */
-    private function xlsxWorkbookXml(): string
+    private function xlsxWorkbookXml(string $sheetName): string
     {
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             . '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
-            . '<sheets><sheet name="Log" sheetId="1" r:id="rId1"/></sheets>'
+            . '<sheets><sheet name="' . $this->xmlEscape($sheetName) . '" sheetId="1" r:id="rId1"/></sheets>'
             . '</workbook>';
     }
 
@@ -642,6 +809,47 @@ class DownloadService
     }
 
     /**
+     * Stream a zip archive containing a generated temporary file.
+     *
+     * @param string $innerFilename
+     * @param callable $buildFile
+     * @return StreamedResponse
+     */
+    private function zipFileResponse(string $innerFilename, callable $buildFile): StreamedResponse
+    {
+        $zipFilename = pathinfo($innerFilename, PATHINFO_FILENAME) . '.zip';
+
+        return response()->streamDownload(function () use ($innerFilename, $buildFile): void {
+            $sourceFile = $buildFile();
+            $zip = new ZipArchive();
+            $tmpFile = tempnam(sys_get_temp_dir(), 'zip');
+
+            if ($tmpFile === false) {
+                @unlink($sourceFile);
+                throw new \RuntimeException('Failed to create temporary file.');
+            }
+
+            if ($zip->open($tmpFile, ZipArchive::CREATE) !== true) {
+                @unlink($sourceFile);
+                @unlink($tmpFile);
+                throw new \RuntimeException('Failed to create zip archive.');
+            }
+
+            $zip->addFile($sourceFile, $innerFilename);
+            $zip->close();
+
+            try {
+                readfile($tmpFile);
+            } finally {
+                @unlink($sourceFile);
+                @unlink($tmpFile);
+            }
+        }, $zipFilename, [
+            'Content-Type' => 'application/zip',
+        ]);
+    }
+
+    /**
      * @param string $filename
      * @param callable $callback
      * @return StreamedResponse
@@ -698,22 +906,32 @@ class DownloadService
      */
     private function getSubscribersList(?array $ids): Collection
     {
+        return $this->getSubscribersQuery($ids)->get();
+    }
+
+    /**
+     * Build the active subscribers query used by text and XLSX exports.
+     *
+     * @param array|null $ids
+     * @return Builder
+     */
+    private function getSubscribersQuery(?array $ids): Builder
+    {
         if ($ids) {
             return Subscribers::query()
-                ->select('subscribers.name', 'subscribers.email')
+                ->select('subscribers.id', 'subscribers.name', 'subscribers.email')
                 ->distinct()
                 ->leftJoin('subscriptions', function ($join) use ($ids) {
                     $join->on('subscribers.id', '=', 'subscriptions.subscriber_id')
                         ->whereIn('subscriptions.category_id', $ids);
                 })
                 ->where('subscribers.active', 1)
-                ->whereNotNull('subscriptions.subscriber_id')
-                ->get();
+                ->whereNotNull('subscriptions.subscriber_id');
         }
 
         return Subscribers::query()
-            ->select('name', 'email')
+            ->select('subscribers.id', 'subscribers.name', 'subscribers.email')
             ->where('active', 1)
-            ->get();
+            ->orderBy('subscribers.id');
     }
 }

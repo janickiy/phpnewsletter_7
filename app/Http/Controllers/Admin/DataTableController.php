@@ -138,10 +138,14 @@ class DataTableController extends Controller
     public function getSubscribers(): JsonResponse
     {
         $rows = Subscribers::query()
-            ->with('subscriptions.category')
-            ->select('subscribers.*', 'subscriptions.subscriber_id')
-            ->leftJoin('subscriptions', 'subscribers.id', '=', 'subscriptions.subscriber_id')
-            ->distinct();
+            ->with(['subscriptions:subscriber_id,category_id', 'subscriptions.category:id,name'])
+            ->select([
+                'subscribers.id',
+                'subscribers.name',
+                'subscribers.email',
+                'subscribers.active',
+                'subscribers.created_at',
+            ]);
 
         return DataTables::of($rows)
             ->addColumn('checkbox', fn ($row) => sprintf(
@@ -150,8 +154,9 @@ class DataTableController extends Controller
             ))
             ->addColumn('subscriptions', function ($row) {
                 return $row->subscriptions
-                    ->pluck('category.name')
+                    ->map(fn ($subscription) => $subscription->category?->name)
                     ->filter()
+                    ->unique()
                     ->implode(', ');
             })
             ->editColumn('active', fn ($row) => $row->active === 1
@@ -288,13 +293,13 @@ class DataTableController extends Controller
         return DataTables::of($rows)
             ->editColumn('count', fn ($row) => sprintf(
                 '<a href="%s">%s</a>',
-                route('admin.redirect.info', ['url' => base64_encode($row->url)]),
+                route('admin.redirect.info', ['url' => $this->encodeRouteBase64($row->url)]),
                 $row->count
             ))
             ->addColumn('report', fn ($row) => PermissionsHelper::has_permission('admin')
                 ? sprintf(
                     '<a href="%s">%s</a>',
-                    route('admin.redirect.report', ['url' => base64_encode($row->url)]),
+                    route('admin.redirect.report', ['url' => $this->encodeRouteBase64($row->url)]),
                     __('frontend.str.download')
                 )
                 : '')
@@ -311,13 +316,42 @@ class DataTableController extends Controller
      */
     public function getInfoRedirectLog(string $url): JsonResponse
     {
-        $decodedUrl = base64_decode($url, true) ?: '';
+        $decodedUrl = $this->decodeRouteBase64($url);
 
         $rows = Redirect::query()->where('url', $decodedUrl);
 
         return DataTables::of($rows)
             ->editColumn('created_at', fn ($row) => $this->formatDateTime($row->created_at))
             ->make(true);
+    }
+
+    /**
+     * Encode binary-safe base64 for a single route segment.
+     *
+     * @param string $value
+     * @return string
+     */
+    private function encodeRouteBase64(string $value): string
+    {
+        return rtrim(strtr(base64_encode($value), '+/', '-_'), '=');
+    }
+
+    /**
+     * Decode URL-safe or regular base64 route parameters.
+     *
+     * @param string $value
+     * @return string
+     */
+    private function decodeRouteBase64(string $value): string
+    {
+        $normalized = strtr($value, '-_', '+/');
+        $padding = strlen($normalized) % 4;
+
+        if ($padding > 0) {
+            $normalized .= str_repeat('=', 4 - $padding);
+        }
+
+        return base64_decode($normalized, true) ?: '';
     }
 
     /**
