@@ -29,10 +29,13 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <p class="text-center">
-                                            <a class="btn btn-outline btn-danger btn-lg" onclick="confirmation()"
+                                            <a id="clearLogButton" class="btn btn-outline btn-danger btn-lg" onclick="confirmation(event)"
                                                title="{{ __('frontend.str.log_clear') }}">
                                                 <span class="fa fa-trash fa-2x"></span> {{ __('frontend.str.log_clear') }}
                                             </a>
+                                            <span id="clearLogSpinner" class="ml-2 d-none">
+                                                <span class="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true"></span>
+                                            </span>
                                         </p>
                                     </div>
                                 </div>
@@ -124,6 +127,15 @@
         let itemListTable;
         let logListTable;
 
+        function toggleClearLogLoading(isLoading) {
+            const clearButton = $('#clearLogButton');
+
+            clearButton.toggleClass('disabled', isLoading);
+            clearButton.attr('aria-disabled', isLoading ? 'true' : 'false');
+            clearButton.css('pointer-events', isLoading ? 'none' : '');
+            $('#clearLogSpinner').toggleClass('d-none', !isLoading);
+        }
+
         $(function () {
             itemListTable = $('#itemList').DataTable({
                 "oLanguage": {
@@ -199,6 +211,11 @@
         })
 
         function confirmation(event) {
+            if ($('#clearLogButton').hasClass('disabled')) {
+                event.preventDefault();
+                return;
+            }
+
             Swal.fire({
                 title: "{{ __('frontend.str.clear_confirmation') }}",
                 text: "{{ __('frontend.str.want_to_log_clear') }}",
@@ -216,6 +233,8 @@
                 if (!result.isConfirmed) {
                     return;
                 }
+
+                toggleClearLogLoading(true);
 
                 $.ajax({
                     url: "{{ route('admin.log.clear') }}",
@@ -244,6 +263,9 @@
                             title: response.message || "{{ __('frontend.str.delete_error') }}",
                             confirmButtonText: 'OK'
                         });
+                    },
+                    complete: function () {
+                        toggleClearLogLoading(false);
                     }
                 });
             })

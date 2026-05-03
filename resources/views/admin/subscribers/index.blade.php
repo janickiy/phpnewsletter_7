@@ -31,11 +31,14 @@
                            href="{{ route('admin.subscribers.export') }}">
                             <span class="fa fa-upload fa-x"></span> {{ __('frontend.str.export') }}
                         </a>
-                        <a class="btn btn-outline btn-danger btn-lg"
+                        <a id="removeAllSubscribersButton" class="btn btn-outline btn-danger btn-lg"
                            title="{{ __('frontend.str.delete_all_subscribers') }}"
-                           onclick="confirmation()">
+                           onclick="confirmation(event)">
                             <span class="fa fa-trash fa-x"></span> {{ __('frontend.str.delete_all') }}
                         </a>
+                        <span id="removeAllSubscribersSpinner" class="ml-2 d-none">
+                            <span class="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true"></span>
+                        </span>
                     </p>
                 </div>
             </div>
@@ -273,7 +276,25 @@
                 $('#apply').attr('disabled', true);
         }
 
-        function confirmation() {
+        function toggleRemoveAllSubscribersLoading(isLoading) {
+            const removeButton = $('#removeAllSubscribersButton');
+
+            removeButton.toggleClass('disabled', isLoading);
+            removeButton.attr('aria-disabled', isLoading ? 'true' : 'false');
+            removeButton.css('pointer-events', isLoading ? 'none' : '');
+            $('#removeAllSubscribersSpinner').toggleClass('d-none', !isLoading);
+        }
+
+        $(window).on('pageshow', function () {
+            toggleRemoveAllSubscribersLoading(false);
+        });
+
+        function confirmation(event) {
+            if ($('#removeAllSubscribersButton').hasClass('disabled')) {
+                event.preventDefault();
+                return;
+            }
+
             Swal.fire({
                 title: "{{ __('frontend.str.delete_all_subscribers') }}",
                 text: "{{ __('frontend.str.want_to_delete_all_subscribers')  }}",
@@ -285,6 +306,7 @@
                 closeOnConfirm: false
             }).then((result) => {
                 if (result.isConfirmed) {
+                    toggleRemoveAllSubscribersLoading(true);
                     window.location.href = "{{ route('admin.subscribers.remove_all') }}";
                 }
             });

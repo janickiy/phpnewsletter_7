@@ -6,11 +6,11 @@ namespace App\Services;
 use App\Helpers\StringHelper;
 use App\Models\ReadySent;
 use App\Models\Redirect;
-use App\Models\Subscribers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -67,6 +67,8 @@ class DownloadService
      */
     public function exportSubscribers(Request $request): Response|StreamedResponse
     {
+        $this->disableExecutionLimit();
+
         if ($request->export_type === 'excel') {
             $filename = 'exportEmail_' . date('d_m_Y') . '.' . self::XLSX_EXT;
 
@@ -157,6 +159,8 @@ class DownloadService
     private function streamXlsxFile(string $filename, callable $buildFile): StreamedResponse
     {
         return response()->streamDownload(function () use ($buildFile): void {
+            $this->disableExecutionLimit();
+
             $xlsxFile = $buildFile();
 
             try {
@@ -228,6 +232,8 @@ class DownloadService
      */
     private function buildXlsxFile(callable $writeWorksheet, string $sheetName): string
     {
+        $this->disableExecutionLimit();
+
         $sheetFile = $this->createTempFile('sheet');
         $xlsxFile = $this->createTempFile('xlsx');
 
@@ -261,6 +267,7 @@ class DownloadService
         $zip->addFromString('xl/_rels/workbook.xml.rels', $this->xlsxWorkbookRelsXml());
         $zip->addFromString('xl/styles.xml', $this->xlsxStylesXml());
         $zip->addFile($sheetFile, 'xl/worksheets/sheet1.xml');
+        $this->setFastZipCompression($zip, 'xl/worksheets/sheet1.xml');
         $zip->close();
 
         @unlink($sheetFile);
@@ -394,6 +401,8 @@ class DownloadService
      */
     private function writeSubscribersWorksheet($sheet, ?array $categoryIds): void
     {
+        $this->disableExecutionLimit();
+
         $query = $this->getSubscribersQuery($categoryIds);
         $total = (clone $query)->count();
 
@@ -412,16 +421,20 @@ class DownloadService
 
         (clone $query)
             ->orderBy('subscribers.id')
-            ->chunk(2000, function ($subscribers) use ($sheet, &$rowIndex): void {
+            ->chunkById(10000, function ($subscribers) use ($sheet, &$rowIndex): void {
+                $buffer = '';
+
                 foreach ($subscribers as $subscriber) {
                     $rowIndex++;
 
-                    fwrite($sheet, '<row r="' . $rowIndex . '">');
-                    $this->writeInlineCell($sheet, 'A', $rowIndex, (string) $subscriber->email);
-                    $this->writeInlineCell($sheet, 'B', $rowIndex, (string) $subscriber->name);
-                    fwrite($sheet, '</row>');
+                    $buffer .= '<row r="' . $rowIndex . '">'
+                        . $this->inlineCellXml('A', $rowIndex, (string) $subscriber->email)
+                        . $this->inlineCellXml('B', $rowIndex, (string) $subscriber->name)
+                        . '</row>';
                 }
-            });
+
+                fwrite($sheet, $buffer);
+            }, 'subscribers.id', 'id');
 
         fwrite($sheet, '</sheetData>');
         fwrite($sheet, '</worksheet>');
@@ -439,15 +452,26 @@ class DownloadService
      */
     private function writeInlineCell($sheet, string $column, int $row, string $value, ?int $style = null): void
     {
+        fwrite($sheet, $this->inlineCellXml($column, $row, $value, $style));
+    }
+
+    /**
+     * Build one inline string cell as worksheet XML.
+     *
+     * @param string $column
+     * @param int $row
+     * @param string $value
+     * @param int|null $style
+     * @return string
+     */
+    private function inlineCellXml(string $column, int $row, string $value, ?int $style = null): string
+    {
         $styleAttribute = $style !== null ? ' s="' . $style . '"' : '';
         $spaceAttribute = preg_match('/^\s|\s$/u', $value) ? ' xml:space="preserve"' : '';
 
-        fwrite(
-            $sheet,
-            '<c r="' . $column . $row . '"' . $styleAttribute . ' t="inlineStr"><is><t' . $spaceAttribute . '>'
+        return '<c r="' . $column . $row . '"' . $styleAttribute . ' t="inlineStr"><is><t' . $spaceAttribute . '>'
             . $this->xmlEscape($value)
-            . '</t></is></c>'
-        );
+            . '</t></is></c>';
     }
 
     /**
@@ -465,6 +489,32 @@ class DownloadService
         }
 
         return $file;
+    }
+
+    /**
+     * Disable PHP execution timeout for large export streams.
+     *
+     * @return void
+     */
+    private function disableExecutionLimit(): void
+    {
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(0);
+        }
+    }
+
+    /**
+     * Prefer faster compression for large worksheet XML files.
+     *
+     * @param ZipArchive $zip
+     * @param string $name
+     * @return void
+     */
+    private function setFastZipCompression(ZipArchive $zip, string $name): void
+    {
+        if (method_exists($zip, 'setCompressionName')) {
+            $zip->setCompressionName($name, ZipArchive::CM_DEFLATE, 1);
+        }
     }
 
     /**
@@ -913,25 +963,24 @@ class DownloadService
      * Build the active subscribers query used by text and XLSX exports.
      *
      * @param array|null $ids
-     * @return Builder
+     * @return QueryBuilder
      */
-    private function getSubscribersQuery(?array $ids): Builder
+    private function getSubscribersQuery(?array $ids): QueryBuilder
     {
+        $query = DB::table('subscribers')
+            ->select('subscribers.id', 'subscribers.name', 'subscribers.email')
+            ->where('subscribers.active', 1);
+
         if ($ids) {
-            return Subscribers::query()
-                ->select('subscribers.id', 'subscribers.name', 'subscribers.email')
-                ->distinct()
-                ->leftJoin('subscriptions', function ($join) use ($ids) {
-                    $join->on('subscribers.id', '=', 'subscriptions.subscriber_id')
-                        ->whereIn('subscriptions.category_id', $ids);
-                })
-                ->where('subscribers.active', 1)
-                ->whereNotNull('subscriptions.subscriber_id');
+            $query->whereExists(function (QueryBuilder $subquery) use ($ids): void {
+                $subquery
+                    ->selectRaw('1')
+                    ->from('subscriptions')
+                    ->whereColumn('subscriptions.subscriber_id', 'subscribers.id')
+                    ->whereIn('subscriptions.category_id', $ids);
+            });
         }
 
-        return Subscribers::query()
-            ->select('subscribers.id', 'subscribers.name', 'subscribers.email')
-            ->where('active', 1)
-            ->orderBy('subscribers.id');
+        return $query;
     }
 }

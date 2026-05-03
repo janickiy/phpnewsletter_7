@@ -28,10 +28,13 @@
 
                                 <div class="row">
                                     <div class="col-lg-12"><p class="text-center">
-                                            <a class="btn btn-outline btn-danger btn-lg"
-                                               title="{{ __('frontend.str.log_clear') }}" onclick="confirmation()">
+                                            <a id="clearRedirectButton" class="btn btn-outline btn-danger btn-lg"
+                                               title="{{ __('frontend.str.log_clear') }}" onclick="confirmation(event)">
                                                 <span class="fa fa-trash fa-2x"></span> {{ __('frontend.str.redirect_clear') }}
                                             </a>
+                                            <span id="clearRedirectSpinner" class="ml-2 d-none">
+                                                <span class="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true"></span>
+                                            </span>
                                         </p>
                                     </div>
                                 </div>
@@ -87,9 +90,19 @@
     {!! Html::script('/plugins/datatables-buttons/js/buttons.colVis.min.js') !!}
 
     <script>
+        let redirectTable;
+
+        function toggleClearRedirectLoading(isLoading) {
+            const clearButton = $('#clearRedirectButton');
+
+            clearButton.toggleClass('disabled', isLoading);
+            clearButton.attr('aria-disabled', isLoading ? 'true' : 'false');
+            clearButton.css('pointer-events', isLoading ? 'none' : '');
+            $('#clearRedirectSpinner').toggleClass('d-none', !isLoading);
+        }
 
         $(function () {
-            const redirectTable = $('#itemList').DataTable({
+            redirectTable = $('#itemList').DataTable({
                 "oLanguage": {
                     "sLengthMenu": "{{ __('pagination.s_length_menu') }}",
                     "sZeroRecords": "{{ __('pagination.s_zero_records') }}",
@@ -121,6 +134,11 @@
         });
 
         function confirmation(event) {
+            if ($('#clearRedirectButton').hasClass('disabled')) {
+                event.preventDefault();
+                return;
+            }
+
             Swal.fire({
                 title: "{{ __('frontend.str.clear_confirmation') }}",
                 text: "{{ __('frontend.str.want_to_log_clear') }}",
@@ -139,6 +157,8 @@
                     return;
                 }
 
+                toggleClearRedirectLoading(true);
+
                 $.ajax({
                     url: "{{ route('admin.redirect.clear') }}",
                     type: 'GET',
@@ -150,12 +170,8 @@
                             confirmButtonText: 'OK'
                         });
 
-                        if (itemListTable) {
-                            itemListTable.ajax.reload(null, false);
-                        }
-
-                        if (logListTable) {
-                            logListTable.ajax.reload(null, false);
+                        if (redirectTable) {
+                            redirectTable.ajax.reload(null, false);
                         }
                     },
                     error: function (xhr) {
@@ -166,6 +182,9 @@
                             title: response.message || "{{ __('frontend.str.delete_error') }}",
                             confirmButtonText: 'OK'
                         });
+                    },
+                    complete: function () {
+                        toggleClearRedirectLoading(false);
                     }
                 });
             })
@@ -174,4 +193,3 @@
     </script>
 
 @endsection
-

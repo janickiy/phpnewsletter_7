@@ -3,9 +3,12 @@
 namespace App\Http\Requests\Admin\Subscribers;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\UploadedFile;
 
 class ImportRequest extends FormRequest
 {
+    private const ALLOWED_EXTENSIONS = ['csv', 'xlsx', 'xls', 'ods', 'txt'];
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -25,8 +28,21 @@ class ImportRequest extends FormRequest
             'import' => [
                 'required',
                 'file',
-                'mimes:csv,xlsx,xls,ods,txt',
                 'max:10240',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (!$value instanceof UploadedFile) {
+                        return;
+                    }
+
+                    $extension = strtolower($value->getClientOriginalExtension());
+
+                    if (!in_array($extension, self::ALLOWED_EXTENSIONS, true)) {
+                        $fail(__('validation.mimes', [
+                            'attribute' => $attribute,
+                            'values' => implode(', ', self::ALLOWED_EXTENSIONS),
+                        ]));
+                    }
+                },
             ],
         ];
     }

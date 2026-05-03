@@ -33,7 +33,7 @@
                                 <div class="input-group">
                                     <div class="custom-file">
 
-                                        {!! Form::file('import',  ['id' => 'import', 'class' => "custom-file-input"]) !!}
+                                        {!! Form::file('import',  ['id' => 'import', 'class' => "custom-file-input", 'accept' => '.csv,.xlsx,.xls,.ods,.txt']) !!}
 
                                         {!! Form::label('import', __('frontend.form.browse'),  ['class' => "custom-file-label"]) !!}
 
