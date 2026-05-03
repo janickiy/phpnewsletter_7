@@ -181,24 +181,62 @@ class SubscribersController extends Controller
      * Import subscribers from an uploaded spreadsheet or text file.
      *
      * @param ImportRequest $request
-     * @return RedirectResponse
+     * @return StreamedResponse
      */
-    public function importSubscribers(ImportRequest $request): RedirectResponse
+    public function importSubscribers(ImportRequest $request): StreamedResponse
     {
+        ignore_user_abort(true);
         set_time_limit(0);
 
         $extension = strtolower($request->file('import')->getClientOriginalExtension());
 
-        $result = match ($extension) {
-            'csv', 'xls', 'xlsx', 'ods' => $this->subscriberService->importFromExcel($request),
-            default => $this->subscriberService->importFromText($request),
-        };
+        return response()->stream(function () use ($request, $extension): void {
+            $redirectUrl = route('admin.subscribers.index');
+            $flush = function (?int $count = null): void {
+                $message = $count === null
+                    ? 'Import started...'
+                    : 'Imported: ' . $count;
 
-        if ($result === false) {
-            return to_route('admin.subscribers.index')->with('error', __('message.error_import_file'));
-        }
+                echo '<script>document.getElementById("import-status").textContent = '
+                    . json_encode($message)
+                    . ';</script>' . str_repeat(' ', 4096);
 
-        return to_route('admin.subscribers.index')->with('success', __('message.import_completed') . $result);
+                if (ob_get_level() > 0) {
+                    @ob_flush();
+                }
+
+                flush();
+            };
+
+            echo '<!doctype html><html><head><meta charset="utf-8"><title>Import</title></head>'
+                . '<body><p id="import-status">Import started...</p>';
+            $flush();
+
+            try {
+                $result = match ($extension) {
+                    'csv', 'xls', 'xlsx', 'ods' => $this->subscriberService->importFromExcel($request, $flush),
+                    default => $this->subscriberService->importFromText($request, $flush),
+                };
+
+                if ($result === false) {
+                    session()->flash('error', __('message.error_import_file'));
+                } else {
+                    session()->flash('success', __('message.import_completed') . $result);
+                }
+            } catch (\Throwable $e) {
+                report($e);
+
+                session()->flash('error', $e->getMessage());
+            }
+
+            echo '<script>window.location.href = ' . json_encode($redirectUrl) . ';</script>'
+                . '</body></html>';
+        }, 200, [
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Content-Type' => 'text/html; charset=UTF-8',
+            'X-Accel-Buffering' => 'no',
+        ]);
+
     }
 
     /**

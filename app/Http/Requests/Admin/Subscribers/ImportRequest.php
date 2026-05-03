@@ -8,6 +8,7 @@ use Illuminate\Http\UploadedFile;
 class ImportRequest extends FormRequest
 {
     private const ALLOWED_EXTENSIONS = ['csv', 'xlsx', 'xls', 'ods', 'txt'];
+    private const MAX_IMPORT_FILE_SIZE_KB = 262144;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -28,7 +29,7 @@ class ImportRequest extends FormRequest
             'import' => [
                 'required',
                 'file',
-                'max:10240',
+                'max:' . self::MAX_IMPORT_FILE_SIZE_KB,
                 function (string $attribute, mixed $value, \Closure $fail): void {
                     if (!$value instanceof UploadedFile) {
                         return;

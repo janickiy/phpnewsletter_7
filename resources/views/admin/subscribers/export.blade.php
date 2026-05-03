@@ -63,7 +63,7 @@
                                     </label>
                                     <label class="radio">
 
-                                        {{ Form::radio('compress', 'zip', true) }}
+                                        {{ Form::radio('compress', 'zip', false) }}
 
                                         <i></i>zip
                                     </label>

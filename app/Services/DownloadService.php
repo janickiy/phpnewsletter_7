@@ -22,6 +22,8 @@ use ZipArchive;
 class DownloadService
 {
     private const XLSX_EXT = 'xlsx';
+    private const TXT_EXT = 'txt';
+    private const EXPORT_CHUNK_SIZE = 10000;
     private const HEADER_FILL_COLOR = 'EE7171';
     private const SUMMARY_FILL_COLOR = 'EEEEEE';
 
@@ -85,19 +87,20 @@ class DownloadService
             );
         }
 
-        $subscribers = $this->getSubscribersList($request->categoryId);
-        [$contents, $ext] = $this->buildSubscribersFile($subscribers, $request->export_type);
+        if ($request->export_type === 'text') {
+            $filename = 'exportEmail_' . date('d_m_Y') . '.' . self::TXT_EXT;
 
-        $filename = 'exportEmail_' . date('d_m_Y') . '.' . $ext;
+            if ($request->compress === 'zip') {
+                return $this->zipFileResponse(
+                    $filename,
+                    fn (): string => $this->buildSubscribersTextFile($request->categoryId)
+                );
+            }
 
-        if ($request->compress === 'zip') {
-            return $this->zipResponse($contents, $filename);
+            return $this->streamSubscribersTextFile($filename, $request->categoryId);
         }
 
-        return response($contents, 200, [
-            'Content-Disposition' => "attachment; filename={$filename}",
-            'Content-Type' => StringHelper::getMimeType($ext),
-        ]);
+        throw new InvalidArgumentException('Invalid export type');
     }
 
     /**
@@ -824,6 +827,100 @@ class DownloadService
         }
 
         throw new InvalidArgumentException('Invalid export type');
+    }
+
+    /**
+     * Stream subscribers as a plain text file without loading all rows into memory.
+     *
+     * @param string $filename
+     * @param array|null $ids
+     * @return StreamedResponse
+     */
+    private function streamSubscribersTextFile(string $filename, ?array $ids): StreamedResponse
+    {
+        return response()->streamDownload(function () use ($ids): void {
+            $handle = fopen('php://output', 'wb');
+
+            if ($handle === false) {
+                throw new \RuntimeException('Failed to open output stream.');
+            }
+
+            $this->writeSubscribersTextRows($handle, $ids);
+        }, $filename, [
+            'Content-Type' => StringHelper::getMimeType(self::TXT_EXT),
+        ]);
+    }
+
+    /**
+     * Build a temporary text file for ZIP exports.
+     *
+     * @param array|null $ids
+     * @return string
+     */
+    private function buildSubscribersTextFile(?array $ids): string
+    {
+        $tmpFile = tempnam(sys_get_temp_dir(), 'subscribers_txt_');
+
+        if ($tmpFile === false) {
+            throw new \RuntimeException('Failed to create temporary file.');
+        }
+
+        $handle = fopen($tmpFile, 'wb');
+
+        if ($handle === false) {
+            @unlink($tmpFile);
+            throw new \RuntimeException('Failed to open temporary file.');
+        }
+
+        try {
+            $this->writeSubscribersTextRows($handle, $ids);
+        } catch (\Throwable $e) {
+            fclose($handle);
+            @unlink($tmpFile);
+
+            throw $e;
+        }
+
+        fclose($handle);
+
+        return $tmpFile;
+    }
+
+    /**
+     * Write active subscribers in chunks to the provided stream handle.
+     *
+     * @param resource $handle
+     * @param array|null $ids
+     * @return void
+     */
+    private function writeSubscribersTextRows($handle, ?array $ids): void
+    {
+        $this->getSubscribersQuery($ids)
+            ->chunkById(self::EXPORT_CHUNK_SIZE, function (Collection $subscribers) use ($handle): void {
+                foreach ($subscribers as $subscriber) {
+                    fwrite($handle, $this->formatSubscriberTextLine($subscriber));
+                }
+
+                if (ob_get_level() > 0) {
+                    @ob_flush();
+                }
+
+                flush();
+            }, 'subscribers.id', 'id');
+    }
+
+    /**
+     * Format one subscriber line for text export.
+     *
+     * @param object $subscriber
+     * @return string
+     */
+    private function formatSubscriberTextLine(object $subscriber): string
+    {
+        $email = trim((string) $subscriber->email);
+        $name = trim(str_replace(["\r", "\n"], ' ', (string) $subscriber->name));
+
+        return rtrim($email . ' ' . $name) . "\n";
     }
 
     /**
