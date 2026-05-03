@@ -7,6 +7,10 @@ class UpdateHelper
     private $language;
     private string $url = 'http://license.janickiy.com/';
     private string $currentVersion;
+    private bool $updateInfoLoaded = false;
+
+    /** @var array<string, mixed> */
+    private array $updateInfo = [];
 
     public function __construct(string $language, string $currentVersion)
     {
@@ -60,9 +64,19 @@ class UpdateHelper
 
         curl_close($ch);
 
+        if (!is_string($data) || $data === '') {
+            return '';
+        }
+
         preg_match('/\{([^\}])+\}/', $data, $out);
 
-        return isset($out[0]) ? json_decode($out[0], true) : '';
+        if (!isset($out[0])) {
+            return '';
+        }
+
+        $decoded = json_decode($out[0], true);
+
+        return is_array($decoded) ? $decoded : '';
     }
 
     /**
@@ -70,7 +84,9 @@ class UpdateHelper
      */
     public function checkTree(): bool
     {
-        preg_match("/(\d+)\.(\d+)\.(\d+)/", $this->currentVersion, $out);
+        if (!preg_match("/^(\d+)\.(\d+)\.(\d+)$/", $this->currentVersion, $out)) {
+            return false;
+        }
 
         if ($out[1] < $out[2]) {
             return false;
@@ -84,7 +100,7 @@ class UpdateHelper
      */
     public function getVersion(): string
     {
-        $out = $this->getDataContents($this->getUrlInfo());
+        $out = $this->getUpdateInfo();
 
         return $out["version"] ?? '';
     }
@@ -94,7 +110,7 @@ class UpdateHelper
      */
     public function getDownloadLink(): string
     {
-        $out = $this->getDataContents($this->getUrlInfo());
+        $out = $this->getUpdateInfo();
 
         return $out['download'] ?? '';
     }
@@ -104,7 +120,7 @@ class UpdateHelper
      */
     public function getUpdateLink(): string
     {
-        $out = $this->getDataContents($this->getUrlInfo());
+        $out = $this->getUpdateInfo();
 
         return $out['update'] ?? '';
     }
@@ -114,7 +130,7 @@ class UpdateHelper
      */
     public function getCreated(): string
     {
-        $out = $this->getDataContents($this->getUrlInfo());
+        $out = $this->getUpdateInfo();
 
         return $out['created'] ?? '';
     }
@@ -124,7 +140,7 @@ class UpdateHelper
      */
     public function getUpdate(): string
     {
-        $out = $this->getDataContents($this->getUrlInfo());
+        $out = $this->getUpdateInfo();
 
         return $out['update'] ?? '';
     }
@@ -134,7 +150,7 @@ class UpdateHelper
      */
     public function getUpgradeVersion(): string
     {
-        $out = $this->getDataContents($this->getUrlInfo());
+        $out = $this->getUpdateInfo();
 
         return $out['upgrade_version'] ?? '';
     }
@@ -144,7 +160,7 @@ class UpdateHelper
      */
     public function getMessage(): string
     {
-        $out = $this->getDataContents($this->getUrlInfo());
+        $out = $this->getUpdateInfo();
 
         return $out['message'] ?? '';
     }
@@ -175,16 +191,30 @@ class UpdateHelper
      */
     private function checkVersion(string $version, string $currentVersion): bool
     {
-        if ($version) {
-            preg_match("/(\d+)\.(\d+)\.(\d+)/", $currentVersion, $out1);
-            preg_match("/(\d+)\.(\d+)\.(\d+)/", $version, $out2);
-
-            $v1 = ($out1[1] * 10000 + $out1[2] * 100 + $out1[3]);
-            $v2 = ($out2[1] * 10000 + $out2[2] * 100 + $out2[3]);
-
-            if ($v2 > $v1) return true;
+        foreach ([$version, $currentVersion] as $value) {
+            if (!preg_match("/^\d+\.\d+\.\d+$/", $value)) {
+                return false;
+            }
         }
 
-        return false;
+        return version_compare($version, $currentVersion, '>');
+    }
+
+    /**
+     * Load update metadata once per request.
+     *
+     * @return array<string, mixed>
+     */
+    private function getUpdateInfo(): array
+    {
+        if ($this->updateInfoLoaded) {
+            return $this->updateInfo;
+        }
+
+        $this->updateInfoLoaded = true;
+        $data = $this->getDataContents($this->getUrlInfo());
+        $this->updateInfo = is_array($data) ? $data : [];
+
+        return $this->updateInfo;
     }
 }

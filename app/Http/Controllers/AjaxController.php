@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\UpdateHelper;
 use App\Models\Category;
 use App\Models\Logs;
+use App\Models\User;
 use App\Repositories\AttachRepository;
 use App\Repositories\ProcessRepository;
 use App\Repositories\ReadySentRepository;
@@ -19,6 +20,10 @@ use Illuminate\Support\Facades\Cookie;
 
 class AjaxController extends Controller
 {
+    private const ADMIN_ONLY_ACTIONS = [
+        'start_update',
+    ];
+
     /**
      * Inject services and repositories used by shared admin AJAX actions.
      */
@@ -71,6 +76,13 @@ class AjaxController extends Controller
             return [];
         }
 
+        if ($this->isAdminOnlyAction($action) && !$this->currentUserIsAdmin()) {
+            return [
+                'result' => false,
+                'status' => __('frontend.msg.failed_to_update'),
+            ];
+        }
+
         $update = new UpdateHelper(app()->getLocale(), env('VERSION'));
 
         return match ($action) {
@@ -105,6 +117,27 @@ class AjaxController extends Controller
 
             default => [],
         };
+    }
+
+    /**
+     * Determine whether the AJAX action can only be executed by administrators.
+     *
+     * @param string $action
+     * @return bool
+     */
+    private function isAdminOnlyAction(string $action): bool
+    {
+        return in_array($action, self::ADMIN_ONLY_ACTIONS, true);
+    }
+
+    /**
+     * Check whether the current session belongs to an administrator.
+     *
+     * @return bool
+     */
+    private function currentUserIsAdmin(): bool
+    {
+        return Auth::check() && Auth::user()?->role === User::ROLE_ADMIN;
     }
 
     /**

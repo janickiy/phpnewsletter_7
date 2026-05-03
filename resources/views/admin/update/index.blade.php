@@ -47,7 +47,7 @@
     <script>
 
         $(function () {
-            $("#start_update").on("click", function () {
+            $(document).on("click", "#start_update", function () {
                 $("#btn_refresh").html('<div class="progress"><div id="progress_bar" class="progress-bar bg-primary progress-bar-striped" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width: 1%"></div></div><p class="text-muted" id="status_process">{{ __('frontend.str.start_update') }}</p>');
                 $("#status_process").text('{{ __('frontend.msg.downloading') }} update.zip ...');
 
@@ -79,7 +79,7 @@
         });
 
         function uploadFiles2() {
-            $("#status_process").text('{{ __('frontend.msg.downloading') }} puplic.zip ...');
+            $("#status_process").text('{{ __('frontend.msg.downloading') }} public.zip ...');
 
             $.ajax({
                 type: "POST",

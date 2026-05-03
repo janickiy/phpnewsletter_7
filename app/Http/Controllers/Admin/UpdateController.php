@@ -29,7 +29,7 @@ class UpdateController extends Controller
             $msgNoUpdate = str_replace(
                 ['%SCRIPT_NAME%', '%NEW_VERSION%'],
                 [__('frontend.str.script_name'), env('VERSION')],
-                __('frontend.str.no_updates')
+                __('frontend.msg.no_updates')
             );
         }
 
