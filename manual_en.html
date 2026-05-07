@@ -103,7 +103,6 @@
       <li><code>curl</code></li>
       <li><code>iconv</code></li>
       <li><code>gd</code></li>
-      <li><code>pdo_mysql</code></li>
       <li><code>fileinfo</code></li>
     </ul>
 
@@ -266,6 +265,10 @@
       <li><code>/unsubscribe/{subscriber}/{token}</code> — unsubscribe link;</li>
       <li><code>/subscribe/{subscriber}/{token}</code> — subscription confirmation link.</li>
     </ul>
+    <p>The subscription form can also be embedded into your own website. In the admin panel, open the <strong>Subscription Form</strong> page to preview the form and copy the ready-made HTML/JavaScript embed code. Place this code on the desired page of your site; it will load available categories, submit subscriber data through the public <code>/add-sub</code> endpoint, and show success or validation messages without requiring visitors to leave your website.</p>
+    <div class="note">
+      <strong>Embedding note:</strong> the copied form code uses jQuery and the public API routes listed above. Make sure the PHP Newsletter installation is reachable from the page where the form is placed, and that the selected subscriber categories are active.
+    </div>
 
     <h2 id="templates">9. Templates, Macros, and Attachments</h2>
     <h3>Templates</h3>
