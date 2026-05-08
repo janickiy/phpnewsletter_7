@@ -39,7 +39,7 @@ class UpdateHelper
      */
     public function getUrlInfo(): string
     {
-        return $this->url . '?id=5&version=' . urlencode($this->currentVersion) . '&lang=' . $this->language . '&ip=' . $this->getIP();
+        return $this->url . '?id=6&version=' . urlencode($this->currentVersion) . '&lang=' . $this->language . '&ip=' . $this->getIP();
     }
 
     /**
@@ -122,7 +122,7 @@ class UpdateHelper
     {
         $out = $this->getUpdateInfo();
 
-        return $out['update'] ?? '';
+        return $this->normalizeUpdateLink($out['update'] ?? '');
     }
 
     /**
@@ -142,7 +142,7 @@ class UpdateHelper
     {
         $out = $this->getUpdateInfo();
 
-        return $out['update'] ?? '';
+        return $this->normalizeUpdateLink($out['update'] ?? '');
     }
 
     /**
@@ -198,6 +198,21 @@ class UpdateHelper
         }
 
         return version_compare($version, $currentVersion, '>');
+    }
+
+    private function normalizeUpdateLink(string $link): string
+    {
+        if ($link === '') {
+            return '';
+        }
+
+        $path = (string)parse_url($link, PHP_URL_PATH);
+
+        if (pathinfo($path, PATHINFO_EXTENSION) === 'zip') {
+            $link = dirname($link);
+        }
+
+        return rtrim($link, '/');
     }
 
     /**

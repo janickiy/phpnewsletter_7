@@ -77,7 +77,7 @@ class UpdateService
             );
         }
 
-        $fileContent = @file_get_contents($updateLink . $fileName);
+        $fileContent = @file_get_contents(rtrim($updateLink, '/') . '/' . $fileName);
 
         if ($fileContent === false) {
             return $this->makeResponse(
