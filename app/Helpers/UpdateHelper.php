@@ -5,7 +5,7 @@ namespace App\Helpers;
 class UpdateHelper
 {
     private $language;
-    private string $url = 'http://license.janickiy.com/';
+    private string $url = 'https://license.janickiy.com/';
     private string $currentVersion;
     private bool $updateInfoLoaded = false;
 
@@ -39,7 +39,11 @@ class UpdateHelper
      */
     public function getUrlInfo(): string
     {
-        return $this->url . '?id=6&version=' . urlencode($this->currentVersion) . '&lang=' . $this->language . '&ip=' . $this->getIP();
+        return $this->url . '?' . http_build_query([
+            'id' => 5,
+            'version' => $this->currentVersion,
+            'lang' => $this->language,
+        ]);
     }
 
     /**
@@ -55,7 +59,6 @@ class UpdateHelper
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_USERAGENT, isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 0);
-        curl_setopt($ch, CURLOPT_REFERER, isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
@@ -68,13 +71,20 @@ class UpdateHelper
             return '';
         }
 
-        preg_match('/\{([^\}])+\}/', $data, $out);
+        $decoded = json_decode($data, true);
 
-        if (!isset($out[0])) {
+        if (is_array($decoded)) {
+            return $decoded;
+        }
+
+        $jsonStart = strpos($data, '{');
+        $jsonEnd = strrpos($data, '}');
+
+        if ($jsonStart === false || $jsonEnd === false || $jsonEnd < $jsonStart) {
             return '';
         }
 
-        $decoded = json_decode($out[0], true);
+        $decoded = json_decode(substr($data, $jsonStart, $jsonEnd - $jsonStart + 1), true);
 
         return is_array($decoded) ? $decoded : '';
     }

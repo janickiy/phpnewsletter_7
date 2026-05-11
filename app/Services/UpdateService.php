@@ -58,7 +58,10 @@ class UpdateService
             __('frontend.str.update_warning')
         );
 
-        return ['msg' => $message];
+        return [
+            'msg' => $message,
+            'version' => $update->getVersion(),
+        ];
     }
 
     /**
