@@ -254,6 +254,7 @@ return [
         'description' => 'Beschreibung',
         'role' => 'Rolle',
         'password_again' => 'Passwort wiederholen',
+        'leave_blank_password' => 'Leer lassen, wenn das Passwort nicht geändert werden soll.',
         'date_and_time' => 'Datum und Uhrzeit',
         'interval_number' => 'Intervall für den Versand von E-Mails an den Abonnenten',
         'minute' => 'Minute',

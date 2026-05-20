@@ -254,6 +254,7 @@ return [
         'description' => 'विवरण',
         'role' => 'भूमिका',
         'password_again' => 'पासवर्ड पुनः दर्ज करें',
+        'leave_blank_password' => 'यदि आप पासवर्ड बदलना नहीं चाहते हैं तो खाली छोड़ दें।',
         'date_and_time' => 'तिथि और समय',
         'interval_number' => 'सदस्य को ईमेल भेजने का अंतराल',
         'minute' => 'मिनट',

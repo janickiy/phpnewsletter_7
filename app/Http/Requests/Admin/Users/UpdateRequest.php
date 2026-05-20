@@ -35,6 +35,7 @@ class UpdateRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'password' => ['nullable', 'string', 'min:6'],
             'password_again' => [
+                'required_with:password',
                 'nullable',
                 'string',
                 'min:6',

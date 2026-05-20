@@ -77,31 +77,39 @@
 
                                 </div>
 
-                                <div class="form-group">
-
-                                    {!! Form::label('password', __('frontend.form.password')) !!}
-
-                                    {!! Form::password('password', ['class' => 'form-control']) !!}
-
-                                    @if ($errors->has('password'))
-                                        <p class="text-danger">{{ $errors->first('password') }}</p>
-                                    @endif
-
-                                </div>
-
-                                <div class="form-group">
-
-                                    {!! Form::label('password_again', __('frontend.form.password_again')) !!}
-
-                                    {!! Form::password('password_again', ['class' => 'form-control']) !!}
-
-                                    @if ($errors->has('password_again'))
-                                        <p class="text-danger">{{ $errors->first('password_again') }}</p>
-                                    @endif
-
-                                </div>
-
+                            @else
+                                {!! Form::hidden('role', $row->role) !!}
                             @endif
+
+                            <div class="form-group">
+
+                                {!! Form::label('password', __('frontend.form.password')) !!}
+
+                                {!! Form::password('password', ['class' => 'form-control', 'autocomplete' => 'new-password']) !!}
+
+                                @if (isset($row))
+                                    <small class="form-text text-muted">
+                                        {{ __('frontend.form.leave_blank_password') }}
+                                    </small>
+                                @endif
+
+                                @if ($errors->has('password'))
+                                    <p class="text-danger">{{ $errors->first('password') }}</p>
+                                @endif
+
+                            </div>
+
+                            <div class="form-group">
+
+                                {!! Form::label('password_again', __('frontend.form.password_again')) !!}
+
+                                {!! Form::password('password_again', ['class' => 'form-control', 'autocomplete' => 'new-password']) !!}
+
+                                @if ($errors->has('password_again'))
+                                    <p class="text-danger">{{ $errors->first('password_again') }}</p>
+                                @endif
+
+                            </div>
 
                         </div>
                         <!-- /.card-body -->
@@ -133,4 +141,3 @@
 
 
 @endsection
-

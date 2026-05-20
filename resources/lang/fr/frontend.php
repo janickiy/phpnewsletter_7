@@ -254,6 +254,7 @@ return [
         'description' => 'Description',
         'role' => 'Rôle',
         'password_again' => 'Confirmer le mot de passe',
+        'leave_blank_password' => 'Laissez vide si vous ne souhaitez pas modifier le mot de passe.',
         'date_and_time' => 'Date et heure',
         'interval_number' => 'Intervalle d’envoi des e-mails à l’abonné',
         'minute' => 'minute',

@@ -255,6 +255,7 @@ return [
         'description' => 'Описание',
         'role'        => 'Роль',
         'password_again' => 'Повтор пароля',
+        'leave_blank_password' => 'Оставьте поле пустым, если не хотите менять пароль.',
         'date_and_time'  => 'Дата и время',
         'minute' => 'минут',
         'hour'   => 'часов',

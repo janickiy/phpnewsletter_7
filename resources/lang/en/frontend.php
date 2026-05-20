@@ -254,6 +254,7 @@ return [
         'description' => 'Description',
         'role' => 'Role',
         'password_again' => 'Password again',
+        'leave_blank_password' => 'Leave blank if you do not want to change the password.',
         'date_and_time' => 'Date and time',
         'interval_number' => 'Interval for sending emails to the subscriber',
         'minute' => 'minute',

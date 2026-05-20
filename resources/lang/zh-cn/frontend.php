@@ -254,6 +254,7 @@ return [
         'description' => '描述',
         'role' => '角色',
         'password_again' => '再次输入密码',
+        'leave_blank_password' => '如果不想更改密码，请留空。',
         'date_and_time' => '日期和时间',
         'interval_number' => '向订阅者发送邮件的间隔',
         'minute' => '分钟',

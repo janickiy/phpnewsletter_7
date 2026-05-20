@@ -223,6 +223,7 @@ return [
         'description' => 'Descrição',
         'role' => 'Função',
         'password_again' => 'Confirmar senha',
+        'leave_blank_password' => 'Deixe em branco se não quiser alterar a senha.',
         'date_and_time' => 'Data e hora',
         'interval_number' => 'Intervalo de envio',
         'minute' => 'minuto',

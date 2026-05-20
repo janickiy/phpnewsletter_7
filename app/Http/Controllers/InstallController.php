@@ -129,6 +129,7 @@ class InstallController extends Controller
     {
         try {
             $db = Session::pull('install.db_credentials');
+            $installLocale = $this->getInstallLocale();
 
             copy(base_path('.env.example'), base_path('.env'));
 
@@ -142,10 +143,13 @@ class InstallController extends Controller
             $env = str_replace('DB_PASSWORD=' . env('DB_PASSWORD'), 'DB_PASSWORD="' . $db['password'] . '"', $env);
             $env = str_replace('VERSION=', 'VERSION="7.1.0"', $env);
             $env = str_replace('APP_URL=', 'APP_URL=' . StringHelper::getUrl(), $env);
+            $env = $this->setEnvValue($env, 'APP_LOCALE', $installLocale);
 
             file_put_contents($path, $env);
 
             $this->setDatabaseCredentials($db);
+            config(['app.locale' => $installLocale]);
+            app()->setLocale($installLocale);
             config(['app.debug' => true]);
 
             Artisan::call('migrate', ['--force' => true]);
@@ -172,6 +176,41 @@ class InstallController extends Controller
     private function reloadEnv(): void
     {
         (new LoadEnvironmentVariables)->bootstrap(app());
+    }
+
+    /**
+     * Return the supported locale selected during installation.
+     *
+     * @return string
+     */
+    private function getInstallLocale(): string
+    {
+        $locale = app()->getLocale();
+
+        return in_array($locale, Config::get('app.locales', []), true)
+            ? $locale
+            : Config::get('app.fallback_locale', 'en');
+    }
+
+    /**
+     * Set or append one value in the generated .env contents.
+     *
+     * @param string $contents
+     * @param string $key
+     * @param string $value
+     * @return string
+     */
+    private function setEnvValue(string $contents, string $key, string $value): string
+    {
+        $line = $key . '=' . $value;
+
+        if (preg_match('/^' . preg_quote($key, '/') . '=.*/m', $contents)) {
+            $updatedContents = preg_replace('/^' . preg_quote($key, '/') . '=.*/m', $line, $contents);
+
+            return $updatedContents ?? $contents;
+        }
+
+        return rtrim($contents) . PHP_EOL . $line . PHP_EOL;
     }
 
     /**
@@ -326,7 +365,7 @@ class InstallController extends Controller
                 case 'change_lng':
 
                     if ($request->input('locale')) {
-                        if (in_array($request->input('locale'), Config::get('app.locales'))) {
+                        if (in_array($request->input('locale'), Config::get('app.locales', []), true)) {
                             Cookie::queue(
                                 Cookie::forever('lang', $request->input('locale')));
                         }
@@ -335,5 +374,7 @@ class InstallController extends Controller
                     return response()->json(['result' => true]);
             }
         }
+
+        return response()->json(['result' => false]);
     }
 }
