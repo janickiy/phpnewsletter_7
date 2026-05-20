@@ -38,7 +38,7 @@ class SettingsRepository extends BaseRepository
         $headerNames = $data['header_name'] ?? [];
         $headerValues = $data['header_value'] ?? [];
 
-        Customheaders::truncate();
+        CustomHeaders::truncate();
 
         if (!empty($headerNames)) {
             for ($i = 0; $i < count($headerNames); $i++) {
@@ -52,7 +52,7 @@ class SettingsRepository extends BaseRepository
                 if (preg_match('/^[\\-a-zA-Z]+$/', $name)) {
                     $value = str_replace([';', ':'], '', $value);
 
-                    Customheaders::create([
+                    CustomHeaders::create([
                         'name' => $name,
                         'value' => $value,
                     ]);

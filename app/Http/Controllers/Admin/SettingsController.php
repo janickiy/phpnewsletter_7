@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Models\Charsets;
-use App\Models\Customheaders;
+use App\Models\CustomHeaders;
 use App\Repositories\SettingsRepository;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -30,7 +30,7 @@ class SettingsController extends Controller
     {
         return view('admin.settings.index', [
             'option_charset' => Charsets::getOption(),
-            'customHeaders' => Customheaders::get(),
+            'customHeaders' => CustomHeaders::get(),
             'infoAlert' => __('frontend.hint.settings_index'),
             'title' => __('frontend.title.settings_index'),
         ]);

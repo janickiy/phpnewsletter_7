@@ -3,7 +3,7 @@
 namespace App\Helpers;
 
 use PHPMailer\PHPMailer;
-use App\Models\{Attach, Smtp, Customheaders};
+use App\Models\{Attach, Smtp, CustomHeaders};
 use Illuminate\Support\Facades\Storage;
 use URL;
 
@@ -170,7 +170,7 @@ class SendEmailHelper
             $m->addCustomHeader("List-Unsubscribe: " . $UNSUB);
         }
 
-        foreach (Customheaders::get() ?? [] as $customheader) {
+        foreach (CustomHeaders::get() ?? [] as $customheader) {
             $m->addCustomHeader($customheader->name . ": " . $customheader->value);
         }
 
