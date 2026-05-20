@@ -148,7 +148,10 @@ class InstallController extends Controller
             file_put_contents($path, $env);
 
             $this->setDatabaseCredentials($db);
-            config(['app.locale' => $installLocale]);
+            config([
+                'app.locale' => $installLocale,
+                'app.installed_locale' => $installLocale,
+            ]);
             app()->setLocale($installLocale);
             config(['app.debug' => true]);
 
@@ -158,7 +161,9 @@ class InstallController extends Controller
 
             User::create(['name' => 'admin', 'login' => $request->input('login'), 'role' => 'admin', 'password' => Hash::make($request->input('password'))]);
 
-            return redirect()->route('install.complete');
+            return redirect()
+                ->route('install.complete')
+                ->withCookie(Cookie::forever('lang', $installLocale));
         } catch (\Exception $e) {
             @unlink(base_path('.env'));
             Log::error($e->getMessage());
@@ -185,7 +190,7 @@ class InstallController extends Controller
      */
     private function getInstallLocale(): string
     {
-        $locale = app()->getLocale();
+        $locale = Session::get('install.locale', app()->getLocale());
 
         return in_array($locale, Config::get('app.locales', []), true)
             ? $locale
@@ -214,12 +219,31 @@ class InstallController extends Controller
     }
 
     /**
+     * Return the installed application locale from configuration.
+     *
+     * @return string
+     */
+    private function getConfiguredLocale(): string
+    {
+        $locale = Config::get('app.installed_locale', Config::get('app.fallback_locale', 'en'));
+
+        return in_array($locale, Config::get('app.locales', []), true)
+            ? $locale
+            : Config::get('app.fallback_locale', 'en');
+    }
+
+    /**
      * Show the successful installation completion page.
      *
      * @return View
      */
     public function complete(): View
     {
+        $locale = $this->getConfiguredLocale();
+
+        app()->setLocale($locale);
+        Cookie::queue(Cookie::forever('lang', $locale));
+
         return view('install.complete');
     }
 
@@ -365,9 +389,14 @@ class InstallController extends Controller
                 case 'change_lng':
 
                     if ($request->input('locale')) {
-                        if (in_array($request->input('locale'), Config::get('app.locales', []), true)) {
+                        $locale = (string)$request->input('locale');
+
+                        if (in_array($locale, Config::get('app.locales', []), true)) {
+                            Session::put('install.locale', $locale);
+                            app()->setLocale($locale);
+
                             Cookie::queue(
-                                Cookie::forever('lang', $request->input('locale')));
+                                Cookie::forever('lang', $locale));
                         }
                     }
 

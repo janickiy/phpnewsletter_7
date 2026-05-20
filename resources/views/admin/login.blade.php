@@ -80,7 +80,7 @@
                     </div>
                     <!-- /.col -->
                     <div class="col-4">
-                        {!! Form::submit('Войти', ['class' => 'btn btn-primary btn-block']) !!}
+                        {!! Form::submit(__('frontend.str.singin'), ['class' => 'btn btn-primary btn-block']) !!}
                     </div>
                     <!-- /.col -->
                 </div>

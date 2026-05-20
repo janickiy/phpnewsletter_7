@@ -84,6 +84,7 @@ return [
     */
 
     'locale' => env('APP_LOCALE', 'en'),
+    'installed_locale' => env('APP_LOCALE', 'en'),
     'locales' => ['en', 'ru', 'es', 'fr', 'de', 'zh-cn', 'pt', 'ar', 'hi'],
     'languages' => [
         'en' => 'English',
