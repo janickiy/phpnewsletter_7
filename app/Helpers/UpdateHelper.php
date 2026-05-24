@@ -40,10 +40,10 @@ class UpdateHelper
     public function getUrlInfo(): string
     {
         return $this->url . '?' . http_build_query([
-            'id' => 5,
-            'version' => $this->currentVersion,
-            'lang' => $this->language,
-        ]);
+                'id' => 5,
+                'version' => $this->currentVersion,
+                'lang' => $this->language,
+            ]);
     }
 
     /**
@@ -58,7 +58,15 @@ class UpdateHelper
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_USERAGENT, isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 0);
+        $userAgent = $this->getServerHeader('HTTP_USER_AGENT');
+        if ($userAgent !== null) {
+            curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
+        }
+
+        $referer = $this->getServerHeader('HTTP_REFERER');
+        if ($referer !== null) {
+            curl_setopt($ch, CURLOPT_REFERER, $referer);
+        }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
@@ -223,6 +231,22 @@ class UpdateHelper
         }
 
         return rtrim($link, '/');
+    }
+
+    /**
+     * Return a non-empty HTTP header value from the current request.
+     */
+    private function getServerHeader(string $key): ?string
+    {
+        $value = $_SERVER[$key] ?? null;
+
+        if (!is_string($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        return $value === '' ? null : $value;
     }
 
     /**
