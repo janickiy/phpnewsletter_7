@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Http\Requests\Admin\Templates\StoreRequest;
+use App\Http\Requests\Admin\Templates\DeleteRequest;
 use App\Http\Requests\Admin\Templates\UpdateRequest;
 use App\Models\Macros;
 use App\Repositories\CategoryRepository;
@@ -148,12 +149,12 @@ class TemplatesController extends Controller
     }
 
     /**
-     * Apply bulk status changes to selected email templates.
+     * Delete selected email templates from the bulk action form.
      *
      * @param DeleteRequest $request
      * @return RedirectResponse
      */
-    public function status(DeleteRequest $request): RedirectResponse
+    public function delete(DeleteRequest $request): RedirectResponse
     {
         try {
             $this->templateRepository->updateStatus(

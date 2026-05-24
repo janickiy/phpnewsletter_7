@@ -24,10 +24,20 @@ class DeleteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => [
+            'templateId' => [
+                'required',
+                'array',
+                'min:1',
+            ],
+            'templateId.*' => [
                 'required',
                 'integer',
                 Rule::exists(Templates::getTableName(), 'id'),
+            ],
+            'action' => [
+                'required',
+                'integer',
+                Rule::in([1]),
             ],
         ];
     }

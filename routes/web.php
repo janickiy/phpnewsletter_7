@@ -52,7 +52,7 @@ Route::group(['middleware' => ['install']], function () {
         Route::get('edit/{id}', [TemplatesController::class, 'edit'])->name('admin.templates.edit')->where('id', '[0-9]+');
         Route::put('update', [TemplatesController::class, 'update'])->name('admin.templates.update');
         Route::delete('destroy/{id}', [TemplatesController::class, 'destroy'])->name('admin.templates.destroy')->where('id', '[0-9]+');
-        Route::post('status', [TemplatesController::class, 'status'])->name('admin.templates.status');
+        Route::post('status', [TemplatesController::class, 'delete'])->name('admin.templates.status');
     });
 
     Route::middleware(['permission:admin|moderator'])->group(function () {
