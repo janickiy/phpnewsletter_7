@@ -73,21 +73,21 @@
 
                             <div class="form-group">
 
-                                {!! Form::label('categoryId[]',  __('frontend.form.subscribers_category')) !!}
+                                {!! Form::label('categoryId',  __('frontend.form.subscribers_category')) !!}
 
                                 @php
-                                    $selected = array_map('strval', old('categoryId', $categoryId ?? []));
+                                    $selectedCategoryIds = collect(old('categoryId', $categoryId ?? []))
+                                        ->map(fn ($value) => (string) $value)
+                                        ->all();
                                 @endphp
 
-                                {!! Form::select(
-                                    'categoryId[]', // ❗ БЕЗ []
-                                    $category_options,
-                                    $selected,
-                                    [
-                                        'multiple' => true,
-                                        'class' => 'form-control',
-                                    ]
-                                ) !!}
+                                <select name="categoryId[]" id="categoryId" multiple class="form-control">
+                                    @foreach($category_options as $categoryValue => $categoryLabel)
+                                        <option value="{{ $categoryValue }}" @selected(in_array((string) $categoryValue, $selectedCategoryIds, true))>
+                                            {{ $categoryLabel }}
+                                        </option>
+                                    @endforeach
+                                </select>
 
                                 @if ($errors->has('categoryId'))
                                     <p class="text-danger">{{ $errors->first('categoryId') }}</p>
