@@ -25,7 +25,7 @@
     {!! Html::style('/plugins/flag-icon-css/css/flag-icon.min.css') !!}
 
     <!-- Custom style -->
-    {!! Html::style('/dist/css/admin.css?v=3') !!}
+    {!! Html::style('/dist/css/admin.css?v=9') !!}
 
     @yield('css')
 
@@ -90,9 +90,12 @@
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
-        <a href="{{ route('admin.templates.index') }}" class="brand-link">
-            <img src="{{ url('/dist/img/logo.png') }}" alt="PHP Newsletter" class="brand-image">
-            <span style="font-size: 0.7rem">{{ env('VERSION') }}</span>
+        <a href="{{ route('admin.dashboard.index') }}" class="brand-link">
+            <img src="{{ url('/dist/img/logo-sidebar-icon.png') }}?v={{ filemtime(public_path('dist/img/logo-sidebar-icon.png')) }}" alt="PHP Newsletter" class="brand-icon">
+            <span class="brand-wordmark">
+                <span class="brand-wordmark-main"><span>PHP</span>Newsletter</span>
+                <span class="brand-wordmark-sub">Mailing System</span>
+            </span>
         </a>
 
         <!-- Sidebar -->
@@ -115,7 +118,15 @@
                          with font-awesome or any other icon font library -->
 
                     <li class="nav-item">
-                        <a href="{{ route('admin.templates.index') }}" class="nav-link{{ Request::is('template*') || Request::is('/') ? ' active' : '' }}"
+                        <a href="{{ route('admin.dashboard.index') }}" class="nav-link{{ Request::is('/') ? ' active' : '' }}"
+                           title="{{ __('frontend.menu.dashboard') }}">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>{{ __('frontend.menu.dashboard') }}</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('admin.templates.index') }}" class="nav-link{{ Request::is('templates*') || Request::is('template*') ? ' active' : '' }}"
                            title="{{ __('frontend.menu.templates') }}">
                             <i class="nav-icon fas fa-envelope"></i>
                             <p>{{ __('frontend.menu.templates') }}</p>
@@ -320,6 +331,9 @@
     <!-- /.content-wrapper -->
 
     <footer class="main-footer">
+        <div class="float-right d-none d-sm-inline">
+            {{ env('VERSION') }}
+        </div>
         <strong>&copy; 2006-{{ date('Y') }} <a href="https://janickiy.com">PHP Newsletter</a>, {{ __('frontend.str.author') }}</strong>
     </footer>
 

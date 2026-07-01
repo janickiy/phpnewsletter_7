@@ -98,7 +98,7 @@ return [
         'hi' => 'हिन्दी',
     ],
     'flags' => [
-        'en' => 'us',
+        'en' => 'gb',
         'ru' => 'ru',
         'es' => 'es',
         'fr' => 'fr',

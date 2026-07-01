@@ -21,6 +21,16 @@
     <!-- Theme style -->
     {!! Html::style('dist/css/adminlte.min.css?v=2') !!}
 
+    <style>
+        .auth-logo {
+            width: min(300px, 100%);
+            height: auto;
+        }
+
+        .login-box .card-header {
+            padding: 1.25rem 1.25rem 1rem;
+        }
+    </style>
 
 </head>
 <body class="hold-transition login-page">
@@ -29,7 +39,7 @@
     <div class="card card-outline card-primary">
         <div class="card-header text-center">
 
-            <img src="{{ url('/dist/img/logo.png') }}" alt="">
+            <img src="{{ url('/dist/img/logo-auth-install.png') }}?v={{ filemtime(public_path('dist/img/logo-auth-install.png')) }}" alt="PHP Newsletter" class="auth-logo">
         </div>
         <div class="card-body">
             <p class="login-box-msg">{{ __('auth.admin_area') }}</p>

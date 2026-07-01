@@ -45,7 +45,7 @@ class AuthController extends Controller
         if (Auth::guard('web')->attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('admin.templates.index'));
+            return redirect()->intended(route('admin.dashboard.index'));
         }
 
         return back()
@@ -64,7 +64,7 @@ class AuthController extends Controller
      */
     protected function authenticated(Request $request, mixed $user): RedirectResponse
     {
-        return to_route('admin.templates.index');
+        return to_route('admin.dashboard.index');
     }
 
     /**

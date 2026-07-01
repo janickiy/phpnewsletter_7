@@ -48,7 +48,7 @@
         </div>
 
         <div class="col-md-6 offset-3 logo-wrapper">
-            <img src="{{ url('/dist/img/logo.png') }}" alt="PHP Newsletter" class="logo">
+            <img src="{{ url('/dist/img/logo-auth-install.png') }}?v={{ filemtime(public_path('dist/img/logo-auth-install.png')) }}" alt="PHP Newsletter" class="logo">
         </div>
     </div>
     <div class="wizard col-md-6 offset-3">

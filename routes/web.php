@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\{
     AuthController,
     CategoryController,
     DataTableController,
+    DashboardController,
     TemplatesController,
     SmtpController,
     SettingsController,
@@ -44,7 +45,8 @@ Route::group(['middleware' => ['install']], function () {
     Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('login', [AuthController::class, 'login'])->name('login.submit');
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
-    Route::get('/', [TemplatesController::class, 'index'])->name('admin.templates.index');
+    Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard.index');
+    Route::get('templates', [TemplatesController::class, 'index'])->name('admin.templates.index');
 
     Route::group(['prefix' => 'template'], function () {
         Route::get('create', [TemplatesController::class, 'create'])->name('admin.templates.create');

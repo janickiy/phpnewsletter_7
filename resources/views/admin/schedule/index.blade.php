@@ -12,9 +12,7 @@
     .fc-time-grid .fc-event {
         overflow: auto;
     }
-    .event-class .event-actions {
-        display: none;
-    }
+
     .fc-day-today {
         background-color: #0f0 !important;
     }
@@ -49,9 +47,9 @@
         color: #00008B !important;
     }
 
-    #calendar .p-2,
-    #calendar .event-actions,
-    #calendar .event-actions b {
+    #calendar .calendar-event-content,
+    #calendar .calendar-event-actions,
+    #calendar .calendar-event-title {
         color: #00008B !important;
     }
 
@@ -59,20 +57,70 @@
     .fc-day-today a:hover,
     .fc-day-today a:focus,
     .fc-day-today a:active,
-    .fc-day-today .p-2,
-    .fc-day-today .p-2 .event-actions,
-    .fc-day-today .p-2 .event-actions b {
+    .fc-day-today .calendar-event-content,
+    .fc-day-today .calendar-event-actions,
+    .fc-day-today .calendar-event-title {
         color: #00008B !important;
     }
 
-    .event-class:hover .event-actions {
-        display: flex;
-        justify-content: space-around;
-        font-size: 1.75rem;
-        padding-top: 4px;
+    #calendar .fc-daygrid-event,
+    #calendar .fc-timegrid-event {
+        max-width: 100%;
+        overflow: hidden;
+        white-space: normal;
     }
-    .event-actions {
-        color: #00008B
+
+    #calendar .fc-daygrid-event .fc-event-main,
+    #calendar .fc-daygrid-event .fc-event-main-frame,
+    #calendar .fc-timegrid-event .fc-event-main {
+        max-width: 100%;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    #calendar .calendar-event-content {
+        align-items: flex-start;
+        display: flex;
+        gap: 3px;
+        max-width: 100%;
+        min-width: 0;
+        overflow: hidden;
+        white-space: normal;
+    }
+
+    #calendar .calendar-event-dot {
+        background: #00008B;
+        border-radius: 50%;
+        flex: 0 0 0.55rem;
+        height: 0.55rem;
+        margin-top: 0.45rem;
+        width: 0.55rem;
+    }
+
+    #calendar .calendar-event-time {
+        flex: 0 0 auto;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    #calendar .calendar-event-title {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow-wrap: anywhere;
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    #calendar .calendar-event-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 4px;
+    }
+
+    #calendar .calendar-event-actions .btn {
+        line-height: 1;
+        padding: 0.16rem 0.35rem;
     }
 </style>
 
@@ -128,9 +176,10 @@
             let rowid = $(this).attr('data-id');
 
             Swal.fire({
-                title: "Вы действительно хотите удалить этот событие?",
+                title: "{{ __('frontend.str.confirm_remove') }}",
                 showCancelButton: true,
-                confirmButtonText: "Удалить",
+                confirmButtonText: "{{ __('frontend.msg.yes_remove') }}",
+                cancelButtonText: "{{ __('frontend.str.cancel') }}",
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -155,18 +204,51 @@
     document.addEventListener('DOMContentLoaded', function() {
         let initialTimeZone = 'UTC';
         let calendarEl = document.getElementById('calendar');
+
+        function escapeHtml(value) {
+            return $('<div>').text(value ?? '').html();
+        }
+
+        function formatEventTime(event) {
+            if (!event.start) {
+                return '';
+            }
+
+            let hours = String(event.start.getUTCHours()).padStart(2, '0');
+            let minutes = String(event.start.getUTCMinutes()).padStart(2, '0');
+
+            return hours + ':' + minutes;
+        }
+
+        function renderCalendarEvent(event, showActions = false) {
+            let eventTitle = escapeHtml(event.title);
+            let eventTime = formatEventTime(event);
+            let content = '<div class="calendar-event-content">' +
+                '<span class="calendar-event-dot"></span>' +
+                '<span class="calendar-event-time">' + eventTime + '</span>' +
+                '<span class="calendar-event-title">' + eventTitle + '</span>' +
+                '</div>';
+
+            if (!showActions) {
+                return content;
+            }
+
+            return content + '<div class="calendar-event-actions">' +
+                '<a href="{{ url("schedule/edit") }}/' + event.id + '" class="btn btn-info btn-xs" title="{{ __('frontend.str.edit') }}"><i class="fa fa-edit"></i></a>' +
+                '<button type="button" class="btn btn-danger btn-xs delete-event" data-id="' + event.id + '" title="{{ __('frontend.str.remove') }}"><i class="fa fa-trash"></i></button>' +
+                '</div>';
+        }
+
         let calendar = new FullCalendar.Calendar(calendarEl, {
+            eventClassNames: ['calendar-event'],
+            eventContent: function(info) {
+                return { html: renderCalendarEvent(info.event) };
+            },
             eventMouseEnter: function(info) {
-                info.el.innerHTML = '<div class="p-2"> '+ info.event.title +'<div class="event-actions">'+
-                    '<a href="{{ url('schedule/edit') }}/'+info.event.id+'" class="m-1 btn btn-info btn-sm"><i class="fa fa-edit"></i></a>'+
-                    '<button class="m-1 btn btn-danger btn-sm delete-event" data-id='+info.event.id+'><i class="fa fa-trash"></i></button></div></div>';
+                info.el.innerHTML = renderCalendarEvent(info.event, true);
             },
             eventMouseLeave: function(info) {
-
-                // console.log(info.event.start.getHours());
-                // console.log(info.event.start.getMinutes());
-                // console.log(info.event.start.getUTCHours());
-                info.el.innerHTML = '<div class="p-2"><div class="event-actions"> &#x25CF;'+info.event.start.getUTCHours() + ':' + info.event.start.getMinutes() + '<b> '  +info.event.title+'</b></div>';
+                info.el.innerHTML = renderCalendarEvent(info.event);
             },
             timeZone: initialTimeZone,
             headerToolbar: {
@@ -178,6 +260,7 @@
             editable: true,
             selectable: true,
             dayMaxEvents: true, // allow "more" link when too many events
+            displayEventTime: false,
             events: "{{ route('admin.schedule.list') }}",
 
             @if(app()->getLocale()!= 'en') locale: '{{ app()->getLocale() }}', @endif
