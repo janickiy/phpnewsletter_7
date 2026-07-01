@@ -275,6 +275,7 @@ return [
         'macros' => '<strong>Macros:</strong>',
     ],
     'title' => [
+        'dashboard_index' => 'Panel',
         'category_index'  => 'Categoría de suscriptores',
         'category_create' => 'Agregar una plantilla',
         'category_edit' => 'Edición de categoría',
@@ -312,6 +313,7 @@ return [
         'macros_type' => 'Tipo',
     ],
     'menu' => [
+        'dashboard' => 'Panel',
         'templates' => 'Plantillas',
         'subscribers' => 'Suscriptores',
         'subscribers_category' => 'Categoría de suscriptores',
@@ -326,6 +328,16 @@ return [
         'update' => 'Actualizar',
         'subscription_form' => 'Formulario de suscripción',
         'macros' => 'Macros',
+    ],
+    'dashboard' => [
+        'open_section' => 'Abrir sección',
+        'active_count' => ':count activos',
+        'quick_actions' => 'Acciones rápidas',
+        'delivery_overview' => 'Resumen de entrega',
+        'no_mailings' => 'Aún no hay envíos.',
+        'no_templates' => 'Aún no hay plantillas.',
+        'no_subscribers' => 'Aún no hay suscriptores.',
+        'no_schedules' => 'Aún no hay envíos programados.',
     ],
     'hint' => [
         'template_index' => 'Esta sección muestra una lista de todas las plantillas de correo creadas que están disponibles para su uso futuro. Aquí puedes ver plantillas, seleccionar una o varias opciones para enviarlas a los suscriptores, eliminar entradas innecesarias y controlar el proceso de envío masivo mediante una revista en línea con el estado de envío y estadísticas de correos exitosos y fallidos.',

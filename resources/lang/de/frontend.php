@@ -275,6 +275,7 @@ return [
         'macros' => '<strong>Makros:</strong>',
     ],
     'title' => [
+        'dashboard_index' => 'Übersicht',
         'category_index' => 'Abonnentenkategorie',
         'category_create' => 'Vorlage hinzufügen',
         'category_edit' => 'Kategorie bearbeiten',
@@ -312,6 +313,7 @@ return [
         'macros_type' => 'Typ',
     ],
     'menu' => [
+        'dashboard' => 'Übersicht',
         'templates' => 'Vorlagen',
         'subscribers' => 'Abonnenten',
         'subscribers_category' => 'Abonnentenkategorie',
@@ -326,6 +328,16 @@ return [
         'update' => 'Aktualisierung',
         'subscription_form' => 'Abonnementformular',
         'macros' => 'Makros',
+    ],
+    'dashboard' => [
+        'open_section' => 'Bereich öffnen',
+        'active_count' => ':count aktiv',
+        'quick_actions' => 'Schnellaktionen',
+        'delivery_overview' => 'Zustellungsübersicht',
+        'no_mailings' => 'Noch keine Mailings.',
+        'no_templates' => 'Noch keine Vorlagen.',
+        'no_subscribers' => 'Noch keine Abonnenten.',
+        'no_schedules' => 'Noch keine geplanten Mailings.',
     ],
     'hint' => [
         'template_index' => 'Dieser Abschnitt zeigt eine Liste aller erstellten E-Mail-Vorlagen, die für die zukünftige Verwendung verfügbar sind. Hier können Sie Vorlagen anzeigen, eine oder mehrere Optionen auswählen, um sie an Abonnenten zu senden, unnötige Einträge löschen und den Massenversandprozess über ein Online-Magazin mit Versandstatus sowie Statistiken über erfolgreiche und fehlgeschlagene E-Mails steuern.',

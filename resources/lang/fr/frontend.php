@@ -275,6 +275,7 @@ return [
         'macros' => '<strong>Macros :</strong>',
     ],
     'title' => [
+        'dashboard_index' => 'Tableau de bord',
         'category_index' => 'Catégorie d’abonnés',
         'category_create' => 'Ajout d’un modèle',
         'category_edit' => 'Modification de la catégorie',
@@ -312,6 +313,7 @@ return [
         'macros_type' => 'Type',
     ],
     'menu' => [
+        'dashboard' => 'Tableau de bord',
         'templates' => 'Modèles',
         'subscribers' => 'Abonnés',
         'subscribers_category' => 'Catégorie d’abonnés',
@@ -326,6 +328,16 @@ return [
         'update' => 'Mise à jour',
         'subscription_form' => 'Formulaire d’abonnement',
         'macros' => 'Macros',
+    ],
+    'dashboard' => [
+        'open_section' => 'Ouvrir la section',
+        'active_count' => ':count actifs',
+        'quick_actions' => 'Actions rapides',
+        'delivery_overview' => 'Aperçu de la livraison',
+        'no_mailings' => 'Aucun envoi pour le moment.',
+        'no_templates' => 'Aucun modèle pour le moment.',
+        'no_subscribers' => 'Aucun abonné pour le moment.',
+        'no_schedules' => 'Aucun envoi planifié pour le moment.',
     ],
     'hint' => [
         'template_index' => 'Cette section affiche la liste de tous les modèles d’e-mails créés disponibles pour une utilisation future. Vous pouvez ici consulter les modèles, sélectionner une ou plusieurs options pour les envoyer aux abonnés, supprimer les entrées inutiles et contrôler le processus d’envoi en masse via un journal en ligne avec l’état des envois et les statistiques des e-mails réussis et échoués.',

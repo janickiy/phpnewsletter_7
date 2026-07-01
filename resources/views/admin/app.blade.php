@@ -176,9 +176,9 @@
                     @if(PermissionsHelper::has_permission('admin'))
 
                         <li class="nav-item">
-                            <a href="{{ route('admin.smtp.index') }}" class="nav-link{{ Request::is('smtp*') ? ' active' : '' }}" title="SMTP">
+                            <a href="{{ route('admin.smtp.index') }}" class="nav-link{{ Request::is('smtp*') ? ' active' : '' }}" title="{{ __('frontend.str.smtp_server') }}">
                                 <i class="nav-icon fas fa-inbox"></i>
-                                <p>SMTP</p>
+                                <p>{{ __('frontend.str.smtp_server') }}</p>
                             </a>
                         </li>
 

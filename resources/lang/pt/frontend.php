@@ -246,6 +246,7 @@ return [
     ],
 
     'title' => [
+        'dashboard_index' => 'Painel',
         'category_index' => 'Categoria de assinantes',
         'category_create' => 'Adicionar modelo',
         'category_edit' => 'Editar categoria',
@@ -284,6 +285,7 @@ return [
     ],
 
     'menu' => [
+        'dashboard' => 'Painel',
         'templates' => 'Modelos',
         'subscribers' => 'Assinantes',
         'subscribers_category' => 'Categorias de assinantes',
@@ -298,6 +300,16 @@ return [
         'update' => 'Atualização',
         'subscription_form' => 'Formulário de inscrição',
         'macros' => 'Macros',
+    ],
+    'dashboard' => [
+        'open_section' => 'Abrir seção',
+        'active_count' => ':count ativos',
+        'quick_actions' => 'Ações rápidas',
+        'delivery_overview' => 'Visão geral da entrega',
+        'no_mailings' => 'Ainda não há envios.',
+        'no_templates' => 'Ainda não há modelos.',
+        'no_subscribers' => 'Ainda não há assinantes.',
+        'no_schedules' => 'Ainda não há envios agendados.',
     ],
 
     'hint' => [

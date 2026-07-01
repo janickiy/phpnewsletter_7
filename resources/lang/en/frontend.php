@@ -275,6 +275,7 @@ return [
         'macros' => '<strong>Macros:</strong>',
     ],
     'title' => [
+        'dashboard_index' => 'Dashboard',
         'category_index' => 'Subscriber category',
         'category_create' => 'Adding a template',
         'category_edit' => 'Category Editing',
@@ -312,6 +313,7 @@ return [
         'macros_type' => 'Type',
     ],
     'menu' => [
+        'dashboard' => 'Dashboard',
         'templates' => 'Templates',
         'subscribers' => 'Subscribers',
         'subscribers_category' => 'Subscribers category',
@@ -326,6 +328,16 @@ return [
         'update' => 'Update',
         'subscription_form' => 'Subscription form',
         'macros' => 'Macros',
+    ],
+    'dashboard' => [
+        'open_section' => 'Open section',
+        'active_count' => ':count active',
+        'quick_actions' => 'Quick actions',
+        'delivery_overview' => 'Delivery overview',
+        'no_mailings' => 'No mailings yet.',
+        'no_templates' => 'No templates yet.',
+        'no_subscribers' => 'No subscribers yet.',
+        'no_schedules' => 'No scheduled mailings yet.',
     ],
     'hint' => [
         'template_index' => 'This section displays a list of all created mailing templates that are available for future use. Here you can view templates, select one or more options to send to subscribers, delete unnecessary entries, and control the mass mailing process through an online magazine with the status of sending, statistics of successful and unsuccessful emails.',

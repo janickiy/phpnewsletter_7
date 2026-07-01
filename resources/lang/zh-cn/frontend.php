@@ -275,6 +275,7 @@ return [
         'macros' => '<strong>宏：</strong>',
     ],
     'title' => [
+        'dashboard_index' => '仪表板',
         'category_index' => '订阅者分类',
         'category_create' => '添加模板',
         'category_edit' => '分类编辑',
@@ -312,6 +313,7 @@ return [
         'macros_type' => '类型',
     ],
     'menu' => [
+        'dashboard' => '仪表板',
         'templates' => '模板',
         'subscribers' => '订阅者',
         'subscribers_category' => '订阅者分类',
@@ -326,6 +328,16 @@ return [
         'update' => '更新',
         'subscription_form' => '订阅表单',
         'macros' => '宏',
+    ],
+    'dashboard' => [
+        'open_section' => '打开部分',
+        'active_count' => ':count 个活跃',
+        'quick_actions' => '快速操作',
+        'delivery_overview' => '发送概览',
+        'no_mailings' => '暂无邮件发送。',
+        'no_templates' => '暂无模板。',
+        'no_subscribers' => '暂无订阅者。',
+        'no_schedules' => '暂无计划发送。',
     ],
     'hint' => [
         'template_index' => '本节显示所有已创建的邮件模板列表，这些模板可供将来使用。在这里，您可以查看模板，选择一个或多个模板发送给订阅者，删除不必要的条目，并通过带有发送状态以及成功和失败邮件统计的在线面板来控制群发过程。',
