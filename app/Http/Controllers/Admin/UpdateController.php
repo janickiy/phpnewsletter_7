@@ -3,10 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Helpers\UpdateHelper;
+use App\Services\UpdateService;
 use Illuminate\View\View;
 
 class UpdateController extends Controller
 {
+    public function __construct(private readonly UpdateService $updateService)
+    {
+        parent::__construct();
+    }
+
     /**
      * Show update availability information and prepare the update action message.
      *
@@ -38,6 +44,7 @@ class UpdateController extends Controller
             'msg_no_update' => $msgNoUpdate,
             'infoAlert' => __('frontend.hint.update_index'),
             'title' => __('frontend.title.update'),
+            'update_steps' => $this->updateService->getClientSteps(),
         ]);
     }
 }

@@ -141,7 +141,7 @@ class InstallController extends Controller
             $env = str_replace('DB_DATABASE=' . env('DB_DATABASE'), 'DB_DATABASE=' . $db['database'], $env);
             $env = str_replace('DB_USERNAME=' . env('DB_USERNAME'), 'DB_USERNAME=' . $db['username'], $env);
             $env = str_replace('DB_PASSWORD=' . env('DB_PASSWORD'), 'DB_PASSWORD="' . $db['password'] . '"', $env);
-            $env = str_replace('VERSION=', 'VERSION="7.2.0"', $env);
+            $env = str_replace('VERSION=', 'VERSION="7.2.1"', $env);
             $env = str_replace('APP_URL=', 'APP_URL=' . StringHelper::getUrl(), $env);
             $env = $this->setEnvValue($env, 'APP_LOCALE', $installLocale);
 

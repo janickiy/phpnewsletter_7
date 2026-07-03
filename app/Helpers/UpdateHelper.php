@@ -43,6 +43,7 @@ class UpdateHelper
                 'id' => 5,
                 'version' => $this->currentVersion,
                 'lang' => $this->language,
+                'ip' => $this->getIP(),
             ]);
     }
 
@@ -188,18 +189,15 @@ class UpdateHelper
      */
     public function getIP(): string
     {
-        if (getenv("HTTP_CLIENT_IP") and strcasecmp(getenv("HTTP_CLIENT_IP"), "unknown"))
-            $ip = getenv("HTTP_CLIENT_IP");
-        elseif (getenv("HTTP_X_FORWARDED_FOR") && strcasecmp(getenv("HTTP_X_FORWARDED_FOR"), "unknown"))
-            $ip = getenv("HTTP_X_FORWARDED_FOR");
-        elseif (getenv("REMOTE_ADDR") and strcasecmp(getenv("REMOTE_ADDR"), "unknown"))
-            $ip = getenv("REMOTE_ADDR");
-        elseif (!empty($_SERVER['REMOTE_ADDR']) and strcasecmp($_SERVER['REMOTE_ADDR'], "unknown"))
-            $ip = $_SERVER['REMOTE_ADDR'];
-        else
-            $ip = "unknown";
+        foreach ($this->getIpHeaderCandidates() as $candidate) {
+            $ip = $this->extractValidIp($candidate);
 
-        return $ip;
+            if ($ip !== null) {
+                return $ip;
+            }
+        }
+
+        return 'unknown';
     }
 
     /**
@@ -247,6 +245,53 @@ class UpdateHelper
         $value = trim($value);
 
         return $value === '' ? null : $value;
+    }
+
+    /**
+     * Return request headers that may contain the end-user IP address.
+     *
+     * @return array<int, string|null>
+     */
+    private function getIpHeaderCandidates(): array
+    {
+        return [
+            $this->getServerHeader('HTTP_CF_CONNECTING_IP'),
+            $this->getServerHeader('HTTP_X_REAL_IP'),
+            $this->getServerHeader('HTTP_CLIENT_IP'),
+            $this->getServerHeader('HTTP_X_FORWARDED_FOR'),
+            $this->getServerHeader('HTTP_FORWARDED'),
+            $this->getServerHeader('REMOTE_ADDR'),
+        ];
+    }
+
+    /**
+     * Extract the first valid IP from single-value or comma-separated proxy headers.
+     */
+    private function extractValidIp(?string $value): ?string
+    {
+        if ($value === null || strcasecmp($value, 'unknown') === 0) {
+            return null;
+        }
+
+        foreach (explode(',', $value) as $part) {
+            $part = trim($part);
+
+            if ($part === '' || strcasecmp($part, 'unknown') === 0) {
+                continue;
+            }
+
+            if (str_contains($part, 'for=')) {
+                $part = preg_replace('/^.*for="?([^";,]+)"?.*$/i', '$1', $part) ?? $part;
+            }
+
+            $part = trim($part, " \t\n\r\0\x0B[]\"");
+
+            if (filter_var($part, FILTER_VALIDATE_IP)) {
+                return $part;
+            }
+        }
+
+        return null;
     }
 
     /**

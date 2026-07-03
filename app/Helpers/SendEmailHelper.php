@@ -17,7 +17,7 @@ class SendEmailHelper
 
     public int $prior = 0;
 
-    public string $name = 'USERNAME';
+    public ?string $name = 'USERNAME';
 
     public int $templateId = 0;
 
@@ -41,7 +41,7 @@ class SendEmailHelper
         $body = $this->body;
         $email = $this->email;
         $prior = $this->prior;
-        $name = $this->name;
+        $name = (string) ($this->name ?? '');
         $templateId = $this->templateId;
         $subscriberId = $this->subscriberId;
         $token = $this->token;

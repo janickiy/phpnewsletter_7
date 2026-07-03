@@ -50,9 +50,21 @@
 
                             <div class="form-group">
 
-                                {!! Form::label('categoryId[]',  __('frontend.form.subscribers_category')) !!}
+                                {!! Form::label('categoryId',  __('frontend.form.subscribers_category')) !!}
 
-                                {!! Form::select('categoryId[]', $options, isset($subscriberCategoryIds) && count($subscriberCategoryIds) > 0 ? $subscriberCategoryIds : null, ['multiple' => 'multiple', 'placeholder' => __('frontend.form.select_category'), 'class' => 'form-control']) !!}
+                                @php
+                                    $selectedCategoryIds = collect((array) old('categoryId', $subscriberCategoryIds ?? []))
+                                        ->map(fn ($value) => (string) $value)
+                                        ->all();
+                                @endphp
+
+                                <select name="categoryId[]" id="categoryId" multiple class="form-control">
+                                    @foreach($options as $categoryValue => $categoryLabel)
+                                        <option value="{{ $categoryValue }}" @selected(in_array((string) $categoryValue, $selectedCategoryIds, true))>
+                                            {{ $categoryLabel }}
+                                        </option>
+                                    @endforeach
+                                </select>
 
                                 @if ($errors->has('categoryId'))
                                     <p class="text-danger">{{ $errors->first('categoryId') }}</p>

@@ -48,235 +48,87 @@
 
         $(function () {
             $(document).on("click", "#start_update", function () {
-                $("#btn_refresh").html('<div class="progress"><div id="progress_bar" class="progress-bar bg-primary progress-bar-striped" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width: 1%"></div></div><p class="text-muted" id="status_process">{{ __('frontend.str.start_update') }}</p>');
-                $("#status_process").text('{{ __('frontend.msg.downloading') }} update.zip ...');
-
-                $.ajax({
-                    type: "POST",
-                    cache: false,
-                    url: "{{ route('admin.ajax.action') }}",
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    data: {
-                        action: "start_update",
-                        p: "start",
-                    },
-                    success: function (data) {
-                        if (data.result === true) {
-                            $('.progress-bar').css('width', '15%');
-                            $("#status_process").text(data.status);
-                            uploadFiles2();
-                        } else {
-                            $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
-                        }
-                        console.log(data);
-                    },
-                    error: function(xhr, textStatus, error) {
-                        console.log(textStatus);
-                        console.log(error);
-                    }
-                });
+                renderUpdateProgress();
+                runUpdateStep(0);
             });
         });
 
-        function uploadFiles2() {
-            $("#status_process").text('{{ __('frontend.msg.downloading') }} public.zip ...');
+        const updateSteps = @json($update_steps);
+        const buttonUpdateLabel = @json(strip_tags($button_update));
+        const ajaxUrl = @json(route('admin.ajax.action'));
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+        const failedToUpdateText = @json(__('frontend.msg.failed_to_update'));
+        const startUpdateText = @json(__('frontend.str.start_update'));
+        const updateCompletedText = @json(__('frontend.msg.update_completed'));
 
-            $.ajax({
-                type: "POST",
-                cache: false,
-                url: "{{ route('admin.ajax.action') }}",
-                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                data: {
-                    action: "start_update",
-                    p: "upload_files_2",
-                },
-                success: function (data) {
-                    if (data.result === true) {
-                        $('.progress-bar').css('width', '30%');
-                        $("#status_process").text(data.status);
-                        uploadFiles3();
-                    } else {
-                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
-                    }
-                    console.log(data);
-                },
-                error: function(xhr, textStatus, error) {
-                    console.log(textStatus);
-                    console.log(error);
-                }
-            });
+        function renderUpdateProgress() {
+            const $progress = $('<div>', {class: 'progress'}).append(
+                $('<div>', {
+                    id: 'progress_bar',
+                    class: 'progress-bar bg-primary progress-bar-striped',
+                    role: 'progressbar',
+                    'aria-valuenow': 1,
+                    'aria-valuemin': 0,
+                    'aria-valuemax': 100,
+                    style: 'width: 1%'
+                })
+            );
+            const $status = $('<p>', {class: 'text-muted', id: 'status_process'}).text(startUpdateText);
+
+            $('#btn_refresh').empty().append($progress).append($status);
         }
 
-        function uploadFiles3() {
-            $("#status_process").text('{{ __('frontend.msg.downloading') }} vendor.zip ...');
+        function renderRetryButton(message) {
+            const $button = $('<a>', {id: 'start_update', class: 'btn btn-outline btn-default'}).append(
+                $('<i>', {class: 'fa fa-sync-alt'})
+            ).append(' ' + buttonUpdateLabel);
+            const $status = $('<p>', {class: 'text-muted text-danger', id: 'status_process'}).text(message || failedToUpdateText);
 
-            $.ajax({
-                type: "POST",
-                cache: false,
-                url: "{{ route('admin.ajax.action') }}",
-                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                data: {
-                    action: "start_update",
-                    p: "upload_files_3",
-                },
-                success: function (data) {
-                    if (data.result === true) {
-                        $('.progress-bar').css('width', '40%');
-                        $("#status_process").text(data.status);
-                        updateFiles();
-                    } else {
-                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
-                    }
-                    console.log(data);
-                },
-                error: function(xhr, textStatus, error) {
-                    console.log(textStatus);
-                    console.log(error);
-                }
-            });
+            $('#btn_refresh').empty().append($button).append($status);
         }
 
-        function updateFiles() {
-            $("#status_process").text('{{ __('frontend.msg.unzipping') }} update.zip ...');
+        function runUpdateStep(index) {
+            const step = updateSteps[index];
+
+            if (!step) {
+                return;
+            }
+
+            $('#status_process').text(step.status);
 
             $.ajax({
-                type: "POST",
+                type: 'POST',
                 cache: false,
-                url: "{{ route('admin.ajax.action') }}",
-                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                timeout: 300000,
+                url: ajaxUrl,
+                headers: {'X-CSRF-TOKEN': csrfToken},
                 data: {
-                    action: "start_update",
-                    p: "update_files",
+                    action: 'start_update',
+                    p: step.p,
                 },
                 success: function (data) {
-                    if (data.result === true) {
-                        $('.progress-bar').css('width', '50%');
-                        $("#status_process").text(data.status);
-                        updateFiles2();
-                    } else {
-                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
+                    if (data && data.result === true) {
+                        $('.progress-bar').css('width', step.progress + '%');
+                        $('#status_process').text(data.status || step.status);
+
+                        if (step.final === true) {
+                            $('#progress_bar').delay(3000).fadeOut();
+                            setTimeout(function () {
+                                $('#status_process').text(updateCompletedText);
+                            }, 3000);
+                            return;
+                        }
+
+                        runUpdateStep(index + 1);
+                        return;
                     }
-                    console.log(data);
-                },
-                error: function(xhr, textStatus, error) {
-                    console.log(textStatus);
-                    console.log(error);
-                }
-            });
-        }
 
-        function updateFiles2() {
-            $("#status_process").text('{{ __('frontend.msg.unzipping') }} public.zip ...');
+                    renderRetryButton((data && (data.status || data.errors)) || failedToUpdateText);
+                },
+                error: function (xhr, textStatus, error) {
+                    const data = xhr.responseJSON || {};
 
-            $.ajax({
-                type: "POST",
-                cache: false,
-                url: "{{ route('admin.ajax.action') }}",
-                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                data: {
-                    action: "start_update",
-                    p: "update_files_2",
-                },
-                success: function (data) {
-                    if (data.result === true) {
-                        $('.progress-bar').css('width', '60%');
-                        $("#status_process").text(data.status);
-                        updateFiles3();
-                    } else {
-                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
-                    }
-                    console.log(data);
-                },
-                error: function(xhr, textStatus, error) {
-                    console.log(textStatus);
-                    console.log(error);
-                }
-            });
-        }
-
-        function updateFiles3() {
-            $("#status_process").text('{{ __('frontend.msg.unzipping') }} vendor.zip ...');
-
-            $.ajax({
-                type: "POST",
-                cache: false,
-                url: "{{ route('admin.ajax.action') }}",
-                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                data: {
-                    action: "start_update",
-                    p: "update_files_3",
-                },
-                success: function (data) {
-                    if (data.result === true) {
-                        $('.progress-bar').css('width', '70%');
-                        $("#status_process").text(data.status);
-                        updateBD();
-                    } else {
-                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
-                    }
-                    console.log(data);
-                },
-                error: function(xhr, textStatus, error) {
-                    console.log(textStatus);
-                    console.log(error);
-                }
-            });
-        }
-
-        function updateBD() {
-            $("#status_process").text('{{ __('frontend.msg.update_bd') }}');
-
-            $.ajax({
-                type: "POST",
-                cache: false,
-                url: "{{ route('admin.ajax.action') }}",
-                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                data: {
-                    action: "start_update",
-                    p: "update_bd",
-                },
-                success: function (data) {
-                    if (data.result === true) {
-                        $('.progress-bar').css('width', '90%');
-                        $("#status_process").text(data.status);
-                        clearCache();
-                    } else {
-                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
-                    }
-                    console.log(data);
-                },
-                error: function(xhr, textStatus, error) {
-                    console.log(textStatus);
-                    console.log(error);
-                }
-            });
-        }
-
-        function clearCache() {
-            $("#status_process").text('{{ __('frontend.msg.completing_update') }}');
-
-            $.ajax({
-                type: "POST",
-                cache: false,
-                url: "{{ route('admin.ajax.action') }}",
-                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                data: {
-                    action: "start_update",
-                    p: "clear_cache",
-                },
-                success: function (data) {
-                    if (data.result === true) {
-                        $('.progress-bar').css('width', '100%');
-                        $('#progress_bar').delay(3000).fadeOut();
-                        $('#status_process').delay(3000).text('{{ __('frontend.msg.update_completed') }}');
-                    } else {
-                        $("#btn_refresh").html('<a id="start_update" class="btn btn-outline btn-default"><i class="fa fa-sync-alt"></i> {!! $button_update !!}</a><p class="text-muted" id="status_process">' + data.status + '</p>');
-                    }
-                    console.log(data);
-                },
-                error: function(xhr, textStatus, error) {
-                    console.log(textStatus);
-                    console.log(error);
+                    renderRetryButton(data.status || data.errors || error || textStatus || failedToUpdateText);
                 }
             });
         }
