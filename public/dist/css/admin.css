@@ -14,9 +14,19 @@ a.opislink {
     padding: 16px;
 }
 
-.brand-link {
+.navbar-user-link {
+    font-weight: 600;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.main-sidebar .brand-link,
+.sidebar-dark-primary .brand-link {
     align-items: center;
     border-bottom: 0;
+    box-shadow: none;
     display: flex;
     gap: 8px;
     justify-content: flex-start;

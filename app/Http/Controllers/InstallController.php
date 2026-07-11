@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Http\Requests\Frontend\InstallRequest;
 use App\Http\Requests\Frontend\InstallAdminRequest;
 use Illuminate\Http\Request;
+use Illuminate\Encryption\Encrypter;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -136,13 +137,15 @@ class InstallController extends Controller
             $this->reloadEnv();
 
             $path = base_path('.env');
+            $appKey = $this->generateAppKey();
             $env = file_get_contents($path);
             $env = str_replace('DB_HOST=' . env('DB_HOST'), 'DB_HOST=' . $db['host'], $env);
             $env = str_replace('DB_DATABASE=' . env('DB_DATABASE'), 'DB_DATABASE=' . $db['database'], $env);
             $env = str_replace('DB_USERNAME=' . env('DB_USERNAME'), 'DB_USERNAME=' . $db['username'], $env);
             $env = str_replace('DB_PASSWORD=' . env('DB_PASSWORD'), 'DB_PASSWORD="' . $db['password'] . '"', $env);
-            $env = str_replace('VERSION=', 'VERSION="7.2.1"', $env);
+            $env = str_replace('VERSION=', 'VERSION="7.3.0"', $env);
             $env = str_replace('APP_URL=', 'APP_URL=' . StringHelper::getUrl(), $env);
+            $env = $this->setEnvValue($env, 'APP_KEY', $appKey);
             $env = $this->setEnvValue($env, 'APP_LOCALE', $installLocale);
 
             file_put_contents($path, $env);
@@ -151,13 +154,13 @@ class InstallController extends Controller
             config([
                 'app.locale' => $installLocale,
                 'app.installed_locale' => $installLocale,
+                'app.key' => $appKey,
             ]);
             app()->setLocale($installLocale);
             config(['app.debug' => true]);
 
             Artisan::call('migrate', ['--force' => true]);
             Artisan::call('db:seed', ['--force' => true]);
-            Artisan::call('key:generate', ['--force' => true]);
 
             User::create(['name' => 'admin', 'login' => $request->input('login'), 'role' => 'admin', 'password' => Hash::make($request->input('password'))]);
 
@@ -171,6 +174,18 @@ class InstallController extends Controller
 
             return redirect()->route('install.error');
         }
+    }
+
+    /**
+     * Generate a Laravel APP_KEY value suitable for the configured cipher.
+     *
+     * @return string
+     */
+    private function generateAppKey(): string
+    {
+        return 'base64:' . base64_encode(
+            Encrypter::generateKey(Config::get('app.cipher', 'AES-256-CBC'))
+        );
     }
 
     /**

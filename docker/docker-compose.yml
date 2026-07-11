@@ -9,7 +9,7 @@ services:
         required: false
     init: true
     ports:
-      - "${APP_PORT:-8080}:80"
+      - "${APP_PORT:-8081}:80"
     environment:
       COMPOSER_INSTALL: ${COMPOSER_INSTALL:-true}
       COMPOSER_BLOCK_SECURITY_ADVISORIES: ${COMPOSER_BLOCK_SECURITY_ADVISORIES:-false}

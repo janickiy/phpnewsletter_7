@@ -25,7 +25,7 @@
     {!! Html::style('/plugins/flag-icon-css/css/flag-icon.min.css') !!}
 
     <!-- Custom style -->
-    {!! Html::style('/dist/css/admin.css?v=9') !!}
+    {!! Html::style('/dist/css/admin.css?v=11') !!}
 
     @yield('css')
 
@@ -76,7 +76,15 @@
                 </div>
             </li>
 
-            <!-- Notifications Dropdown Menu -->
+            <li class="nav-item">
+                <a class="nav-link navbar-user-link"
+                   href="{{ route('admin.users.edit', ['id' => Auth::user()->id ]) }}">
+                    {{ Auth::user()->login }} @if(!empty(Auth::user()->name))
+                        ({{ Auth::user()->name }})
+                    @endif
+                </a>
+            </li>
+
             <li class="nav-item">
                 <a class="nav-link" title="{{ __('frontend.str.signout') }}" href="{{ route('logout') }}"
                    role="button">
@@ -100,16 +108,6 @@
 
         <!-- Sidebar -->
         <div class="sidebar">
-            <!-- Sidebar user (optional) -->
-            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                <div class="info">
-                    <a href="{{ route('admin.users.edit', ['id' => Auth::user()->id ]) }}"
-                       class="d-block">{{ Auth::user()->login }} @if(!empty(Auth::user()->name))
-                            ({{ Auth::user()->name }})
-                        @endif</a>
-                </div>
-            </div>
-
             <!-- Sidebar Menu -->
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"

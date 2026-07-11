@@ -37,12 +37,15 @@ if [ "${COMPOSER_INSTALL:-true}" = "true" ] && [ -f composer.json ] && [ ! -f ve
         composer_security_args+=(--no-security-blocking)
     fi
 
-    run_as_app_user composer install --no-interaction --prefer-dist --optimize-autoloader "${composer_security_args[@]}"
+    run_as_app_user env XDEBUG_MODE=off composer install --no-interaction --prefer-dist --optimize-autoloader "${composer_security_args[@]}"
 fi
 
 if [ -f artisan ]; then
     run_as_app_user php artisan package:discover --ansi || true
-    run_as_app_user php artisan storage:link || true
+
+    if [ ! -e public/storage ] && [ ! -L public/storage ]; then
+        run_as_app_user php artisan storage:link || true
+    fi
 fi
 
 exec docker-php-entrypoint "$@"
