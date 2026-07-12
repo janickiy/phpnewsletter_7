@@ -60,6 +60,26 @@ class TemplatesController extends Controller
     }
 
     /**
+     * Show a read-only card with template details and rendered email body.
+     *
+     * @param int $id
+     * @return View
+     */
+    public function show(int $id): View
+    {
+        $template = $this->templateRepository->find($id);
+
+        abort_if(!$template, 404);
+
+        $template->load('attach');
+
+        return view('admin.templates.show', [
+            'template' => $template,
+            'title' => $template->name,
+        ]);
+    }
+
+    /**
      * Validate and persist a new email template together with uploaded attachments.
      *
      * @param StoreRequest $request

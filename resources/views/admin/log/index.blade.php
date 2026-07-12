@@ -20,29 +20,32 @@
             <div class="row">
                 <div class="col-12">
 
-                    <div class="card">
-                        <!-- /.card-header -->
-                        <div class="card-body">
+                    <div class="card card-primary card-outline">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-bar mr-1"></i>
+                                {{ __('frontend.str.mailing_report') }}
+                            </h3>
 
                             @if(PermissionsHelper::has_permission('admin'))
-
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <p class="text-center">
-                                            <a id="clearLogButton" class="btn btn-outline btn-danger btn-lg" onclick="confirmation(event)"
-                                               title="{{ __('frontend.str.log_clear') }}">
-                                                <span class="fa fa-trash fa-2x"></span> {{ __('frontend.str.log_clear') }}
-                                            </a>
-                                            <span id="clearLogSpinner" class="ml-2 d-none">
-                                                <span class="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true"></span>
-                                            </span>
-                                        </p>
-                                    </div>
+                                <div class="card-tools">
+                                    <button id="clearLogButton"
+                                            type="button"
+                                            class="btn btn-danger btn-sm"
+                                            onclick="confirmation(event)"
+                                            title="{{ __('frontend.str.log_clear') }}">
+                                        <i class="fas fa-trash-alt mr-1"></i>
+                                        {{ __('frontend.str.log_clear') }}
+                                    </button>
+                                    <span id="clearLogSpinner" class="ml-2 d-none">
+                                        <span class="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true"></span>
+                                    </span>
                                 </div>
-
                             @endif
+                        </div>
 
-                            <table id="itemList" class="table table-bordered table-striped">
+                        <div class="card-body">
+                            <table id="itemList" class="table table-bordered table-striped table-hover">
                                 <thead>
                                 <tr>
                                     <th>{{ __('frontend.str.time') }}</th>
@@ -64,38 +67,44 @@
                                 </tr>
                                 </tfoot>
                             </table>
-
-                            <div class="pt-3">
-                                <table id="logList" class="table table-striped table-bordered table-hover">
-                                    <thead>
-                                    <tr>
-                                        <th>{{ __('frontend.str.newsletter') }}</th>
-                                        <th>E-mail</th>
-                                        <th>{{ __('frontend.str.time') }}</th>
-                                        <th>{{ __('frontend.str.status') }}</th>
-                                        <th>{{ __('frontend.str.read') }}</th>
-                                        <th>{{ __('frontend.str.error') }}</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                    <tfoot>
-                                    <tr>
-                                        <th>{{ __('frontend.str.newsletter') }}</th>
-                                        <th>E-mail</th>
-                                        <th>{{ __('frontend.str.time') }}</th>
-                                        <th>{{ __('frontend.str.status') }}</th>
-                                        <th>{{ __('frontend.str.read') }}</th>
-                                        <th>{{ __('frontend.str.error') }}</th>
-                                    </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-
                         </div>
-                        <!-- /.card-body -->
                     </div>
-                    <!-- /.card -->
+
+                    <div class="card card-secondary card-outline">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-list mr-1"></i>
+                                {{ __('frontend.str.log') }}
+                            </h3>
+                        </div>
+
+                        <div class="card-body">
+                            <table id="logList" class="table table-bordered table-striped table-hover">
+                                <thead>
+                                <tr>
+                                    <th>{{ __('frontend.str.newsletter') }}</th>
+                                    <th>E-mail</th>
+                                    <th>{{ __('frontend.str.time') }}</th>
+                                    <th>{{ __('frontend.str.status') }}</th>
+                                    <th>{{ __('frontend.str.read') }}</th>
+                                    <th>{{ __('frontend.str.error') }}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <th>{{ __('frontend.str.newsletter') }}</th>
+                                    <th>E-mail</th>
+                                    <th>{{ __('frontend.str.time') }}</th>
+                                    <th>{{ __('frontend.str.status') }}</th>
+                                    <th>{{ __('frontend.str.read') }}</th>
+                                    <th>{{ __('frontend.str.error') }}</th>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
                 </div>
                 <!-- /.col -->
             </div>
@@ -132,6 +141,7 @@
 
             clearButton.toggleClass('disabled', isLoading);
             clearButton.attr('aria-disabled', isLoading ? 'true' : 'false');
+            clearButton.prop('disabled', isLoading);
             clearButton.css('pointer-events', isLoading ? 'none' : '');
             $('#clearLogSpinner').toggleClass('d-none', !isLoading);
         }
@@ -152,7 +162,8 @@
                     },
                 },
                 "sDom": "lrtip",
-                "autoWidth": true,
+                "autoWidth": false,
+                "responsive": true,
                 'createdRow': function (row, data, dataIndex) {
                     $(row).attr('id', 'rowid_' + data['id']);
                 },
@@ -185,10 +196,11 @@
                         "sNext": "{{ __('pagination.s_paginate.next') }}",
                         "sPrevious": "{{ __('pagination.s_paginate.previous') }}",
                     },
-                    "sSearch": '<span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>'
+                    "sSearch": ' <i class="fas fa-search" aria-hidden="true"></i>'
                 },
                 "sDom": "flrtip",
-                "autoWidth": true,
+                "autoWidth": false,
+                "responsive": true,
                 'createdRow': function (row, data, dataIndex) {
                     $(row).attr('id', 'rowid_' + data['id']);
                     if (data['status'] === 0) $(row).attr('class', 'table-danger');

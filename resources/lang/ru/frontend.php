@@ -290,7 +290,7 @@ return [
         'redirect_index' => 'Статистика переходов по ссылкам',
         'redirect_info'  => 'Статистика переходов по ссылкам',
         'schedule_index' => 'Расписание рассылки',
-        'schedule_edit'  => 'Редактирование рассылки',
+        'schedule_edit'  => 'Редактирование расписание',
         'settings_index' => 'Настройки',
         'smtp_index'  => 'Список SMTP',
         'smtp_create' => 'Добавление SMTP',

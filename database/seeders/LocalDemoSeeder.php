@@ -135,12 +135,6 @@ class LocalDemoSeeder extends Seeder
                 'prior' => 2,
                 'body' => '<h2>We missed you</h2><p>We have not seen you among active readers for a while. Here is a short list of resources worth checking out.</p>',
             ],
-            [
-                'name' => 'Weekly content plan',
-                'legacy_names' => ['Еженедельный контент-план'],
-                'prior' => 0,
-                'body' => '<h2>Publishing plan</h2><p>This week: a deliverability checklist, subject line review, and an example of audience segmentation.</p>',
-            ],
         ];
 
         foreach ($templates as $template) {
@@ -202,7 +196,7 @@ class LocalDemoSeeder extends Seeder
         $emails = [];
         $now = now();
 
-        for ($i = 1; $i <= 120; $i++) {
+        for ($i = 1; $i <= 200; $i++) {
             $emails[] = sprintf('demo.subscriber%03d@phpnewsletter.test', $i);
         }
 
@@ -334,8 +328,7 @@ class LocalDemoSeeder extends Seeder
             ['event_name' => 'Summer promo campaign: sent', 'legacy_event_names' => ['Летняя промо-кампания: отправлено'], 'offset' => -7, 'template' => 2],
             ['event_name' => 'Welcome series: sent', 'legacy_event_names' => ['Welcome-серия: отправлено'], 'offset' => -3, 'template' => 0],
             ['event_name' => 'Email marketing webinar', 'legacy_event_names' => ['Вебинар по email-маркетингу'], 'offset' => 2, 'template' => 3],
-            ['event_name' => 'Weekly content plan', 'legacy_event_names' => ['Еженедельный контент-план'], 'offset' => 5, 'template' => 5],
-            ['event_name' => 'Inactive subscriber reactivation', 'legacy_event_names' => ['Реактивация неактивных подписчиков'], 'offset' => 9, 'template' => 4],
+            ['event_name' => 'Inactive subscriber reactivation', 'legacy_event_names' => ['Реактивация неактивных подписчиков'], 'offset' => 5, 'template' => 4],
         ];
 
         $eventNames = array_column($scheduleRows, 'event_name');

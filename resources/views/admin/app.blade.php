@@ -25,7 +25,7 @@
     {!! Html::style('/plugins/flag-icon-css/css/flag-icon.min.css') !!}
 
     <!-- Custom style -->
-    {!! Html::style('/dist/css/admin.css?v=11') !!}
+    {!! Html::style('/dist/css/admin.css?v=12') !!}
 
     @yield('css')
 
@@ -313,7 +313,11 @@
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="{{ url('/') }}">{{ __('frontend.str.admin_panel') }}</a></li>
-                            <li class="breadcrumb-item active">{{ $title }}</li>
+                            @hasSection('breadcrumbs')
+                                @yield('breadcrumbs')
+                            @else
+                                <li class="breadcrumb-item active">{{ $title }}</li>
+                            @endif
                         </ol>
                     </div>
                 </div>
@@ -332,7 +336,7 @@
         <div class="float-right d-none d-sm-inline">
             {{ env('VERSION') }}
         </div>
-        <strong>&copy; 2006-{{ date('Y') }} <a href="https://janickiy.com">PHP Newsletter</a>, {{ __('frontend.str.author') }}</strong>
+        &copy; 2006-{{ date('Y') }} <a href="https://janickiy.com">PHP Newsletter</a>, {{ __('frontend.str.author') }}
     </footer>
 
     <!-- Control Sidebar -->

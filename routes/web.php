@@ -51,6 +51,7 @@ Route::group(['middleware' => ['install']], function () {
     Route::group(['prefix' => 'template'], function () {
         Route::get('create', [TemplatesController::class, 'create'])->name('admin.templates.create');
         Route::post('store', [TemplatesController::class, 'store'])->name('admin.templates.store');
+        Route::get('show/{id}', [TemplatesController::class, 'show'])->name('admin.templates.show')->where('id', '[0-9]+');
         Route::get('edit/{id}', [TemplatesController::class, 'edit'])->name('admin.templates.edit')->where('id', '[0-9]+');
         Route::put('update', [TemplatesController::class, 'update'])->name('admin.templates.update');
         Route::delete('destroy/{id}', [TemplatesController::class, 'destroy'])->name('admin.templates.destroy')->where('id', '[0-9]+');
@@ -122,6 +123,7 @@ Route::group(['middleware' => ['install']], function () {
             Route::get('', [SmtpController::class, 'index'])->name('admin.smtp.index');
             Route::get('create', [SmtpController::class, 'create'])->name('admin.smtp.create');
             Route::post('store', [SmtpController::class, 'store'])->name('admin.smtp.store');
+            Route::get('show/{id}', [SmtpController::class, 'show'])->name('admin.smtp.show')->where('id', '[0-9]+');
             Route::get('edit/{id}', [SmtpController::class, 'edit'])->name('admin.smtp.edit')->where('id', '[0-9]+');
             Route::put('update', [SmtpController::class, 'update'])->name('admin.smtp.update');
             Route::delete('destroy/{id}', [SmtpController::class, 'destroy'])->name('admin.smtp.destroy')->where('id', '[0-9]+');

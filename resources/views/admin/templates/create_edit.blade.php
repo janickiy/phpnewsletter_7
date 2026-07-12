@@ -2,6 +2,13 @@
 
 @section('title', $title)
 
+@section('breadcrumbs')
+    <li class="breadcrumb-item">
+        <a href="{{ route('admin.templates.index') }}">{{ __('frontend.str.template') }}</a>
+    </li>
+    <li class="breadcrumb-item active">{{ $title }}</li>
+@endsection
+
 @section('css')
 
     <!-- summernote -->
@@ -21,13 +28,15 @@
             <div class="row">
                 <div class="col-12">
 
-                    <!-- general form elements -->
-                    <header class="card card-primary">
+                    {!! Form::open(['url' => isset($template) ? route('admin.templates.update') : route('admin.templates.store'), 'files' => true, 'method' => isset($template) ? 'put' : 'post', 'id' => 'tmplForm']) !!}
 
-                        <!-- form start -->
-                        {!! Form::open(['url' => isset($template) ? route('admin.templates.update') : route('admin.templates.store'), 'files' => true, 'method' => isset($template) ? 'put' : 'post', 'id' => 'tmplForm']) !!}
+                    {!! isset($template) ? Form::hidden('id', $template->id) : '' !!}
 
-                        {!! isset($template) ? Form::hidden('id', $template->id) : '' !!}
+                    @php
+                        $priorValue = (int) old('prior', $template->prior ?? 3);
+                    @endphp
+
+                    <div class="card card-primary">
 
                         <div class="card-body">
 
@@ -37,7 +46,7 @@
 
                                 {!! Form::label('name', __('frontend.form.name') . '*') !!}
 
-                                {!! Form::text('name', old('name', $template->name ?? null), ['class' => 'form-control']) !!}
+                                {!! Form::text('name', old('name', $template->name ?? null), ['class' => 'form-control', 'placeholder' => __('frontend.form.name')]) !!}
 
                                 @if ($errors->has('name'))
                                     <p class="text-danger">{{ $errors->first('name') }}</p>
@@ -54,14 +63,14 @@
                                     <p class="text-danger">{{ $errors->first('body') }}</p>
                                 @endif
 
-                                <blockquote class="quote-secondary">
+                                <div class="callout callout-info py-2 mt-3 mb-2">
                                     <small>{!! __('frontend.note.personalization') !!}</small>
-                                </blockquote>
+                                </div>
 
                                 @if($macrosList)
-                                <blockquote class="quote-secondary">
-                                    <small>{!! __('frontend.note.macros') !!} {!! $macrosList !!}</small>
-                                </blockquote>
+                                    <div class="callout callout-info py-2 mb-0">
+                                        <small>{!! __('frontend.note.macros') !!} {!! $macrosList !!}</small>
+                                    </div>
                                 @endif
 
                             </div>
@@ -73,9 +82,9 @@
                                 <div class="input-group">
                                     <div class="custom-file">
 
-                                        {!! Form::file('attachfile[]',  ['id' => 'import', 'multiple' => "true", 'class' => "custom-file-input"]) !!}
+                                        {!! Form::file('attachfile[]', ['id' => 'attachfile', 'multiple' => true, 'class' => 'custom-file-input']) !!}
 
-                                        {!! Form::label('attachfile[]', __('frontend.form.browse'), ['class' => 'custom-file-label']) !!}
+                                        {!! Form::label('attachfile', __('frontend.form.browse'), ['class' => 'custom-file-label']) !!}
 
                                     </div>
                                 </div>
@@ -90,11 +99,12 @@
 
                                 {!! Form::label('attachments', __('frontend.str.attachments')) !!}
 
-                                <div class="inline-group">
+                                <div class="d-flex flex-wrap">
                                     @if(isset($attachment))
                                         @foreach($attachment as $a)
-                                            <span id="attach_{{ $a->id }}">{{ $a->file_name }}
-                                                <a href="#" data-num="{{ $a->id }}" class="remove_attach" title="{{ __('frontend.str.remove') }}"> X </a>&nbsp;&nbsp;
+                                            <span id="attach_{{ $a->id }}" class="badge badge-light border mr-2 mb-2 p-2">
+                                                {{ $a->file_name }}
+                                                <a href="#" data-num="{{ $a->id }}" class="remove_attach text-danger ml-1" title="{{ __('frontend.str.remove') }}">X</a>
                                             </span>
                                         @endforeach
                                     @endif
@@ -106,25 +116,24 @@
 
                                 {!! Form::label('prior', __('frontend.form.prior')) !!}
 
-                                <div class="inline-group">
-                                    <label class="radio">
+                                <div>
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        {!! Form::radio('prior', 3, $priorValue === 3, ['class' => 'custom-control-input', 'id' => 'prior_normal']) !!}
 
-                                        {!! Form::radio('prior', 3, (isset($template) && $template->prior == 3) or !isset($template)) !!}
+                                        <label class="custom-control-label" for="prior_normal">{{ __('frontend.form.normal') }}</label>
+                                    </div>
 
-                                        <i></i>{{ __('frontend.form.normal') }}
-                                    </label>
-                                    <label class="radio">
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        {!! Form::radio('prior', 2, $priorValue === 2, ['class' => 'custom-control-input', 'id' => 'prior_low']) !!}
 
-                                        {!! Form::radio('prior', 2, isset($template) && $template->prior == 2) !!}
+                                        <label class="custom-control-label" for="prior_low">{{ __('frontend.form.low') }}</label>
+                                    </div>
 
-                                        <i></i>{{ __('frontend.form.low') }}
-                                    </label>
-                                    <label class="radio">
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        {!! Form::radio('prior', 1, $priorValue === 1, ['class' => 'custom-control-input', 'id' => 'prior_high']) !!}
 
-                                        {!! Form::radio('prior', 1, isset($template) && $template->prior == 1) !!}
-
-                                        <i></i>{{ __('frontend.form.high') }}
-                                    </label>
+                                        <label class="custom-control-label" for="prior_high">{{ __('frontend.form.high') }}</label>
+                                    </div>
 
                                     @if ($errors->has('prior'))
                                         <p class="text-danger">{{ $errors->first('prior') }}</p>
@@ -141,14 +150,15 @@
                             <button type="submit" class="btn btn-primary">
                                 {{ isset($template) ? __('frontend.form.edit') : __('frontend.form.add') }}
                             </button>
-                            <a class="btn btn-default float-sm-right" href="{{ route('admin.templates.index') }}">
+                            <a class="btn btn-default bg-white float-right" href="{{ route('admin.templates.index') }}">
+                                <i class="fas fa-arrow-left mr-1"></i>
                                 {{ __('frontend.form.back') }}
                             </a>
 
                         </div>
-                    </header>
+                    </div>
 
-                    <header class="card card-info">
+                    <div class="card card-info">
                         <div class="card-header">
                             <h3 class="card-title">{{ __('frontend.str.send_test_letter') }}<span id="process"></span></h3>
                         </div>
@@ -164,12 +174,12 @@
                                 {!! Form::text('email', null, ['class' => 'form-control', 'placeholder' => 'Email', 'id' => 'email']) !!}
 
                                 <span class="input-group-append">
-                                    <button type="button" id="send_test" class="btn btn-info btn-flat">{{ __('frontend.str.send') }}</button>
+                                    <button type="button" id="send_test" class="btn btn-info">{{ __('frontend.str.send') }}</button>
                                 </span>
 
                             </div>
                         </div>
-                    </header>
+                    </div>
 
                     {!! Form::close() !!}
 
@@ -193,7 +203,6 @@
     {!! Html::script('/plugins/codemirror/mode/css/css.js') !!}
     {!! Html::script('/plugins/codemirror/mode/xml/xml.js') !!}
     {!! Html::script('/plugins/codemirror/mode/htmlmixed/htmlmixed.js') !!}
-    {!! Html::script('/plugins/bs-custom-file-input/bs-custom-file-input.min.js') !!}
     {!! Html::script('/plugins/bs-custom-file-input/bs-custom-file-input.min.js') !!}
 
     <!-- Page specific script -->
@@ -290,4 +299,3 @@
     </script>
 
 @endsection
-

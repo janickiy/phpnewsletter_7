@@ -2,6 +2,13 @@
 
 @section('title', $title)
 
+@section('breadcrumbs')
+    <li class="breadcrumb-item">
+        <a href="{{ route('admin.subscribers.index') }}">{{ __('frontend.menu.subscribers') }}</a>
+    </li>
+    <li class="breadcrumb-item active">{{ $title }}</li>
+@endsection
+
 @section('css')
 
 
@@ -83,6 +90,7 @@
                                 {{ __('frontend.form.send') }}
                             </button>
                             <a class="btn btn-default float-sm-right" href="{{ route('admin.subscribers.index') }}">
+                                <i class="fas fa-arrow-left mr-1"></i>
                                 {{ __('frontend.form.back') }}
                             </a>
                         </div>

@@ -2,6 +2,13 @@
 
 @section('title', $title)
 
+@section('breadcrumbs')
+    <li class="breadcrumb-item">
+        <a href="{{ route('admin.schedule.index') }}">{{ __('frontend.menu.schedule') }}</a>
+    </li>
+    <li class="breadcrumb-item active">{{ $title }}</li>
+@endsection
+
 @section('css')
 
     {!! Html::style('/plugins/daterangepicker/daterangepicker.css') !!}
@@ -102,6 +109,7 @@
                                 {{ isset($row) ? __('frontend.form.edit') : __('frontend.form.add') }}
                             </button>
                             <a class="btn btn-default float-sm-right" href="{{ route('admin.schedule.index') }}">
+                                <i class="fas fa-arrow-left mr-1"></i>
                                 {{ __('frontend.form.back') }}
                             </a>
                         </div>
