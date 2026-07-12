@@ -48,6 +48,24 @@ class SmtpController extends Controller
     }
 
     /**
+     * Show SMTP account details.
+     *
+     * @param int $id
+     * @return View
+     */
+    public function show(int $id): View
+    {
+        $row = $this->smtpRepository->find($id);
+
+        abort_if(!$row, 404);
+
+        return view('admin.smtp.show', [
+            'row' => $row,
+            'title' => __('frontend.str.smtp_server'),
+        ]);
+    }
+
+    /**
      * Validate and persist a new SMTP account configuration.
      *
      * @param StoreRequest $request
