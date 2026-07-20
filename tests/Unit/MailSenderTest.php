@@ -8,13 +8,14 @@ use App\Models\Subscribers;
 use App\Models\Templates;
 use App\Services\MailSender;
 use App\Services\SmtpConfigurationResolver;
+use App\Services\UrlHostResolver;
 use PHPUnit\Framework\TestCase;
 
 class MailSenderTest extends TestCase
 {
     public function test_it_maps_message_data_to_the_legacy_helper(): void
     {
-        $helper = new class(new SmtpConfigurationResolver) extends SendEmailHelper
+        $helper = new class(new SmtpConfigurationResolver, new UrlHostResolver) extends SendEmailHelper
         {
             public ?int $receivedAttachmentTemplateId = null;
 

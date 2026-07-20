@@ -12,6 +12,7 @@ class MailSender
 {
     public function __construct(
         private readonly SmtpConfigurationResolver $smtpConfigurationResolver,
+        private readonly UrlHostResolver $urlHostResolver,
     ) {}
 
     /**
@@ -44,6 +45,9 @@ class MailSender
 
     protected function createHelper(): SendEmailHelper
     {
-        return new SendEmailHelper($this->smtpConfigurationResolver);
+        return new SendEmailHelper(
+            $this->smtpConfigurationResolver,
+            $this->urlHostResolver,
+        );
     }
 }

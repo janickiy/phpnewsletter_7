@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Models\Attach;
 use App\Models\CustomHeaders;
 use App\Services\SmtpConfigurationResolver;
+use App\Services\UrlHostResolver;
 use Illuminate\Support\Facades\Storage;
 use PHPMailer\PHPMailer;
 use URL;
@@ -13,6 +14,7 @@ class SendEmailHelper
 {
     public function __construct(
         private readonly SmtpConfigurationResolver $smtpConfigurationResolver,
+        private readonly UrlHostResolver $urlHostResolver,
     ) {}
 
     public string $subject;
@@ -180,7 +182,10 @@ class SendEmailHelper
         }
 
         $msg = $body;
-        $url_info = parse_url(SettingsHelper::getInstance()->getValueForKey('URL'));
+        $serverName = $this->urlHostResolver->resolve(
+            SettingsHelper::getInstance()->getValueForKey('URL'),
+            config('app.url'),
+        );
 
         $msg = preg_replace_callback("/%REFERRAL\:(.+)%/isU", function ($matches) {
             return '%URL_PATH%/referral/'.base64_encode($matches[1]).'/%USERID%';
@@ -188,7 +193,7 @@ class SendEmailHelper
 
         $msg = str_replace('%NAME%', $name, $msg);
         $msg = str_replace('%UNSUB%', $UNSUB, $msg);
-        $msg = str_replace('%SERVER_NAME%', $url_info['host'], $msg);
+        $msg = str_replace('%SERVER_NAME%', $serverName, $msg);
         $msg = str_replace('%USERID%', $subscriberId, $msg);
         $msg = str_replace('%URL_PATH%', URL::to('/'), $msg);
         $msg = (int) SettingsHelper::getInstance()->getValueForKey('RANDOM_REPLACEMENT_BODY') === 1

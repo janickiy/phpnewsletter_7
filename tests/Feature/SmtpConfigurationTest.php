@@ -9,6 +9,7 @@ use App\Http\Requests\Admin\Smtp\StoreRequest;
 use App\Models\Settings;
 use App\Models\Smtp;
 use App\Services\SmtpConfigurationResolver;
+use App\Services\UrlHostResolver;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Validator;
 use Tests\TestCase;
@@ -110,7 +111,10 @@ class SmtpConfigurationTest extends TestCase
         SettingsHelper::refresh();
 
         try {
-            $helper = new SendEmailHelper(new SmtpConfigurationResolver);
+            $helper = new SendEmailHelper(
+                new SmtpConfigurationResolver,
+                new UrlHostResolver,
+            );
             $helper->subject = 'Subject';
             $helper->body = 'Body';
             $helper->email = 'recipient@example.com';
