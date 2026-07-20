@@ -222,7 +222,7 @@ class StringHelper
     static public function getScheme(string $url): string
     {
         $parse = parse_url($url);
-        return isset($parse['scheme']) ? $parse['scheme'] : 'http';
+        return $parse['scheme'] ?? 'http';
     }
 
     /**

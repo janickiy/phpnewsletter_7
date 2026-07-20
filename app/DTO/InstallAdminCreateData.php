@@ -9,6 +9,7 @@ class InstallAdminCreateData
         public readonly string $login,
         public readonly string $role,
         public readonly string $password,
-    ) {
+    )
+    {
     }
 }

@@ -5,18 +5,21 @@ namespace App\DTO;
 final class MailingOptions
 {
     public function __construct(
-        public readonly string $order,
-        public readonly ?int $limit,
+        public readonly string  $order,
+        public readonly ?int    $limit,
         public readonly ?string $interval,
-    ) {}
+    )
+    {
+    }
 
     public static function fromValues(
-        bool $randomOrder,
-        bool $limitEnabled,
-        int $limit,
+        bool   $randomOrder,
+        bool   $limitEnabled,
+        int    $limit,
         string $intervalType,
-        int $intervalNumber,
-    ): self {
+        int    $intervalNumber,
+    ): self
+    {
         return new self(
             order: $randomOrder ? 'RAND()' : 'subscribers.id',
             limit: $limitEnabled ? $limit : null,

@@ -19,13 +19,14 @@ class SendUnsentEmails extends Command implements Isolatable
     protected $description = 'Send unsent emails to subscribers';
 
     public function __construct(
-        private readonly ScheduleRepository $scheduleRepository,
-        private readonly SubscriberRepository $subscribersRepository,
-        private readonly MailSender $mailSender,
-        private readonly MailingOptionsResolver $mailingOptionsResolver,
-        private readonly MailingProgressReporter $progressReporter,
+        private readonly ScheduleRepository        $scheduleRepository,
+        private readonly SubscriberRepository      $subscribersRepository,
+        private readonly MailSender                $mailSender,
+        private readonly MailingOptionsResolver    $mailingOptionsResolver,
+        private readonly MailingProgressReporter   $progressReporter,
         private readonly SubscriberSentTimeUpdater $subscriberSentTimeUpdater,
-    ) {
+    )
+    {
         parent::__construct();
     }
 
@@ -42,7 +43,7 @@ class SendUnsentEmails extends Command implements Isolatable
         $options = $this->mailingOptionsResolver->resolve();
 
         foreach ($schedule ?? [] as $row) {
-            if (! $row->template) {
+            if (!$row->template) {
                 continue;
             }
 
@@ -85,8 +86,8 @@ class SendUnsentEmails extends Command implements Isolatable
             }
         }
 
-        $this->line('sent: '.$mailCount);
-        $this->line('no sent: '.$mailCountNo);
+        $this->line('sent: ' . $mailCount);
+        $this->line('no sent: ' . $mailCountNo);
 
         return self::SUCCESS;
     }
