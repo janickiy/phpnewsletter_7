@@ -12,7 +12,7 @@ services:
       - "${APP_PORT:-8081}:80"
     environment:
       COMPOSER_INSTALL: ${COMPOSER_INSTALL:-true}
-      COMPOSER_BLOCK_SECURITY_ADVISORIES: ${COMPOSER_BLOCK_SECURITY_ADVISORIES:-false}
+      COMPOSER_BLOCK_SECURITY_ADVISORIES: ${COMPOSER_BLOCK_SECURITY_ADVISORIES:-true}
     volumes:
       - ..:/var/www/html
       - composer-cache:/tmp/composer

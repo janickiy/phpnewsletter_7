@@ -4,246 +4,179 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Macros;
+use App\Models\Redirect;
 use App\Models\Schedule;
 use App\Models\Smtp;
 use App\Models\Subscribers;
 use App\Models\Templates;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class LocalDemoSeeder extends Seeder
 {
+    private const CATEGORIES = [
+        'Category 1',
+        'Category 2',
+        'Category 3',
+        'Product Updates',
+        'Promotions',
+        'Blog Digest',
+        'Events',
+        'VIP Customers',
+        'New Users',
+    ];
+
+    private const TEMPLATES = [
+        [
+            'name' => 'Welcome email for new subscribers',
+            'prior' => 0,
+            'body' => '<h2>Hello, %NAME%!</h2><p>Thanks for subscribing to PHP Newsletter. This email collects the most useful resources to help you get started quickly.</p><p><a href="https://example.test/start">Open the starter guide</a></p>',
+        ],
+        [
+            'name' => 'July product digest',
+            'prior' => 1,
+            'body' => '<h2>Main updates this month</h2><p>New templates, improved subscriber imports, and clearer mailing statistics are now available in the control panel.</p>',
+        ],
+        [
+            'name' => 'Promo campaign: summer discount',
+            'prior' => 1,
+            'body' => '<h2>Summer promotion</h2><p>A special offer is available for active subscribers until the end of the week. Use promo code <strong>SUMMER25</strong>.</p>',
+        ],
+        [
+            'name' => 'Webinar invitation',
+            'prior' => 0,
+            'body' => '<h2>Email marketing webinar</h2><p>We will show how to segment your audience, prepare messages, and track results without unnecessary routine work.</p>',
+        ],
+        [
+            'name' => 'Inactive subscriber reactivation',
+            'prior' => 2,
+            'body' => '<h2>We missed you</h2><p>We have not seen you among active readers for a while. Here is a short list of resources worth checking out.</p>',
+        ],
+    ];
+
+    private const SCHEDULES = [
+        ['event_name' => 'July digest: sent', 'day_offset' => -12, 'template' => 'July product digest'],
+        ['event_name' => 'Summer promo campaign: sent', 'day_offset' => -7, 'template' => 'Promo campaign: summer discount'],
+        ['event_name' => 'Welcome series: sent', 'day_offset' => -3, 'template' => 'Welcome email for new subscribers'],
+        ['event_name' => 'Email marketing webinar', 'day_offset' => 2, 'template' => 'Webinar invitation'],
+        ['event_name' => 'Inactive subscriber reactivation', 'day_offset' => 5, 'template' => 'Inactive subscriber reactivation'],
+    ];
+
     /**
-     * Fill the local installation with realistic demo data without resetting it.
+     * Fill a local installation without resetting or overwriting existing data.
      */
     public function run(): void
     {
-        DB::transaction(function () {
+        DB::transaction(function (): void {
+            $this->call([
+                CharsetSeeder::class,
+                CategorySeeder::class,
+                SettingsSeeder::class,
+                UsersSeeder::class,
+            ]);
+
             $categories = $this->seedCategories();
             $templates = $this->seedTemplates();
-            $subscribers = $this->seedSubscribers($categories);
+            $subscribers = $this->seedSubscribers();
 
+            $this->seedSubscriptions($subscribers, $categories);
             $this->seedMacros();
             $this->seedSmtpServers();
             $this->seedSchedulesAndDeliveryLog($templates, $subscribers, $categories);
             $this->seedRedirects($subscribers);
         });
 
-        $this->command?->info('Local site has been seeded with English demo data.');
+        $this->command?->info('Local site has been seeded with demo data. Existing rows were left unchanged.');
     }
 
     /**
-     * @return \Illuminate\Support\Collection<int, Category>
+     * @return Collection<int, Category>
      */
-    private function seedCategories()
+    private function seedCategories(): Collection
     {
-        $categories = [
-            [
-                'name' => 'Category 1',
-                'legacy_names' => ['Категория 1', 'Categoría 1', 'Catégorie 1', 'Kategorie 1', '分类 1', 'Categoria 1', 'الفئة 1', 'श्रेणी 1'],
-            ],
-            [
-                'name' => 'Category 2',
-                'legacy_names' => ['Категория 2', 'Categoría 2', 'Catégorie 2', 'Kategorie 2', '分类 2', 'Categoria 2', 'الفئة 2', 'श्रेणी 2'],
-            ],
-            [
-                'name' => 'Category 3',
-                'legacy_names' => ['Категория 3', 'Categoría 3', 'Catégorie 3', 'Kategorie 3', '分类 3', 'Categoria 3', 'الفئة 3', 'श्रेणी 3'],
-            ],
-            ['name' => 'Product Updates', 'legacy_names' => ['Новости продукта']],
-            ['name' => 'Promotions', 'legacy_names' => ['Промо-акции']],
-            ['name' => 'Blog Digest', 'legacy_names' => ['Дайджест блога']],
-            ['name' => 'Events', 'legacy_names' => ['События']],
-            ['name' => 'VIP Customers', 'legacy_names' => ['VIP клиенты']],
-            ['name' => 'New Users', 'legacy_names' => ['Новые пользователи']],
-        ];
-
-        foreach ($categories as $category) {
-            $this->syncDemoCategory($category['name'], $category['legacy_names']);
+        foreach (self::CATEGORIES as $name) {
+            Category::query()->firstOrCreate(['name' => $name]);
         }
 
-        $names = array_column($categories, 'name');
-
-        return Category::query()->whereIn('name', $names)->orderBy('id')->get();
-    }
-
-    private function syncDemoCategory(string $name, array $legacyNames): Category
-    {
-        $names = array_values(array_unique(array_merge([$name], $legacyNames)));
-        $existing = Category::query()->whereIn('name', $names)->orderBy('id')->get();
-        $target = $existing->firstWhere('name', $name) ?? $existing->first();
-
-        if (!$target) {
-            return Category::query()->create(['name' => $name]);
-        }
-
-        $target->forceFill(['name' => $name])->save();
-
-        foreach ($existing as $category) {
-            if ($category->id === $target->id) {
-                continue;
-            }
-
-            DB::table('subscriptions')
-                ->where('category_id', $category->id)
-                ->update(['category_id' => $target->id]);
-            DB::table('schedule_category')
-                ->where('category_id', $category->id)
-                ->update(['category_id' => $target->id]);
-
-            $category->delete();
-        }
-
-        return $target->refresh();
+        return Category::query()->whereIn('name', self::CATEGORIES)->orderBy('id')->get();
     }
 
     /**
-     * @return \Illuminate\Support\Collection<int, Templates>
+     * @return Collection<int, Templates>
      */
-    private function seedTemplates()
+    private function seedTemplates(): Collection
     {
-        $templates = [
-            [
-                'name' => 'Welcome email for new subscribers',
-                'legacy_names' => ['Welcome-письмо для новых подписчиков'],
-                'prior' => 0,
-                'body' => '<h2>Hello, %NAME%!</h2><p>Thanks for subscribing to PHP Newsletter. This email collects the most useful resources to help you get started quickly.</p><p><a href="https://example.test/start">Open the starter guide</a></p>',
-            ],
-            [
-                'name' => 'July product digest',
-                'legacy_names' => ['Июльский дайджест продукта'],
-                'prior' => 1,
-                'body' => '<h2>Main updates this month</h2><p>New templates, improved subscriber imports, and clearer mailing statistics are now available in the control panel.</p>',
-            ],
-            [
-                'name' => 'Promo campaign: summer discount',
-                'legacy_names' => ['Промо-кампания: летняя скидка'],
-                'prior' => 1,
-                'body' => '<h2>Summer promotion</h2><p>A special offer is available for active subscribers until the end of the week. Use promo code <strong>SUMMER25</strong>.</p>',
-            ],
-            [
-                'name' => 'Webinar invitation',
-                'legacy_names' => ['Приглашение на вебинар'],
-                'prior' => 0,
-                'body' => '<h2>Email marketing webinar</h2><p>We will show how to segment your audience, prepare messages, and track results without unnecessary routine work.</p>',
-            ],
-            [
-                'name' => 'Inactive subscriber reactivation',
-                'legacy_names' => ['Реактивация неактивных подписчиков'],
-                'prior' => 2,
-                'body' => '<h2>We missed you</h2><p>We have not seen you among active readers for a while. Here is a short list of resources worth checking out.</p>',
-            ],
-        ];
-
-        foreach ($templates as $template) {
-            $this->syncDemoTemplate($template);
+        foreach (self::TEMPLATES as $template) {
+            Templates::query()->firstOrCreate(
+                ['name' => $template['name']],
+                ['body' => $template['body'], 'prior' => $template['prior']],
+            );
         }
 
         return Templates::query()
-            ->whereIn('name', array_column($templates, 'name'))
+            ->whereIn('name', array_column(self::TEMPLATES, 'name'))
             ->orderBy('id')
             ->get();
     }
 
-    private function syncDemoTemplate(array $template): Templates
-    {
-        $names = array_values(array_unique(array_merge([$template['name']], $template['legacy_names'] ?? [])));
-        $existing = Templates::query()->whereIn('name', $names)->orderBy('id')->get();
-        $target = $existing->firstWhere('name', $template['name']) ?? $existing->first();
-        $data = [
-            'name' => $template['name'],
-            'body' => $template['body'],
-            'prior' => $template['prior'],
-        ];
-
-        if (!$target) {
-            return Templates::query()->create($data);
-        }
-
-        $target->forceFill($data)->save();
-
-        foreach ($existing as $existingTemplate) {
-            if ($existingTemplate->id === $target->id) {
-                continue;
-            }
-
-            DB::table('schedule')
-                ->where('template_id', $existingTemplate->id)
-                ->update(['template_id' => $target->id]);
-            DB::table('ready_sent')
-                ->where('template_id', $existingTemplate->id)
-                ->update([
-                    'template_id' => $target->id,
-                    'template' => $target->name,
-                ]);
-
-            $existingTemplate->delete();
-        }
-
-        return $target->refresh();
-    }
-
     /**
-     * @param \Illuminate\Support\Collection<int, Category> $categories
-     * @return \Illuminate\Support\Collection<int, Subscribers>
+     * @return Collection<int, Subscribers>
      */
-    private function seedSubscribers($categories)
+    private function seedSubscribers(): Collection
     {
         $faker = fake('en_US');
         $faker->seed(1200);
         $emails = [];
         $now = now();
 
-        for ($i = 1; $i <= 200; $i++) {
-            $emails[] = sprintf('demo.subscriber%03d@phpnewsletter.test', $i);
-        }
+        for ($index = 0; $index < 200; $index++) {
+            $email = sprintf('demo.subscriber%03d@phpnewsletter.test', $index + 1);
+            $createdAt = $now->copy()
+                ->subDays(($index % 75) + 1)
+                ->subMinutes(($index * 37) % 720);
 
-        $existingSubscribers = Subscribers::query()
-            ->whereIn('email', $emails)
-            ->get()
-            ->keyBy('email');
-
-        foreach ($emails as $index => $email) {
-            $subscriber = $existingSubscribers->get($email);
-            $createdAt = $now->copy()->subDays(random_int(1, 75))->subMinutes(random_int(0, 720));
-
-            Subscribers::query()->updateOrCreate(
+            Subscribers::query()->firstOrCreate(
                 ['email' => $email],
                 [
                     'name' => $faker->name(),
                     'active' => $index % 11 === 0 ? 0 : 1,
-                    'token' => $subscriber?->token ?: Str::random(32),
-                    'timeSent' => $index % 5 === 0 ? $createdAt->copy()->addDays(random_int(1, 8)) : null,
-                    'created_at' => $subscriber?->created_at ?: $createdAt,
-                    'updated_at' => $now,
-                ]
+                    'token' => substr(hash('sha256', $email), 0, 32),
+                    'timeSent' => $index % 5 === 0 ? $createdAt->copy()->addDays(($index % 8) + 1) : null,
+                    'created_at' => $createdAt,
+                    'updated_at' => $createdAt,
+                ],
             );
+
+            $emails[] = $email;
         }
 
-        $subscribers = Subscribers::query()->whereIn('email', $emails)->orderBy('id')->get();
+        return Subscribers::query()->whereIn('email', $emails)->orderBy('id')->get();
+    }
 
-        DB::table('subscriptions')->whereIn('subscriber_id', $subscribers->pluck('id'))->delete();
-
-        $subscriptions = [];
+    /**
+     * @param  Collection<int, Subscribers>  $subscribers
+     * @param  Collection<int, Category>  $categories
+     */
+    private function seedSubscriptions(Collection $subscribers, Collection $categories): void
+    {
+        $rows = [];
         $categoryIds = $categories->pluck('id')->values();
 
-        foreach ($subscribers as $index => $subscriber) {
-            $take = ($index % 3) + 1;
-            $offset = $index % max(1, $categoryIds->count());
+        foreach ($subscribers->values() as $index => $subscriber) {
+            $categoryCount = ($index % 3) + 1;
+            $offset = $index % $categoryIds->count();
 
-            for ($i = 0; $i < $take; $i++) {
-                $subscriptions[] = [
+            for ($position = 0; $position < $categoryCount; $position++) {
+                $rows[] = [
                     'subscriber_id' => $subscriber->id,
-                    'category_id' => $categoryIds[($offset + $i) % $categoryIds->count()],
+                    'category_id' => $categoryIds[($offset + $position) % $categoryIds->count()],
                 ];
             }
         }
 
-        DB::table('subscriptions')->insertOrIgnore($subscriptions);
-
-        return $subscribers;
+        DB::table('subscriptions')->insertOrIgnore($rows);
     }
 
     private function seedMacros(): void
@@ -257,12 +190,9 @@ class LocalDemoSeeder extends Seeder
         ];
 
         foreach ($macros as $macro) {
-            Macros::query()->updateOrCreate(
+            Macros::query()->firstOrCreate(
                 ['name' => $macro['name']],
-                [
-                    'value' => $macro['value'],
-                    'type' => $macro['type'],
-                ]
+                ['value' => $macro['value'], 'type' => $macro['type']],
             );
         }
     }
@@ -276,8 +206,8 @@ class LocalDemoSeeder extends Seeder
                 'email' => 'newsletter@example.test',
                 'password' => 'secret',
                 'port' => 2525,
-                'authentication' => 'login',
-                'secure' => 'tls',
+                'authentication' => Smtp::AUTH_LOGIN,
+                'secure' => Smtp::SECURE_TLS,
                 'timeout' => 30,
                 'active' => 1,
             ],
@@ -287,8 +217,8 @@ class LocalDemoSeeder extends Seeder
                 'email' => 'backup@example.test',
                 'password' => 'secret',
                 'port' => 587,
-                'authentication' => 'plain',
-                'secure' => 'tls',
+                'authentication' => Smtp::AUTH_PLAIN,
+                'secure' => Smtp::SECURE_TLS,
                 'timeout' => 45,
                 'active' => 1,
             ],
@@ -298,101 +228,98 @@ class LocalDemoSeeder extends Seeder
                 'email' => 'paused@example.test',
                 'password' => 'secret',
                 'port' => 465,
-                'authentication' => 'login',
-                'secure' => 'ssl',
+                'authentication' => Smtp::AUTH_LOGIN,
+                'secure' => Smtp::SECURE_SSL,
                 'timeout' => 30,
                 'active' => 0,
             ],
         ];
 
         foreach ($servers as $server) {
-            Smtp::query()->updateOrCreate(
-                [
-                    'host' => $server['host'],
-                    'username' => $server['username'],
-                ],
-                $server
+            Smtp::query()->firstOrCreate(
+                ['host' => $server['host'], 'username' => $server['username']],
+                collect($server)->except(['host', 'username'])->all(),
             );
         }
     }
 
     /**
-     * @param \Illuminate\Support\Collection<int, Templates> $templates
-     * @param \Illuminate\Support\Collection<int, Subscribers> $subscribers
-     * @param \Illuminate\Support\Collection<int, Category> $categories
+     * @param  Collection<int, Templates>  $templates
+     * @param  Collection<int, Subscribers>  $subscribers
+     * @param  Collection<int, Category>  $categories
      */
-    private function seedSchedulesAndDeliveryLog($templates, $subscribers, $categories): void
-    {
-        $scheduleRows = [
-            ['event_name' => 'July digest: sent', 'legacy_event_names' => ['Июльский дайджест: отправлено'], 'offset' => -12, 'template' => 1],
-            ['event_name' => 'Summer promo campaign: sent', 'legacy_event_names' => ['Летняя промо-кампания: отправлено'], 'offset' => -7, 'template' => 2],
-            ['event_name' => 'Welcome series: sent', 'legacy_event_names' => ['Welcome-серия: отправлено'], 'offset' => -3, 'template' => 0],
-            ['event_name' => 'Email marketing webinar', 'legacy_event_names' => ['Вебинар по email-маркетингу'], 'offset' => 2, 'template' => 3],
-            ['event_name' => 'Inactive subscriber reactivation', 'legacy_event_names' => ['Реактивация неактивных подписчиков'], 'offset' => 5, 'template' => 4],
-        ];
-
-        $eventNames = array_column($scheduleRows, 'event_name');
-        $legacyEventNames = collect($scheduleRows)
-            ->flatMap(fn (array $row) => $row['legacy_event_names'] ?? [])
-            ->all();
-        $demoEventNames = array_values(array_unique(array_merge($eventNames, $legacyEventNames)));
-        $oldScheduleIds = Schedule::query()->whereIn('event_name', $demoEventNames)->pluck('id');
-        $oldLogIds = DB::table('ready_sent')->whereIn('schedule_id', $oldScheduleIds)->pluck('log_id')->filter()->unique();
-
-        DB::table('ready_sent')->whereIn('schedule_id', $oldScheduleIds)->delete();
-        DB::table('schedule_category')->whereIn('schedule_id', $oldScheduleIds)->delete();
-        DB::table('logs')->whereIn('id', $oldLogIds)->delete();
-        Schedule::query()->whereIn('id', $oldScheduleIds)->delete();
-
-        $templateList = $templates->values();
+    private function seedSchedulesAndDeliveryLog(
+        Collection $templates,
+        Collection $subscribers,
+        Collection $categories,
+    ): void {
         $categoryIds = $categories->pluck('id')->values();
 
-        foreach ($scheduleRows as $index => $row) {
-            $template = $templateList[$row['template'] % $templateList->count()];
-            $start = Carbon::now()->addDays($row['offset'])->setTime(10 + ($index % 6), 0);
-            $end = $start->copy()->addMinutes(45);
+        foreach (self::SCHEDULES as $index => $row) {
+            /** @var Templates $template */
+            $template = $templates->firstWhere('name', $row['template']);
+            $start = now()->startOfDay()->addDays($row['day_offset'])->addHours(10 + $index);
+            $schedule = Schedule::query()->firstOrCreate(
+                ['event_name' => $row['event_name']],
+                [
+                    'event_start' => $start,
+                    'event_end' => $start->copy()->addMinutes(45),
+                    'template_id' => $template->id,
+                ],
+            );
 
-            $schedule = Schedule::query()->create([
-                'event_name' => $row['event_name'],
-                'event_start' => $start,
-                'event_end' => $end,
-                'template_id' => $template->id,
-            ]);
-
-            $scheduleCategories = [];
-            for ($i = 0; $i < 2; $i++) {
-                $scheduleCategories[] = [
+            for ($position = 0; $position < 2; $position++) {
+                DB::table('schedule_category')->insertOrIgnore([
                     'schedule_id' => $schedule->id,
-                    'category_id' => $categoryIds[($index + $i) % $categoryIds->count()],
-                ];
+                    'category_id' => $categoryIds[($index + $position) % $categoryIds->count()],
+                ]);
             }
-            DB::table('schedule_category')->insertOrIgnore($scheduleCategories);
 
-            if ($row['offset'] < 0) {
+            if ($row['day_offset'] < 0) {
                 $this->seedDeliveryRows($schedule, $template, $subscribers, $index);
             }
         }
     }
 
     /**
-     * @param \Illuminate\Support\Collection<int, Subscribers> $subscribers
+     * @param  Collection<int, Subscribers>  $subscribers
      */
-    private function seedDeliveryRows(Schedule $schedule, Templates $template, $subscribers, int $batchIndex): void
-    {
-        $logId = DB::table('logs')->insertGetId([
-            'time' => $schedule->event_start,
-        ]);
-
-        $rows = [];
+    private function seedDeliveryRows(
+        Schedule $schedule,
+        Templates $template,
+        Collection $subscribers,
+        int $batchIndex,
+    ): void {
         $sample = $subscribers->slice($batchIndex * 30, 45);
 
         if ($sample->count() < 45) {
             $sample = $subscribers->take(45);
         }
 
-        foreach ($sample->values() as $index => $subscriber) {
+        $missingSubscribers = $sample->reject(fn (Subscribers $subscriber): bool => DB::table('ready_sent')
+            ->where('schedule_id', $schedule->id)
+            ->where('subscriber_id', $subscriber->id)
+            ->where('template_id', $template->id)
+            ->exists());
+
+        if ($missingSubscribers->isEmpty()) {
+            return;
+        }
+
+        $logId = DB::table('ready_sent')
+            ->where('schedule_id', $schedule->id)
+            ->whereNotNull('log_id')
+            ->value('log_id');
+
+        $logId ??= DB::table('logs')->insertGetId([
+            'time' => Carbon::parse($schedule->event_start),
+        ]);
+
+        $rows = [];
+
+        foreach ($missingSubscribers->values() as $index => $subscriber) {
             $success = $index % 9 === 0 ? 0 : 1;
-            $createdAt = $schedule->event_start->copy()->addMinutes($index);
+            $createdAt = Carbon::parse($schedule->event_start)->addMinutes($index);
 
             $rows[] = [
                 'subscriber_id' => $subscriber->id,
@@ -413,9 +340,9 @@ class LocalDemoSeeder extends Seeder
     }
 
     /**
-     * @param \Illuminate\Support\Collection<int, Subscribers> $subscribers
+     * @param  Collection<int, Subscribers>  $subscribers
      */
-    private function seedRedirects($subscribers): void
+    private function seedRedirects(Collection $subscribers): void
     {
         $urls = [
             'https://example.test/start',
@@ -425,20 +352,11 @@ class LocalDemoSeeder extends Seeder
             'https://example.test/promo/summer',
         ];
 
-        DB::table('redirect')->whereIn('url', $urls)->delete();
-
-        $rows = [];
-        $now = now();
-
         foreach ($subscribers->take(70)->values() as $index => $subscriber) {
-            $rows[] = [
+            Redirect::query()->firstOrCreate([
                 'url' => $urls[$index % count($urls)],
                 'email' => $subscriber->email,
-                'created_at' => $now->copy()->subHours(random_int(1, 160)),
-                'updated_at' => $now,
-            ];
+            ]);
         }
-
-        DB::table('redirect')->insert($rows);
     }
 }

@@ -2,18 +2,20 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class UsersSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create([
-            'name' => 'admin',
-            'role' => 'admin' ,
-            'login' => 'admin',
-            'password' => '1234567',
-        ]);
+        User::query()->firstOrCreate(
+            ['login' => 'admin'],
+            [
+                'name' => 'admin',
+                'role' => User::ROLE_ADMIN,
+                'password' => '1234567',
+            ],
+        );
     }
 }

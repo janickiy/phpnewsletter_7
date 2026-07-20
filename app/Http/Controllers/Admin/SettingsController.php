@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-
+use App\Helpers\SettingsHelper;
+use App\Http\Requests\Admin\Settings\UpdateRequest;
 use App\Models\Charsets;
 use App\Models\CustomHeaders;
 use App\Repositories\SettingsRepository;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
-use Illuminate\Http\Request;
 
 class SettingsController extends Controller
 {
@@ -23,14 +23,13 @@ class SettingsController extends Controller
 
     /**
      * Show the application settings page with charset and custom header options.
-     *
-     * @return View
      */
     public function index(): View
     {
         return view('admin.settings.index', [
             'option_charset' => Charsets::getOption(),
             'customHeaders' => CustomHeaders::get(),
+            'settings' => SettingsHelper::all(),
             'infoAlert' => __('frontend.hint.settings_index'),
             'title' => __('frontend.title.settings_index'),
         ]);
@@ -38,16 +37,11 @@ class SettingsController extends Controller
 
     /**
      * Persist application settings submitted from the settings form.
-     *
-     * @param Request $request
-     * @return RedirectResponse
      */
-    public function update(Request $request): RedirectResponse
+    public function update(UpdateRequest $request): RedirectResponse
     {
         try {
-            $this->settingsRepository->setSettings(
-                $request->all()
-            );
+            $this->settingsRepository->setSettings($request->validated());
         } catch (\Throwable $e) {
             report($e);
 

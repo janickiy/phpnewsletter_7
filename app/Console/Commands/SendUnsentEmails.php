@@ -2,17 +2,15 @@
 
 namespace App\Console\Commands;
 
-
-use App\Helpers\SendEmailHelper;
-use App\Helpers\SettingsHelper;
 use App\Models\ReadySent;
-use App\Models\Subscribers;
 use App\Repositories\ScheduleRepository;
 use App\Repositories\SubscriberRepository;
+use App\Services\MailingOptionsResolver;
+use App\Services\MailingProgressReporter;
+use App\Services\MailSender;
+use App\Services\SubscriberSentTimeUpdater;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Isolatable;
-use Illuminate\Support\Facades\DB;
-use Symfony\Component\Console\Helper\ProgressBar;
 
 class SendUnsentEmails extends Command implements Isolatable
 {
@@ -23,6 +21,10 @@ class SendUnsentEmails extends Command implements Isolatable
     public function __construct(
         private readonly ScheduleRepository $scheduleRepository,
         private readonly SubscriberRepository $subscribersRepository,
+        private readonly MailSender $mailSender,
+        private readonly MailingOptionsResolver $mailingOptionsResolver,
+        private readonly MailingProgressReporter $progressReporter,
+        private readonly SubscriberSentTimeUpdater $subscriberSentTimeUpdater,
     ) {
         parent::__construct();
     }
@@ -37,42 +39,26 @@ class SendUnsentEmails extends Command implements Isolatable
         $mailCount = 0;
 
         $schedule = $this->scheduleRepository->getScheduleEvent();
+        $options = $this->mailingOptionsResolver->resolve();
 
         foreach ($schedule ?? [] as $row) {
-            if (!$row->template) {
+            if (! $row->template) {
                 continue;
             }
 
-            $order = (int) SettingsHelper::getInstance()->getValueForKey('RANDOM_SEND') === 1
-                ? 'RAND()'
-                : 'subscribers.id';
-
-            $limit = (int) SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1
-                ? (int) SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER')
-                : null;
-
-            $interval = $this->resolveInterval(
-                (string) SettingsHelper::getInstance()->getValueForKey('INTERVAL_TYPE'),
-                (int) SettingsHelper::getInstance()->getValueForKey('INTERVAL_NUMBER')
-            );
-
             $subscribers = $this->subscribersRepository->getSubscribersUnSent(
                 $row->id,
-                $order,
-                $limit,
-                $interval
+                $options->order,
+                $options->limit,
+                $options->interval,
             );
 
             $sentSubscriberIds = [];
             $subscriberUpdates = [];
-            $progressBar = $this->createMailingProgressBar(count($subscribers ?? []));
+            $progressBar = $this->progressReporter->start($this->output, count($subscribers ?? []));
 
             foreach ($subscribers ?? [] as $subscriber) {
-                if ((int) SettingsHelper::getInstance()->getValueForKey('SLEEP') > 0) {
-                    sleep((int) SettingsHelper::getInstance()->getValueForKey('SLEEP'));
-                }
-
-                $result = $this->sendToSubscriber($row, $subscriber);
+                $result = $this->mailSender->sendTemplate($row->template, $subscriber);
 
                 if ($result['result'] === true) {
                     $subscriberUpdates[$subscriber->id] = now()->format('Y-m-d H:i:s');
@@ -84,157 +70,30 @@ class SendUnsentEmails extends Command implements Isolatable
                     $status = 'failed';
                 }
 
-                $this->advanceMailingProgressBar($progressBar, $subscriber->email, $status);
+                $this->progressReporter->advance($this->output, $progressBar, $subscriber->email, $status);
 
-                if (
-                    (int) SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1
-                    && $mailCount >= (int) SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER')
-                ) {
-                    $this->resultSend($row->id, $sentSubscriberIds, $subscriberUpdates);
+                if ($options->limitReached($mailCount)) {
                     break;
                 }
             }
 
-            $this->finishMailingProgressBar($progressBar);
+            $this->progressReporter->finish($this->output, $progressBar);
             $this->resultSend($row->id, $sentSubscriberIds, $subscriberUpdates);
 
-            if (
-                (int) SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1
-                && $mailCount >= (int) SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER')
-            ) {
+            if ($options->limitReached($mailCount)) {
                 break;
             }
         }
 
-        $this->line('sent: ' . $mailCount);
-        $this->line('no sent: ' . $mailCountNo);
+        $this->line('sent: '.$mailCount);
+        $this->line('no sent: '.$mailCountNo);
 
         return self::SUCCESS;
     }
 
-    /**
-     * @param object $schedule
-     * @param object $subscriber
-     * @return array
-     * @throws \PHPMailer\PHPMailer\Exception
-     */
-    private function sendToSubscriber(object $schedule, object $subscriber): array
-    {
-        $sendMail = new SendEmailHelper();
-        $sendMail->body = $schedule->template->body;
-        $sendMail->subject = $schedule->template->name;
-        $sendMail->prior = $schedule->template->prior;
-        $sendMail->email = $subscriber->email;
-        $sendMail->token = $subscriber->token;
-        $sendMail->subscriberId = $subscriber->id;
-        $sendMail->name = $subscriber->name;
-        $sendMail->templateId = $schedule->template->id;
-
-        return $sendMail->sendEmail();
-    }
-
-    /**
-     * @param string $intervalType
-     * @param int $intervalNumber
-     * @return string|null
-     */
-    private function resolveInterval(string $intervalType, int $intervalNumber): ?string
-    {
-        if ($intervalNumber <= 0) {
-            return null;
-        }
-
-        return match ($intervalType) {
-            'minute' => "(subscribers.timeSent IS NULL OR subscribers.timeSent < NOW() - INTERVAL '{$intervalNumber}' MINUTE)",
-            'hour' => "(subscribers.timeSent IS NULL OR subscribers.timeSent < NOW() - INTERVAL '{$intervalNumber}' HOUR)",
-            'day' => "(subscribers.timeSent IS NULL OR subscribers.timeSent < NOW() - INTERVAL '{$intervalNumber}' DAY)",
-            default => null,
-        };
-    }
-
-    /**
-     * @param int $max
-     * @return ProgressBar|null
-     */
-    private function createMailingProgressBar(int $max): ?ProgressBar
-    {
-        if ($max <= 0) {
-            return null;
-        }
-
-        ProgressBar::setFormatDefinition(
-            'mailing',
-            ' %current%/%max% [%bar%] %percent:3s%% | %message%'
-        );
-
-        $progressBar = $this->output->createProgressBar($max);
-        $progressBar->setFormat('mailing');
-        $progressBar->setMessage('waiting...');
-        $progressBar->start();
-
-        return $progressBar;
-    }
-
-    /**
-     * @param ProgressBar|null $progressBar
-     * @param string $email
-     * @param string $status
-     * @return void
-     */
-    private function advanceMailingProgressBar(?ProgressBar $progressBar, string $email, string $status): void
-    {
-        if (!$progressBar) {
-            $this->line($email . ' - ' . $status);
-            return;
-        }
-
-        $progressBar->setMessage($email . ' - ' . $status);
-        $progressBar->advance();
-    }
-
-    /**
-     * @param ProgressBar|null $progressBar
-     * @return void
-     */
-    private function finishMailingProgressBar(?ProgressBar $progressBar): void
-    {
-        if (!$progressBar) {
-            return;
-        }
-
-        $progressBar->finish();
-        $this->newLine(2);
-    }
-
-    /**
-     * @param int $scheduleId
-     * @param array $sentSubscriberIds
-     * @param array $subscriberUpdates
-     * @return void
-     */
     private function resultSend(int $scheduleId, array $sentSubscriberIds, array $subscriberUpdates): void
     {
-        if ($subscriberUpdates !== []) {
-            $ids = array_keys($subscriberUpdates);
-            $caseSql = 'CASE id ';
-            $bindings = [];
-
-            foreach ($subscriberUpdates as $id => $ts) {
-                $caseSql .= 'WHEN ? THEN ? ';
-                $bindings[] = (int) $id;
-                $bindings[] = $ts;
-            }
-
-            $caseSql .= 'END';
-
-            $inSql = implode(',', array_fill(0, count($ids), '?'));
-            $bindings = array_merge($bindings, array_map('intval', $ids));
-
-            DB::statement(
-                'UPDATE ' . Subscribers::getTableName() . " SET timeSent = {$caseSql} WHERE id IN ({$inSql})",
-                $bindings
-            );
-        }
+        $this->subscriberSentTimeUpdater->update($subscriberUpdates);
 
         if ($sentSubscriberIds !== []) {
             ReadySent::query()

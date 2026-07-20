@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-
 use App\Http\Traits\StaticTableName;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Subscribers extends Model
 {
@@ -20,39 +20,27 @@ class Subscribers extends Model
         'email',
         'active',
         'timeSent',
-        'token'
+        'token',
     ];
 
     protected $hidden = [
         'token',
     ];
 
-    /**
-     * @param $query
-     * @return mixed
-     */
-    public function scopeActive($query)
+    public function scopeActive(Builder $query): Builder
     {
-        return $query->where('active', 'true');
+        return $query->where('active', 1);
     }
 
-    /**
-     * @return HasMany
-     */
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscriptions::class, 'subscriber_id');
     }
 
-    /**
-     * @return void
-     */
-    public function scopeRemove(): void
+    public function remove(): bool
     {
-        foreach ($this->subscriptions ?? [] as $subscription) {
-            $subscription->delete();
-        }
+        $this->subscriptions()->delete();
 
-        $this->delete();
+        return (bool) $this->delete();
     }
 }

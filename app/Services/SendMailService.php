@@ -2,42 +2,34 @@
 
 namespace App\Services;
 
-use App\Enums\ProcessStatus;
+use App\DTO\MailMessageData;
 use App\DTO\ReadySentCreateData;
+use App\Enums\ProcessStatus;
 use App\Helpers\SettingsHelper;
+use App\Helpers\StringHelper;
 use App\Models\Subscribers;
 use App\Models\Templates;
-use Illuminate\Support\Facades\DB;
-use App\Repositories\{
-    ReadySentRepository,
-    SubscriberRepository,
-    ProcessRepository,
-};
-use App\Helpers\SendEmailHelper;
-use App\Helpers\StringHelper;
-use Illuminate\Http\Request;
+use App\Repositories\ProcessRepository;
+use App\Repositories\ReadySentRepository;
+use App\Repositories\SubscriberRepository;
 use Auth;
 use DateTime;
+use Illuminate\Http\Request;
+use PHPMailer\PHPMailer\Exception;
 
 class SendMailService
 {
-    /**
-     * @param ReadySentRepository $readySentRepository
-     * @param SubscriberRepository $subscribersRepository
-     * @param ProcessRepository $processRepository
-     */
     public function __construct(
-        private ReadySentRepository  $readySentRepository,
-        private SubscriberRepository $subscribersRepository,
-        private ProcessRepository    $processRepository,
-    )
-    {
-    }
+        private readonly ReadySentRepository $readySentRepository,
+        private readonly SubscriberRepository $subscribersRepository,
+        private readonly ProcessRepository $processRepository,
+        private readonly MailSender $mailSender,
+        private readonly MailingOptionsResolver $mailingOptionsResolver,
+        private readonly SubscriberSentTimeUpdater $subscriberSentTimeUpdater,
+    ) {}
 
     /**
-     * @param Request $request
-     * @return array
-     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws Exception
      */
     public function sendTest(Request $request): array
     {
@@ -48,27 +40,34 @@ class SendMailService
 
         $errors = [];
 
-        if (empty($subject)) $errors[] = __('validation.empty_name');
-        if (empty($body)) $errors[] = __('validation.empty_template');
-        if (empty($email)) $errors[] = __('validation.empty_email');
-        if (!empty($email) && StringHelper::isEmail($email) === false) $errors[] = __('validation.wrong_email');
+        if (empty($subject)) {
+            $errors[] = __('validation.empty_name');
+        }
+        if (empty($body)) {
+            $errors[] = __('validation.empty_template');
+        }
+        if (empty($email)) {
+            $errors[] = __('validation.empty_email');
+        }
+        if (! empty($email) && StringHelper::isEmail($email) === false) {
+            $errors[] = __('validation.wrong_email');
+        }
 
         if (count($errors) === 0) {
-            $sendEmail = new SendEmailHelper();
-            $sendEmail->body = $body;
-            $sendEmail->subject = $subject;
-            $sendEmail->prior = $prior;
-            $sendEmail->email = $email;
-            $sendEmail->token = StringHelper::token();
-            $sendEmail->templateId = 0;
-            $sendEmail->tracking = false;
-            $result = $sendEmail->sendEmail();
+            $result = $this->mailSender->send(new MailMessageData(
+                subject: $subject,
+                body: $body,
+                email: $email,
+                prior: (int) $prior,
+                token: StringHelper::token(),
+                tracking: false,
+            ));
 
             // Test emails are not tied to real subscribers/templates/schedules/logs,
             // so we must not write fake foreign keys like 0 into ready_sent.
             return [
                 'result' => (bool) ($result['result'] ?? false),
-                'msg' => !empty($result['error']) ? __('frontend.msg.email_wasnt_sent') : __('frontend.msg.email_sent'),
+                'msg' => ! empty($result['error']) ? __('frontend.msg.email_wasnt_sent') : __('frontend.msg.email_sent'),
             ];
         }
 
@@ -78,11 +77,8 @@ class SendMailService
         ];
     }
 
-
     /**
-     * @param Request $request
-     * @return array
-     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws Exception
      */
     public function sendOut(Request $request): array
     {
@@ -109,126 +105,103 @@ class SendMailService
             ];
         }
 
-        $this->processRepository->updateByUserId(Auth::user('web')->id, ProcessStatus::Start->value);
+        $userId = Auth::user('web')->id;
+        $this->processRepository->updateByUserId($userId, ProcessStatus::Start->value);
+        $subscriberUpdates = [];
 
-        $mailCount = 0;
+        try {
+            $mailCount = 0;
+            $options = $this->mailingOptionsResolver->resolve();
 
-        $order = (int)SettingsHelper::getInstance()->getValueForKey('RANDOM_SEND') === 1 ? 'RAND()' : 'subscribers.id';
-        $limit = (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 ? (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') : null;
+            $templates = Templates::whereIn('id', $templateIds)->get();
 
-        switch (SettingsHelper::getInstance()->getValueForKey('INTERVAL_TYPE')) {
-            case "minute":
-                $interval = "(subscribers.timeSent IS NULL OR subscribers.timeSent < NOW() - INTERVAL '" . (int)SettingsHelper::getInstance()->getValueForKey('INTERVAL_NUMBER') . "' MINUTE)";
-                break;
-            case "hour":
-                $interval = "(subscribers.timeSent IS NULL OR subscribers.timeSent < NOW() - INTERVAL '" . (int)SettingsHelper::getInstance()->getValueForKey('INTERVAL_NUMBER') . "' HOUR)";
-                break;
-            case "day":
-                $interval = "(subscribers.timeSent IS NULL OR subscribers.timeSent < NOW() - INTERVAL '" . (int)SettingsHelper::getInstance()->getValueForKey('INTERVAL_NUMBER') . "' DAY)";
-                break;
-            default:
-                $interval = null;
-        }
+            foreach ($templates ?? [] as $template) {
 
-        $templates = Templates::whereIn('id', $templateIds)->get();
+                $subscribers = $this->subscribersRepository->getSubscribers(
+                    $logId,
+                    $template->id,
+                    $categoryIds,
+                    $options->order,
+                    $options->limit,
+                    $options->interval,
+                );
 
-        foreach ($templates ?? [] as $template) {
+                $subscriberUpdates = [];
 
-            $subscribers = $this->subscribersRepository->getSubscribers($logId, $template->id, $categoryIds, $order, $limit, $interval);
+                foreach ($subscribers ?? [] as $subscriber) {
+                    $processStatus = $this->processRepository->getProcess($userId);
 
-            $subscriberUpdates = [];
+                    if (in_array($processStatus, [ProcessStatus::Stop->value, ProcessStatus::Pause->value], true)) {
+                        $this->subscriberSentTimeUpdater->update($subscriberUpdates);
 
-            foreach ($subscribers ?? [] as $subscriber) {
-                if ($this->processRepository->getProcess(Auth::user('web')->id) === 'stop' || $this->processRepository->getProcess(Auth::user('web')->id) === 'pause') {
-                    return [
-                        'result' => true,
-                        'completed' => true,
-                    ];
-                }
+                        return [
+                            'result' => true,
+                            'completed' => true,
+                        ];
+                    }
 
-                if ((int) SettingsHelper::getInstance()->getValueForKey('SLEEP') > 0) {
-                    sleep((int) SettingsHelper::getInstance()->getValueForKey('SLEEP'));
-                }
+                    $result = $this->mailSender->sendTemplate($template, $subscriber);
+                    $sent = ($result['result'] ?? false) === true;
 
-                $sendEmail = new SendEmailHelper();
-                $sendEmail->body = $template->body;
-                $sendEmail->subject = $template->name;
-                $sendEmail->prior = $template->prior;
-                $sendEmail->email = $subscriber->email;
-                $sendEmail->token = $subscriber->token;
-                $sendEmail->subscriberId = $subscriber->id;
-                $sendEmail->name = $subscriber->name;
-                $sendEmail->templateId = $template->id;
-                $result = $sendEmail->sendEmail();
-
-                if ($result['result'] === true) {
                     $this->readySentRepository->add(new ReadySentCreateData(
                         subscriberId: $subscriber->id,
                         templateId: $template->id,
-                        success: 1,
+                        success: $sent ? 1 : 0,
                         scheduleId: null,
                         logId: $logId,
                         email: $subscriber->email,
                         template: $template->name,
-                        errorMsg: null,
-                        readMail: null
+                        errorMsg: $sent ? null : ($result['error'] ?? null),
+                        readMail: null,
                     ));
 
-                    $mailCount++;
-                    $subscriberUpdates[$subscriber->id] = now()->format('Y-m-d H:i:s');
-                } else {
-                    $this->readySentRepository->add(new ReadySentCreateData(
-                        subscriberId: $subscriber->id,
-                        templateId: $template->id,
-                        success: 0,
-                        scheduleId: null,
-                        logId: $logId,
-                        email: $subscriber->email,
-                        template: $template->name,
-                        errorMsg: $result['error'],
-                        readMail: null
-                    ));
+                    if ($sent) {
+                        $mailCount++;
+                        $subscriberUpdates[$subscriber->id] = now()->format('Y-m-d H:i:s');
+                    }
+
+                    if ($options->limitReached($mailCount)) {
+                        $this->processRepository->updateByUserId($userId, ProcessStatus::Stop->value);
+                        $this->subscriberSentTimeUpdater->update($subscriberUpdates);
+
+                        return [
+                            'result' => true,
+                            'completed' => true,
+                        ];
+                    }
                 }
 
-                if ((int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailCount) {
-                    $this->processRepository->updateByUserId(Auth::user('web')->id, ProcessStatus::Stop->value);
-                    $this->resultSend($subscriberUpdates);
-                    return [
-                        'result' => true,
-                        'completed' => true,
-                    ];
-                }
+                $this->subscriberSentTimeUpdater->update($subscriberUpdates);
             }
 
-            $this->resultSend($subscriberUpdates);
-        }
-
-        if ((int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 && (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') === $mailCount) {
-            $this->processRepository->updateByUserId(Auth::user('web')->id, ProcessStatus::Stop->value);
+            $this->processRepository->updateByUserId($userId, ProcessStatus::Stop->value);
 
             return [
                 'result' => true,
                 'completed' => true,
             ];
+        } catch (\Throwable $exception) {
+            try {
+                $this->subscriberSentTimeUpdater->update($subscriberUpdates);
+            } catch (\Throwable $cleanupException) {
+                report($cleanupException);
+            }
+
+            try {
+                $this->processRepository->updateByUserId($userId, ProcessStatus::Stop->value);
+            } catch (\Throwable $cleanupException) {
+                report($cleanupException);
+            }
+
+            throw $exception;
         }
-
-        $this->processRepository->updateByUserId(Auth::user('web')->id, ProcessStatus::Stop->value);
-
-        return [
-            'result' => true,
-            'completed' => true,
-        ];
     }
 
-    /**
-     * @param Request $request
-     * @return array
-     */
     public function countSend(Request $request): array
     {
-        if (!$request->logId || !$request->categoryId) {
+        if (! $request->logId || ! $request->categoryId) {
             return [
-                'result' => false
+                'result' => false,
             ];
         }
 
@@ -242,23 +215,13 @@ class SendMailService
 
         $logId = $request->input('logId');
 
-        $limit = (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') === 1 ? (int)SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER') : null;
+        $options = $this->mailingOptionsResolver->resolve();
 
-        switch (SettingsHelper::getInstance()->getValueForKey('INTERVAL_TYPE')) {
-            case "minute":
-                $interval = "(subscribers.timeSent IS NULL OR subscribers.timeSent < NOW() - INTERVAL '" . (int)SettingsHelper::getInstance()->getValueForKey('INTERVAL_NUMBER') . "' MINUTE)";
-                break;
-            case "hour":
-                $interval = "(subscribers.timeSent IS NULL OR subscribers.timeSent < NOW() - INTERVAL '" . (int)SettingsHelper::getInstance()->getValueForKey('INTERVAL_NUMBER') . "' HOUR)";
-                break;
-            case "day":
-                $interval = "(subscribers.timeSent IS NULL OR subscribers.timeSent < NOW() - INTERVAL '" . (int)SettingsHelper::getInstance()->getValueForKey('INTERVAL_NUMBER') . "' DAY)";
-                break;
-            default:
-                $interval = null;
-        }
-
-        $total = $this->subscribersRepository->countSubscriptions($categoryId, $limit, $interval);
+        $total = $this->subscribersRepository->countSubscriptions(
+            $categoryId,
+            $options->limit,
+            $options->interval,
+        );
         $success = $this->readySentRepository->countStatus($logId, 1);
         $unsuccess = $this->readySentRepository->countStatus($logId, 0);
 
@@ -266,7 +229,7 @@ class SendMailService
         $sleep = $sleepSetting === 0 ? 0.5 : $sleepSetting;
         $timeSec = intval(($total - ($success + $unsuccess)) * $sleep);
 
-        $datetime = new DateTime();
+        $datetime = new DateTime;
         $datetime->setTime(0, 0, $timeSec);
 
         return [
@@ -281,9 +244,7 @@ class SendMailService
     }
 
     /**
-     * @param Subscribers $subscriber
-     * @return void
-     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws Exception
      */
     public function sendFrontendSubscriberEmails(Subscribers $subscriber): void
     {
@@ -293,8 +254,6 @@ class SendMailService
         $notifyNewSubscriber = (int) $settings->getValueForKey('NEW_SUBSCRIBER_NOTIFY') === 1;
 
         if ($requireConfirmation) {
-            $sendMail = new SendEmailHelper();
-
             $confirmUrl = route('frontend.subscribe', [
                 'subscriber' => $subscriber->id,
                 'token' => $subscriber->token,
@@ -308,69 +267,38 @@ class SendMailService
 
             $message = str_replace('%CONFIRM%', $confirmUrl, $message);
 
-            $sendMail->subject = $settings->getValueForKey('SUBJECT_TEXT_CONFIRM');
-            $sendMail->body = $message;
-            $sendMail->email = $subscriber->email;
-            $sendMail->token = $subscriber->token;
-            $sendMail->subscriberId = $subscriber->id;
-            $sendMail->name = $subscriber->name;
-            $sendMail->prior = 0;
-            $sendMail->unsub = false;
-            $sendMail->tracking = false;
-            $sendMail->sendEmail();
+            $this->mailSender->send(new MailMessageData(
+                subject: (string) $settings->getValueForKey('SUBJECT_TEXT_CONFIRM'),
+                body: $message,
+                email: (string) $subscriber->email,
+                name: $subscriber->name,
+                subscriberId: (int) $subscriber->id,
+                token: (string) $subscriber->token,
+                tracking: false,
+                unsubscribe: false,
+            ));
         }
 
         if ($notifyNewSubscriber) {
-            $sendMail = new SendEmailHelper();
-
             $subject = str_replace(
                 '%SITE%',
                 request()->getHost(),
                 __('frontend.str.notification_newuser')
             );
 
-            $message = __('frontend.str.notification_newuser') .
+            $message = __('frontend.str.notification_newuser').
                 "\nName: {$subscriber->name} \nE-mail: {$subscriber->email}\n";
 
             $message = str_replace('%SITE%', request()->getHost(), $message);
 
-            $sendMail->subject = $subject;
-            $sendMail->body = $message;
-            $sendMail->email = $settings->getValueForKey('EMAIL');
-            $sendMail->name = $settings->getValueForKey('FROM');
-            $sendMail->prior = 0;
-            $sendMail->tracking = false;
-            $sendMail->unsub = false;
-            $sendMail->sendEmail();
-        }
-    }
-
-    /**
-     * @param array $subscriberUpdates
-     * @return void
-     */
-    private function resultSend(array $subscriberUpdates): void
-    {
-        if (!empty($subscriberUpdates)) {
-            $ids = array_keys($subscriberUpdates);
-
-            $caseSql  = "CASE id ";
-            $bindings = [];
-
-            foreach ($subscriberUpdates as $id => $ts) {
-                $caseSql .= "WHEN ? THEN ? ";
-                $bindings[] = (int)$id;
-                $bindings[] = $ts;
-            }
-            $caseSql .= "END";
-
-            $inSql = implode(',', array_fill(0, count($ids), '?'));
-            $bindings = array_merge($bindings, $ids);
-
-            DB::statement(
-                "UPDATE " . Subscribers::getTableName() . " SET timeSent = {$caseSql} WHERE id IN ({$inSql})",
-                $bindings
-            );
+            $this->mailSender->send(new MailMessageData(
+                subject: $subject,
+                body: $message,
+                email: (string) $settings->getValueForKey('EMAIL'),
+                name: (string) $settings->getValueForKey('FROM'),
+                tracking: false,
+                unsubscribe: false,
+            ));
         }
     }
 }

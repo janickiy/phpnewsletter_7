@@ -40,7 +40,7 @@
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('EMAIL', SettingsHelper::getInstance()->getValueForKey('EMAIL'), ['placeholder' => "Email", 'class' => 'form-control']) !!}
+                                            {!! Form::text('EMAIL', $settings->get('EMAIL'), ['placeholder' => "Email", 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('EMAIL'))
                                                 <span class="text-danger">{{ $errors->first('EMAIL') }}</span>
@@ -56,7 +56,7 @@
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('FROM', SettingsHelper::getInstance()->getValueForKey('FROM'), ['placeholder' => __("frontend.str.sender_name"), 'class' => 'form-control']) !!}
+                                            {!! Form::text('FROM', $settings->get('FROM'), ['placeholder' => __("frontend.str.sender_name"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('FROM'))
                                                 <span class="text-danger">{{ $errors->first('FROM') }}</span>
@@ -71,7 +71,7 @@
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('RETURN_PATH', SettingsHelper::getInstance()->getValueForKey('RETURN_PATH'), ['placeholder' => __("frontend.form.return_path"), 'class' => 'form-control']) !!}
+                                            {!! Form::text('RETURN_PATH', $settings->get('RETURN_PATH'), ['placeholder' => __("frontend.form.return_path"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('RETURN_PATH'))
                                                 <span class="text-danger">{{ $errors->first('RETURN_PATH') }}</span>
@@ -87,7 +87,7 @@
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('LIST_OWNER', SettingsHelper::getInstance()->getValueForKey('LIST_OWNER'), ['placeholder' => __("frontend.form.list_owner"), 'class' => 'form-control']) !!}
+                                            {!! Form::text('LIST_OWNER', $settings->get('LIST_OWNER'), ['placeholder' => __("frontend.form.list_owner"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('LIST_OWNER'))
                                                 <span class="text-danger">{{ $errors->first('LIST_OWNER') }}</span>
@@ -103,7 +103,7 @@
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('ORGANIZATION', SettingsHelper::getInstance()->getValueForKey('ORGANIZATION'), ['placeholder' => __("frontend.form.organization"), 'class' => 'form-control']) !!}
+                                            {!! Form::text('ORGANIZATION', $settings->get('ORGANIZATION'), ['placeholder' => __("frontend.form.organization"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('ORGANIZATION'))
                                                 <span class="text-danger">{{ $errors->first('ORGANIZATION') }}</span>
@@ -119,7 +119,7 @@
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('SUBJECT_TEXT_CONFIRM', SettingsHelper::getInstance()->getValueForKey('SUBJECT_TEXT_CONFIRM'), ['placeholder' => __("frontend.form.subject_text_confirm"), 'class' => 'form-control']) !!}
+                                            {!! Form::text('SUBJECT_TEXT_CONFIRM', $settings->get('SUBJECT_TEXT_CONFIRM'), ['placeholder' => __("frontend.form.subject_text_confirm"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('SUBJECT_TEXT_CONFIRM'))
                                                 <span
@@ -136,7 +136,7 @@
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::textarea('TEXT_CONFIRMATION', SettingsHelper::getInstance()->getValueForKey('TEXT_CONFIRMATION'), ['rows' => "4", 'placeholder' => __("frontend.form.text_confirmation"), 'class' => 'form-control']) !!}
+                                            {!! Form::textarea('TEXT_CONFIRMATION', $settings->get('TEXT_CONFIRMATION'), ['rows' => "4", 'placeholder' => __("frontend.form.text_confirmation"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('TEXT_CONFIRMATION'))
                                                 <span
@@ -152,7 +152,7 @@
                                         <div class="offset-sm-2 col-sm-10">
                                             <div class="form-check">
 
-                                                {!! Form::checkbox('REQUIRE_SUB_CONFIRMATION', 1, SettingsHelper::getInstance()->getValueForKey('REQUIRE_SUB_CONFIRMATION') == 1 ? true : false, ['class' => 'form-check-input']) !!}
+                                                {!! Form::checkbox('REQUIRE_SUB_CONFIRMATION', 1, (bool) $settings->get('REQUIRE_SUB_CONFIRMATION'), ['class' => 'form-check-input']) !!}
 
                                                 {!! Form::label('REQUIRE_SUB_CONFIRMATION', __('frontend.form.require_subscription_confirmation'), ['class' => 'form-check-label']) !!}
 
@@ -167,7 +167,7 @@
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::textarea('UNSUBLINK', SettingsHelper::getInstance()->getValueForKey('UNSUBLINK'), ['rows' => "4", 'placeholder' => __("frontend.form.unsublink_text"), 'class' => 'form-control']) !!}
+                                            {!! Form::textarea('UNSUBLINK', $settings->get('UNSUBLINK'), ['rows' => "4", 'placeholder' => __("frontend.form.unsublink_text"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('UNSUBLINK'))
                                                 <span class="text-danger">{{ $errors->first('UNSUBLINK') }}</span>
@@ -186,7 +186,7 @@
                                         <div class="offset-sm-2 col-sm-10">
                                             <div class="form-check">
 
-                                                {!! Form::checkbox('SHOW_UNSUBSCRIBE_LINK', 1, SettingsHelper::getInstance()->getValueForKey('SHOW_UNSUBSCRIBE_LINK') == 1 ? true : false, ['class' => 'form-check-input']) !!}
+                                                {!! Form::checkbox('SHOW_UNSUBSCRIBE_LINK', 1, (bool) $settings->get('SHOW_UNSUBSCRIBE_LINK'), ['class' => 'form-check-input']) !!}
 
                                                 {!! Form::label('SHOW_UNSUBSCRIBE_LINK', __('frontend.form.show_unsubscribe_link'), ['class' => 'form-check-label']) !!}
 
@@ -200,7 +200,7 @@
                                         <div class="offset-sm-2 col-sm-10">
                                             <div class="form-check">
 
-                                                {!! Form::checkbox('REQUEST_REPLY', 1, SettingsHelper::getInstance()->getValueForKey('REQUEST_REPLY') == 1 ? true : false, ['class' => 'form-check-input']) !!}
+                                                {!! Form::checkbox('REQUEST_REPLY', 1, (bool) $settings->get('REQUEST_REPLY'), ['class' => 'form-check-input']) !!}
 
                                                 {!! Form::label('REQUEST_REPLY', __('frontend.form.request_reply'), ['class' => 'form-check-label']) !!}
 
@@ -214,7 +214,7 @@
                                         <div class="offset-sm-2 col-sm-10">
                                             <div class="form-check">
 
-                                                {!! Form::checkbox('NEW_SUBSCRIBER_NOTIFY', 1, SettingsHelper::getInstance()->getValueForKey('NEW_SUBSCRIBER_NOTIFY') == 1 ? true : false, ['class' => 'form-check-input']) !!}
+                                                {!! Form::checkbox('NEW_SUBSCRIBER_NOTIFY', 1, (bool) $settings->get('NEW_SUBSCRIBER_NOTIFY'), ['class' => 'form-check-input']) !!}
 
                                                 {!! Form::label('NEW_SUBSCRIBER_NOTIFY', __('frontend.form.new_subscriber_notify'), ['class' => 'form-check-label']) !!}
 
@@ -229,7 +229,7 @@
 
                                         <div class="col-md-7">
 
-                                            {!! Form::text('INTERVAL_NUMBER', SettingsHelper::getInstance()->getValueForKey('INTERVAL_NUMBER'), ['class' => 'form-control']) !!}
+                                            {!! Form::text('INTERVAL_NUMBER', $settings->get('INTERVAL_NUMBER'), ['class' => 'form-control']) !!}
 
                                             @if ($errors->has('INTERVAL_NUMBER'))
                                                 <span class="text-danger">{{ $errors->first('INTERVAL_NUMBER') }}</span>
@@ -244,7 +244,7 @@
                                                             'minute' => __('frontend.form.minute'),
                                                             'hour' => __('frontend.form.hour'),
                                                             'day' => __('frontend.form.day'),
-                                                            ], SettingsHelper::getInstance()->getValueForKey('INTERVAL_TYPE') ? SettingsHelper::getInstance()->getValueForKey('INTERVAL_TYPE') : 'no', ['class' => 'form-control']
+                                                            ], $settings->get('INTERVAL_TYPE', 'no'), ['class' => 'form-control']
                                                             ) !!}
 
                                             @if ($errors->has('INTERVAL_TYPE'))
@@ -264,11 +264,11 @@
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">
-                                                        {!! Form::checkbox('LIMIT_SEND', 1, SettingsHelper::getInstance()->getValueForKey('LIMIT_SEND') == 1 ? true : false) !!}
+                                                        {!! Form::checkbox('LIMIT_SEND', 1, (bool) $settings->get('LIMIT_SEND')) !!}
                                                     </span>
                                                 </div>
 
-                                                {!! Form::text('LIMIT_NUMBER', SettingsHelper::getInstance()->getValueForKey('LIMIT_NUMBER'), ['class' => 'form-control']) !!}
+                                                {!! Form::text('LIMIT_NUMBER', $settings->get('LIMIT_NUMBER'), ['class' => 'form-control']) !!}
 
                                                 @if ($errors->has('LIMIT_NUMBER'))
                                                     <span
@@ -287,7 +287,7 @@
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('SLEEP', !empty(SettingsHelper::getInstance()->getValueForKey('ORGANIZATION')) ?SettingsHelper::getInstance()->getValueForKey('ORGANIZATION'): 0, ['placeholder' => __("frontend.form.sleep"), 'class' => 'form-control']) !!}
+                                            {!! Form::text('SLEEP', $settings->get('SLEEP', 0), ['placeholder' => __("frontend.form.sleep"), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('SLEEP'))
                                                 <span class="text-danger">{{ $errors->first('SLEEP') }}</span>
@@ -306,11 +306,11 @@
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">
-                                                        {!! Form::checkbox('REMOVE_SUBSCRIBER', 1, SettingsHelper::getInstance()->getValueForKey('REMOVE_SUBSCRIBER') == 1 ? true : false) !!}
+                                                        {!! Form::checkbox('REMOVE_SUBSCRIBER', 1, (bool) $settings->get('REMOVE_SUBSCRIBER')) !!}
                                                     </span>
                                                 </div>
 
-                                                {!! Form::text('DAYS_FOR_REMOVE_SUBSCRIBER', SettingsHelper::getInstance()->getValueForKey('DAYS_FOR_REMOVE_SUBSCRIBER'), ['class' => 'form-control']) !!}
+                                                {!! Form::text('DAYS_FOR_REMOVE_SUBSCRIBER', $settings->get('DAYS_FOR_REMOVE_SUBSCRIBER'), ['class' => 'form-control']) !!}
 
                                                 @if ($errors->has('DAYS_FOR_REMOVE_SUBSCRIBER'))
                                                     <span
@@ -328,7 +328,7 @@
                                         <div class="offset-sm-2 col-sm-10">
                                             <div class="form-check">
 
-                                                {!! Form::checkbox('RANDOM_SEND', 1, SettingsHelper::getInstance()->getValueForKey('RANDOM_SEND') == 1 ? true : false, ['class' => 'form-check-input']) !!}
+                                                {!! Form::checkbox('RANDOM_SEND', 1, (bool) $settings->get('RANDOM_SEND'), ['class' => 'form-check-input']) !!}
 
                                                 {!! Form::label('RANDOM_SEND', __('frontend.form.random_send'), ['class' => 'form-check-label']) !!}
 
@@ -342,7 +342,7 @@
                                         <div class="offset-sm-2 col-sm-10">
                                             <div class="form-check">
 
-                                                {!! Form::checkbox('RENDOM_REPLACEMENT_SUBJECT', 1, SettingsHelper::getInstance()->getValueForKey('RENDOM_REPLACEMENT_SUBJECT') == 1 ? true : false, ['class' => 'form-check-input']) !!}
+                                                {!! Form::checkbox('RENDOM_REPLACEMENT_SUBJECT', 1, (bool) $settings->get('RENDOM_REPLACEMENT_SUBJECT'), ['class' => 'form-check-input']) !!}
 
                                                 {!! Form::label('RENDOM_REPLACEMENT_SUBJECT', __('frontend.form.rendom_replacement_subject'), ['class' => 'form-check-label']) !!}
 
@@ -356,7 +356,7 @@
                                         <div class="offset-sm-2 col-sm-10">
                                             <div class="form-check">
 
-                                                {!! Form::checkbox('RANDOM_REPLACEMENT_BODY', 1, SettingsHelper::getInstance()->getValueForKey('RANDOM_REPLACEMENT_BODY') == 1 ? true : false, ['class' => 'form-check-input']) !!}
+                                                {!! Form::checkbox('RANDOM_REPLACEMENT_BODY', 1, (bool) $settings->get('RANDOM_REPLACEMENT_BODY'), ['class' => 'form-check-input']) !!}
 
                                                 {!! Form::label('RANDOM_REPLACEMENT_BODY', __('frontend.form.random_replacement_body'), ['class' => 'form-check-label']) !!}
 
@@ -376,11 +376,11 @@
                                                                              'bulk' => 'bulk',
                                                                              'junk' => 'junk',
                                                                               'list' => 'list',
-                                                                            ], SettingsHelper::getInstance()->getValueForKey('PRECEDENCE') ? SettingsHelper::getInstance()->getValueForKey('PRECEDENCE') : 'no', ['class' => 'form-control']
+                                                                            ], $settings->get('PRECEDENCE', 'no'), ['class' => 'form-control']
                                              ) !!}
 
-                                            @if ($errors->has('CHARSET'))
-                                                <span class="text-danger">{{ $errors->first('CHARSET') }}</span>
+                                            @if ($errors->has('PRECEDENCE'))
+                                                <span class="text-danger">{{ $errors->first('PRECEDENCE') }}</span>
                                             @endif
 
                                         </div>
@@ -393,7 +393,7 @@
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::select('CHARSET', $option_charset, SettingsHelper::getInstance()->getValueForKey('CHARSET') ? SettingsHelper::getInstance()->getValueForKey('CHARSET') : 'no', ['class' => 'form-control'] ) !!}
+                                            {!! Form::select('CHARSET', $option_charset, $settings->get('CHARSET', 'utf-8'), ['class' => 'form-control'] ) !!}
 
                                             @if ($errors->has('CHARSET'))
                                                 <span class="text-danger">{{ $errors->first('CHARSET') }}</span>
@@ -413,13 +413,13 @@
                                             <div class="form-group">
                                                 <div class="form-check">
 
-                                                    {!! Form::radio('CONTENT_TYPE', 'html', SettingsHelper::getInstance()->getValueForKey('CONTENT_TYPE') == 'html' or SettingsHelper::getInstance()->getValueForKey('CONTENT_TYPE') == '' ? true : false, ['class' => 'form-check-input'] ) !!}
+                                                    {!! Form::radio('CONTENT_TYPE', 'html', $settings->get('CONTENT_TYPE', 'html') === 'html', ['class' => 'form-check-input'] ) !!}
 
                                                     <label class="form-check-label">HTML</label>
                                                 </div>
                                                 <div class="form-check">
 
-                                                    {!! Form::radio('CONTENT_TYPE', 'plain', SettingsHelper::getInstance()->getValueForKey('CONTENT_TYPE') == 'plain' ? true : false, ['class' => 'form-check-input'] ) !!}
+                                                    {!! Form::radio('CONTENT_TYPE', 'plain', $settings->get('CONTENT_TYPE') === 'plain', ['class' => 'form-check-input'] ) !!}
 
                                                     <label class="form-check-label">Plain</label>
                                                 </div>
@@ -439,19 +439,19 @@
                                             <div class="form-group">
                                                 <div class="form-check">
 
-                                                    {!! Form::radio('HOW_TO_SEND', 'php', SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') == 'php' or SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') == '' ? true : false, ['class' => 'form-check-input'] ) !!}
+                                                    {!! Form::radio('HOW_TO_SEND', 'php', $settings->get('HOW_TO_SEND', 'php') === 'php', ['class' => 'form-check-input'] ) !!}
 
                                                     <label class="form-check-label">PHP Mail</label>
                                                 </div>
                                                 <div class="form-check">
 
-                                                    {!! Form::radio('HOW_TO_SEND', 'smtp', SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') == 'smtp' ? true : false, ['class' => 'form-check-input'] ) !!}
+                                                    {!! Form::radio('HOW_TO_SEND', 'smtp', $settings->get('HOW_TO_SEND') === 'smtp', ['class' => 'form-check-input'] ) !!}
 
                                                     <label class="form-check-label">SMTP</label>
                                                 </div>
                                                 <div class="form-check">
 
-                                                    {!! Form::radio('HOW_TO_SEND', 'sendmail', SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') == 'sendmail' ? true : false, ['class' => 'form-check-input'] ) !!}
+                                                    {!! Form::radio('HOW_TO_SEND', 'sendmail', $settings->get('HOW_TO_SEND') === 'sendmail', ['class' => 'form-check-input'] ) !!}
 
                                                     <label class="form-check-label">Sendmail</label>
                                                 </div>
@@ -466,7 +466,7 @@
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('SENDMAIL_PATH', SettingsHelper::getInstance()->getValueForKey('SENDMAIL_PATH'), ['placeholder' => __('frontend.form.sendmail_path'), 'class' => 'form-control']) !!}
+                                            {!! Form::text('SENDMAIL_PATH', $settings->get('SENDMAIL_PATH'), ['placeholder' => __('frontend.form.sendmail_path'), 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('SENDMAIL_PATH'))
                                                 <span class="text-danger">{{ $errors->first('SENDMAIL_PATH') }}</span>
@@ -482,7 +482,7 @@
 
                                         <div class="col-sm-10">
 
-                                            {!! Form::text('URL', SettingsHelper::getInstance()->getValueForKey('URL'), ['placeholder' => 'URL', 'class' => 'form-control']) !!}
+                                            {!! Form::text('URL', $settings->get('URL'), ['placeholder' => 'URL', 'class' => 'form-control']) !!}
 
                                             @if ($errors->has('URL'))
                                                 <span class="text-danger">{{ $errors->first('URL') }}</span>
@@ -496,8 +496,13 @@
 
                                 <div class="tab-pane" id="s3">
                                     <div id="headerslist">
+                                        @php
+                                            $savedHeaders = $customHeaders ?? collect();
+                                            $headerNames = old('header_name', $savedHeaders->pluck('name')->all());
+                                            $headerValues = old('header_value', $savedHeaders->pluck('value')->all());
+                                        @endphp
 
-                                        @foreach($customHeaders ?? [] as $header)
+                                        @foreach($headerNames as $index => $headerName)
 
                                             <div class="header-row">
                                                 <div class="form-group row">
@@ -506,7 +511,11 @@
 
                                                     <div class="col-md-3">
 
-                                                        {!! Form::text('header_name[]', $header->name, ['class' => 'form-control']) !!}
+                                                        {!! Form::text('header_name[]', $headerName, ['class' => 'form-control']) !!}
+
+                                                        @if ($errors->has("header_name.$index"))
+                                                            <span class="text-danger">{{ $errors->first("header_name.$index") }}</span>
+                                                        @endif
 
                                                     </div>
 
@@ -514,7 +523,11 @@
 
                                                     <div class="col-md-3">
 
-                                                        {!! Form::text('header_value[]', $header->value, ['class' => 'form-control']) !!}
+                                                        {!! Form::text('header_value[]', $headerValues[$index] ?? '', ['class' => 'form-control']) !!}
+
+                                                        @if ($errors->has("header_value.$index"))
+                                                            <span class="text-danger">{{ $errors->first("header_value.$index") }}</span>
+                                                        @endif
 
                                                     </div>
 
@@ -577,7 +590,6 @@
                 html += '</div></div>';
 
                 $('#headerslist').prepend(html);
-                console.log(html);
             });
 
             $(document).on("click", '.removeBlock', function () {

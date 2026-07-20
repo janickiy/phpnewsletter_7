@@ -3,114 +3,92 @@
 namespace App\Helpers;
 
 use App\Models\Settings;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class SettingsHelper
 {
     public const CACHE_KEY = 'settings';
 
-    private static $instance;
+    private static ?self $instance = null;
 
-    private $settings;
+    private static ?Collection $settings = null;
 
-    private function __construct()
+    private function __construct() {}
+
+    private function __clone() {}
+
+    public static function getInstance(): self
     {
-    }
-
-    private function __clone()
-    {
-    }
-
-    public static function getInstance()
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new self;
-            self::$instance->loadSettings();
-        }
-
-        return self::$instance;
+        return self::$instance ??= new self;
     }
 
     /**
-     * @return array
+     * Return all settings keyed by their names.
+     *
+     * @return Collection<string, mixed>
      */
-    private function loadSettings(): mixed
+    public static function all(): Collection
     {
-        $this->settings = self::loadSettingsFromCache();
-
-        return $this->settings;
+        return self::settings();
     }
 
     /**
-     * @param bool $cache
-     * @return array
+     * @return Collection<string, mixed>
      */
-    private static function loadSettingsFromCache(bool $cache = false): Collection
+    private static function settings(): Collection
     {
-        if ($cache === true) {
-            return Cache::remember(self::CACHE_KEY, 180, function () {
-                try {
-                    $settings = Settings::all();
-                } catch (QueryException $e) {
-                    return collect();
-                }
+        return self::$settings ??= self::loadSettingsFromCache();
+    }
 
-                if ($settings === null) {
-                    return collect();
-                }
-
-                return  $settings->pluck('value', 'name');
-            });
-        } else {
-            $settings = Settings::all();
-
-            return $settings->pluck('value', 'name');
+    /**
+     * @return Collection<string, mixed>
+     */
+    private static function loadSettingsFromCache(): Collection
+    {
+        try {
+            return Cache::remember(
+                self::CACHE_KEY,
+                180,
+                fn (): Collection => Settings::query()->pluck('value', 'name'),
+            );
+        } catch (QueryException) {
+            return collect();
         }
     }
 
-    /**
-     * @param string $name
-     * @param bool $default
-     * @return bool|mixed
-     */
-    public static function getValueForKey(string $name, bool $default = false): mixed
+    public static function getValueForKey(string $name, mixed $default = false): mixed
     {
-        $settings = SettingsHelper::getInstance()->settings;
-
-        return $settings[$name] ?? $default;
+        return self::settings()->get($name, $default);
     }
 
-    /**
-     * @param string $key
-     * @param bool $default
-     * @return bool|mixed
-     */
-    public static function get(string $key, bool $default = false): mixed
+    public static function get(string $key, mixed $default = false): mixed
     {
         return self::getValueForKey($key, $default);
     }
 
-    /**
-     * @param bool $key
-     * @return bool
-     */
-    public static function has(bool $key): bool
+    public static function has(string $key): bool
     {
-        return isset(self::getInstance()->settings[$key]);
+        return self::settings()->has($key);
     }
 
     /**
-     * @param bool $reload
-     * @return bool
+     * Forget cached settings and immediately load the current values.
      */
-    public static function cacheClear(bool $reload = false)
+    public static function refresh(): void
+    {
+        self::cacheClear();
+        self::settings();
+    }
+
+    public static function cacheClear(bool $reload = false): bool
     {
         $result = Cache::forget(self::CACHE_KEY);
+        self::$settings = null;
 
-        if ($result && $reload) {
-            self::loadSettingsFromCache();
+        if ($reload) {
+            self::settings();
         }
 
         return $result;

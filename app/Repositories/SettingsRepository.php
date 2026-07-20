@@ -2,62 +2,102 @@
 
 namespace App\Repositories;
 
+use App\Helpers\SettingsHelper;
+use App\Helpers\StringHelper;
 use App\Models\CustomHeaders;
 use App\Models\Settings;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class SettingsRepository extends BaseRepository
 {
-    public function __construct(Settings $model)
-    {
+    public function __construct(
+        Settings $model,
+        private readonly CustomHeaders $customHeaders,
+    ) {
         parent::__construct($model);
     }
 
-    /**
-     * @param array $data
-     * @return void
-     */
     public function setSettings(array $data): void
     {
-        $array = $data;
-        $array['REQUIRE_SUB_CONFIRMATION'] = isset($data['REQUIRE_SUB_CONFIRMATION']) && $data['REQUIRE_SUB_CONFIRMATION'] ? 1 : 0;
-        $array['SHOW_UNSUBSCRIBE_LINK'] = isset($data['SHOW_UNSUBSCRIBE_LINK']) && $data['SHOW_UNSUBSCRIBE_LINK']  ? 1 : 0;
-        $array['REQUEST_REPLY'] = isset($data['SHOW_UNSUBSCRIBE_LINK']) && $data['SHOW_UNSUBSCRIBE_LINK'] ? 1 : 0;
-        $array['NEW_SUBSCRIBER_NOTIFY'] = isset($data['NEW_SUBSCRIBER_NOTIFY']) && $data['NEW_SUBSCRIBER_NOTIFY'] ? 1 : 0;
-        $array['RANDOM_SEND'] = isset($data['RANDOM_SEND']) && $data['RANDOM_SEND']  ? 1 : 0;
-        $array['RENDOM_REPLACEMENT_SUBJECT'] = isset($data['RENDOM_REPLACEMENT_SUBJECT']) && $data['RENDOM_REPLACEMENT_SUBJECT'] ? 1 : 0;
-        $array['RANDOM_REPLACEMENT_BODY'] = isset($data['RANDOM_REPLACEMENT_BODY']) && $data['RANDOM_REPLACEMENT_BODY'] ? 1 : 0;
-        $array['ADD_DKIM'] = isset($data['ADD_DKIM']) && $data['ADD_DKIM'] ? 1 : 0;
-        $array['LIMIT_SEND'] = isset($data['LIMIT_SEND']) && $data['LIMIT_SEND']  ? 1 : 0;
-        $array['REQUEST_REPLY'] = isset($data['REQUEST_REPLY']) && $data['REQUEST_REPLY']  ? 1 : 0;
-        $array['REMOVE_SUBSCRIBER'] = isset($data['REMOVE_SUBSCRIBER']) && $data['REMOVE_SUBSCRIBER']  ? 1 : 0;
+        $settings = $this->normalizeSettings($data);
+        $headers = $this->normalizeHeaders($data);
 
-        foreach ($array ?? [] as $key => $value) {
-            $this->model->setValue($key, $value);
-        }
-
-        $headerNames = $data['header_name'] ?? [];
-        $headerValues = $data['header_value'] ?? [];
-
-        CustomHeaders::truncate();
-
-        if (!empty($headerNames)) {
-            for ($i = 0; $i < count($headerNames); $i++) {
-                $name = trim((string) ($headerNames[$i] ?? ''));
-                $value = trim((string) ($headerValues[$i] ?? ''));
-
-                if ($name === '' || $value === '') {
-                    continue;
-                }
-
-                if (preg_match('/^[\\-a-zA-Z]+$/', $name)) {
-                    $value = str_replace([';', ':'], '', $value);
-
-                    CustomHeaders::create([
-                        'name' => $name,
-                        'value' => $value,
-                    ]);
-                }
+        DB::transaction(function () use ($settings, $headers): void {
+            foreach ($settings as $name => $value) {
+                $this->model->newQuery()->updateOrCreate(
+                    ['name' => $name],
+                    ['value' => $value],
+                );
             }
+
+            $this->customHeaders->newQuery()->delete();
+
+            if ($headers !== []) {
+                $this->customHeaders->newQuery()->insert($headers);
+            }
+        });
+
+        SettingsHelper::refresh();
+    }
+
+    /**
+     * Keep persistence limited to known settings and normalize checkbox values.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function normalizeSettings(array $data): array
+    {
+        $settings = Arr::only($data, Settings::EDITABLE_KEYS);
+
+        foreach ($settings as $key => $value) {
+            $settings[$key] = $value ?? '';
         }
+
+        foreach (Settings::BOOLEAN_KEYS as $key) {
+            $settings[$key] = ! empty($data[$key]) ? 1 : 0;
+        }
+
+        if (array_key_exists('URL', $settings) && trim((string) $settings['URL']) === '') {
+            $settings['URL'] = StringHelper::getUrl();
+        }
+
+        return $settings;
+    }
+
+    /**
+     * Build a clean, de-duplicated list of RFC-compatible custom headers.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<int, array{name: string, value: string, created_at: mixed, updated_at: mixed}>
+     */
+    private function normalizeHeaders(array $data): array
+    {
+        $names = array_values(Arr::wrap($data['header_name'] ?? []));
+        $values = array_values(Arr::wrap($data['header_value'] ?? []));
+        $headers = [];
+
+        foreach ($names as $index => $headerName) {
+            $name = trim((string) $headerName);
+            $value = trim((string) ($values[$index] ?? ''));
+
+            if (
+                $name === ''
+                || $value === ''
+                || preg_match('/^[A-Za-z][A-Za-z0-9-]*$/', $name) !== 1
+            ) {
+                continue;
+            }
+
+            $headers[strtolower($name)] = [
+                'name' => $name,
+                'value' => preg_replace('/[\r\n]+/', ' ', $value) ?? '',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        return array_values($headers);
     }
 }

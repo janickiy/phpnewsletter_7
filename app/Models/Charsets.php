@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Helpers\StringHelper;
 use App\Http\Traits\StaticTableName;
 use Illuminate\Database\Eloquent\Model;
-use App\Helpers\StringHelper;
 
 class Charsets extends Model
 {
@@ -14,17 +14,18 @@ class Charsets extends Model
 
     public $timestamps = false;
 
-    /**
-     * @return array
-     */
+    protected $fillable = [
+        'charset',
+    ];
+
     public static function getOption(): array
     {
-       return Charsets::orderBy('charset')
-           ->get()
-           ->pluck('charset')
-           ->mapWithKeys(fn (string $charset) => [
-               $charset => StringHelper::charsetList($charset),
-           ])
-           ->toArray();
+        return Charsets::orderBy('charset')
+            ->get()
+            ->pluck('charset')
+            ->mapWithKeys(fn (string $charset) => [
+                $charset => StringHelper::charsetList($charset),
+            ])
+            ->toArray();
     }
 }

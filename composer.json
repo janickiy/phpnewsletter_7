@@ -1,13 +1,19 @@
 {
-    "name": "laravel/laravel",
+    "name": "janickiy/php-newsletter",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Self-hosted email marketing and subscriber management system.",
+    "keywords": ["email-marketing", "laravel", "newsletter"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-curl": "*",
+        "ext-fileinfo": "*",
+        "ext-gd": "*",
+        "ext-iconv": "*",
+        "ext-mbstring": "*",
+        "ext-zip": "*",
         "guzzlehttp/guzzle": "^7.2",
-        "janickiy/html": "v1.0.2",
+        "laravelcollective/html": "^6.4.1",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
@@ -15,10 +21,7 @@
         "phpmailer/phpmailer": "^6.9",
         "phpoffice/phpspreadsheet": "^2.0",
         "yajra/laravel-datatables-buttons": "^10.0",
-        "yajra/laravel-datatables-html": "^10.12",
-        "ext-gd": "*",
-        "ext-zip": "*",
-        "ext-curl": "*"
+        "yajra/laravel-datatables-html": "^10.12"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.13",
@@ -55,7 +58,8 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
-        ]
+        ],
+        "test": "@php artisan test"
     },
     "extra": {
         "laravel": {
@@ -70,7 +74,13 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "audit": {
-            "block-insecure": false
+            "abandoned": "report",
+            "block-insecure": true,
+            "ignore": {
+                "PKSA-3r5d-mb8f-1qw9": "Laravel 10 is retained by explicit project requirement; migration to a supported framework branch is tracked separately.",
+                "PKSA-m5cs-t1y6-qpcs": "Laravel 10 is retained by explicit project requirement; this application does not register signed URL routes.",
+                "PKSA-mdq4-51ck-6kdq": "Laravel 10 is retained by explicit project requirement; migration to a supported framework branch is tracked separately."
+            }
         },
         "allow-plugins": {
             "pestphp/pest-plugin": true,

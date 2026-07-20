@@ -2,70 +2,81 @@
 
 namespace App\Services;
 
-
+use App\DTO\SubscriberImportData;
 use App\Helpers\StringHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Reader\IReadFilter;
+use PhpOffice\PhpSpreadsheet\Reader\IReader;
+use SimpleXMLElement;
+use ValueError;
+use XMLReader;
+use ZipArchive;
 
 class SubscriberService
 {
     private const SPREADSHEET_CHUNK_SIZE = 10000;
+
     private const DATABASE_CHUNK_SIZE = 1000;
 
     /**
-     * @param Request $request
-     * @return bool|int
+     * Backward-compatible HTTP adapter for spreadsheet imports.
      */
     public function importFromExcel(Request $request, ?callable $onChunkProcessed = null): bool|int
     {
-        $extension = strtolower($request->file('import')->getClientOriginalExtension());
-        $file = $request->file('import')->getRealPath();
+        $import = $this->createImportData($request);
 
-        if ($file === false) {
-            return false;
+        return $import === null
+            ? false
+            : $this->importSpreadsheet($import, $onChunkProcessed);
+    }
+
+    /**
+     * Import a spreadsheet without coupling the import logic to an HTTP request.
+     */
+    public function importSpreadsheet(
+        SubscriberImportData $import,
+        ?callable $onChunkProcessed = null,
+    ): bool|int {
+        if ($import->extension === 'xlsx') {
+            return $this->importFromXlsx($import, $onChunkProcessed);
         }
 
-        if ($extension === 'xlsx') {
-            return $this->importFromXlsx($file, (array) ($request->categoryId ?? []), $onChunkProcessed);
-        }
-
-        $reader = $this->createSpreadsheetReader($extension);
-        $categoryIds = (array) ($request->categoryId ?? []);
+        $reader = $this->createSpreadsheetReader($import->extension);
         $count = 0;
 
-        foreach ($reader->listWorksheetInfo($file) as $worksheetInfo) {
+        foreach ($reader->listWorksheetInfo($import->filePath) as $worksheetInfo) {
             $sheetName = $worksheetInfo['worksheetName'];
             $totalRows = (int) $worksheetInfo['totalRows'];
 
             for ($startRow = 2; $startRow <= $totalRows; $startRow += self::SPREADSHEET_CHUNK_SIZE) {
                 $endRow = min($startRow + self::SPREADSHEET_CHUNK_SIZE - 1, $totalRows);
-
-                $chunkReader = $this->createSpreadsheetReader($extension);
+                $chunkReader = $this->createSpreadsheetReader($import->extension);
                 $chunkReader->setLoadSheetsOnly([$sheetName]);
                 $chunkReader->setReadFilter(new SubscriberImportReadFilter($startRow, $endRow));
 
-                $spreadsheet = $chunkReader->load($file);
+                $spreadsheet = $chunkReader->load($import->filePath);
                 $worksheet = $spreadsheet->getActiveSheet();
                 $rows = [];
 
                 for ($row = $startRow; $row <= $endRow; $row++) {
-                    $email = strtolower(trim((string) $worksheet->getCell('A' . $row)->getValue()));
-                    $name = trim((string) $worksheet->getCell('B' . $row)->getValue());
+                    $subscriber = $this->normalizeSubscriberRow(
+                        $worksheet->getCell('A'.$row)->getValue(),
+                        $worksheet->getCell('B'.$row)->getValue(),
+                    );
 
-                    if ($email === '') {
-                        continue;
+                    if ($subscriber['email'] !== '') {
+                        $rows[] = $subscriber;
                     }
-
-                    $rows[] = [
-                        'email' => $email,
-                        'name' => $name,
-                    ];
                 }
 
-                $count += $this->importSubscriberRows($rows, $categoryIds);
-                $this->reportImportProgress($onChunkProcessed, $count);
+                $count = $this->persistChunk(
+                    $rows,
+                    $import->categoryIds,
+                    $count,
+                    $onChunkProcessed,
+                );
 
                 $spreadsheet->disconnectWorksheets();
                 unset($spreadsheet, $worksheet, $rows);
@@ -77,39 +88,100 @@ class SubscriberService
     }
 
     /**
-     * Import XLSX rows by reading worksheet XML directly instead of loading the workbook.
-     *
-     * @param string $file
-     * @param array $categoryIds
-     * @return bool|int
+     * Backward-compatible HTTP adapter for text imports.
      */
-    private function importFromXlsx(string $file, array $categoryIds, ?callable $onChunkProcessed = null): bool|int
+    public function importFromText(object $request, ?callable $onChunkProcessed = null): bool|int
     {
-        $zip = new \ZipArchive();
+        $import = $this->createImportData($request);
 
-        if ($zip->open($file) !== true) {
+        return $import === null
+            ? false
+            : $this->importTextFile($import, $onChunkProcessed);
+    }
+
+    /**
+     * Import a text file without coupling the import logic to an HTTP request.
+     */
+    public function importTextFile(
+        SubscriberImportData $import,
+        ?callable $onChunkProcessed = null,
+    ): bool|int {
+        $handle = @fopen($import->filePath, 'rb');
+
+        if ($handle === false) {
+            return false;
+        }
+
+        $count = 0;
+        $rows = [];
+
+        try {
+            while (($line = fgets($handle)) !== false) {
+                $line = trim($this->convertToUtf8($line, $import->charset));
+                preg_match('/([a-z0-9&\-_.]+?)@([\w\-]+\.([\w\-\.]+\.)*[\w]+)/uis', $line, $matches);
+
+                $matchedEmail = $matches[0] ?? '';
+                $email = strtolower($matchedEmail);
+                $name = trim(str_ireplace($matchedEmail, '', $line));
+
+                if (mb_strlen($name) > 250) {
+                    $name = '';
+                }
+
+                $rows[] = $this->normalizeSubscriberRow($email, $name);
+
+                if (count($rows) >= self::SPREADSHEET_CHUNK_SIZE) {
+                    $count = $this->persistChunk(
+                        $rows,
+                        $import->categoryIds,
+                        $count,
+                        $onChunkProcessed,
+                    );
+                    $rows = [];
+                }
+            }
+        } finally {
+            fclose($handle);
+        }
+
+        return $this->persistChunk(
+            $rows,
+            $import->categoryIds,
+            $count,
+            $onChunkProcessed,
+        );
+    }
+
+    /**
+     * Import XLSX rows by reading worksheet XML directly instead of loading the workbook.
+     */
+    private function importFromXlsx(
+        SubscriberImportData $import,
+        ?callable $onChunkProcessed = null,
+    ): bool|int {
+        $zip = new ZipArchive;
+
+        if ($zip->open($import->filePath) !== true) {
             return false;
         }
 
         $worksheetPath = $this->getFirstWorksheetPath($zip);
-        $sharedStrings = SubscriberSharedStringStore::create($file);
-        $reader = new \XMLReader();
+        $sharedStrings = SubscriberSharedStringStore::create($import->filePath);
+        $reader = new XMLReader;
         $rows = [];
         $count = 0;
 
         try {
-            if (!$reader->open($this->zipStreamPath($file, $worksheetPath))) {
+            if (! $reader->open($this->zipStreamPath($import->filePath, $worksheetPath))) {
                 return false;
             }
 
             while ($reader->read()) {
-                if ($reader->nodeType !== \XMLReader::ELEMENT || $reader->localName !== 'row') {
+                if ($reader->nodeType !== XMLReader::ELEMENT || $reader->localName !== 'row') {
                     continue;
                 }
 
-                $rowNumber = (int) $reader->getAttribute('r');
-
-                if ($rowNumber <= 1) {
+                if ((int) $reader->getAttribute('r') <= 1) {
                     continue;
                 }
 
@@ -122,9 +194,13 @@ class SubscriberService
                 $rows[] = $row;
 
                 if (count($rows) >= self::SPREADSHEET_CHUNK_SIZE) {
-                    $count += $this->importSubscriberRows($rows, $categoryIds);
+                    $count = $this->persistChunk(
+                        $rows,
+                        $import->categoryIds,
+                        $count,
+                        $onChunkProcessed,
+                    );
                     $rows = [];
-                    $this->reportImportProgress($onChunkProcessed, $count);
                 }
             }
         } finally {
@@ -133,76 +209,87 @@ class SubscriberService
             $sharedStrings->close();
         }
 
-        $count += $this->importSubscriberRows($rows, $categoryIds);
-        $this->reportImportProgress($onChunkProcessed, $count);
-
-        return $count;
+        return $this->persistChunk(
+            $rows,
+            $import->categoryIds,
+            $count,
+            $onChunkProcessed,
+        );
     }
 
-    /**
-     * @param object $f
-     * @return bool|int
-     */
-    public function importFromText(object $f, ?callable $onChunkProcessed = null): bool|int
+    private function createImportData(object $source): ?SubscriberImportData
     {
-        if (!($fp = @fopen($f->file('import'), "rb"))) {
-            return false;
+        if (! method_exists($source, 'file')) {
+            return null;
         }
 
-        $count = 0;
-        $rows = [];
-        $categoryIds = (array) ($f->categoryId ?? []);
+        $uploadedFile = $source->file('import');
 
-        while (($line = fgets($fp)) !== false) {
-            $str = trim($line);
-
-            if ($f->charset) {
-                $str = iconv($str, 'utf-8', $f->charset);
-            }
-
-            preg_match('/([a-z0-9&\-_.]+?)@([\w\-]+\.([\w\-\.]+\.)*[\w]+)/uis', $str, $out);
-
-            $email = strtolower($out[0] ?? '');
-            $name = trim(str_replace($email, '', $str));
-
-            if (mb_strlen($name) > 250) {
-                $name = '';
-            }
-
-            $rows[] = [
-                'email' => $email,
-                'name' => $name,
-            ];
-
-            if (count($rows) >= self::SPREADSHEET_CHUNK_SIZE) {
-                $count += $this->importSubscriberRows($rows, $categoryIds);
-                $rows = [];
-                $this->reportImportProgress($onChunkProcessed, $count);
-            }
+        if ($uploadedFile === null) {
+            return null;
         }
 
-        fclose($fp);
+        $filePath = $this->resolveUploadedFilePath($uploadedFile);
 
-        $count += $this->importSubscriberRows($rows, $categoryIds);
-        $this->reportImportProgress($onChunkProcessed, $count);
+        if ($filePath === null) {
+            return null;
+        }
 
-        return $count;
+        $extension = method_exists($uploadedFile, 'getClientOriginalExtension')
+            ? (string) $uploadedFile->getClientOriginalExtension()
+            : (string) pathinfo($filePath, PATHINFO_EXTENSION);
+
+        if (method_exists($source, 'input')) {
+            $categoryIds = (array) $source->input('categoryId', []);
+            $charset = $source->input('charset');
+        } else {
+            $categoryIds = (array) ($source->categoryId ?? []);
+            $charset = $source->charset ?? null;
+        }
+
+        return new SubscriberImportData(
+            filePath: $filePath,
+            extension: $extension,
+            categoryIds: $categoryIds,
+            charset: is_string($charset) ? $charset : null,
+        );
     }
 
-    /**
-     * Create a configured spreadsheet reader by file extension.
-     *
-     * @param string $extension
-     * @return \PhpOffice\PhpSpreadsheet\Reader\IReader
-     */
-    private function createSpreadsheetReader(string $extension): \PhpOffice\PhpSpreadsheet\Reader\IReader
+    private function resolveUploadedFilePath(mixed $uploadedFile): ?string
+    {
+        if (is_string($uploadedFile)) {
+            return $uploadedFile === '' ? null : $uploadedFile;
+        }
+
+        if (! is_object($uploadedFile)) {
+            return null;
+        }
+
+        if (method_exists($uploadedFile, 'getRealPath')) {
+            $realPath = $uploadedFile->getRealPath();
+
+            if (is_string($realPath) && $realPath !== '') {
+                return $realPath;
+            }
+        }
+
+        if (method_exists($uploadedFile, 'getPathname')) {
+            $pathName = $uploadedFile->getPathname();
+
+            return is_string($pathName) && $pathName !== '' ? $pathName : null;
+        }
+
+        return null;
+    }
+
+    private function createSpreadsheetReader(string $extension): IReader
     {
         $inputFileType = match ($extension) {
             'xlsx' => 'Xlsx',
             'xls' => 'Xls',
             'csv' => 'Csv',
             'ods' => 'Ods',
-            default => throw new \InvalidArgumentException('Unsupported spreadsheet extension.'),
+            default => throw new InvalidArgumentException('Unsupported spreadsheet extension.'),
         };
 
         $reader = IOFactory::createReader($inputFileType);
@@ -216,26 +303,42 @@ class SubscriberService
     }
 
     /**
-     * Notify the caller that another import chunk has been processed.
+     * Persist one chunk and report its cumulative progress.
      *
-     * @param callable|null $callback
-     * @param int $count
-     * @return void
+     * @param  array<int, array{email: string, name: string}>  $rows
+     * @param  list<int>  $categoryIds
      */
-    private function reportImportProgress(?callable $callback, int $count): void
-    {
+    private function persistChunk(
+        array $rows,
+        array $categoryIds,
+        int $count,
+        ?callable $callback,
+    ): int {
+        $count += $this->importSubscriberRows($rows, $categoryIds);
+
         if ($callback !== null) {
             $callback($count);
         }
+
+        return $count;
     }
 
-    /**
-     * Resolve the first worksheet XML path inside an XLSX archive.
-     *
-     * @param \ZipArchive $zip
-     * @return string
-     */
-    private function getFirstWorksheetPath(\ZipArchive $zip): string
+    private function convertToUtf8(string $line, ?string $sourceCharset): string
+    {
+        if ($sourceCharset === null || strcasecmp($sourceCharset, 'UTF-8') === 0) {
+            return $line;
+        }
+
+        try {
+            $converted = @iconv($sourceCharset, 'UTF-8//IGNORE', $line);
+        } catch (ValueError) {
+            return $line;
+        }
+
+        return $converted === false ? $line : $converted;
+    }
+
+    private function getFirstWorksheetPath(ZipArchive $zip): string
     {
         $workbookXml = $zip->getFromName('xl/workbook.xml');
         $relationshipsXml = $zip->getFromName('xl/_rels/workbook.xml.rels');
@@ -257,7 +360,9 @@ class SubscriberService
             return 'xl/worksheets/sheet1.xml';
         }
 
-        $attributes = $sheet->attributes('http://schemas.openxmlformats.org/officeDocument/2006/relationships');
+        $attributes = $sheet->attributes(
+            'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
+        );
         $relationshipId = (string) ($attributes['id'] ?? '');
 
         foreach ($relationships->Relationship as $relationship) {
@@ -271,31 +376,18 @@ class SubscriberService
                 return ltrim($target, '/');
             }
 
-            return str_starts_with($target, 'xl/')
-                ? $target
-                : 'xl/' . $target;
+            return str_starts_with($target, 'xl/') ? $target : 'xl/'.$target;
         }
 
         return 'xl/worksheets/sheet1.xml';
     }
 
-    /**
-     * Build a zip stream URI for XMLReader.
-     *
-     * @param string $file
-     * @param string $entry
-     * @return string
-     */
     private function zipStreamPath(string $file, string $entry): string
     {
-        return 'zip://' . $file . '#' . $entry;
+        return 'zip://'.$file.'#'.$entry;
     }
 
     /**
-     * Read email and name from one XLSX worksheet row XML.
-     *
-     * @param string $rowXml
-     * @param SubscriberSharedStringStore $sharedStrings
      * @return array{email: string, name: string}
      */
     private function readXlsxRow(string $rowXml, SubscriberSharedStringStore $sharedStrings): array
@@ -305,7 +397,7 @@ class SubscriberService
         $row = simplexml_load_string($rowXml);
 
         if ($row === false) {
-            return ['email' => '', 'name' => ''];
+            return $this->normalizeSubscriberRow('', '');
         }
 
         foreach ($row->c as $cell) {
@@ -318,27 +410,19 @@ class SubscriberService
             $value = $this->readXlsxCellValue($cell, $sharedStrings);
 
             if ($column === 'A') {
-                $email = strtolower(trim($value));
+                $email = $value;
             } else {
-                $name = trim($value);
+                $name = $value;
             }
         }
 
-        return [
-            'email' => $email,
-            'name' => $name,
-        ];
+        return $this->normalizeSubscriberRow($email, $name);
     }
 
-    /**
-     * Read one XLSX cell value from XML.
-     *
-     * @param \SimpleXMLElement $cell
-     * @param SubscriberSharedStringStore $sharedStrings
-     * @return string
-     */
-    private function readXlsxCellValue(\SimpleXMLElement $cell, SubscriberSharedStringStore $sharedStrings): string
-    {
+    private function readXlsxCellValue(
+        SimpleXMLElement $cell,
+        SubscriberSharedStringStore $sharedStrings,
+    ): string {
         $type = (string) $cell['t'];
 
         if ($type === 's') {
@@ -359,11 +443,21 @@ class SubscriberService
     }
 
     /**
+     * @return array{email: string, name: string}
+     */
+    private function normalizeSubscriberRow(mixed $email, mixed $name): array
+    {
+        return [
+            'email' => strtolower(trim((string) $email)),
+            'name' => trim((string) $name),
+        ];
+    }
+
+    /**
      * Create or update imported subscribers using bulk database operations.
      *
-     * @param array $rows
-     * @param array $categoryIds
-     * @return int
+     * @param  array<int, array{email?: mixed, name?: mixed}>  $rows
+     * @param  list<int>  $categoryIds
      */
     private function importSubscriberRows(array $rows, array $categoryIds): int
     {
@@ -374,16 +468,18 @@ class SubscriberService
         $normalizedRows = [];
 
         foreach ($rows as $row) {
-            $email = strtolower(trim((string) ($row['email'] ?? '')));
-            $name = trim((string) ($row['name'] ?? ''));
+            $subscriber = $this->normalizeSubscriberRow(
+                $row['email'] ?? '',
+                $row['name'] ?? '',
+            );
 
-            if (!StringHelper::isEmail($email) || mb_strlen($email) > 255) {
+            if (! StringHelper::isEmail($subscriber['email']) || mb_strlen($subscriber['email']) > 255) {
                 continue;
             }
 
-            $normalizedRows[$email] = [
-                'email' => $email,
-                'name' => mb_substr($name, 0, 100),
+            $normalizedRows[$subscriber['email']] = [
+                'email' => $subscriber['email'],
+                'name' => mb_substr($subscriber['name'], 0, 100),
             ];
         }
 
@@ -396,7 +492,6 @@ class SubscriberService
             ->whereIn('email', $emails)
             ->pluck('id', 'email')
             ->all();
-
         $newSubscribers = [];
         $now = date('Y-m-d H:i:s');
 
@@ -431,14 +526,12 @@ class SubscriberService
     }
 
     /**
-     * @param array $subscriberIds
-     * @param array $categoryIds
-     * @return void
+     * @param  array<int, int|string>  $subscriberIds
+     * @param  list<int>  $categoryIds
      */
     private function syncSubscriptions(array $subscriberIds, array $categoryIds): void
     {
         $subscriberIds = array_values(array_unique(array_filter($subscriberIds)));
-        $categoryIds = array_values(array_unique(array_filter($categoryIds, 'is_numeric')));
 
         if ($subscriberIds === []) {
             return;
@@ -458,7 +551,7 @@ class SubscriberService
             foreach ($categoryIds as $categoryId) {
                 $rows[] = [
                     'subscriber_id' => $subscriberId,
-                    'category_id' => (int) $categoryId,
+                    'category_id' => $categoryId,
                 ];
             }
         }
@@ -466,242 +559,5 @@ class SubscriberService
         foreach (array_chunk($rows, self::DATABASE_CHUNK_SIZE) as $chunk) {
             DB::table('subscriptions')->insertOrIgnore($chunk);
         }
-    }
-}
-
-final class SubscriberImportReadFilter implements IReadFilter
-{
-    public function __construct(
-        private readonly int $startRow,
-        private readonly int $endRow,
-    ) {
-    }
-
-    /**
-     * Read only the email and name columns for the current chunk.
-     *
-     * @param string $columnAddress
-     * @param int $row
-     * @param string $worksheetName
-     * @return bool
-     */
-    public function readCell(string $columnAddress, int $row, string $worksheetName = ''): bool
-    {
-        return in_array($columnAddress, ['A', 'B'], true)
-            && $row >= $this->startRow
-            && $row <= $this->endRow;
-    }
-}
-
-final class SubscriberSharedStringStore
-{
-    private const INDEX_RECORD_SIZE = 8;
-    private const MAX_MEMORY_STRINGS = 200000;
-
-    private ?string $indexFile = null;
-    private ?string $dataFile = null;
-
-    /** @var array<int, string>|null */
-    private ?array $strings = null;
-
-    /** @var resource|null */
-    private $indexHandle = null;
-
-    /** @var resource|null */
-    private $dataHandle = null;
-
-    private function __construct(bool $useMemory)
-    {
-        if ($useMemory) {
-            $this->strings = [];
-
-            return;
-        }
-
-        $this->indexFile = (string) tempnam(sys_get_temp_dir(), 'xlsx_sst_index');
-        $this->dataFile = (string) tempnam(sys_get_temp_dir(), 'xlsx_sst_data');
-        $this->indexHandle = fopen($this->indexFile, 'w+b');
-        $this->dataHandle = fopen($this->dataFile, 'w+b');
-
-        if ($this->indexHandle === false || $this->dataHandle === false) {
-            $this->close();
-            throw new \RuntimeException('Failed to create shared string temporary files.');
-        }
-    }
-
-    /**
-     * Build a disk-backed shared string lookup for an XLSX file.
-     *
-     * @param string $file
-     * @return self
-     */
-    public static function create(string $file): self
-    {
-        $store = null;
-        $reader = new \XMLReader();
-        $zip = new \ZipArchive();
-
-        if ($zip->open($file) !== true) {
-            return new self(true);
-        }
-
-        $hasSharedStrings = $zip->locateName('xl/sharedStrings.xml') !== false;
-        $zip->close();
-
-        if (!$hasSharedStrings) {
-            return new self(true);
-        }
-
-        if (!@$reader->open('zip://' . $file . '#xl/sharedStrings.xml')) {
-            return new self(true);
-        }
-
-        try {
-            while ($reader->read()) {
-                if ($reader->nodeType === \XMLReader::ELEMENT && $reader->localName === 'sst' && $store === null) {
-                    $uniqueCount = (int) ($reader->getAttribute('uniqueCount') ?: $reader->getAttribute('count'));
-                    $store = new self($uniqueCount <= self::MAX_MEMORY_STRINGS);
-                }
-
-                if ($reader->nodeType !== \XMLReader::ELEMENT || $reader->localName !== 'si') {
-                    continue;
-                }
-
-                if ($store === null) {
-                    $store = new self(true);
-                }
-
-                $store->append($store->readSharedString($reader->readOuterXml()));
-            }
-        } finally {
-            $reader->close();
-        }
-
-        return $store ?? new self(true);
-    }
-
-    /**
-     * Return a shared string by its zero-based index.
-     *
-     * @param int $index
-     * @return string
-     */
-    public function get(int $index): string
-    {
-        if ($this->strings !== null) {
-            return $this->strings[$index] ?? '';
-        }
-
-        if ($this->indexHandle === null || $this->dataHandle === null) {
-            return '';
-        }
-
-        if (fseek($this->indexHandle, $index * self::INDEX_RECORD_SIZE) !== 0) {
-            return '';
-        }
-
-        $offsetBytes = fread($this->indexHandle, self::INDEX_RECORD_SIZE);
-
-        if ($offsetBytes === false || strlen($offsetBytes) !== self::INDEX_RECORD_SIZE) {
-            return '';
-        }
-
-        $parts = unpack('Vlow/Vhigh', $offsetBytes);
-        $offset = (int) $parts['low'] + ((int) $parts['high'] * 4294967296);
-
-        if (fseek($this->dataHandle, $offset) !== 0) {
-            return '';
-        }
-
-        $lengthBytes = fread($this->dataHandle, 4);
-
-        if ($lengthBytes === false || strlen($lengthBytes) !== 4) {
-            return '';
-        }
-
-        $length = (int) unpack('Vlength', $lengthBytes)['length'];
-
-        if ($length === 0) {
-            return '';
-        }
-
-        return (string) fread($this->dataHandle, $length);
-    }
-
-    /**
-     * Close handles and remove temporary files.
-     *
-     * @return void
-     */
-    public function close(): void
-    {
-        if (is_resource($this->indexHandle)) {
-            fclose($this->indexHandle);
-        }
-
-        if (is_resource($this->dataHandle)) {
-            fclose($this->dataHandle);
-        }
-
-        $this->indexHandle = null;
-        $this->dataHandle = null;
-
-        if (isset($this->indexFile)) {
-            @unlink($this->indexFile);
-        }
-
-        if (isset($this->dataFile)) {
-            @unlink($this->dataFile);
-        }
-    }
-
-    /**
-     * Append one shared string to the disk-backed store.
-     *
-     * @param string $value
-     * @return void
-     */
-    private function append(string $value): void
-    {
-        if ($this->strings !== null) {
-            $this->strings[] = $value;
-
-            return;
-        }
-
-        $offset = ftell($this->dataHandle);
-
-        if ($offset === false) {
-            return;
-        }
-
-        $low = $offset & 0xffffffff;
-        $high = intdiv($offset, 4294967296);
-
-        fwrite($this->indexHandle, pack('V2', $low, $high));
-        fwrite($this->dataHandle, pack('V', strlen($value)) . $value);
-    }
-
-    /**
-     * Extract text from one shared string XML fragment.
-     *
-     * @param string $xml
-     * @return string
-     */
-    private function readSharedString(string $xml): string
-    {
-        $element = simplexml_load_string($xml);
-
-        if ($element === false) {
-            return '';
-        }
-
-        $value = '';
-
-        foreach ($element->xpath('.//*[local-name()="t"]') ?: [] as $textNode) {
-            $value .= (string) $textNode;
-        }
-
-        return $value;
     }
 }

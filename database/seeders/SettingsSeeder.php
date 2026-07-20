@@ -9,13 +9,14 @@ class SettingsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run(): void
     {
         foreach ($this->settings() as $row) {
-            Settings::create(['name' => $row['name'], 'value' => $row['value']]);
+            Settings::query()->firstOrCreate(
+                ['name' => $row['name']],
+                ['value' => $row['value']],
+            );
         }
     }
 
@@ -131,8 +132,6 @@ class SettingsSeeder extends Seeder
 
     /**
      * Resolve the locale used for installer seed data.
-     *
-     * @return string
      */
     private function locale(): string
     {

@@ -27,7 +27,7 @@
                                 {{ __('frontend.str.redirect') }}
                             </h3>
 
-                            @if(PermissionsHelper::has_permission('admin'))
+                            @if(PermissionsHelper::hasPermission('admin'))
                                 <div class="card-tools">
                                     <button id="clearRedirectButton"
                                             type="button"

@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AjaxAction;
 use App\Helpers\UpdateHelper;
+use App\Http\Requests\AjaxActionRequest;
 use App\Models\Category;
 use App\Models\Logs;
-use App\Models\User;
 use App\Repositories\AttachRepository;
 use App\Repositories\ProcessRepository;
 use App\Repositories\ReadySentRepository;
@@ -15,146 +16,104 @@ use App\Services\UpdateService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cookie;
+use PHPMailer\PHPMailer\Exception;
 
 class AjaxController extends Controller
 {
-    private const ADMIN_ONLY_ACTIONS = [
-        'start_update',
-    ];
-
     /**
      * Inject services and repositories used by shared admin AJAX actions.
      */
     public function __construct(
-        private readonly UpdateService       $updateService,
-        private readonly ScheduleRepository  $scheduleRepository,
-        private readonly AttachRepository    $attachRepository,
-        private readonly SendMailService     $sendMailService,
+        private readonly UpdateService $updateService,
+        private readonly ScheduleRepository $scheduleRepository,
+        private readonly AttachRepository $attachRepository,
+        private readonly SendMailService $sendMailService,
         private readonly ReadySentRepository $readySentRepository,
-        private readonly ProcessRepository   $processRepository,
-    )
-    {
-    }
+        private readonly ProcessRepository $processRepository,
+    ) {}
 
     /**
      * Dispatch an AJAX action and return a normalized JSON response.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
-    public function action(Request $request): JsonResponse
+    public function action(AjaxActionRequest $request): JsonResponse
     {
         @set_time_limit(0);
 
         try {
-            return response()->json($this->getResult($request));
+            return response()->json($this->getResult($request->ajaxAction(), $request));
         } catch (\Throwable $e) {
             report($e);
 
             return response()->json([
                 'result' => false,
-                'errors' => $e->getMessage(),
-            ]);
+                'errors' => __('frontend.str.error_server'),
+            ], 500);
         }
     }
 
     /**
      * Resolve the requested AJAX action to the matching service or repository operation.
      *
-     * @param Request $request
      * @return array|false[]|true[]
-     * @throws \PHPMailer\PHPMailer\Exception
+     *
+     * @throws Exception
      * @throws \Throwable
      */
-    private function getResult(Request $request): array
+    private function getResult(AjaxAction $action, Request $request): array
     {
-        $action = (string)$request->input('action');
-
-        if ($action === '') {
-            return [];
-        }
-
-        if ($this->isAdminOnlyAction($action) && !$this->currentUserIsAdmin()) {
-            return [
-                'result' => false,
-                'status' => __('frontend.msg.failed_to_update'),
-            ];
-        }
-
-        $update = new UpdateHelper(app()->getLocale(), env('VERSION'));
-
         return match ($action) {
-            'start_update' => $this->updateService->startUpdate($update, $request),
+            AjaxAction::StartUpdate => $this->updateService->startUpdate($this->updateHelper(), $request),
 
-            'alert_update' => $this->updateService->alertUpdate($update),
+            AjaxAction::AlertUpdate => $this->updateService->alertUpdate($this->updateHelper()),
 
-            'remove_schedule' => [
-                'result' => $this->scheduleRepository->removeSchedule((int)$request->input('id')),
-                'id' => (int)$request->input('id'),
+            AjaxAction::RemoveSchedule => [
+                'result' => $this->scheduleRepository->removeSchedule((int) $request->input('id')),
+                'id' => (int) $request->input('id'),
             ],
 
-            'change_lng' => $this->changeLanguage($request),
+            AjaxAction::ChangeLanguage => $this->changeLanguage($request),
 
-            'remove_attach' => $this->removeAttach($request),
+            AjaxAction::RemoveAttach => $this->removeAttach($request),
 
-            'send_test_email' => $this->sendMailService->sendTest($request),
+            AjaxAction::SendTestEmail => $this->sendMailService->sendTest($request),
 
-            'send_out' => $this->sendMailService->sendOut($request),
+            AjaxAction::SendOut => $this->sendMailService->sendOut($request),
 
-            'count_send' => $this->sendMailService->countSend($request),
+            AjaxAction::CountSend => $this->sendMailService->countSend($request),
 
-            'log_online' => $this->readySentRepository->logOnline(5),
+            AjaxAction::LogOnline => $this->readySentRepository->logOnline(5),
 
-            'start_mailing' => $this->startMailing(),
+            AjaxAction::StartMailing => $this->startMailing(),
 
-            'get_categories' => [
+            AjaxAction::GetCategories => [
                 'items' => Category::query()->get(),
             ],
 
-            'process' => $this->processCommand($request),
-
-            default => [],
+            AjaxAction::Process => $this->processCommand($request),
         };
     }
 
     /**
-     * Determine whether the AJAX action can only be executed by administrators.
-     *
-     * @param string $action
-     * @return bool
+     * Build update metadata only for actions that actually need it.
      */
-    private function isAdminOnlyAction(string $action): bool
+    private function updateHelper(): UpdateHelper
     {
-        return in_array($action, self::ADMIN_ONLY_ACTIONS, true);
-    }
-
-    /**
-     * Check whether the current session belongs to an administrator.
-     *
-     * @return bool
-     */
-    private function currentUserIsAdmin(): bool
-    {
-        return Auth::check() && Auth::user()?->role === User::ROLE_ADMIN;
+        return new UpdateHelper(app()->getLocale(), env('VERSION'));
     }
 
     /**
      * Store the selected interface locale in a long-lived cookie.
      *
-     * @param Request $request
      * @return true[]
      */
     private function changeLanguage(Request $request): array
     {
-        $locale = (string)$request->input('locale');
+        $locale = (string) $request->input('locale');
 
-        if ($locale !== '' && in_array($locale, Config::get('app.locales', []), true)) {
-            Cookie::queue(
-                Cookie::forever('lang', $locale)
-            );
-        }
+        Cookie::queue(
+            Cookie::forever('lang', $locale)
+        );
 
         return ['result' => true];
     }
@@ -162,20 +121,17 @@ class AjaxController extends Controller
     /**
      * Remove an uploaded template attachment by ID.
      *
-     * @param Request $request
      * @return true[]
      */
     private function removeAttach(Request $request): array
     {
-        $this->attachRepository->remove((int)$request->input('id'));
+        $this->attachRepository->remove((int) $request->input('id'));
 
         return ['result' => true];
     }
 
     /**
      * Create a log record that marks the start of a manual mailing run.
-     *
-     * @return array
      */
     private function startMailing(): array
     {
@@ -192,7 +148,6 @@ class AjaxController extends Controller
     /**
      * Persist the current user's long-running process command.
      *
-     * @param Request $request
      * @return array|false[]
      */
     private function processCommand(Request $request): array
@@ -205,7 +160,7 @@ class AjaxController extends Controller
 
         $userId = Auth::id();
 
-        if (!$userId) {
+        if (! $userId) {
             return ['result' => false];
         }
 

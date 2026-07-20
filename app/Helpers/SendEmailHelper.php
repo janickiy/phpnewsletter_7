@@ -2,13 +2,19 @@
 
 namespace App\Helpers;
 
-use PHPMailer\PHPMailer;
-use App\Models\{Attach, Smtp, CustomHeaders};
+use App\Models\Attach;
+use App\Models\CustomHeaders;
+use App\Services\SmtpConfigurationResolver;
 use Illuminate\Support\Facades\Storage;
+use PHPMailer\PHPMailer;
 use URL;
 
 class SendEmailHelper
 {
+    public function __construct(
+        private readonly SmtpConfigurationResolver $smtpConfigurationResolver,
+    ) {}
+
     public string $subject;
 
     public string $body;
@@ -29,10 +35,9 @@ class SendEmailHelper
 
     public bool $unsub = true;
 
-
     /**
-     * @param int|null $attach
      * @return array
+     *
      * @throws PHPMailer\Exception
      */
     public function sendEmail(?int $attach = null)
@@ -46,39 +51,39 @@ class SendEmailHelper
         $subscriberId = $this->subscriberId;
         $token = $this->token;
 
-        $m = new PHPMailer\PHPMailer();
+        $m = new PHPMailer\PHPMailer;
 
         if (SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') === 'smtp') {
             $m->IsSMTP();
             $m->SMTPAuth = true;
             $m->SMTPKeepAlive = true;
 
-            $smtp_q = Smtp::query();
-            $smtp = $smtp_q->count() > 1
-                ? $smtp_q->inRandomOrder()->first()
-                : $smtp_q->first();
+            $smtp = $this->smtpConfigurationResolver->resolve();
 
-            if ($smtp) {
-                $m->Host = $smtp->host;
-                $m->Port = $smtp->port;
-                $m->From = $smtp->email;
-                $m->Username = $smtp->username;
-                $m->Password = $smtp->password;
-
-                if ($smtp->secure === 'ssl') {
-                    $m->SMTPSecure = 'ssl';
-                } elseif ($smtp->secure === 'tls') {
-                    $m->SMTPSecure = 'tls';
-                }
-
-                if ($smtp->authentication === 'plain') {
-                    $m->AuthType = 'PLAIN';
-                } elseif ($smtp->authentication === 'cram-md5') {
-                    $m->AuthType = 'CRAM-MD5';
-                }
-
-                $m->Timeout = $smtp->timeout;
+            if (! $smtp) {
+                return [
+                    'result' => false,
+                    'error' => 'No active SMTP server is configured.',
+                ];
             }
+
+            $m->Host = $smtp->host;
+            $m->Port = $smtp->port;
+            $m->From = $smtp->email;
+            $m->Username = $smtp->username;
+            $m->Password = $smtp->password;
+
+            if ($smtp->secure === 'ssl') {
+                $m->SMTPSecure = 'ssl';
+            } elseif ($smtp->secure === 'tls') {
+                $m->SMTPSecure = 'tls';
+            }
+
+            if ($authType = $smtp->phpMailerAuthType()) {
+                $m->AuthType = $authType;
+            }
+
+            $m->Timeout = $smtp->timeout;
         } elseif (
             SettingsHelper::getInstance()->getValueForKey('HOW_TO_SEND') === 'sendmail'
             && SettingsHelper::getInstance()->getValueForKey('SENDMAIL_PATH') !== ''
@@ -106,11 +111,11 @@ class SendEmailHelper
         $m->FromName = SettingsHelper::getInstance()->getValueForKey('FROM');
 
         if (SettingsHelper::getInstance()->getValueForKey('LIST_OWNER') !== '') {
-            $m->addCustomHeader("List-Owner: <" . SettingsHelper::getInstance()->getValueForKey('LIST_OWNER') . ">");
+            $m->addCustomHeader('List-Owner: <'.SettingsHelper::getInstance()->getValueForKey('LIST_OWNER').'>');
         }
 
         if (SettingsHelper::getInstance()->getValueForKey('RETURN_PATH') !== '') {
-            $m->addCustomHeader("Return-Path: <" . SettingsHelper::getInstance()->getValueForKey('RETURN_PATH') . ">");
+            $m->addCustomHeader('Return-Path: <'.SettingsHelper::getInstance()->getValueForKey('RETURN_PATH').'>');
         }
 
         if (SettingsHelper::getInstance()->getValueForKey('CONTENT_TYPE') === 'html') {
@@ -135,7 +140,7 @@ class SendEmailHelper
         }
 
         if (SettingsHelper::getInstance()->getValueForKey('ORGANIZATION') !== '') {
-            $m->addCustomHeader("Organization: " . SettingsHelper::getInstance()->getValueForKey('ORGANIZATION'));
+            $m->addCustomHeader('Organization: '.SettingsHelper::getInstance()->getValueForKey('ORGANIZATION'));
         }
 
         $m->AddAddress($email);
@@ -144,16 +149,16 @@ class SendEmailHelper
             (int) SettingsHelper::getInstance()->getValueForKey('REQUEST_REPLY') === 1
             && SettingsHelper::getInstance()->getValueForKey('EMAIL') !== ''
         ) {
-            $m->addCustomHeader("Disposition-Notification-To: " . SettingsHelper::getInstance()->getValueForKey('EMAIL'));
+            $m->addCustomHeader('Disposition-Notification-To: '.SettingsHelper::getInstance()->getValueForKey('EMAIL'));
             $m->ConfirmReadingTo = SettingsHelper::getInstance()->getValueForKey('EMAIL');
         }
 
         if (SettingsHelper::getInstance()->getValueForKey('PRECEDENCE') === 'bulk') {
-            $m->addCustomHeader("Precedence: bulk");
+            $m->addCustomHeader('Precedence: bulk');
         } elseif (SettingsHelper::getInstance()->getValueForKey('PRECEDENCE') === 'junk') {
-            $m->addCustomHeader("Precedence: junk");
+            $m->addCustomHeader('Precedence: junk');
         } elseif (SettingsHelper::getInstance()->getValueForKey('PRECEDENCE') === 'list') {
-            $m->addCustomHeader("Precedence: list");
+            $m->addCustomHeader('Precedence: list');
         }
 
         $UNSUB = URL::route('frontend.unsubscribe', ['subscriber' => $subscriberId, 'token' => $token]);
@@ -164,21 +169,21 @@ class SendEmailHelper
                 (int) SettingsHelper::getInstance()->getValueForKey('SHOW_UNSUBSCRIBE_LINK') === 1
                 && SettingsHelper::getInstance()->getValueForKey('UNSUBLINK') !== ''
             ) {
-                $body .= "<br><br>" . $unsublink;
+                $body .= '<br><br>'.$unsublink;
             }
 
-            $m->addCustomHeader("List-Unsubscribe: " . $UNSUB);
+            $m->addCustomHeader('List-Unsubscribe: '.$UNSUB);
         }
 
         foreach (CustomHeaders::get() ?? [] as $customheader) {
-            $m->addCustomHeader($customheader->name . ": " . $customheader->value);
+            $m->addCustomHeader($customheader->name.': '.$customheader->value);
         }
 
         $msg = $body;
         $url_info = parse_url(SettingsHelper::getInstance()->getValueForKey('URL'));
 
         $msg = preg_replace_callback("/%REFERRAL\:(.+)%/isU", function ($matches) {
-            return "%URL_PATH%/referral/" . base64_encode($matches[1]) . "/%USERID%";
+            return '%URL_PATH%/referral/'.base64_encode($matches[1]).'/%USERID%';
         }, $msg);
 
         $msg = str_replace('%NAME%', $name, $msg);
@@ -193,7 +198,7 @@ class SendEmailHelper
 
         if ($attach) {
             foreach (Attach::where('template_id', $attach)->get() ?? [] as $f) {
-                $path = Attach::DIRECTORY . '/' . $f->file_name;
+                $path = Attach::DIRECTORY.'/'.$f->file_name;
 
                 if (Storage::exists($path)) {
                     $storagePath = Storage::disk('local')->path($path);
@@ -216,7 +221,7 @@ class SendEmailHelper
         if (SettingsHelper::getInstance()->getValueForKey('CONTENT_TYPE') === 'html') {
             if ($this->tracking) {
                 $imageUrl = URL::route('frontend.pic', ['subscriber' => $subscriberId, 'template' => $templateId]);
-                $IMG = '<img alt="" border="0" src="' . $imageUrl . '" width="1" height="1">';
+                $IMG = '<img alt="" border="0" src="'.$imageUrl.'" width="1" height="1">';
                 $msg .= $IMG;
             }
         } else {
@@ -226,7 +231,7 @@ class SendEmailHelper
 
         $m->Body = $msg;
 
-        if (!$m->Send()) {
+        if (! $m->Send()) {
             $result = ['result' => false, 'error' => $m->ErrorInfo];
         } else {
             $result = ['result' => true, 'error' => null];
@@ -244,15 +249,6 @@ class SendEmailHelper
     }
 
     /**
-     * @param string $host
-     * @param string $email
-     * @param string $username
-     * @param string|null $password
-     * @param int $port
-     * @param string $authentication
-     * @param string $secure
-     * @param int $timeout
-     * @return bool
      * @throws PHPMailer\Exception
      */
     public static function checkConnection(
@@ -265,7 +261,7 @@ class SendEmailHelper
         string $secure,
         int $timeout = 5
     ): bool {
-        $m = new PHPMailer\PHPMailer();
+        $m = new PHPMailer\PHPMailer;
         $m->isSMTP();
         $m->Host = $host;
         $m->Port = $port;
@@ -287,6 +283,7 @@ class SendEmailHelper
 
         if ($m->smtpConnect()) {
             $m->smtpClose();
+
             return true;
         } else {
             return false;

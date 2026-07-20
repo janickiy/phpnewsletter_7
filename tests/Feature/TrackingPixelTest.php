@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\DTO\ReadySentCreateData;
 use App\DTO\ReadySentReadData;
 use App\Models\Logs;
 use App\Models\ReadySent;
@@ -72,5 +73,36 @@ class TrackingPixelTest extends TestCase
 
         $this->assertSame(1, $firstDelivery->fresh()->readMail);
         $this->assertSame(1, $secondDelivery->fresh()->readMail);
+    }
+
+    public function test_manual_delivery_can_be_stored_without_schedule_or_log(): void
+    {
+        $subscriber = Subscribers::query()->create([
+            'name' => 'Manual recipient',
+            'email' => 'manual@example.com',
+            'active' => 1,
+            'token' => str_repeat('c', 32),
+            'timeSent' => now(),
+        ]);
+        $template = Templates::query()->create([
+            'name' => 'Manual newsletter',
+            'body' => '<p>Hello</p>',
+            'prior' => 0,
+        ]);
+
+        $delivery = app(ReadySentRepository::class)->add(new ReadySentCreateData(
+            subscriberId: $subscriber->id,
+            templateId: $template->id,
+            success: 1,
+            scheduleId: null,
+            logId: null,
+            email: $subscriber->email,
+            template: $template->name,
+            errorMsg: null,
+            readMail: null,
+        ));
+
+        $this->assertNull($delivery->schedule_id);
+        $this->assertNull($delivery->log_id);
     }
 }

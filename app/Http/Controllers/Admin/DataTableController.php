@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-
 use App\Helpers\PermissionsHelper;
 use App\Helpers\StringHelper;
 use App\Models\Category;
@@ -23,7 +22,6 @@ class DataTableController extends Controller
     /**
      * Return email template rows formatted for the templates DataTable.
      *
-     * @return JsonResponse
      * @throws \Exception
      */
     public function getTemplates(): JsonResponse
@@ -50,13 +48,13 @@ class DataTableController extends Controller
                     route('admin.templates.edit', ['id' => $row->id])
                 );
 
-                return '<div class="nobr">' . $showBtn . $editBtn . '</div>';
+                return '<div class="nobr">'.$showBtn.$editBtn.'</div>';
             })
             ->editColumn('name', function ($row) {
                 $body = preg_replace('/(<.*?>)|(&.*?;)/', '', $row->body);
 
-                return $row->name . '<br><br><small class="text-muted">' .
-                    StringHelper::shortText($body ?? '', 500) .
+                return $row->name.'<br><br><small class="text-muted">'.
+                    StringHelper::shortText($body ?? '', 500).
                     '</small>';
             })
             ->editColumn('prior', fn ($row) => $row->getPrior())
@@ -71,7 +69,6 @@ class DataTableController extends Controller
     /**
      * Return category rows with subscriber counts and action buttons for DataTables.
      *
-     * @return JsonResponse
      * @throws \Exception
      */
     public function getCategory(): JsonResponse
@@ -95,7 +92,7 @@ class DataTableController extends Controller
                     $row->id
                 );
 
-                return '<div class="nobr">' . $editBtn . $deleteBtn . '</div>';
+                return '<div class="nobr">'.$editBtn.$deleteBtn.'</div>';
             })
             ->rawColumns(['actions'])
             ->make(true);
@@ -104,7 +101,6 @@ class DataTableController extends Controller
     /**
      * Return SMTP account rows with status, checkbox, and action columns for DataTables.
      *
-     * @return JsonResponse
      * @throws \Exception
      */
     public function getSmtp(): JsonResponse
@@ -116,10 +112,10 @@ class DataTableController extends Controller
                 '<input type="checkbox" class="check" value="%d" name="activate[]">',
                 $row->id
             ))
-            ->editColumn('active', fn ($row) => $row->active === 1
+            ->editColumn('active', fn ($row) => $row->active
                 ? __('frontend.str.yes')
                 : __('frontend.str.no'))
-            ->editColumn('activeStatus', fn ($row) => $row->active)
+            ->editColumn('activeStatus', fn ($row) => (bool) $row->active)
             ->addColumn('action', function ($row) {
                 $showBtn = sprintf(
                     '<a title="%s" class="btn btn-xs btn-info" href="%s"><span class="fa fa-eye"></span></a>&nbsp;',
@@ -138,7 +134,7 @@ class DataTableController extends Controller
                     $row->id
                 );
 
-                return '<div class="nobr">' . $showBtn . $editBtn . $deleteBtn . '</div>';
+                return '<div class="nobr">'.$showBtn.$editBtn.$deleteBtn.'</div>';
             })
             ->editColumn('created_at', fn ($row) => $this->formatDateTime($row->created_at))
             ->rawColumns(['action', 'checkbox'])
@@ -148,7 +144,6 @@ class DataTableController extends Controller
     /**
      * Return subscriber rows with category names, status, and action columns for DataTables.
      *
-     * @return JsonResponse
      * @throws \Exception
      */
     public function getSubscribers(): JsonResponse
@@ -192,7 +187,7 @@ class DataTableController extends Controller
                     $row->id
                 );
 
-                return '<div class="nobr">' . $editBtn . $deleteBtn . '</div>';
+                return '<div class="nobr">'.$editBtn.$deleteBtn.'</div>';
             })
             ->editColumn('created_at', fn ($row) => $this->formatDateTime($row->created_at))
             ->rawColumns(['action', 'checkbox'])
@@ -202,7 +197,6 @@ class DataTableController extends Controller
     /**
      * Return admin user rows with role labels and action buttons for DataTables.
      *
-     * @return JsonResponse
      * @throws \Exception
      */
     public function getUsers(): JsonResponse
@@ -225,7 +219,7 @@ class DataTableController extends Controller
                     )
                     : '';
 
-                return '<div class="nobr">' . $editBtn . $deleteBtn . '</div>';
+                return '<div class="nobr">'.$editBtn.$deleteBtn.'</div>';
             })
             ->editColumn('role', fn ($row) => $row->role_label)
             ->editColumn('created_at', fn ($row) => $this->formatDateTime($row->created_at))
@@ -236,7 +230,6 @@ class DataTableController extends Controller
     /**
      * Return mailing summary rows for the log overview DataTable.
      *
-     * @return JsonResponse
      * @throws \Exception
      */
     public function getLogs(): JsonResponse
@@ -254,7 +247,7 @@ class DataTableController extends Controller
             ))
             ->addColumn('unsent', fn ($row) => $row->count - $row->sent)
             ->editColumn('read_mail', fn ($row) => $row->read_mail ?? 0)
-            ->addColumn('report', fn ($row) => PermissionsHelper::has_permission('admin')
+            ->addColumn('report', fn ($row) => PermissionsHelper::hasPermission('admin')
                 ? sprintf(
                     '<a href="%s">%s</a>',
                     route('admin.log.report', ['id' => $row->id]),
@@ -270,8 +263,6 @@ class DataTableController extends Controller
     /**
      * Return per-recipient delivery log rows, optionally filtered by schedule ID.
      *
-     * @param int|null $id
-     * @return JsonResponse
      * @throws \Exception
      */
     public function getInfoLog(?int $id = null): JsonResponse
@@ -296,7 +287,6 @@ class DataTableController extends Controller
     /**
      * Return grouped redirect tracking rows with report links for DataTables.
      *
-     * @return JsonResponse
      * @throws \Exception
      */
     public function getRedirectLogs(): JsonResponse
@@ -312,7 +302,7 @@ class DataTableController extends Controller
                 route('admin.redirect.info', ['url' => $this->encodeRouteBase64($row->url)]),
                 $row->count
             ))
-            ->addColumn('report', fn ($row) => PermissionsHelper::has_permission('admin')
+            ->addColumn('report', fn ($row) => PermissionsHelper::hasPermission('admin')
                 ? sprintf(
                     '<a href="%s">%s</a>',
                     route('admin.redirect.report', ['url' => $this->encodeRouteBase64($row->url)]),
@@ -326,8 +316,6 @@ class DataTableController extends Controller
     /**
      * Return redirect tracking details for a single encoded URL.
      *
-     * @param string $url
-     * @return JsonResponse
      * @throws \Exception
      */
     public function getInfoRedirectLog(string $url): JsonResponse
@@ -343,9 +331,6 @@ class DataTableController extends Controller
 
     /**
      * Encode binary-safe base64 for a single route segment.
-     *
-     * @param string $value
-     * @return string
      */
     private function encodeRouteBase64(string $value): string
     {
@@ -354,9 +339,6 @@ class DataTableController extends Controller
 
     /**
      * Decode URL-safe or regular base64 route parameters.
-     *
-     * @param string $value
-     * @return string
      */
     private function decodeRouteBase64(string $value): string
     {
@@ -373,7 +355,6 @@ class DataTableController extends Controller
     /**
      * Return macro rows with action buttons for the macros DataTable.
      *
-     * @return JsonResponse
      * @throws \Exception
      */
     public function getMacros(): JsonResponse
@@ -394,7 +375,7 @@ class DataTableController extends Controller
                     $row->id
                 );
 
-                return '<div class="nobr">' . $editBtn . $deleteBtn . '</div>';
+                return '<div class="nobr">'.$editBtn.$deleteBtn.'</div>';
             })
             ->rawColumns(['actions'])
             ->make(true);
@@ -402,9 +383,6 @@ class DataTableController extends Controller
 
     /**
      * Normalize database or date-like values for display in DataTables.
-     *
-     * @param mixed $value
-     * @return string
      */
     private function formatDateTime(mixed $value): string
     {
@@ -422,5 +400,4 @@ class DataTableController extends Controller
             ? date('Y-m-d H:i:s', $timestamp)
             : (string) $value;
     }
-
 }

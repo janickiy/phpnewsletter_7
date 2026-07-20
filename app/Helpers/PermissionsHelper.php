@@ -2,22 +2,20 @@
 
 namespace App\Helpers;
 
-class PermissionsHelper
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+
+final class PermissionsHelper
 {
-    /**
-     * @param string $permissions
-     * @return bool
-     */
-    public static function has_permission(string $permissions = ''): bool
+    public static function hasPermission(string $permissions = ''): bool
     {
-        if (\Auth::user()->role === 'admin') return true;
+        $role = Auth::user()?->role;
 
-        $permissions = explode('|', $permissions);
-
-        if (in_array(\Auth::user()->role, $permissions)) {
-            return true;
-        } else {
+        if ($role === null) {
             return false;
         }
+
+        return $role === User::ROLE_ADMIN
+            || in_array($role, explode('|', $permissions), true);
     }
 }

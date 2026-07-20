@@ -11,30 +11,16 @@ class SmtpRepository extends BaseRepository
         parent::__construct($model);
     }
 
-    /**
-     * @param int $id
-     * @param array $data
-     * @return bool
-     */
     public function updateWithMapping(int $id, array $data): bool
     {
         return parent::update($id, $this->mapping($data));
     }
 
-    /**
-     * @param array $data
-     * @return Smtp
-     */
     public function createWithMapping(array $data): Smtp
     {
         return $this->create($this->mapping($data));
     }
 
-    /**
-     * @param int $action
-     * @param array $ids
-     * @return void
-     */
     public function updateStatus(int $action, array $ids): void
     {
         $ids = array_filter($ids, static fn ($id) => is_numeric($id));
@@ -56,23 +42,27 @@ class SmtpRepository extends BaseRepository
         };
     }
 
-    /**
-     * @param array $data
-     * @return array
-     */
     private function mapping(array $data): array
     {
         $mapped = collect($data)
             ->only($this->model->getFillable())
             ->map(function ($value, $key) {
                 return match ($key) {
-                    'port', 'timeout' => !is_null($value) ? (int) $value : null,
+                    'port', 'timeout' => ! is_null($value) ? (int) $value : null,
+                    'authentication' => match ($value) {
+                        'no' => Smtp::AUTH_LOGIN,
+                        'crammd5' => Smtp::AUTH_CRAM_MD5,
+                        default => $value,
+                    },
                     default => $value,
                 };
             })
             ->toArray();
 
-        if (array_key_exists('password', $mapped) && empty($mapped['password'])) {
+        if (
+            array_key_exists('password', $mapped)
+            && ($mapped['password'] === null || $mapped['password'] === '')
+        ) {
             unset($mapped['password']);
         }
 

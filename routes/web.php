@@ -1,26 +1,24 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\{
-    AuthController,
-    CategoryController,
-    DataTableController,
-    DashboardController,
-    TemplatesController,
-    SmtpController,
-    SettingsController,
-    SubscribersController,
-    ScheduleController,
-    PagesController,
-    LogController,
-    RedirectController,
-    MacrosController,
-    UsersController,
-    UpdateController,
-};
+use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DataTableController;
+use App\Http\Controllers\Admin\LogController;
+use App\Http\Controllers\Admin\MacrosController;
+use App\Http\Controllers\Admin\PagesController;
+use App\Http\Controllers\Admin\RedirectController;
+use App\Http\Controllers\Admin\ScheduleController;
+use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\SmtpController;
+use App\Http\Controllers\Admin\SubscribersController;
+use App\Http\Controllers\Admin\TemplatesController;
+use App\Http\Controllers\Admin\UpdateController;
+use App\Http\Controllers\Admin\UsersController;
+use App\Http\Controllers\AjaxController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\InstallController;
-use App\Http\Controllers\AjaxController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,7 +39,7 @@ Route::group(['middleware' => ['install']], function () {
     Route::any('form', [FrontendController::class, 'form'])->name('frontend.form');
     Route::any('categories', [FrontendController::class, 'getCategories'])->name('frontend.categories');
     Route::post('add-sub', [FrontendController::class, 'addSub'])->name('frontend.addsub');
-    Route::any('ajax', [AjaxController::class, 'action'])->name('admin.ajax.action');
+    Route::post('ajax', [AjaxController::class, 'action'])->name('admin.ajax.action');
     Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('login', [AuthController::class, 'login'])->name('login.submit');
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');

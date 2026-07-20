@@ -41,7 +41,16 @@
                             @php
                                 $secureValue = old('secure', $row->secure ?? 'no');
                                 $authenticationValue = old('authentication', $row->authentication ?? 'no');
+                                $authenticationValue = match ($authenticationValue) {
+                                    'no' => 'login',
+                                    'crammd5' => 'cram-md5',
+                                    default => $authenticationValue,
+                                };
                             @endphp
+
+                            @if ($errors->has('connection'))
+                                <div class="alert alert-danger">{{ $errors->first('connection') }}</div>
+                            @endif
 
                             <div class="row">
                                 <div class="col-md-6">
@@ -77,9 +86,13 @@
 
                                     <div class="form-group">
 
-                                        {!! Form::label('password', __('frontend.form.password')) !!}
+                                        {!! Form::label('password', __('frontend.form.password') . (isset($row) ? '' : '*')) !!}
 
-                                        {!! Form::text('password', old('password', $row->password ?? null), [ 'placeholder' => __('frontend.form.password'), 'class' => 'form-control']) !!}
+                                        {!! Form::password('password', [
+                                            'placeholder' => __('frontend.form.password'),
+                                            'class' => 'form-control',
+                                            'autocomplete' => 'new-password',
+                                        ]) !!}
 
                                         @if ($errors->has('password'))
                                             <p class="text-danger">{{ $errors->first('password') }}</p>
@@ -138,8 +151,8 @@
 
                                         <div>
                                             <div class="custom-control custom-radio custom-control-inline">
-                                                {!! Form::radio('authentication', 'no', $authenticationValue === 'no', ['class' => 'custom-control-input', 'id' => 'authentication_no']) !!}
-                                                <label class="custom-control-label" for="authentication_no">LOGIN ({{ __('frontend.form.low_secrecy') }})</label>
+                                                {!! Form::radio('authentication', 'login', $authenticationValue === 'login', ['class' => 'custom-control-input', 'id' => 'authentication_login']) !!}
+                                                <label class="custom-control-label" for="authentication_login">LOGIN ({{ __('frontend.form.low_secrecy') }})</label>
                                             </div>
 
                                             <div class="custom-control custom-radio custom-control-inline">
@@ -148,8 +161,8 @@
                                             </div>
 
                                             <div class="custom-control custom-radio custom-control-inline">
-                                                {!! Form::radio('authentication', 'crammd5', $authenticationValue === 'crammd5', ['class' => 'custom-control-input', 'id' => 'authentication_crammd5']) !!}
-                                                <label class="custom-control-label" for="authentication_crammd5">CRAM-MD5 ({{ __('frontend.form.high_secrecy') }})</label>
+                                                {!! Form::radio('authentication', 'cram-md5', $authenticationValue === 'cram-md5', ['class' => 'custom-control-input', 'id' => 'authentication_cram_md5']) !!}
+                                                <label class="custom-control-label" for="authentication_cram_md5">CRAM-MD5 ({{ __('frontend.form.high_secrecy') }})</label>
                                             </div>
                                         </div>
 

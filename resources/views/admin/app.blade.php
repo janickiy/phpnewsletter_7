@@ -131,7 +131,7 @@
                         </a>
                     </li>
 
-                    @if(PermissionsHelper::has_permission('admin|moderator'))
+                    @if(PermissionsHelper::hasPermission('admin|moderator'))
 
                         <li class="nav-item">
                             <a href="{{ route('admin.subscribers.index') }}" class="nav-link{{ Request::is('subscribers*') ? ' active' : '' }}"
@@ -159,7 +159,7 @@
                         </a>
                     </li>
 
-                    @if(PermissionsHelper::has_permission('admin|moderator'))
+                    @if(PermissionsHelper::hasPermission('admin|moderator'))
 
                         <li class="nav-item">
                             <a href="{{ route('admin.category.index') }}" class="nav-link{{ Request::is('category*') ? ' active' : '' }}"
@@ -171,7 +171,7 @@
 
                     @endif
 
-                    @if(PermissionsHelper::has_permission('admin'))
+                    @if(PermissionsHelper::hasPermission('admin'))
 
                         <li class="nav-item">
                             <a href="{{ route('admin.smtp.index') }}" class="nav-link{{ Request::is('smtp*') ? ' active' : '' }}" title="{{ __('frontend.str.smtp_server') }}">
@@ -212,7 +212,7 @@
                         </ul>
                     </li>
 
-                    @if(PermissionsHelper::has_permission(Auth::user()->role,'admin'))
+                    @if(PermissionsHelper::hasPermission('admin'))
 
                         <li class="nav-item">
                             <a href="{{ route('admin.settings.index') }}" class="nav-link{{  Request::is('settings*') ? ' active' : '' }}"
@@ -224,7 +224,7 @@
 
                     @endif
 
-                    @if(PermissionsHelper::has_permission(Auth::user()->role,'admin'))
+                    @if(PermissionsHelper::hasPermission('admin'))
 
                         <li class="nav-item">
                             <a href="{{ route('admin.users.index') }}" class="nav-link{{ Request::is('users*') ? ' active' : '' }}"
@@ -236,7 +236,7 @@
 
                     @endif
 
-                    @if(PermissionsHelper::has_permission(Auth::user()->role,'admin'))
+                    @if(PermissionsHelper::hasPermission('admin'))
 
                         <li class="nav-item">
                             <a href="{{ route('admin.update.index') }}" class="nav-link{{ Request::is('update*') ? ' active' : '' }}" title="{{ __('frontend.menu.update') }}">
@@ -273,7 +273,7 @@
                                 </a>
                             </li>
 
-                            @if(PermissionsHelper::has_permission(Auth::user()->role,'admin|moderator'))
+                            @if(PermissionsHelper::hasPermission('admin|moderator'))
 
                                 <li class="nav-item">
                                     <a href="{{ route('admin.pages.cron_job_list') }}" class="nav-link{{ Request::is('pages/cron-job-list*') ? ' active' : '' }}"

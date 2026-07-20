@@ -193,7 +193,7 @@
                                     <i class="fas fa-plus text-info mr-2"></i>{{ __('frontend.str.add_template') }}
                                     <i class="fas fa-angle-right float-right mt-1"></i>
                                 </a>
-                                @if(PermissionsHelper::has_permission('admin|moderator'))
+                                @if(PermissionsHelper::hasPermission('admin|moderator'))
                                     <a href="{{ route('admin.subscribers.import') }}" class="list-group-item list-group-item-action">
                                         <i class="fas fa-file-import text-success mr-2"></i>{{ __('frontend.str.import_subscribers') }}
                                         <i class="fas fa-angle-right float-right mt-1"></i>
@@ -203,7 +203,7 @@
                                     <i class="fas fa-calendar-plus text-warning mr-2"></i>{{ __('frontend.str.add_schedule') }}
                                     <i class="fas fa-angle-right float-right mt-1"></i>
                                 </a>
-                                @if(PermissionsHelper::has_permission('admin'))
+                                @if(PermissionsHelper::hasPermission('admin'))
                                     <a href="{{ route('admin.settings.index') }}" class="list-group-item list-group-item-action">
                                         <i class="fas fa-cogs text-secondary mr-2"></i>{{ __('frontend.menu.settings') }}
                                         <i class="fas fa-angle-right float-right mt-1"></i>

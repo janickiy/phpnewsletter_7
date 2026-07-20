@@ -218,7 +218,6 @@ return [
         Collective\Html\HtmlServiceProvider::class,
 
         Yajra\DataTables\DataTablesServiceProvider::class,
-        Collective\Html\HtmlServiceProvider::class,
         Yajra\DataTables\ButtonsServiceProvider::class,
         Yajra\DataTables\HtmlServiceProvider::class,
 

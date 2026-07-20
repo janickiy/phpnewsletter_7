@@ -2,9 +2,9 @@
 
 namespace App\Repositories;
 
-use App\Models\ReadySent;
 use App\DTO\ReadySentCreateData;
 use App\DTO\ReadySentReadData;
+use App\Models\ReadySent;
 
 class ReadySentRepository extends BaseRepository
 {
@@ -13,10 +13,6 @@ class ReadySentRepository extends BaseRepository
         parent::__construct($model);
     }
 
-    /**
-     * @param ReadySentCreateData $data
-     * @return ReadySent
-     */
     public function add(ReadySentCreateData $data): ReadySent
     {
         return ReadySent::query()->create([
@@ -32,42 +28,27 @@ class ReadySentRepository extends BaseRepository
         ]);
     }
 
-    /**
-     * @param ReadySentReadData $data
-     * @return bool
-     */
     public function markAsRead(ReadySentReadData $data): bool
     {
         return $this->model->query()
             ->where('template_id', $data->templateId)
             ->where('subscriber_id', $data->subscriberId)
             ->update([
-            'readMail' => $data->readMail,
-        ]);
+                'readMail' => $data->readMail,
+            ]);
     }
 
-    /**
-     * @param int $id
-     * @param array $data
-     * @return bool
-     */
     public function update(int $id, array $data): bool
     {
-        return $this->update($id, ['name' => $data['name']]);
+        return parent::update($id, $data);
     }
 
-    /**
-     * @param int $logId
-     * @param int $success
-     * @return int
-     */
     public function countStatus(int $logId, int $success): int
     {
         return $this->model->where('log_id', $logId)->where('success', $success)->count();
     }
 
     /**
-     * @param int $limit
      * @return array|false[]
      */
     public function logOnline(int $limit = 5): array
@@ -78,7 +59,7 @@ class ReadySentRepository extends BaseRepository
             ->limit($limit)
             ->get();
 
-        if (!$readySent) {
+        if (! $readySent) {
             return ['result' => false];
         }
 
@@ -87,14 +68,14 @@ class ReadySentRepository extends BaseRepository
         foreach ($readySent as $row) {
             $rows[] = [
                 'subscriber_id' => $row->subscriber_id,
-                "email" => $row->email,
-                "status" => $row->success === 1 ? __('frontend.str.sent') : __('frontend.str.not_sent'),
+                'email' => $row->email,
+                'status' => $row->success === 1 ? __('frontend.str.sent') : __('frontend.str.not_sent'),
             ];
         }
 
         return [
             'result' => true,
-            'item' => $rows
+            'item' => $rows,
         ];
     }
 }

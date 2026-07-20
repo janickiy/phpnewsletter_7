@@ -16,18 +16,16 @@ class Category extends Model
         'name',
     ];
 
-    /**
-     * @return HasMany
-     */
     public function templates(): HasMany
     {
         return $this->hasMany(Templates::class, 'subscriberId');
     }
 
-    public function scopeRemove(): void
+    public function remove(): bool
     {
         Subscriptions::where('category_id', $this->id)->delete();
         ScheduleCategory::where('category_id', $this->id)->delete();
-        self::delete();
+
+        return (bool) $this->delete();
     }
 }

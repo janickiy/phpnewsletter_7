@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Helpers\StringHelper;
 use App\Http\Traits\StaticTableName;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Helpers\StringHelper;
 
 class Templates extends Model
 {
@@ -16,20 +16,14 @@ class Templates extends Model
     protected $fillable = [
         'name',
         'body',
-        'prior'
+        'prior',
     ];
 
-    /**
-     * @return HasMany
-     */
-    public function attach(): hasMany
+    public function attach(): HasMany
     {
         return $this->hasMany(Attach::class, 'template_id');
     }
 
-    /**
-     * @return string
-     */
     public function excerpt(): string
     {
         $content = $this->body;
@@ -38,17 +32,11 @@ class Templates extends Model
         return StringHelper::shortText($content, 500);
     }
 
-    /**
-     * @return array
-     */
     public static function getOption(): array
     {
         return self::orderBy('name')->get()->pluck('name', 'id')->toArray();
     }
 
-    /**
-     * @return string
-     */
     public function getPrior(): string
     {
         switch ($this->prior) {
@@ -61,15 +49,12 @@ class Templates extends Model
         }
     }
 
-    /**
-     * @return void
-     */
-    public function scopeRemove(): void
+    public function remove(): bool
     {
         foreach ($this->attach ?? [] as $attach) {
             $attach->remove();
         }
 
-        $this->delete();
+        return (bool) $this->delete();
     }
 }

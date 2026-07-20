@@ -33,7 +33,7 @@ if [ "${COMPOSER_INSTALL:-true}" = "true" ] && [ -f composer.json ] && [ ! -f ve
 
     composer_security_args=()
 
-    if [ "${COMPOSER_BLOCK_SECURITY_ADVISORIES:-false}" = "false" ]; then
+    if [ "${COMPOSER_BLOCK_SECURITY_ADVISORIES:-true}" = "false" ]; then
         composer_security_args+=(--no-security-blocking)
     fi
 

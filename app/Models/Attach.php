@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-
 use App\Http\Traits\StaticTableName;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,31 +18,26 @@ class Attach extends Model
     protected $fillable = [
         'name',
         'file_name',
-        'template_id'
+        'template_id',
     ];
 
     protected $attributes = [
         'name' => 'user',
     ];
 
-
-    /**
-     * @return BelongsTo
-     */
     public function template(): BelongsTo
     {
         return $this->belongsTo(Templates::class);
     }
 
-    /**
-     * @return void
-     */
-    public function scopeRemove(): void
+    public function remove(): bool
     {
-        if (Storage::exists(Attach::DIRECTORY . '/' . $this->file_name)) {
-            Storage::delete(Attach::DIRECTORY . '/' . $this->file_name);
+        $path = self::DIRECTORY.'/'.$this->file_name;
+
+        if (Storage::exists($path)) {
+            Storage::delete($path);
         }
 
-        $this->delete();
+        return (bool) $this->delete();
     }
 }
